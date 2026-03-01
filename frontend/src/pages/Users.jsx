@@ -167,7 +167,7 @@ export default function Users({ user }) {
                     <TableCell>{u.designation || "-"}</TableCell>
                     <TableCell>
                       {u.is_active ? (
-                        <div className="flex items-center gap-1 text-[#C8FF00] text-400">
+                        <div className="flex items-center gap-1 text-bw-volt text-400">
                           <UserCheck className="h-4 w-4" />
                           <span className="text-sm">Active</span>
                         </div>

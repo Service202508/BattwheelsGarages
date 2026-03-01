@@ -38,11 +38,11 @@ export default function CustomerVehicles({ user }) {
   const getAMCStatusColor = (status) => {
     if (!status) return "";
     const colors = {
-      active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
-      expiring: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border-orange-200",
-      expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200"
+      active: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25 border-green-200",
+      expiring: "bg-bw-orange/10 text-bw-orange border-orange-200",
+      expired: "bg-bw-red/10 text-bw-red border border-bw-red/25 border-red-200"
     };
-    return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
+    return colors[status] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]";
   };
 
   if (loading) {
@@ -58,8 +58,8 @@ export default function CustomerVehicles({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">My Vehicles</h1>
-          <p className="text-[rgba(244,246,240,0.35)]">Manage your registered EVs and view service details</p>
+          <h1 className="text-2xl font-bold text-bw-white">My Vehicles</h1>
+          <p className="text-bw-white/35">Manage your registered EVs and view service details</p>
         </div>
       </div>
 
@@ -67,9 +67,9 @@ export default function CustomerVehicles({ user }) {
       {vehicles.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Car className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
-            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Vehicles Registered</h3>
-            <p className="text-[rgba(244,246,240,0.35)] mb-4">
+            <Car className="h-16 w-16 mx-auto mb-4 text-bw-white/20" />
+            <h3 className="text-lg font-semibold text-bw-white mb-2">No Vehicles Registered</h3>
+            <p className="text-bw-white/35 mb-4">
               Your registered vehicles will appear here. Contact support to add your vehicle.
             </p>
             <Link to="/customer/request-callback">
@@ -80,17 +80,17 @@ export default function CustomerVehicles({ user }) {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {vehicles.map((vehicle) => (
-            <Card key={vehicle.vehicle_id} className="overflow-hidden hover:border-[rgba(255,255,255,0.12)] transition-all">
+            <Card key={vehicle.vehicle_id} className="overflow-hidden hover:border-white/[0.12] transition-all">
               {/* Vehicle Header */}
               <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 text-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-[#111820]/10">
+                    <div className="p-2 rounded-lg bg-bw-panel/10">
                       <Car className="h-6 w-6" />
                     </div>
                     <div>
                       <p className="font-bold text-lg">{vehicle.registration_number}</p>
-                      <p className="text-[rgba(244,246,240,0.20)] text-sm">{vehicle.make} {vehicle.model}</p>
+                      <p className="text-bw-white/20 text-sm">{vehicle.make} {vehicle.model}</p>
                     </div>
                   </div>
                   {vehicle.amc_plan && (
@@ -105,32 +105,32 @@ export default function CustomerVehicles({ user }) {
               <CardContent className="p-4 space-y-4">
                 {/* Vehicle Stats */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-[#111820]">
-                    <p className="text-2xl font-bold text-[#F4F6F0]">{vehicle.total_services || 0}</p>
-                    <p className="text-xs text-[rgba(244,246,240,0.35)]">Total Services</p>
+                  <div className="text-center p-3 rounded-lg bg-bw-panel">
+                    <p className="text-2xl font-bold text-bw-white">{vehicle.total_services || 0}</p>
+                    <p className="text-xs text-bw-white/35">Total Services</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-[#111820]">
-                    <p className="text-2xl font-bold text-[#F4F6F0]">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
-                    <p className="text-xs text-[rgba(244,246,240,0.35)]">Total Spent</p>
+                  <div className="text-center p-3 rounded-lg bg-bw-panel">
+                    <p className="text-2xl font-bold text-bw-white">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
+                    <p className="text-xs text-bw-white/35">Total Spent</p>
                   </div>
                 </div>
 
                 {/* Vehicle Details */}
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
+                    <span className="text-bw-white/35 flex items-center gap-2">
                       <Battery className="h-4 w-4" /> Battery
                     </span>
                     <span className="font-medium">{vehicle.battery_capacity || "N/A"} kWh</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
+                    <span className="text-bw-white/35 flex items-center gap-2">
                       <Calendar className="h-4 w-4" /> Year
                     </span>
                     <span className="font-medium">{vehicle.year || "N/A"}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
+                    <span className="text-bw-white/35 flex items-center gap-2">
                       <Wrench className="h-4 w-4" /> Last Service
                     </span>
                     <span className="font-medium">
@@ -145,21 +145,21 @@ export default function CustomerVehicles({ user }) {
                 {/* AMC Info */}
                 {vehicle.amc_plan && (
                   <div className={`p-3 rounded-lg border ${
-                    vehicle.amc_plan.status === 'expiring' ? 'bg-[rgba(255,140,0,0.08)] border-orange-200' : 'bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]'
+                    vehicle.amc_plan.status === 'expiring' ? 'bg-bw-orange/[0.08] border-orange-200' : 'bg-bw-volt/[0.08] border-bw-volt/20'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Shield className={`h-4 w-4 ${
-                          vehicle.amc_plan.status === 'expiring' ? 'text-[#FF8C00]' : 'text-[#C8FF00] text-600'
+                          vehicle.amc_plan.status === 'expiring' ? 'text-bw-orange' : 'text-bw-volt text-600'
                         }`} />
                         <span className="font-medium text-sm">{vehicle.amc_plan.plan_name}</span>
                       </div>
-                      <span className="text-xs text-[rgba(244,246,240,0.35)]">
+                      <span className="text-xs text-bw-white/35">
                         Expires: {new Date(vehicle.amc_plan.end_date).toLocaleDateString()}
                       </span>
                     </div>
                     {vehicle.amc_plan.status === 'expiring' && (
-                      <p className="text-xs text-[#FF8C00] mt-1 flex items-center gap-1">
+                      <p className="text-xs text-bw-orange mt-1 flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         Expiring soon - Renew now for uninterrupted coverage
                       </p>
@@ -175,7 +175,7 @@ export default function CustomerVehicles({ user }) {
                     </Button>
                   </Link>
                   <Link to="/customer/book-appointment" className="flex-1">
-                    <Button className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" size="sm">
+                    <Button className="w-full bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" size="sm">
                       Book Service
                     </Button>
                   </Link>

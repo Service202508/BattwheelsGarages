@@ -21,8 +21,8 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  inactive: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]",
+  active: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  inactive: "bg-white/5 text-bw-white/35",
   deleted: "bg-red-100 text-red-600"
 };
 
@@ -289,8 +289,8 @@ export default function PriceLists() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Price Lists</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage custom pricing for items (Zoho Books compatible)</p>
+          <h1 className="text-2xl font-bold text-bw-white">Price Lists</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage custom pricing for items (Zoho Books compatible)</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={fetchData}>
@@ -299,7 +299,7 @@ export default function PriceLists() {
           </Button>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-pricelist-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-pricelist-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Price List
               </Button>
             </DialogTrigger>
@@ -365,7 +365,7 @@ export default function PriceLists() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="submit-pricelist-btn">Create Price List</Button>
+                <Button onClick={handleCreate} className="bg-bw-volt text-bw-black font-bold" data-testid="submit-pricelist-btn">Create Price List</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -374,14 +374,14 @@ export default function PriceLists() {
 
       {/* Price Lists */}
       {loading ? (
-        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+        <div className="text-center py-12 text-bw-white/[0.45]">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
           Loading price lists...
         </div>
       ) : priceLists.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-            <List className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+          <CardContent className="py-12 text-center text-bw-white/[0.45]">
+            <List className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
             <p>No price lists found</p>
             <p className="text-sm mt-1">Create a price list to set custom pricing for different customers</p>
           </CardContent>
@@ -389,24 +389,24 @@ export default function PriceLists() {
       ) : (
         <div className="space-y-4">
           {priceLists.map(pl => (
-            <Card key={pl.price_list_id || pl.pricelist_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors" data-testid={`pricelist-${pl.price_list_id || pl.pricelist_id}`}>
+            <Card key={pl.price_list_id || pl.pricelist_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors" data-testid={`pricelist-${pl.price_list_id || pl.pricelist_id}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(pl.price_list_id || pl.pricelist_id)}>
-                    <div className="p-2 bg-[#C8FF00]/10 rounded-lg">
-                      <List className="h-5 w-5 text-[#C8FF00]" />
+                    <div className="p-2 bg-bw-volt/10 rounded-lg">
+                      <List className="h-5 w-5 text-bw-volt" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <CardTitle className="text-lg">{pl.price_list_name || pl.name}</CardTitle>
                         {expandedPriceLists[pl.price_list_id || pl.pricelist_id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </div>
-                      {pl.description && <p className="text-sm text-[rgba(244,246,240,0.45)]">{pl.description}</p>}
+                      {pl.description && <p className="text-sm text-bw-white/[0.45]">{pl.description}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="capitalize">{pl.price_type || 'sales'}</Badge>
-                    {pl.is_default && <Badge className="bg-blue-100 text-[#3B9EFF]">Default</Badge>}
+                    {pl.is_default && <Badge className="bg-blue-100 text-bw-blue">Default</Badge>}
                     <Badge variant="outline">{pl.item_count || pl.items?.length || 0} items</Badge>
                     
                     {/* Actions */}
@@ -441,7 +441,7 @@ export default function PriceLists() {
                   {pl.items?.length > 0 ? (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-[#111820]">
+                        <thead className="bg-bw-panel">
                           <tr>
                             <th className="px-4 py-2 text-left font-medium">Item ID</th>
                             <th className="px-4 py-2 text-left font-medium">Item Name</th>
@@ -456,15 +456,15 @@ export default function PriceLists() {
                         </thead>
                         <tbody>
                           {pl.items.map(item => (
-                            <tr key={item.item_id} className="border-t hover:bg-[#111820]">
-                              <td className="px-4 py-2 font-mono text-xs text-[rgba(244,246,240,0.45)]">{item.item_id}</td>
+                            <tr key={item.item_id} className="border-t hover:bg-bw-panel">
+                              <td className="px-4 py-2 font-mono text-xs text-bw-white/[0.45]">{item.item_id}</td>
                               <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
-                                  <Package className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                                  <Package className="h-4 w-4 text-bw-white/[0.45]" />
                                   <span>{item.item_name || item.synced_item_name || 'Unknown'}</span>
                                 </div>
                               </td>
-                              <td className="px-4 py-2 text-[rgba(244,246,240,0.35)]">{item.sku || item.synced_sku || '-'}</td>
+                              <td className="px-4 py-2 text-bw-white/35">{item.sku || item.synced_sku || '-'}</td>
                               <td className="px-4 py-2 text-center">
                                 <Badge className={statusColors[item.item_status || item.synced_status || 'active']}>
                                   {item.item_status || item.synced_status || 'active'}
@@ -473,18 +473,18 @@ export default function PriceLists() {
                               <td className="px-4 py-2 text-center">
                                 {(item.is_combo_product || item.synced_is_combo) ? 
                                   <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : 
-                                  <span className="text-[rgba(244,246,240,0.20)]">-</span>
+                                  <span className="text-bw-white/20">-</span>
                                 }
                               </td>
-                              <td className="px-4 py-2 text-right text-[rgba(244,246,240,0.45)]">
+                              <td className="px-4 py-2 text-right text-bw-white/[0.45]">
                                 {formatCurrency(item.item_price || item.synced_item_price || 0)}
                               </td>
-                              <td className="px-4 py-2 text-right font-medium text-[#C8FF00]">
+                              <td className="px-4 py-2 text-right font-medium text-bw-volt">
                                 {formatCurrency(item.pricelist_rate || item.custom_rate || 0)}
                               </td>
                               <td className="px-4 py-2 text-right">
                                 {item.discount > 0 ? (
-                                  <Badge variant="outline" className="bg-[rgba(255,140,0,0.08)] text-[#FF8C00]">
+                                  <Badge variant="outline" className="bg-bw-orange/[0.08] text-bw-orange">
                                     {item.discount}%
                                   </Badge>
                                 ) : '-'}
@@ -500,7 +500,7 @@ export default function PriceLists() {
                       </table>
                     </div>
                   ) : (
-                    <div className="text-center py-6 text-[rgba(244,246,240,0.45)] text-sm border rounded-lg border-dashed">
+                    <div className="text-center py-6 text-bw-white/[0.45] text-sm border rounded-lg border-dashed">
                       No items added to this price list yet
                     </div>
                   )}
@@ -520,7 +520,7 @@ export default function PriceLists() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
               <Input 
                 placeholder="Search items..." 
                 value={searchQuery}
@@ -540,7 +540,7 @@ export default function PriceLists() {
                     <SelectItem key={item.item_id} value={item.item_id}>
                       <div className="flex justify-between w-full gap-4">
                         <span>{item.name}</span>
-                        <span className="text-[rgba(244,246,240,0.45)]">{formatCurrency(item.rate)}</span>
+                        <span className="text-bw-white/[0.45]">{formatCurrency(item.rate)}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -571,7 +571,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddItemDialog(false)}>Cancel</Button>
-            <Button onClick={handleAddItem} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="add-item-submit">Add Item</Button>
+            <Button onClick={handleAddItem} className="bg-bw-volt text-bw-black font-bold" data-testid="add-item-submit">Add Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -613,7 +613,7 @@ export default function PriceLists() {
             <Separator />
             
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
               <Input 
                 placeholder="Search items..." 
                 value={searchQuery}
@@ -624,7 +624,7 @@ export default function PriceLists() {
             
             <div className="border rounded-lg max-h-[300px] overflow-y-auto">
               {filteredItems.map(item => (
-                <div key={item.item_id} className="flex items-center gap-3 p-3 hover:bg-[#111820] border-b last:border-b-0">
+                <div key={item.item_id} className="flex items-center gap-3 p-3 hover:bg-bw-panel border-b last:border-b-0">
                   <Checkbox 
                     checked={bulkAddItems.includes(item.item_id)}
                     onCheckedChange={(checked) => {
@@ -637,12 +637,12 @@ export default function PriceLists() {
                   />
                   <div className="flex-1">
                     <div className="font-medium">{item.name}</div>
-                    <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku || item.item_id}</div>
+                    <div className="text-xs text-bw-white/[0.45]">{item.sku || item.item_id}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-medium">{formatCurrency(item.rate)}</div>
                     {bulkPercentageType !== "none" && bulkPercentageValue > 0 && (
-                      <div className="text-xs text-[#C8FF00]">
+                      <div className="text-xs text-bw-volt">
                         → {formatCurrency(
                           bulkPercentageType === "markup_percentage" 
                             ? item.rate * (1 + bulkPercentageValue / 100)
@@ -655,13 +655,13 @@ export default function PriceLists() {
               ))}
             </div>
             
-            <div className="text-sm text-[rgba(244,246,240,0.45)]">
+            <div className="text-sm text-bw-white/[0.45]">
               {bulkAddItems.length} items selected
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowBulkAddDialog(false); setBulkAddItems([]); }}>Cancel</Button>
-            <Button onClick={handleBulkAdd} className="bg-[#C8FF00] text-[#080C0F] font-bold" disabled={bulkAddItems.length === 0}>
+            <Button onClick={handleBulkAdd} className="bg-bw-volt text-bw-black font-bold" disabled={bulkAddItems.length === 0}>
               Add {bulkAddItems.length} Items
             </Button>
           </DialogFooter>
@@ -678,7 +678,7 @@ export default function PriceLists() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-3 bg-[#111820] rounded-lg text-xs font-mono">
+            <div className="p-3 bg-bw-panel rounded-lg text-xs font-mono">
               <p className="font-semibold mb-1">Expected CSV Format:</p>
               <p>Item ID,Item Name,SKU,Status,is_combo_product,Item Price,PriceList Rate,Discount</p>
             </div>
@@ -696,7 +696,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportCsvData(""); }}>Cancel</Button>
-            <Button onClick={handleImport} className="bg-[#C8FF00] text-[#080C0F] font-bold" disabled={importing} data-testid="import-submit-btn">
+            <Button onClick={handleImport} className="bg-bw-volt text-bw-black font-bold" disabled={importing} data-testid="import-submit-btn">
               {importing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Importing...</> : <><Upload className="h-4 w-4 mr-2" />Import</>}
             </Button>
           </DialogFooter>
@@ -749,7 +749,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Save Changes</Button>
+            <Button onClick={handleUpdate} className="bg-bw-volt text-bw-black font-bold">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

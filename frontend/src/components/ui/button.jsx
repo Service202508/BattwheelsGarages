@@ -5,22 +5,22 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(200,255,0,0.3)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bw-volt/30 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-[#C8FF00] text-[#080C0F] font-bold hover:bg-[#d4ff1a] hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]",
+          "bg-bw-volt text-bw-black font-bold hover:bg-bw-volt-hover hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]",
         destructive:
-          "bg-[rgba(255,59,47,0.1)] text-[#FF3B2F] border border-[rgba(255,59,47,0.2)] hover:bg-[rgba(255,59,47,0.15)]",
+          "bg-bw-red/10 text-bw-red border border-bw-red/20 hover:bg-bw-red/15",
         outline:
-          "border border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.7)] hover:border-[rgba(200,255,0,0.3)] hover:text-[#F4F6F0]",
+          "border border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white",
         secondary:
-          "bg-[#111820] text-[rgba(244,246,240,0.7)] border border-[rgba(255,255,255,0.07)] hover:bg-[rgba(200,255,0,0.06)] hover:text-[#F4F6F0]",
+          "bg-bw-panel text-bw-white/70 border border-white/[0.07] hover:bg-bw-volt/[0.06] hover:text-bw-white",
         ghost: 
-          "text-[rgba(244,246,240,0.45)] hover:bg-[rgba(200,255,0,0.06)] hover:text-[#F4F6F0]",
+          "text-bw-white/[0.45] hover:bg-bw-volt/[0.06] hover:text-bw-white",
         link: 
-          "text-[#C8FF00] underline-offset-4 hover:underline",
+          "text-bw-volt underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2",

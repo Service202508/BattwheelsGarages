@@ -15,12 +15,12 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  sent: "bg-blue-100 text-[#3B9EFF]",
-  accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  declined: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  expired: "bg-orange-100 text-[#FF8C00]",
-  invoiced: "bg-purple-100 text-[#8B5CF6]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  sent: "bg-blue-100 text-bw-blue",
+  accepted: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  declined: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  expired: "bg-orange-100 text-bw-orange",
+  invoiced: "bg-purple-100 text-bw-purple"
 };
 
 export default function Quotes() {
@@ -132,12 +132,12 @@ export default function Quotes() {
     <div className="space-y-6" data-testid="quotes-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Quotes / Estimates</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{quotes.length} quotes</p>
+          <h1 className="text-2xl font-bold text-bw-white">Quotes / Estimates</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">{quotes.length} quotes</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
               <Plus className="h-4 w-4 mr-2" /> New Quote
             </Button>
           </DialogTrigger>
@@ -172,7 +172,7 @@ export default function Quotes() {
                 </div>
               </div>
 
-              <div className="border rounded-lg p-4 bg-[#111820]">
+              <div className="border rounded-lg p-4 bg-bw-panel">
                 <h3 className="font-medium mb-3">Add Items</h3>
                 <Tabs defaultValue="services">
                   <TabsList className="mb-3">
@@ -198,10 +198,10 @@ export default function Quotes() {
                 </Tabs>
                 {newLineItem.item_name && (
                   <div className="mt-3 grid grid-cols-4 gap-3">
-                    <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
+                    <Input value={newLineItem.item_name} readOnly className="bg-bw-panel" />
                     <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                     <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                    <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
+                    <Button onClick={handleAddLineItem} className="bg-bw-volt text-bw-black font-bold">Add</Button>
                   </div>
                 )}
               </div>
@@ -209,7 +209,7 @@ export default function Quotes() {
               {newQuote.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right">Qty</th>
@@ -227,7 +227,7 @@ export default function Quotes() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-[#111820] font-semibold">
+                    <tfoot className="bg-bw-panel font-semibold">
                       <tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td></tr>
                     </tfoot>
                   </table>
@@ -236,7 +236,7 @@ export default function Quotes() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateQuote} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Quote</Button>
+              <Button onClick={handleCreateQuote} className="bg-bw-volt text-bw-black font-bold">Create Quote</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -246,17 +246,17 @@ export default function Quotes() {
         {["", "draft", "sent", "accepted", "expired"].map(s => (
           <Button key={s} size="sm" variant={statusFilter === s ? "default" : "outline"}
             onClick={() => setStatusFilter(s)}
-            className={statusFilter === s ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}>
+            className={statusFilter === s ? "bg-bw-volt text-bw-black font-bold" : ""}>
             {s || "All"}
           </Button>
         ))}
       </div>
 
-      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-        quotes.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No quotes found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+        quotes.length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No quotes found</CardContent></Card> :
         <div className="space-y-3">
           {quotes.map(q => (
-            <Card key={q.quote_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+            <Card key={q.quote_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -264,7 +264,7 @@ export default function Quotes() {
                       <h3 className="font-semibold">{q.quote_number}</h3>
                       <Badge className={statusColors[q.status]}>{q.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <div className="flex gap-4 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{q.customer_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{q.quote_date}</span>
                       <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />Expires: {q.expiry_date}</span>
@@ -279,7 +279,7 @@ export default function Quotes() {
                         <Button size="sm" variant="outline" onClick={() => handleConvert(q.quote_id, 'salesorder')}>
                           <ArrowRight className="h-4 w-4 mr-1" /> SO
                         </Button>
-                        <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvert(q.quote_id, 'invoice')}>
+                        <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={() => handleConvert(q.quote_id, 'invoice')}>
                           <ArrowRight className="h-4 w-4 mr-1" /> Invoice
                         </Button>
                       </div>

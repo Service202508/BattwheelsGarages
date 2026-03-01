@@ -31,7 +31,7 @@ const LEAVE_COLORS = {
   CL: "text-blue-500",
   SL: "text-red-500",
   EL: "text-green-500",
-  LWP: "text-[rgba(244,246,240,0.45)]",
+  LWP: "text-bw-white/[0.45]",
   CO: "text-purple-500",
 };
 
@@ -226,9 +226,9 @@ export default function LeaveManagement({ user }) {
 
   const getStatusBadge = (status) => {
     const styles = {
-      pending: "bg-[rgba(234,179,8,0.10)]",
+      pending: "bg-bw-amber/10",
       approved: "badge-success",
-      rejected: "bg-[rgba(255,59,47,0.10)]",
+      rejected: "bg-bw-red/10",
       cancelled: "badge-muted",
     };
     return <Badge className={styles[status]}>{status}</Badge>;
@@ -359,7 +359,7 @@ export default function LeaveManagement({ user }) {
         {leaveTypes.map((lt) => {
           const balance = leaveBalance?.balances?.[lt.code] || {};
           const Icon = LEAVE_ICONS[lt.code] || Calendar;
-          const color = LEAVE_COLORS[lt.code] || "text-[rgba(244,246,240,0.45)]";
+          const color = LEAVE_COLORS[lt.code] || "text-bw-white/[0.45]";
           const usedPct = balance.total ? (balance.used / balance.total) * 100 : 0;
           
           return (
@@ -402,7 +402,7 @@ export default function LeaveManagement({ user }) {
             <TabsTrigger value="approvals">
               Pending Approvals
               {pendingApprovals.length > 0 && (
-                <Badge className="ml-2 bg-[rgba(255,59,47,0.10)]">{pendingApprovals.length}</Badge>
+                <Badge className="ml-2 bg-bw-red/10">{pendingApprovals.length}</Badge>
               )}
             </TabsTrigger>
           )}
@@ -434,7 +434,7 @@ export default function LeaveManagement({ user }) {
                   <TableBody>
                     {myRequests.map((req) => {
                       const Icon = LEAVE_ICONS[req.leave_type] || Calendar;
-                      const color = LEAVE_COLORS[req.leave_type] || "text-[rgba(244,246,240,0.45)]";
+                      const color = LEAVE_COLORS[req.leave_type] || "text-bw-white/[0.45]";
                       
                       return (
                         <TableRow key={req.leave_id}>
@@ -515,7 +515,7 @@ export default function LeaveManagement({ user }) {
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]"
+                                className="bg-bw-green hover:bg-bw-green-hover text-bw-black"
                                 onClick={() => handleApproval(req.leave_id, "approved")}
                               >
                                 <CheckCircle2 className="h-4 w-4" />

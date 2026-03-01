@@ -11,9 +11,9 @@ import { Plus, Truck, Calendar, User, FileText, ArrowRight, CheckCircle, Trash2 
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  invoiced: "bg-blue-100 text-[#3B9EFF]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  delivered: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  invoiced: "bg-blue-100 text-bw-blue"
 };
 
 const challanTypes = {
@@ -119,12 +119,12 @@ export default function DeliveryChallans() {
     <div className="space-y-6" data-testid="delivery-challans-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Delivery Challans</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Track goods dispatched to customers</p>
+          <h1 className="text-2xl font-bold text-bw-white">Delivery Challans</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Track goods dispatched to customers</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-challan-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-challan-btn">
               <Plus className="h-4 w-4 mr-2" /> New Delivery Challan
             </Button>
           </DialogTrigger>
@@ -161,7 +161,7 @@ export default function DeliveryChallans() {
                 <Input value={newChallan.reference_number} onChange={(e) => setNewChallan({ ...newChallan, reference_number: e.target.value })} placeholder="e.g., PO-12345" />
               </div>
 
-              <div className="border rounded-lg p-4 bg-[#111820]">
+              <div className="border rounded-lg p-4 bg-bw-panel">
                 <h3 className="font-medium mb-3">Add Items</h3>
                 <div className="grid grid-cols-4 gap-3 mb-3">
                   <div className="col-span-2">
@@ -172,20 +172,20 @@ export default function DeliveryChallans() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2 text-sm text-[rgba(244,246,240,0.45)] flex items-center">Or enter manually below</div>
+                  <div className="col-span-2 text-sm text-bw-white/[0.45] flex items-center">Or enter manually below</div>
                 </div>
                 <div className="grid grid-cols-4 gap-3">
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" min={1} />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-bw-volt text-bw-black font-bold">Add</Button>
                 </div>
               </div>
 
               {newChallan.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right">Qty</th>
@@ -209,7 +209,7 @@ export default function DeliveryChallans() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-[#111820] font-semibold">
+                    <tfoot className="bg-bw-panel font-semibold">
                       <tr>
                         <td colSpan={3} className="px-3 py-2 text-right">Total:</td>
                         <td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td>
@@ -227,17 +227,17 @@ export default function DeliveryChallans() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Challan</Button>
+              <Button onClick={handleCreate} className="bg-bw-volt text-bw-black font-bold">Create Challan</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+      {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
         challans.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-              <Truck className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+            <CardContent className="py-12 text-center text-bw-white/[0.45]">
+              <Truck className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
               <p>No delivery challans found</p>
               <p className="text-sm mt-1">Create your first delivery challan to track goods dispatched</p>
             </CardContent>
@@ -245,17 +245,17 @@ export default function DeliveryChallans() {
         ) : (
           <div className="space-y-3">
             {challans.map(dc => (
-              <Card key={dc.delivery_challan_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+              <Card key={dc.delivery_challan_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <Truck className="h-5 w-5 text-[#C8FF00]" />
+                        <Truck className="h-5 w-5 text-bw-volt" />
                         <h3 className="font-semibold">{dc.challan_number}</h3>
                         <Badge className={statusColors[dc.status]}>{dc.status}</Badge>
                         <Badge variant="outline">{challanTypes[dc.challan_type] || dc.challan_type}</Badge>
                       </div>
-                      <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                      <div className="flex gap-4 text-sm text-bw-white/[0.45]">
                         <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{dc.customer_name}</span>
                         <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{dc.date}</span>
                         {dc.reference_number && <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />Ref: {dc.reference_number}</span>}
@@ -264,7 +264,7 @@ export default function DeliveryChallans() {
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <p className="font-bold text-lg">₹{dc.sub_total?.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{dc.line_items?.length || 0} items</p>
+                        <p className="text-xs text-bw-white/[0.45]">{dc.line_items?.length || 0} items</p>
                       </div>
                       <div className="flex flex-col gap-1">
                         {dc.status === "draft" && (
@@ -273,7 +273,7 @@ export default function DeliveryChallans() {
                           </Button>
                         )}
                         {dc.status === "delivered" && !dc.is_invoiced && (
-                          <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvertToInvoice(dc.delivery_challan_id)}>
+                          <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={() => handleConvertToInvoice(dc.delivery_challan_id)}>
                             <ArrowRight className="h-4 w-4 mr-1" /> Convert to Invoice
                           </Button>
                         )}

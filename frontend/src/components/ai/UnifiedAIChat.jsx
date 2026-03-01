@@ -232,7 +232,7 @@ How can I help you today?`,
         return (
           <p key={i} className="mb-1">
             {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-[#C8FF00] text-400 font-medium">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-bw-volt text-400 font-medium">{part}</strong> : part
             )}
           </p>
         );
@@ -251,21 +251,21 @@ How can I help you today?`,
   };
 
   return (
-    <div className="h-[calc(100vh-180px)] flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-xl overflow-hidden border border-[rgba(255,255,255,0.07)] border-800/50">
+    <div className="h-[calc(100vh-180px)] flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-xl overflow-hidden border border-white/[0.07] border-800/50">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/80 backdrop-blur-sm">
+      <div className="px-6 py-4 border-b border-white/[0.07] border-800/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-xl blur-xl animate-pulse" />
-              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-[rgba(200,255,0,0.50)]/20">
-                <Sparkles className="h-6 w-6 text-[#C8FF00] text-400" />
+              <div className="absolute inset-0 bg-bw-volt/[0.08]0/20 rounded-xl blur-xl animate-pulse" />
+              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-bw-volt/50/20">
+                <Sparkles className="h-6 w-6 text-bw-volt text-400" />
               </div>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white flex items-center gap-2">
                 AI Assistant
-                <Badge variant="outline" className="ml-2 border-[rgba(200,255,0,0.50)]/30 text-[#C8FF00] text-400 text-xs font-normal">
+                <Badge variant="outline" className="ml-2 border-bw-volt/50/30 text-bw-volt text-400 text-xs font-normal">
                   Gemini Powered
                 </Badge>
               </h1>
@@ -282,9 +282,9 @@ How can I help you today?`,
               <RotateCcw className="h-4 w-4 mr-1" />
               Clear
             </Button>
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/20">
-              <div className="h-2 w-2 rounded-full bg-[rgba(200,255,0,0.08)]0 animate-pulse" />
-              <span className="text-xs text-[#C8FF00] text-400 font-medium">Online</span>
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-bw-volt/[0.08]0/10 border border-bw-volt/50/20">
+              <div className="h-2 w-2 rounded-full bg-bw-volt/[0.08]0 animate-pulse" />
+              <span className="text-xs text-bw-volt text-400 font-medium">Online</span>
             </div>
           </div>
         </div>
@@ -300,8 +300,8 @@ How can I help you today?`,
                 onClick={() => setSelectedCategory(cat.value)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                   isSelected 
-                    ? "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-[rgba(200,255,0,0.50)]/30" 
-                    : "bg-slate-800/50 text-slate-400 border border-[rgba(255,255,255,0.07)] border-700/50 hover:bg-slate-800 hover:text-white"
+                    ? "bg-bw-volt/[0.08]0/20 text-bw-volt text-400 border border-bw-volt/50/30" 
+                    : "bg-slate-800/50 text-slate-400 border border-white/[0.07] border-700/50 hover:bg-slate-800 hover:text-white"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -324,13 +324,13 @@ How can I help you today?`,
               <div className={`flex-shrink-0 ${message.role === "user" ? "order-1" : ""}`}>
                 {message.role === "assistant" ? (
                   <div className="relative">
-                    <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md" />
-                    <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
+                    <div className="absolute inset-0 bg-bw-volt/[0.08]0/20 rounded-full blur-md" />
+                    <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-bw-volt/50/30 flex items-center justify-center">
+                      <Bot className="h-5 w-5 text-bw-volt text-400" />
                     </div>
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border border-[rgba(255,255,255,0.07)] border-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border border-white/[0.07] border-600 flex items-center justify-center">
                     <User className="h-5 w-5 text-slate-300" />
                   </div>
                 )}
@@ -343,8 +343,8 @@ How can I help you today?`,
                     message.role === "user"
                       ? "bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-br-md"
                       : message.error
-                      ? "bg-[rgba(255,59,47,0.08)]0/10 border border-red-500/30 text-slate-200 rounded-bl-md"
-                      : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 text-slate-200 rounded-bl-md"
+                      ? "bg-bw-red/[0.08]0/10 border border-red-500/30 text-slate-200 rounded-bl-md"
+                      : "bg-slate-800/80 border border-white/[0.07] border-700/50 text-slate-200 rounded-bl-md"
                   }`}
                 >
                   <div className="text-sm leading-relaxed">
@@ -366,7 +366,7 @@ How can I help you today?`,
                       <Copy className="h-3 w-3" />
                       Copy
                     </button>
-                    <button className="text-xs hover:text-[#C8FF00] text-400 flex items-center gap-1 transition-colors">
+                    <button className="text-xs hover:text-bw-volt text-400 flex items-center gap-1 transition-colors">
                       <ThumbsUp className="h-3 w-3" />
                     </button>
                     <button className="text-xs hover:text-rose-400 flex items-center gap-1 transition-colors">
@@ -382,19 +382,19 @@ How can I help you today?`,
           {loading && (
             <div className="flex gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md animate-pulse" />
-                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
+                <div className="absolute inset-0 bg-bw-volt/[0.08]0/20 rounded-full blur-md animate-pulse" />
+                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-bw-volt/50/30 flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-bw-volt text-400" />
                 </div>
               </div>
-              <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">
+              <div className="bg-slate-800/80 border border-white/[0.07] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span className="text-sm text-[rgba(244,246,240,0.45)]">AI is thinking...</span>
+                  <span className="text-sm text-bw-white/[0.45]">AI is thinking...</span>
                 </div>
               </div>
             </div>
@@ -406,7 +406,7 @@ How can I help you today?`,
 
       {/* Quick Prompts */}
       {messages.length <= 1 && (
-        <div className="px-6 py-3 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50">
+        <div className="px-6 py-3 border-t border-white/[0.07] border-800/50 bg-slate-900/50">
           <div className="flex items-center gap-2 mb-2">
             <Lightbulb className="h-4 w-4 text-amber-400" />
             <span className="text-xs text-slate-400 font-medium">Quick questions</span>
@@ -416,7 +416,7 @@ How can I help you today?`,
               <button
                 key={idx}
                 onClick={() => sendMessage(prompt)}
-                className="px-3 py-1.5 text-xs bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-[rgba(255,255,255,0.07)] border-600 transition-all flex items-center gap-1"
+                className="px-3 py-1.5 text-xs bg-slate-800/50 border border-white/[0.07] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-white/[0.07] border-600 transition-all flex items-center gap-1"
               >
                 {prompt}
                 <ChevronRight className="h-3 w-3 opacity-50" />
@@ -427,7 +427,7 @@ How can I help you today?`,
       )}
 
       {/* Input Area */}
-      <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/80 backdrop-blur-sm">
+      <div className="px-6 py-4 border-t border-white/[0.07] border-800/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="flex gap-3 items-end max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <Input
@@ -436,7 +436,7 @@ How can I help you today?`,
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="pr-20 py-6 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-[rgba(200,255,0,0.50)]/50 focus:ring-emerald-500/20"
+              className="pr-20 py-6 bg-slate-800/50 border-white/[0.07] border-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-bw-volt/50/50 focus:ring-emerald-500/20"
               disabled={loading}
               data-testid="ai-chat-input"
             />

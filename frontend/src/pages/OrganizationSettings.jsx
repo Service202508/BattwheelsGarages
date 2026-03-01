@@ -25,21 +25,21 @@ import { API } from "@/App";
 
 // Role badge colors
 const roleBadgeColors = {
-  owner: "bg-[rgba(139,92,246,0.20)] text-purple-400 border-purple-500/30",
+  owner: "bg-bw-purple/20 text-purple-400 border-purple-500/30",
   admin: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  manager: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
-  dispatcher: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
-  technician: "bg-[rgba(255,140,0,0.20)] text-orange-400 border-orange-500/30",
+  manager: "bg-bw-green/20 text-green-400 border-green-500/30",
+  dispatcher: "bg-bw-amber/20 text-yellow-400 border-yellow-500/30",
+  technician: "bg-bw-orange/20 text-orange-400 border-orange-500/30",
   accountant: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  viewer: "bg-[rgba(17,24,32,0.2)] text-[rgba(244,246,240,0.45)] border-[rgba(255,255,255,0.07)]",
+  viewer: "bg-bw-panel/20 text-bw-white/[0.45] border-white/[0.07]",
 };
 
 // Status badge colors
 const statusBadgeColors = {
-  active: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
-  invited: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
-  suspended: "bg-[rgba(255,59,47,0.20)] text-red-400 border-red-500/30",
-  deactivated: "bg-[rgba(17,24,32,0.2)] text-[rgba(244,246,240,0.45)] border-[rgba(255,255,255,0.07)]",
+  active: "bg-bw-green/20 text-green-400 border-green-500/30",
+  invited: "bg-bw-amber/20 text-yellow-400 border-yellow-500/30",
+  suspended: "bg-bw-red/20 text-red-400 border-red-500/30",
+  deactivated: "bg-bw-panel/20 text-bw-white/[0.45] border-white/[0.07]",
 };
 
 export default function OrganizationSettings({ user }) {
@@ -892,7 +892,7 @@ export default function OrganizationSettings({ user }) {
             <Badge variant="outline" className="bg-primary/10">
               {organization?.plan_type?.toUpperCase()}
             </Badge>
-            <Badge variant="outline" className={organization?.is_active ? "bg-[rgba(34,197,94,0.10)] text-green-400" : "bg-[rgba(255,59,47,0.10)] text-red-400"}>
+            <Badge variant="outline" className={organization?.is_active ? "bg-bw-green/10 text-green-400" : "bg-bw-red/10 text-red-400"}>
               {organization?.is_active ? "Active" : "Inactive"}
             </Badge>
           </div>
@@ -1857,7 +1857,7 @@ export default function OrganizationSettings({ user }) {
                 <CreditCard className="h-4 w-4" />
                 Payment Gateway (Razorpay)
                 {razorpayConfigured && (
-                  <Badge className="ml-2 bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">
+                  <Badge className="ml-2 bg-bw-green/20 text-green-400 border-green-500/30">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Configured
                   </Badge>
@@ -1870,7 +1870,7 @@ export default function OrganizationSettings({ user }) {
             <CardContent className="space-y-4">
               {razorpayConfigured ? (
                 <>
-                  <div className="p-4 bg-[rgba(34,197,94,0.08)] rounded-lg border border-green-500/20">
+                  <div className="p-4 bg-bw-green/[0.08] rounded-lg border border-green-500/20">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="h-5 w-5 text-green-400" />
                       <span className="font-medium text-green-400">Razorpay is connected</span>
@@ -1930,7 +1930,7 @@ export default function OrganizationSettings({ user }) {
                 </>
               ) : (
                 <>
-                  <div className="p-4 bg-[rgba(234,179,8,0.08)] rounded-lg border border-yellow-500/20 mb-4">
+                  <div className="p-4 bg-bw-amber/[0.08] rounded-lg border border-yellow-500/20 mb-4">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-5 w-5 text-yellow-400 mt-0.5" />
                       <div>
@@ -2032,7 +2032,7 @@ export default function OrganizationSettings({ user }) {
           </Card>
           
           {/* Email Settings Card */}
-          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <Card className="bg-bw-panel border-white/[0.07]">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -2045,9 +2045,9 @@ export default function OrganizationSettings({ user }) {
                   </CardDescription>
                 </div>
                 {emailConfigured ? (
-                  <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">CONFIGURED</Badge>
+                  <Badge className="bg-bw-green/20 text-green-400 border-green-500/30">CONFIGURED</Badge>
                 ) : (
-                  <Badge className="bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30">USING PLATFORM DEFAULT</Badge>
+                  <Badge className="bg-bw-amber/20 text-yellow-400 border-yellow-500/30">USING PLATFORM DEFAULT</Badge>
                 )}
               </div>
             </CardHeader>
@@ -2064,7 +2064,7 @@ export default function OrganizationSettings({ user }) {
                     value={emailConfig.from_email}
                     onChange={e => setEmailConfig({ ...emailConfig, from_email: e.target.value })}
                     placeholder="invoices@yourgaragename.com"
-                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] mt-1"
+                    className="bg-bw-panel/60 border-white/10 mt-1"
                   />
                 </div>
                 <div>
@@ -2073,7 +2073,7 @@ export default function OrganizationSettings({ user }) {
                     value={emailConfig.from_name}
                     onChange={e => setEmailConfig({ ...emailConfig, from_name: e.target.value })}
                     placeholder="Battwheels Garages"
-                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] mt-1"
+                    className="bg-bw-panel/60 border-white/10 mt-1"
                   />
                 </div>
               </div>
@@ -2085,7 +2085,7 @@ export default function OrganizationSettings({ user }) {
                     value={emailConfig.api_key}
                     onChange={e => setEmailConfig({ ...emailConfig, api_key: e.target.value })}
                     placeholder={emailConfigured ? "•••• (enter new key to update)" : "re_xxxxxxxx"}
-                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] pr-10"
+                    className="bg-bw-panel/60 border-white/10 pr-10"
                   />
                   <button
                     type="button"
@@ -2117,12 +2117,12 @@ export default function OrganizationSettings({ user }) {
           </Card>
           
           {/* E-Invoice (IRN) Settings Card */}
-          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <Card className="bg-bw-panel border-white/[0.07]">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <FileCheck className="h-4 w-4 text-[#C8FF00]" />
+                    <FileCheck className="h-4 w-4 text-bw-volt" />
                     E-Invoice (IRN) Settings
                   </CardTitle>
                   <CardDescription className="mt-1">
@@ -2131,15 +2131,15 @@ export default function OrganizationSettings({ user }) {
                 </div>
                 {/* Status Badge */}
                 {einvoiceConfigured && einvoiceEnabled ? (
-                  <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">
+                  <Badge className="bg-bw-green/20 text-green-400 border-green-500/30">
                     ACTIVE
                   </Badge>
                 ) : einvoiceConfigured ? (
-                  <Badge className="bg-[rgba(128,128,128,0.20)] text-[rgba(244,246,240,0.45)] border-[rgba(255,255,255,0.15)]">
+                  <Badge className="bg-bw-white/10 text-bw-white/[0.45] border-white/15">
                     DISABLED
                   </Badge>
                 ) : (
-                  <Badge className="bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30">
+                  <Badge className="bg-bw-amber/20 text-yellow-400 border-yellow-500/30">
                     NOT CONFIGURED
                   </Badge>
                 )}
@@ -2147,17 +2147,17 @@ export default function OrganizationSettings({ user }) {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Enable/Disable Toggle */}
-              <div className="flex items-center justify-between p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[rgba(200,255,0,0.02)]">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-white/[0.07] bg-bw-volt/[0.02]">
                 <div>
                   <Label className="text-sm font-medium">Enable E-Invoice Generation</Label>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+                  <p className="text-xs text-bw-white/[0.45] mt-1">
                     When enabled, finalized B2B invoices will require IRN registration before they can be sent to customers
                   </p>
                 </div>
                 <Switch 
                   checked={einvoiceEnabled}
                   onCheckedChange={setEinvoiceEnabled}
-                  className="data-[state=checked]:bg-[#C8FF00]"
+                  className="data-[state=checked]:bg-bw-volt"
                   data-testid="einvoice-enable-toggle"
                 />
               </div>
@@ -2165,12 +2165,12 @@ export default function OrganizationSettings({ user }) {
               {/* Credentials Form - shown when enabled */}
               {einvoiceEnabled && (
                 <>
-                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
+                  <Separator className="bg-white/[0.07]" />
                   
                   {/* Row 1: GSTIN and Legal Name */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         GSTIN *
                       </Label>
                       <div className="relative">
@@ -2179,7 +2179,7 @@ export default function OrganizationSettings({ user }) {
                           value={einvoiceConfig.gstin}
                           onChange={(e) => handleGstinChange(e.target.value)}
                           maxLength={15}
-                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] font-mono uppercase"
+                          className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08] font-mono uppercase"
                           data-testid="einvoice-gstin-input"
                         />
                         {gstinValid !== null && (
@@ -2197,14 +2197,14 @@ export default function OrganizationSettings({ user }) {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         Legal Business Name
                       </Label>
                       <Input 
                         placeholder="As registered on GST portal"
                         value={einvoiceConfig.legal_name}
                         onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, legal_name: e.target.value })}
-                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)]"
+                        className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08]"
                       />
                     </div>
                   </div>
@@ -2212,19 +2212,19 @@ export default function OrganizationSettings({ user }) {
                   {/* Row 2: IRP Username and Password */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         IRP Username *
                       </Label>
                       <Input 
                         placeholder="Your IRP portal username"
                         value={einvoiceConfig.irp_username}
                         onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, irp_username: e.target.value })}
-                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)]"
+                        className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08]"
                         data-testid="einvoice-username-input"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         IRP Password *
                       </Label>
                       <div className="relative">
@@ -2233,14 +2233,14 @@ export default function OrganizationSettings({ user }) {
                           placeholder="Your IRP portal password"
                           value={einvoiceConfig.irp_password}
                           onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, irp_password: e.target.value })}
-                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] pr-10"
+                          className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08] pr-10"
                           data-testid="einvoice-password-input"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute right-1 top-1 h-7 w-7 text-[rgba(244,246,240,0.45)]"
+                          className="absolute right-1 top-1 h-7 w-7 text-bw-white/[0.45]"
                           onClick={() => setShowEinvoiceSecrets(!showEinvoiceSecrets)}
                         >
                           {showEinvoiceSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -2252,19 +2252,19 @@ export default function OrganizationSettings({ user }) {
                   {/* Row 3: Client ID and Secret */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         Client ID *
                       </Label>
                       <Input 
                         placeholder="IRP API Client ID"
                         value={einvoiceConfig.client_id}
                         onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, client_id: e.target.value })}
-                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] font-mono"
+                        className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08] font-mono"
                         data-testid="einvoice-client-id-input"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                         Client Secret *
                       </Label>
                       <div className="relative">
@@ -2273,14 +2273,14 @@ export default function OrganizationSettings({ user }) {
                           placeholder="IRP API Client Secret"
                           value={einvoiceConfig.client_secret}
                           onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, client_secret: e.target.value })}
-                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] pr-10 font-mono"
+                          className="bg-bw-panel border-white/[0.13] focus:border-bw-volt focus:ring-bw-volt/[0.08] pr-10 font-mono"
                           data-testid="einvoice-client-secret-input"
                         />
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="absolute right-1 top-1 h-7 w-7 text-[rgba(244,246,240,0.45)]"
+                          className="absolute right-1 top-1 h-7 w-7 text-bw-white/[0.45]"
                           onClick={() => setShowEinvoiceSecrets(!showEinvoiceSecrets)}
                         >
                           {showEinvoiceSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -2291,7 +2291,7 @@ export default function OrganizationSettings({ user }) {
                   
                   {/* Row 4: Environment Selector */}
                   <div className="space-y-3">
-                    <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                    <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45] font-mono">
                       Environment
                     </Label>
                     <div className="flex gap-3">
@@ -2300,8 +2300,8 @@ export default function OrganizationSettings({ user }) {
                         onClick={() => setEinvoiceConfig({ ...einvoiceConfig, is_sandbox: true })}
                         className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                           einvoiceConfig.is_sandbox 
-                            ? "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]" 
-                            : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)] border border-[rgba(255,255,255,0.10)]"
+                            ? "bg-bw-amber/10 text-bw-amber border border-bw-amber/25" 
+                            : "bg-white/5 text-bw-white/[0.45] border border-white/10"
                         }`}
                         data-testid="einvoice-sandbox-btn"
                       >
@@ -2312,8 +2312,8 @@ export default function OrganizationSettings({ user }) {
                         onClick={() => setEinvoiceConfig({ ...einvoiceConfig, is_sandbox: false })}
                         className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                           !einvoiceConfig.is_sandbox 
-                            ? "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]" 
-                            : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)] border border-[rgba(255,255,255,0.10)]"
+                            ? "bg-bw-red/10 text-bw-red border border-bw-red/25" 
+                            : "bg-white/5 text-bw-white/[0.45] border border-white/10"
                         }`}
                         data-testid="einvoice-production-btn"
                       >
@@ -2323,9 +2323,9 @@ export default function OrganizationSettings({ user }) {
                     
                     {/* Production Warning */}
                     {!einvoiceConfig.is_sandbox && (
-                      <div className="p-3 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)] border-l-[3px] border-l-[#FF3B2F] rounded">
-                        <p className="text-sm text-[rgba(244,246,240,0.70)] flex items-start gap-2">
-                          <AlertTriangle className="h-4 w-4 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                      <div className="p-3 bg-bw-red/[0.08] border border-bw-red/20 border-l-[3px] border-l-bw-red rounded">
+                        <p className="text-sm text-bw-white/70 flex items-start gap-2">
+                          <AlertTriangle className="h-4 w-4 text-bw-red mt-0.5 flex-shrink-0" />
                           <span>
                             Production mode will submit real IRNs to the government IRP. Ensure all credentials are correct before enabling.
                           </span>
@@ -2334,7 +2334,7 @@ export default function OrganizationSettings({ user }) {
                     )}
                   </div>
                   
-                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
+                  <Separator className="bg-white/[0.07]" />
                   
                   {/* Connection Test Button */}
                   <div className="space-y-3">
@@ -2342,7 +2342,7 @@ export default function OrganizationSettings({ user }) {
                       variant="ghost"
                       onClick={testEinvoiceConnection}
                       disabled={testingEinvoice || !einvoiceConfigured}
-                      className="text-[rgba(244,246,240,0.65)] hover:text-[#F4F6F0] hover:bg-[rgba(255,255,255,0.05)]"
+                      className="text-bw-white/[0.65] hover:text-bw-white hover:bg-white/5"
                       data-testid="test-einvoice-btn"
                     >
                       {testingEinvoice ? (
@@ -2357,11 +2357,11 @@ export default function OrganizationSettings({ user }) {
                     {einvoiceTestResult && (
                       <div className={`p-3 rounded border ${
                         einvoiceTestResult.success 
-                          ? "bg-[rgba(34,197,94,0.08)] border-[rgba(34,197,94,0.25)]" 
-                          : "bg-[rgba(255,59,47,0.08)] border-[rgba(255,59,47,0.25)]"
+                          ? "bg-bw-green/[0.08] border-bw-green/25" 
+                          : "bg-bw-red/[0.08] border-bw-red/25"
                       }`}>
                         <p className={`text-sm flex items-center gap-2 ${
-                          einvoiceTestResult.success ? "text-[#22C55E]" : "text-[#FF3B2F]"
+                          einvoiceTestResult.success ? "text-bw-green" : "text-bw-red"
                         }`}>
                           {einvoiceTestResult.success ? (
                             <CheckCircle className="h-4 w-4" />
@@ -2379,7 +2379,7 @@ export default function OrganizationSettings({ user }) {
                     <Button 
                       onClick={saveEinvoiceConfig}
                       disabled={savingEinvoice || gstinValid === false}
-                      className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                      className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black"
                       data-testid="save-einvoice-btn"
                     >
                       {savingEinvoice ? (
@@ -2395,7 +2395,7 @@ export default function OrganizationSettings({ user }) {
                         variant="destructive" 
                         size="sm"
                         onClick={removeEinvoiceConfig}
-                        className="bg-[rgba(255,59,47,0.15)] hover:bg-[rgba(255,59,47,0.25)] text-[#FF3B2F] border-none"
+                        className="bg-bw-red/15 hover:bg-bw-red/25 text-bw-red border-none"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Remove Configuration
@@ -2406,22 +2406,22 @@ export default function OrganizationSettings({ user }) {
               )}
               
               {/* E-Invoice Applicability Info Card */}
-              <div className="p-4 bg-[rgba(200,255,0,0.04)] border border-[rgba(200,255,0,0.12)] border-l-[3px] border-l-[rgba(200,255,0,0.30)] rounded">
+              <div className="p-4 bg-bw-volt/[0.04] border border-bw-volt/[0.12] border-l-[3px] border-l-bw-volt/30 rounded">
                 <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-[#C8FF00] mt-0.5 flex-shrink-0" />
+                  <Info className="h-5 w-5 text-bw-volt mt-0.5 flex-shrink-0" />
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-[#C8FF00] font-mono">E-Invoice Applicability</h4>
-                    <p className="text-xs text-[rgba(244,246,240,0.65)] leading-relaxed">
+                    <h4 className="text-sm font-medium text-bw-volt font-mono">E-Invoice Applicability</h4>
+                    <p className="text-xs text-bw-white/[0.65] leading-relaxed">
                       E-invoicing is mandatory under GST for businesses with aggregate annual turnover exceeding ₹5 Crore (as per CBIC notification). Invoices issued without IRN to eligible businesses are not valid GST invoices.
                     </p>
                     <div className="grid grid-cols-2 gap-4 pt-2 text-xs">
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Applicable from:</span>
-                        <p className="text-[#F4F6F0] font-medium mt-0.5">₹5 Crore turnover</p>
+                        <span className="text-bw-white/[0.45]">Applicable from:</span>
+                        <p className="text-bw-white font-medium mt-0.5">₹5 Crore turnover</p>
                       </div>
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Penalty for non-compliance:</span>
-                        <p className="text-[#FF3B2F] font-medium mt-0.5">Invoice invalid + ITC denial to buyer</p>
+                        <span className="text-bw-white/[0.45]">Penalty for non-compliance:</span>
+                        <p className="text-bw-red font-medium mt-0.5">Invoice invalid + ITC denial to buyer</p>
                       </div>
                     </div>
                   </div>
@@ -2537,16 +2537,16 @@ export default function OrganizationSettings({ user }) {
                 <Phone className="h-4 w-4 text-green-400" />
                 WhatsApp Business API
                 {waConfigured
-                  ? <Badge className="bg-[rgba(34,197,94,0.15)] text-green-400 border-green-500/25 ml-2">Connected</Badge>
-                  : <Badge className="bg-[rgba(234,179,8,0.15)] text-yellow-400 border-yellow-500/25 ml-2">Not configured</Badge>}
+                  ? <Badge className="bg-bw-green/15 text-green-400 border-green-500/25 ml-2">Connected</Badge>
+                  : <Badge className="bg-bw-amber/15 text-yellow-400 border-yellow-500/25 ml-2">Not configured</Badge>}
               </CardTitle>
               <CardDescription>Send invoices and estimates directly to customers on WhatsApp.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!waConfigured && (
-                <div className="flex items-start gap-3 p-3 rounded-lg border border-[rgba(234,179,8,0.25)] bg-[rgba(234,179,8,0.06)]">
+                <div className="flex items-start gap-3 p-3 rounded-lg border border-bw-amber/25 bg-bw-amber/[0.06]">
                   <AlertTriangle className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-[rgba(244,246,240,0.70)]">
+                  <p className="text-sm text-bw-white/70">
                     WhatsApp delivery is not configured. Invoices and estimates will be sent by email only.
                   </p>
                 </div>
@@ -2604,14 +2604,14 @@ export default function OrganizationSettings({ user }) {
 
               <Separator />
               <div className="space-y-1">
-                <p className="text-sm font-medium text-[rgba(244,246,240,0.70)]">Requires WhatsApp Business API access from Meta.</p>
+                <p className="text-sm font-medium text-bw-white/70">Requires WhatsApp Business API access from Meta.</p>
                 <p className="text-xs text-muted-foreground">
                   Visit{" "}
-                  <a href="https://business.facebook.com" target="_blank" rel="noreferrer" className="text-[#C8FF00] hover:underline">
+                  <a href="https://business.facebook.com" target="_blank" rel="noreferrer" className="text-bw-volt hover:underline">
                     business.facebook.com
                   </a>{" "}
                   to apply. See{" "}
-                  <a href="/WHATSAPP_TEMPLATES.md" target="_blank" className="text-[#C8FF00] hover:underline">
+                  <a href="/WHATSAPP_TEMPLATES.md" target="_blank" className="text-bw-volt hover:underline">
                     WHATSAPP_TEMPLATES.md
                   </a>{" "}
                   for template submission guide.

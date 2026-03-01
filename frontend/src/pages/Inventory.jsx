@@ -111,14 +111,14 @@ export default function Inventory() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Inventory</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">
+          <h1 className="text-2xl font-bold text-bw-white">Inventory</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">
             {totals.services} services, {totals.parts} parts
           </p>
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="add-item-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="add-item-btn">
               <Plus className="h-4 w-4 mr-2" />
               Add {activeTab === "services" ? "Service" : "Part"}
             </Button>
@@ -203,7 +203,7 @@ export default function Inventory() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
-              <Button onClick={handleAddItem} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+              <Button onClick={handleAddItem} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                 Add {activeTab === "services" ? "Service" : "Part"}
               </Button>
             </div>
@@ -217,10 +217,10 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Services</p>
-                <p className="text-2xl font-bold text-[#F4F6F0]">{totals.services}</p>
+                <p className="text-sm text-bw-white/[0.45]">Total Services</p>
+                <p className="text-2xl font-bold text-bw-white">{totals.services}</p>
               </div>
-              <Wrench className="h-8 w-8 text-[#C8FF00]" />
+              <Wrench className="h-8 w-8 text-bw-volt" />
             </div>
           </CardContent>
         </Card>
@@ -228,8 +228,8 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Parts</p>
-                <p className="text-2xl font-bold text-[#F4F6F0]">{totals.parts}</p>
+                <p className="text-sm text-bw-white/[0.45]">Total Parts</p>
+                <p className="text-2xl font-bold text-bw-white">{totals.parts}</p>
               </div>
               <Package className="h-8 w-8 text-blue-500" />
             </div>
@@ -239,8 +239,8 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Low Stock Items</p>
-                <p className="text-2xl font-bold text-[#FF8C00]">{lowStockParts.length}</p>
+                <p className="text-sm text-bw-white/[0.45]">Low Stock Items</p>
+                <p className="text-2xl font-bold text-bw-orange">{lowStockParts.length}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-500" />
             </div>
@@ -250,7 +250,7 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">In Stock</p>
+                <p className="text-sm text-bw-white/[0.45]">In Stock</p>
                 <p className="text-2xl font-bold text-green-600">{parts.length - lowStockParts.length}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500" />
@@ -261,7 +261,7 @@ export default function Inventory() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
         <Input
           placeholder="Search items..."
           value={search}
@@ -274,11 +274,11 @@ export default function Inventory() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="services" className="data-[state=active]:bg-[#C8FF00] data-[state=active]:text-[#080C0F] font-bold">
+          <TabsTrigger value="services" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black font-bold">
             <Wrench className="h-4 w-4 mr-2" />
             Services ({services.length})
           </TabsTrigger>
-          <TabsTrigger value="parts" className="data-[state=active]:bg-[#C8FF00] data-[state=active]:text-[#080C0F] font-bold">
+          <TabsTrigger value="parts" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black font-bold">
             <Package className="h-4 w-4 mr-2" />
             Parts ({parts.length})
           </TabsTrigger>
@@ -286,29 +286,29 @@ export default function Inventory() {
 
         <TabsContent value="services" className="mt-4">
           {loading ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading services...</div>
+            <div className="text-center py-12 text-bw-white/[0.45]">Loading services...</div>
           ) : services.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+              <CardContent className="py-12 text-center text-bw-white/[0.45]">
                 No services found. Add your first service to get started.
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-3">
               {services.map((service) => (
-                <Card key={service.item_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+                <Card key={service.item_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-semibold text-[#F4F6F0]">{service.name}</h3>
+                          <h3 className="font-semibold text-bw-white">{service.name}</h3>
                           {service.hsn_sac && (
                             <Badge variant="outline" className="text-xs">
                               HSN: {service.hsn_sac}
                             </Badge>
                           )}
                         </div>
-                        <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                        <div className="flex flex-wrap gap-4 text-sm text-bw-white/[0.45]">
                           {service.sku && (
                             <span className="flex items-center gap-1">
                               <Tag className="h-3.5 w-3.5" />
@@ -324,8 +324,8 @@ export default function Inventory() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-[#F4F6F0]">₹{service.rate?.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">+ {service.tax_rate || 18}% GST</p>
+                        <p className="text-lg font-bold text-bw-white">₹{service.rate?.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-bw-white/[0.45]">+ {service.tax_rate || 18}% GST</p>
                       </div>
                     </div>
                   </CardContent>
@@ -337,10 +337,10 @@ export default function Inventory() {
 
         <TabsContent value="parts" className="mt-4">
           {loading ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading parts...</div>
+            <div className="text-center py-12 text-bw-white/[0.45]">Loading parts...</div>
           ) : parts.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+              <CardContent className="py-12 text-center text-bw-white/[0.45]">
                 No parts found. Add your first part to get started.
               </CardContent>
             </Card>
@@ -349,14 +349,14 @@ export default function Inventory() {
               {parts.map((part) => {
                 const isLowStock = (part.stock_quantity || 0) <= (part.reorder_level || 5);
                 return (
-                  <Card key={part.item_id} className={`border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${isLowStock ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]/50' : ''}`}>
+                  <Card key={part.item_id} className={`border border-white/[0.07] hover:border-bw-volt/20 transition-colors ${isLowStock ? 'border-orange-200 bg-bw-orange/[0.08]/50' : ''}`}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-semibold text-[#F4F6F0]">{part.name}</h3>
+                            <h3 className="font-semibold text-bw-white">{part.name}</h3>
                             {isLowStock && (
-                              <Badge className="bg-orange-100 text-[#FF8C00] text-xs">
+                              <Badge className="bg-orange-100 text-bw-orange text-xs">
                                 <AlertTriangle className="h-3 w-3 mr-1" />
                                 Low Stock
                               </Badge>
@@ -367,7 +367,7 @@ export default function Inventory() {
                               </Badge>
                             )}
                           </div>
-                          <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                          <div className="flex flex-wrap gap-4 text-sm text-bw-white/[0.45]">
                             {part.sku && (
                               <span className="flex items-center gap-1">
                                 <Tag className="h-3.5 w-3.5" />
@@ -381,8 +381,8 @@ export default function Inventory() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-[#F4F6F0]">₹{part.rate?.toLocaleString('en-IN')}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">+ {part.tax_rate || 18}% GST</p>
+                          <p className="text-lg font-bold text-bw-white">₹{part.rate?.toLocaleString('en-IN')}</p>
+                          <p className="text-xs text-bw-white/[0.45]">+ {part.tax_rate || 18}% GST</p>
                         </div>
                       </div>
                     </CardContent>

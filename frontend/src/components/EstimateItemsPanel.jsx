@@ -36,7 +36,7 @@ const estimateStatusColors = {
   approved: "bg-green-100 text-green-800 border-green-300",
   rejected: "bg-red-100 text-red-800 border-red-300",
   converted: "bg-purple-100 text-purple-800 border-purple-300",
-  void: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] border-[rgba(255,255,255,0.07)]",
+  void: "bg-white/5 text-bw-white border-white/[0.07]",
 };
 
 const estimateStatusLabels = {
@@ -66,7 +66,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: XCircle,
         label: "Out of Stock",
-        className: "text-red-600 bg-[rgba(255,59,47,0.08)]",
+        className: "text-red-600 bg-bw-red/[0.08]",
         iconClass: "text-red-500",
       };
     }
@@ -74,7 +74,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Only ${available_stock} available`,
-        className: "text-[#FF8C00] bg-[rgba(255,140,0,0.08)]",
+        className: "text-bw-orange bg-bw-orange/[0.08]",
         iconClass: "text-orange-500",
       };
     }
@@ -82,14 +82,14 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Low: ${available_stock} left`,
-        className: "text-[#EAB308] bg-[rgba(234,179,8,0.08)]",
+        className: "text-bw-amber bg-bw-amber/[0.08]",
         iconClass: "text-yellow-500",
       };
     }
     return {
       icon: CheckCircle2,
       label: `${available_stock} in stock`,
-      className: "text-green-600 bg-[rgba(34,197,94,0.08)]",
+      className: "text-green-600 bg-bw-green/[0.08]",
       iconClass: "text-green-500",
     };
   };
@@ -715,12 +715,12 @@ export default function EstimateItemsPanel({
         
         {/* Lock Banner */}
         {estimate.locked_at && (
-          <div className="mt-2 p-3 bg-[rgba(255,140,0,0.08)] border border-orange-200 rounded-lg flex items-center gap-2 text-orange-800">
+          <div className="mt-2 p-3 bg-bw-orange/[0.08] border border-orange-200 rounded-lg flex items-center gap-2 text-orange-800">
             <Lock className="h-4 w-4" />
             <div className="text-sm">
               <strong>Estimate Locked</strong>
               <span className="ml-2">{estimate.lock_reason}</span>
-              <span className="text-xs ml-2 text-[#FF8C00]">
+              <span className="text-xs ml-2 text-bw-orange">
                 by {estimate.locked_by_name} on {new Date(estimate.locked_at).toLocaleDateString()}
               </span>
             </div>
@@ -826,10 +826,10 @@ export default function EstimateItemsPanel({
                                           {/* Stock indicator */}
                                           <div className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
                                             isOutOfStock 
-                                              ? "bg-[rgba(255,59,47,0.08)] text-red-600" 
+                                              ? "bg-bw-red/[0.08] text-red-600" 
                                               : isLowStock 
-                                                ? "bg-[rgba(234,179,8,0.08)] text-[#EAB308]" 
-                                                : "bg-[rgba(34,197,94,0.08)] text-green-600"
+                                                ? "bg-bw-amber/[0.08] text-bw-amber" 
+                                                : "bg-bw-green/[0.08] text-green-600"
                                           }`}>
                                             {isOutOfStock ? (
                                               <XCircle className="h-3 w-3" />
@@ -859,12 +859,12 @@ export default function EstimateItemsPanel({
                       {selectedPartStock && newItem.item_id && (
                         <div className={`flex items-center gap-2 p-2 rounded-md text-sm ${
                           selectedPartStock.available_stock <= 0 
-                            ? "bg-[rgba(255,59,47,0.08)] text-red-700"
+                            ? "bg-bw-red/[0.08] text-red-700"
                             : newItem.qty > selectedPartStock.available_stock
-                              ? "bg-[rgba(255,140,0,0.08)] text-[#FF8C00]"
+                              ? "bg-bw-orange/[0.08] text-bw-orange"
                               : selectedPartStock.available_stock <= selectedPartStock.reorder_level
-                                ? "bg-[rgba(234,179,8,0.08)] text-[#EAB308]"
-                                : "bg-[rgba(34,197,94,0.08)] text-green-700"
+                                ? "bg-bw-amber/[0.08] text-bw-amber"
+                                : "bg-bw-green/[0.08] text-green-700"
                         }`}>
                           {selectedPartStock.available_stock <= 0 ? (
                             <>

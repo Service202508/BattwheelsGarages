@@ -291,7 +291,7 @@ export default function CustomModules() {
         return (
           <div className="flex items-center gap-2">
             <Switch checked={value || false} onCheckedChange={onChange} />
-            <span className="text-sm text-[rgba(244,246,240,0.45)]">{value ? "Yes" : "No"}</span>
+            <span className="text-sm text-bw-white/[0.45]">{value ? "Yes" : "No"}</span>
           </div>
         );
       default:
@@ -315,8 +315,8 @@ export default function CustomModules() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Custom Modules</h1>
-          <p className="text-[rgba(244,246,240,0.45)]">Create and manage your own data modules</p>
+          <h1 className="text-2xl font-bold text-bw-white">Custom Modules</h1>
+          <p className="text-bw-white/[0.45]">Create and manage your own data modules</p>
         </div>
         <Dialog open={showCreateModuleDialog} onOpenChange={setShowCreateModuleDialog}>
           <DialogTrigger asChild>
@@ -346,7 +346,7 @@ export default function CustomModules() {
                     onChange={e => setNewModule({ ...newModule, module_name: e.target.value })}
                     placeholder="e.g., equipment_maintenance"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Auto-generated if left blank</p>
+                  <p className="text-xs text-bw-white/[0.45] mt-1">Auto-generated if left blank</p>
                 </div>
               </div>
 
@@ -412,17 +412,17 @@ export default function CustomModules() {
                     {newModule.fields.map((field, idx) => {
                       const Icon = fieldTypeIcons[field.type] || FileText;
                       return (
-                        <div key={idx} className="flex justify-between items-center bg-[#111820] p-3 rounded">
+                        <div key={idx} className="flex justify-between items-center bg-bw-panel p-3 rounded">
                           <div className="flex items-center gap-3">
-                            <Icon className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                            <Icon className="h-4 w-4 text-bw-white/[0.45]" />
                             <div>
                               <span className="font-medium">{field.label}</span>
-                              <span className="text-sm text-[rgba(244,246,240,0.45)] ml-2">({field.name})</span>
+                              <span className="text-sm text-bw-white/[0.45] ml-2">({field.name})</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">{field.type}</Badge>
-                            {field.required && <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Required</Badge>}
+                            {field.required && <Badge className="bg-bw-red/10 text-bw-red border border-bw-red/25">Required</Badge>}
                             <Button size="sm" variant="ghost" onClick={() => removeField(idx)}>
                               <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>
@@ -432,7 +432,7 @@ export default function CustomModules() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No fields added yet</p>
+                  <p className="text-bw-white/[0.45] text-center py-4">No fields added yet</p>
                 )}
               </div>
 
@@ -456,22 +456,22 @@ export default function CustomModules() {
                   {modules.map(module => (
                     <div
                       key={module.module_id}
-                      className={`p-4 cursor-pointer hover:bg-[#111820] ${selectedModule?.module_id === module.module_id ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
+                      className={`p-4 cursor-pointer hover:bg-bw-panel ${selectedModule?.module_id === module.module_id ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
                       onClick={() => setSelectedModule(module)}
                     >
                       <div className="flex items-center gap-3">
-                        <Folder className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                        <Folder className="h-5 w-5 text-bw-white/[0.45]" />
                         <div>
                           <p className="font-medium">{module.module_label}</p>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{module.records_count || 0} records</p>
+                          <p className="text-sm text-bw-white/[0.45]">{module.records_count || 0} records</p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 text-center text-[rgba(244,246,240,0.45)]">
-                  <Database className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+                <div className="p-6 text-center text-bw-white/[0.45]">
+                  <Database className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                   <p>No custom modules yet</p>
                   <p className="text-sm">Create your first module to get started</p>
                 </div>
@@ -487,7 +487,7 @@ export default function CustomModules() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>{selectedModule.module_label}</CardTitle>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">{selectedModule.description || "No description"}</p>
+                  <p className="text-sm text-bw-white/[0.45] mt-1">{selectedModule.description || "No description"}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => handleDeleteModule(selectedModule.module_id)}>
@@ -532,7 +532,7 @@ export default function CustomModules() {
                 {/* Search */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
                     <Input
                       placeholder="Search records..."
                       value={searchQuery}
@@ -560,7 +560,7 @@ export default function CustomModules() {
                 {records.length > 0 ? (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-[#111820]">
+                      <thead className="bg-bw-panel">
                         <tr>
                           {selectedModule.fields.slice(0, 5).map(field => (
                             <th key={field.name} className="text-left p-3 font-medium">
@@ -572,7 +572,7 @@ export default function CustomModules() {
                       </thead>
                       <tbody>
                         {records.map(record => (
-                          <tr key={record.record_id} className="border-t hover:bg-[#111820]">
+                          <tr key={record.record_id} className="border-t hover:bg-bw-panel">
                             {selectedModule.fields.slice(0, 5).map(field => (
                               <td key={field.name} className="p-3">
                                 {field.type === "checkbox" 
@@ -604,8 +604,8 @@ export default function CustomModules() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
-                    <FileText className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+                  <div className="text-center py-12 text-bw-white/[0.45]">
+                    <FileText className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                     <p>No records yet</p>
                     <p className="text-sm">Click "Add Record" to create the first one</p>
                   </div>
@@ -614,8 +614,8 @@ export default function CustomModules() {
             </Card>
           ) : (
             <Card>
-              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-                <Settings className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+              <CardContent className="py-12 text-center text-bw-white/[0.45]">
+                <Settings className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                 <p className="text-lg font-medium">Select a Module</p>
                 <p className="text-sm">Choose a custom module from the list to view its records</p>
               </CardContent>
@@ -634,7 +634,7 @@ export default function CustomModules() {
             <div className="space-y-4">
               {selectedModule.fields.map(field => (
                 <div key={field.name}>
-                  <Label className="text-[rgba(244,246,240,0.45)]">{field.label}</Label>
+                  <Label className="text-bw-white/[0.45]">{field.label}</Label>
                   <p className="font-medium">
                     {field.type === "checkbox" 
                       ? (selectedRecord[field.name] ? "Yes" : "No")

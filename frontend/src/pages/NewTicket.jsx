@@ -492,7 +492,7 @@ export default function NewTicket({ user }) {
                 />
                 {/* Issue Suggestions Dropdown */}
                 {showSuggestions && issueSuggestions.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-popover border border-[rgba(255,255,255,0.13)] rounded max-h-60 overflow-auto">
+                  <div className="absolute z-50 w-full mt-1 bg-popover border border-white/[0.13] rounded max-h-60 overflow-auto">
                     <div className="p-2 text-xs text-muted-foreground border-b">
                       Common EV issues for your vehicle:
                     </div>

@@ -15,11 +15,11 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-[rgba(200,255,0,0.20)]",
+  paid: "bg-bw-volt/10 text-bw-volt text-700 border-bw-volt/20",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
-  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200",
-  partial: "bg-blue-100 text-[#3B9EFF] border-blue-200",
-  draft: "bg-[rgba(255,255,255,0.05)] text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
+  overdue: "bg-bw-red/10 text-bw-red border border-bw-red/25 border-red-200",
+  partial: "bg-blue-100 text-bw-blue border-blue-200",
+  draft: "bg-white/5 text-slate-600 border-white/[0.07] border-200",
 };
 
 export default function BusinessInvoices({ user }) {
@@ -193,7 +193,7 @@ export default function BusinessInvoices({ user }) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -207,7 +207,7 @@ export default function BusinessInvoices({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -221,17 +221,17 @@ export default function BusinessInvoices({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Paid</p>
-                <p className="text-2xl font-bold text-[#C8FF00] text-600">
+                <p className="text-2xl font-bold text-bw-volt text-600">
                   {formatCurrency(summary.total_invoiced - summary.pending_payment)}
                 </p>
               </div>
-              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
+              <div className="p-3 rounded bg-bw-volt/[0.08]">
+                <CheckCircle className="h-5 w-5 text-bw-volt text-600" />
               </div>
             </div>
           </CardContent>
@@ -241,7 +241,7 @@ export default function BusinessInvoices({ user }) {
       {/* Tabs & Filters */}
       <Tabs value={statusFilter} onValueChange={setStatusFilter}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-[rgba(255,255,255,0.05)]">
+          <TabsList className="bg-white/5">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
             <TabsTrigger value="paid">Paid</TabsTrigger>
@@ -274,7 +274,7 @@ export default function BusinessInvoices({ user }) {
               <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
             </div>
           ) : filteredInvoices.length === 0 ? (
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="py-12 text-center">
                 <FileText className="h-16 w-16 mx-auto text-slate-300 mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 mb-2">No invoices found</h3>
@@ -284,7 +284,7 @@ export default function BusinessInvoices({ user }) {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <Table>
                 <TableHeader>
                   <TableRow>

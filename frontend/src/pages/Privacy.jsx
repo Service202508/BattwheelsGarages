@@ -7,8 +7,8 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http:
 const Section = ({ icon: Icon, title, children }) => (
   <section className="mb-12">
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-7 h-7 bg-[#C8FF00]/10 border border-[#C8FF00]/20 rounded flex items-center justify-center shrink-0">
-        <Icon className="w-3.5 h-3.5 text-[#C8FF00]" />
+      <div className="w-7 h-7 bg-bw-volt/10 border border-bw-volt/20 rounded flex items-center justify-center shrink-0">
+        <Icon className="w-3.5 h-3.5 text-bw-volt" />
       </div>
       <h2 className="text-lg font-bold">{title}</h2>
     </div>
@@ -21,16 +21,16 @@ export default function Privacy() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[#F4F6F0] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-bw-black text-bw-white font-sans overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-60" style={{ backgroundImage: GRAIN }} />
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-bw-black/85 backdrop-blur-xl">
         <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
+          <div className="w-7 h-7 bg-bw-volt rounded flex items-center justify-center">
+            <Zap className="w-4 h-4 text-bw-black" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight group-hover:text-[#C8FF00] transition">Battwheels OS</span>
+          <span className="text-lg font-extrabold tracking-tight group-hover:text-bw-volt transition">Battwheels OS</span>
         </button>
         <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest">Privacy Policy</span>
       </nav>
@@ -38,12 +38,12 @@ export default function Privacy() {
       <main className="pt-[73px] max-w-3xl mx-auto px-6 md:px-12 py-14">
         {/* Header */}
         <div className="mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-[#C8FF00] border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded-sm font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
             <Shield className="w-3 h-3" />
             Last updated: 24 February 2026
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Privacy <span className="text-[#C8FF00]">Policy</span>
+            Privacy <span className="text-bw-volt">Policy</span>
           </h1>
           <p className="text-white/45 text-sm leading-relaxed max-w-xl">
             Battwheels Services Private Limited ("Battwheels", "we", "our") operates Battwheels OS — an EV service management platform. This policy explains what data we collect, how we use it, and how we protect it. By using Battwheels OS, you agree to the practices described here.
@@ -68,7 +68,7 @@ export default function Privacy() {
         </Section>
 
         <Section icon={Shield} title="3. Multi-Tenant Data Isolation">
-          <p>Battwheels OS is a multi-tenant SaaS. Every database query is filtered by your <span className="font-mono text-[#C8FF00] text-xs">organization_id</span>. TenantGuardMiddleware enforces this on every authenticated API request — no route bypasses this check.</p>
+          <p>Battwheels OS is a multi-tenant SaaS. Every database query is filtered by your <span className="font-mono text-bw-volt text-xs">organization_id</span>. TenantGuardMiddleware enforces this on every authenticated API request — no route bypasses this check.</p>
           <p>Platform administrators (Battwheels staff) can view metadata about your organisation (plan, member count, last activity) for billing and support purposes, but cannot read your operational data (tickets, invoices, employees, vehicles).</p>
           <p>Cross-tenant access attempts are blocked at the middleware level and logged as security events.</p>
         </Section>
@@ -94,20 +94,20 @@ export default function Privacy() {
         <Section icon={FileText} title="6. Your Rights">
           <p>Under the Information Technology Act, 2000 and the Digital Personal Data Protection Act, 2023 (India), and where applicable the General Data Protection Regulation (GDPR), you have the right to:</p>
           {['Access the personal data we hold about you', 'Correct inaccurate data', 'Delete your account and associated data (subject to legal retention obligations)', 'Export your organisation data', 'Object to processing (contact us — we will respond within 30 days)'].map(r => (
-            <p key={r} className="flex items-start gap-2"><span className="text-[#C8FF00] mt-0.5">→</span>{r}</p>
+            <p key={r} className="flex items-start gap-2"><span className="text-bw-volt mt-0.5">→</span>{r}</p>
           ))}
-          <p>To exercise these rights, email <a href="mailto:privacy@battwheels.com" className="text-[#C8FF00] hover:underline">privacy@battwheels.com</a> with the subject line "Data Request — [your organisation name]".</p>
+          <p>To exercise these rights, email <a href="mailto:privacy@battwheels.com" className="text-bw-volt hover:underline">privacy@battwheels.com</a> with the subject line "Data Request — [your organisation name]".</p>
         </Section>
 
         <Section icon={Shield} title="7. Security">
           <p>All data is encrypted in transit via TLS. Passwords are hashed using bcrypt (cost factor 12). JWT tokens expire after 7 days. API keys are stored encrypted using Fernet symmetric encryption per organisation.</p>
           <p>We run automated dependency vulnerability scans (pip-audit + npm audit) on every code change. Security headers (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security, Content-Security-Policy) are injected on every API response.</p>
-          <p>If you discover a security vulnerability, please email <a href="mailto:security@battwheels.com" className="text-[#C8FF00] hover:underline">security@battwheels.com</a>. We aim to acknowledge reports within 24 hours.</p>
+          <p>If you discover a security vulnerability, please email <a href="mailto:security@battwheels.com" className="text-bw-volt hover:underline">security@battwheels.com</a>. We aim to acknowledge reports within 24 hours.</p>
         </Section>
 
         <Section icon={Mail} title="8. Contact for Privacy Queries">
           <p>Battwheels Services Private Limited<br />India</p>
-          <p>Privacy Officer: <a href="mailto:privacy@battwheels.com" className="text-[#C8FF00] hover:underline">privacy@battwheels.com</a></p>
+          <p>Privacy Officer: <a href="mailto:privacy@battwheels.com" className="text-bw-volt hover:underline">privacy@battwheels.com</a></p>
           <p>This policy may be updated periodically. We will notify registered admin users by email of material changes at least 14 days before they take effect.</p>
         </Section>
       </main>
@@ -118,7 +118,7 @@ export default function Privacy() {
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-bw-volt transition font-mono">{label}</button>
             </li>
           ))}
         </ul>

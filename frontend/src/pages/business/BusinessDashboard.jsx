@@ -13,11 +13,11 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-[#3B9EFF]",
+  open: "bg-blue-100 text-bw-blue",
   in_progress: "bg-amber-100 text-amber-700",
   work_in_progress: "bg-amber-100 text-amber-700",
-  completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  pending: "bg-purple-100 text-[#8B5CF6]",
+  completed: "bg-bw-volt/10 text-bw-volt text-700",
+  pending: "bg-purple-100 text-bw-purple",
 };
 
 export default function BusinessDashboard({ user }) {
@@ -117,7 +117,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -132,7 +132,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -147,7 +147,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -155,14 +155,14 @@ export default function BusinessDashboard({ user }) {
                 <p className="text-3xl font-bold text-slate-900 mt-2">{dashboard?.tickets?.pending_estimate_approval || 0}</p>
                 <p className="text-xs text-slate-400 mt-1">estimates waiting</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(139,92,246,0.08)]">
+              <div className="p-3 rounded bg-bw-purple/[0.08]">
                 <FileText className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -172,7 +172,7 @@ export default function BusinessDashboard({ user }) {
                 </p>
                 <p className="text-xs text-slate-400 mt-1">to be paid</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(255,59,47,0.08)]">
+              <div className="p-3 rounded bg-bw-red/[0.08]">
                 <CreditCard className="h-6 w-6 text-red-600" />
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Resolution TAT & AMC */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <Clock className="h-5 w-5 text-indigo-600" />
@@ -210,17 +210,17 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
-              <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
+              <Shield className="h-5 w-5 text-bw-volt text-600" />
               AMC Status
             </CardTitle>
             <CardDescription>Active contracts</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-4">
-              <p className="text-5xl font-bold text-[#C8FF00] text-600">
+              <p className="text-5xl font-bold text-bw-volt text-600">
                 {dashboard?.amc?.active_contracts || 0}
               </p>
               <p className="text-slate-500 mt-1">active AMC contracts</p>
@@ -233,17 +233,17 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-[#3B9EFF]" />
+              <TrendingUp className="h-5 w-5 text-bw-blue" />
               This Month
             </CardTitle>
             <CardDescription>Tickets resolved</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-4">
-              <p className="text-5xl font-bold text-[#3B9EFF]">
+              <p className="text-5xl font-bold text-bw-blue">
                 {dashboard?.tickets?.resolved_this_month || 0}
               </p>
               <p className="text-slate-500 mt-1">tickets resolved</p>
@@ -260,7 +260,7 @@ export default function BusinessDashboard({ user }) {
       {/* Recent Tickets & Pending Invoices */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Tickets */}
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Active Service Tickets</CardTitle>
@@ -284,7 +284,7 @@ export default function BusinessDashboard({ user }) {
                   <Link 
                     key={ticket.ticket_id}
                     to={`/business/tickets/${ticket.ticket_id}`}
-                    className="block p-4 rounded border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
+                    className="block p-4 rounded border border-white/[0.07] border-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -307,7 +307,7 @@ export default function BusinessDashboard({ user }) {
         </Card>
 
         {/* Pending Invoices */}
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Pending Invoices</CardTitle>
@@ -330,7 +330,7 @@ export default function BusinessDashboard({ user }) {
                 {pendingInvoices.map((invoice) => (
                   <div 
                     key={invoice.invoice_id}
-                    className="p-4 rounded border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-all"
+                    className="p-4 rounded border border-white/[0.07] border-200 hover:border-indigo-200 transition-all"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -358,7 +358,7 @@ export default function BusinessDashboard({ user }) {
       </div>
 
       {/* Financial Summary */}
-      <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-[rgba(255,255,255,0.13)]">
+      <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-white/[0.13]">
         <CardContent className="p-6">
           <div className="grid md:grid-cols-3 gap-6">
             <div>

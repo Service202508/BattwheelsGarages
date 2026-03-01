@@ -100,11 +100,11 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
   if (isPlatformAdmin) {
     return (
       <div
-        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(200,255,0,0.2)]"
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-bw-volt/20"
         data-testid="org-switcher-platform-admin"
       >
-        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
-          <Shield className="w-4 h-4 text-[#C8FF00]" />
+        <div className="w-8 h-8 bg-bw-volt/[0.08] rounded-lg flex items-center justify-center">
+          <Shield className="w-4 h-4 text-bw-volt" />
         </div>
         <div className="hidden sm:block">
           <p className="text-sm font-medium text-white" data-testid="org-switcher-name">
@@ -127,11 +127,11 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     const badge = getPlanBadge(currentOrg?.plan_type);
     return (
       <div
-        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)]"
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-white/[0.07]"
         data-testid="org-switcher-single"
       >
-        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
-          <Building2 className="w-4 h-4 text-[#C8FF00]" />
+        <div className="w-8 h-8 bg-bw-volt/[0.08] rounded-lg flex items-center justify-center">
+          <Building2 className="w-4 h-4 text-bw-volt" />
         </div>
         <div className="hidden sm:block">
           <p className="text-sm font-medium text-white truncate max-w-[150px]" data-testid="org-switcher-name">
@@ -154,13 +154,13 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-[rgba(255,255,255,0.07)] transition"
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-white/[0.07] transition"
         data-testid="org-switcher-btn"
       >
-        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-bw-volt/[0.08] rounded-lg flex items-center justify-center">
           {currentOrg?.logo_url
             ? <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
-            : <Building2 className="w-4 h-4 text-[#C8FF00]" />}
+            : <Building2 className="w-4 h-4 text-bw-volt" />}
         </div>
         <div className="hidden sm:block text-left">
           <p className="text-sm font-medium text-white truncate max-w-[150px]" data-testid="org-switcher-name">
@@ -183,8 +183,8 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] rounded-xl z-50 overflow-hidden">
-          <div className="p-2 border-b border-[rgba(255,255,255,0.07)]">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-white/[0.07] rounded-xl z-50 overflow-hidden">
+          <div className="p-2 border-b border-white/[0.07]">
             <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>
           <div className="max-h-64 overflow-y-auto py-1">
@@ -197,10 +197,10 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
                   org.organization_id === currentOrg?.organization_id ? 'bg-slate-700/30' : ''
                 }`}
               >
-                <div className="w-10 h-10 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-bw-volt/[0.08] rounded-lg flex items-center justify-center flex-shrink-0">
                   {org.logo_url
                     ? <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
-                    : <Building2 className="w-5 h-5 text-[#C8FF00]" />}
+                    : <Building2 className="w-5 h-5 text-bw-volt" />}
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-sm font-medium text-white truncate">{org.name}</p>
@@ -219,12 +219,12 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
                   </div>
                 </div>
                 {org.organization_id === currentOrg?.organization_id && (
-                  <Check className="w-4 h-4 text-[#C8FF00] flex-shrink-0" />
+                  <Check className="w-4 h-4 text-bw-volt flex-shrink-0" />
                 )}
               </button>
             ))}
           </div>
-          <div className="p-2 border-t border-[rgba(255,255,255,0.07)] space-y-1">
+          <div className="p-2 border-t border-white/[0.07] space-y-1">
             <a href="/organization-settings" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition">
               <Settings className="w-4 h-4" />
               Organization Settings
@@ -233,7 +233,7 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
               <Users className="w-4 h-4" />
               Manage Team
             </a>
-            <a href="/subscription" className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] hover:bg-[rgba(200,255,0,0.08)] rounded-lg transition">
+            <a href="/subscription" className="flex items-center gap-2 px-3 py-2 text-sm text-bw-volt hover:bg-bw-volt/[0.08] rounded-lg transition">
               <Plus className="w-4 h-4" />
               Upgrade Plan
             </a>

@@ -46,12 +46,12 @@ const getDocIcon = (type, mimeType) => {
 
 // Document type colors
 const TYPE_COLORS = {
-  receipt: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+  receipt: "bg-bw-green/10 text-bw-green",
   invoice: "bg-blue-100 text-blue-800",
   photo: "bg-purple-100 text-purple-800",
   contract: "bg-orange-100 text-orange-800",
   report: "bg-yellow-100 text-yellow-800",
-  other: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]"
+  other: "bg-white/5 text-bw-white"
 };
 
 // Document Card Component
@@ -126,7 +126,7 @@ const DocumentCard = ({ doc, selected, onSelect, onDelete, viewMode }) => {
 // Folder Item Component
 const FolderItem = ({ folder, onClick }) => (
   <Card 
-    className="cursor-pointer hover:border-[rgba(200,255,0,0.2)] transition-colors"
+    className="cursor-pointer hover:border-bw-volt/20 transition-colors"
     onClick={() => onClick(folder.folder_id)}
   >
     <CardContent className="p-4">
@@ -565,7 +565,7 @@ export default function Documents({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-[#3B9EFF]" />
+                <FileText className="h-5 w-5 text-bw-blue" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats?.total_documents || 0}</p>
@@ -578,8 +578,8 @@ export default function Documents({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
-                <Folder className="h-5 w-5 text-[#22C55E]" />
+              <div className="h-10 w-10 rounded-lg bg-bw-green/10 flex items-center justify-center">
+                <Folder className="h-5 w-5 text-bw-green" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats?.total_folders || 0}</p>
@@ -607,7 +607,7 @@ export default function Documents({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                <File className="h-5 w-5 text-[#FF8C00]" />
+                <File className="h-5 w-5 text-bw-orange" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats?.total_size_mb || 0} MB</p>

@@ -24,8 +24,8 @@ const BarChartSimple = ({ data, labels, colors, height = 200, horizontal = false
       <div className="space-y-2">
         {labels.map((label, idx) => (
           <div key={idx} className="flex items-center gap-3">
-            <span className="text-xs w-24 truncate text-[rgba(244,246,240,0.35)]">{label}</span>
-            <div className="flex-1 bg-[rgba(255,255,255,0.05)] rounded-full h-6 overflow-hidden">
+            <span className="text-xs w-24 truncate text-bw-white/35">{label}</span>
+            <div className="flex-1 bg-white/5 rounded-full h-6 overflow-hidden">
               <div 
                 className="h-full rounded-full flex items-center justify-end pr-2"
                 style={{ 
@@ -55,7 +55,7 @@ const BarChartSimple = ({ data, labels, colors, height = 200, horizontal = false
               minHeight: values[idx] > 0 ? '4px' : '0'
             }}
           />
-          <span className="text-xs mt-2 text-[rgba(244,246,240,0.45)] truncate w-full text-center">{label}</span>
+          <span className="text-xs mt-2 text-bw-white/[0.45] truncate w-full text-center">{label}</span>
         </div>
       ))}
     </div>
@@ -87,7 +87,7 @@ const DonutChart = ({ data, labels, colors, size = 180 }) => {
           position: 'relative'
         }}
       >
-        <div className="absolute bg-[#111820] rounded-full flex items-center justify-center" style={{ width: size * 0.6, height: size * 0.6 }}>
+        <div className="absolute bg-bw-panel rounded-full flex items-center justify-center" style={{ width: size * 0.6, height: size * 0.6 }}>
           <span className="text-lg font-bold">{data.reduce((a,b) => a+b, 0)}</span>
         </div>
       </div>
@@ -133,7 +133,7 @@ const LineChart = ({ data, labels, height = 150, color = "#3B82F6" }) => {
       </svg>
       <div className="flex justify-between mt-2">
         {labels.map((label, idx) => (
-          <span key={idx} className="text-xs text-[rgba(244,246,240,0.45)]">{label}</span>
+          <span key={idx} className="text-xs text-bw-white/[0.45]">{label}</span>
         ))}
       </div>
     </div>
@@ -147,7 +147,7 @@ const FunnelChart = ({ data }) => {
     <div className="space-y-2">
       {data.map((item, idx) => (
         <div key={idx} className="flex items-center gap-3">
-          <span className="text-sm w-20 text-[rgba(244,246,240,0.35)]">{item.stage}</span>
+          <span className="text-sm w-20 text-bw-white/35">{item.stage}</span>
           <div className="flex-1 relative">
             <div 
               className="h-10 rounded flex items-center justify-between px-3"
@@ -161,7 +161,7 @@ const FunnelChart = ({ data }) => {
               <span className="text-xs text-white/80">₹{(item.value/1000).toFixed(0)}K</span>
             </div>
             {item.conversion && (
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-[rgba(244,246,240,0.45)] ml-2">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-bw-white/[0.45] ml-2">
                 {item.conversion}%
               </span>
             )}
@@ -373,7 +373,7 @@ export default function ReportsAdvanced() {
                     {monthlyRevenue.datasets?.map((ds, idx) => (
                       <div key={idx} className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded" style={{ backgroundColor: ds.color }} />
-                        <span className="text-sm text-[rgba(244,246,240,0.35)]">{ds.label}</span>
+                        <span className="text-sm text-bw-white/35">{ds.label}</span>
                       </div>
                     ))}
                   </div>
@@ -429,7 +429,7 @@ export default function ReportsAdvanced() {
                     height={150}
                     color="#14B8A6"
                   />
-                  <p className="text-center mt-4 text-sm text-[rgba(244,246,240,0.45)]">
+                  <p className="text-center mt-4 text-sm text-bw-white/[0.45]">
                     Total Collected: <span className="font-bold text-green-600">{formatCurrency(paymentTrend.total_collected)}</span>
                   </p>
                 </CardContent>
@@ -449,11 +449,11 @@ export default function ReportsAdvanced() {
                 <CardContent>
                   <div className="grid md:grid-cols-6 gap-4">
                     {monthlyRevenue.data?.map((item, idx) => (
-                      <div key={idx} className="bg-[#111820] p-4 rounded-lg text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.month_name}</p>
-                        <p className="text-lg font-bold text-[#3B9EFF] mt-1">{formatCurrencyK(item.invoiced)}</p>
+                      <div key={idx} className="bg-bw-panel p-4 rounded-lg text-center">
+                        <p className="text-xs text-bw-white/[0.45]">{item.month_name}</p>
+                        <p className="text-lg font-bold text-bw-blue mt-1">{formatCurrencyK(item.invoiced)}</p>
                         <p className="text-xs text-green-600">{formatCurrencyK(item.collected)} collected</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">{item.invoice_count} invoices</p>
+                        <p className="text-xs text-bw-white/[0.45] mt-1">{item.invoice_count} invoices</p>
                       </div>
                     ))}
                   </div>
@@ -496,8 +496,8 @@ export default function ReportsAdvanced() {
                   <div className="space-y-3">
                     {agingData.data?.map((bucket, idx) => (
                       <div key={idx} className="flex items-center gap-3">
-                        <span className="text-sm w-20 text-[rgba(244,246,240,0.35)]">{bucket.label}</span>
-                        <div className="flex-1 bg-[rgba(255,255,255,0.05)] rounded-full h-8 overflow-hidden">
+                        <span className="text-sm w-20 text-bw-white/35">{bucket.label}</span>
+                        <div className="flex-1 bg-white/5 rounded-full h-8 overflow-hidden">
                           <div 
                             className="h-full rounded-full flex items-center justify-end pr-3"
                             style={{ 
@@ -509,13 +509,13 @@ export default function ReportsAdvanced() {
                             <span className="text-xs font-medium text-white">{formatCurrency(bucket.amount)}</span>
                           </div>
                         </div>
-                        <span className="text-xs text-[rgba(244,246,240,0.45)] w-8">{bucket.count}</span>
+                        <span className="text-xs text-bw-white/[0.45] w-8">{bucket.count}</span>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4 pt-4 border-t text-center">
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Outstanding</p>
-                    <p className="text-2xl font-bold text-[#FF8C00]">{formatCurrency(agingData.total_outstanding)}</p>
+                    <p className="text-sm text-bw-white/[0.45]">Total Outstanding</p>
+                    <p className="text-2xl font-bold text-bw-orange">{formatCurrency(agingData.total_outstanding)}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -575,12 +575,12 @@ export default function ReportsAdvanced() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg text-center">
-                      <p className="text-3xl font-bold text-[#3B9EFF]">{dashboardSummary.customers?.active || 0}</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.35)]">Active Customers</p>
+                      <p className="text-3xl font-bold text-bw-blue">{dashboardSummary.customers?.active || 0}</p>
+                      <p className="text-sm text-bw-white/35">Active Customers</p>
                     </div>
-                    <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">
-                      <p className="text-3xl font-bold text-[#EAB308]">{dashboardSummary.pipeline?.pending_estimates || 0}</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.35)]">Pending Estimates</p>
+                    <div className="bg-bw-amber/[0.08] p-4 rounded-lg text-center">
+                      <p className="text-3xl font-bold text-bw-amber">{dashboardSummary.pipeline?.pending_estimates || 0}</p>
+                      <p className="text-sm text-bw-white/35">Pending Estimates</p>
                     </div>
                   </div>
                 </CardContent>

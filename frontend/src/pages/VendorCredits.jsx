@@ -11,8 +11,8 @@ import { Plus, Building2, Calendar, FileText, ArrowRight, Trash2 } from "lucide-
 import { API } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-[#3B9EFF]",
-  closed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
+  open: "bg-blue-100 text-bw-blue",
+  closed: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25"
 };
 
 export default function VendorCredits() {
@@ -99,12 +99,12 @@ export default function VendorCredits() {
     <div className="space-y-6" data-testid="vendor-credits-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Vendor Credits</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Credits from vendors</p>
+          <h1 className="text-2xl font-bold text-bw-white">Vendor Credits</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Credits from vendors</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-vc-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-vc-btn">
               <Plus className="h-4 w-4 mr-2" /> New Vendor Credit
             </Button>
           </DialogTrigger>
@@ -135,19 +135,19 @@ export default function VendorCredits() {
                   </Select>
                 </div>
               </div>
-              <div className="border rounded-lg p-4 bg-[#111820]">
+              <div className="border rounded-lg p-4 bg-bw-panel">
                 <h3 className="font-medium mb-3">Add Items</h3>
                 <div className="grid grid-cols-4 gap-3">
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-bw-volt text-bw-black font-bold">Add</Button>
                 </div>
               </div>
               {newVC.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Qty</th><th className="px-3 py-2 text-right">Rate</th><th className="px-3 py-2 text-right">Amount</th><th></th></tr></thead>
+                    <thead className="bg-bw-panel"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Qty</th><th className="px-3 py-2 text-right">Rate</th><th className="px-3 py-2 text-right">Amount</th><th></th></tr></thead>
                     <tbody>
                       {newVC.line_items.map((item, idx) => (
                         <tr key={idx} className="border-t">
@@ -159,24 +159,24 @@ export default function VendorCredits() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-[#111820] font-semibold"><tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr></tfoot>
+                    <tfoot className="bg-bw-panel font-semibold"><tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr></tfoot>
                   </table>
                 </div>
               )}
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
+              <Button onClick={handleCreate} className="bg-bw-volt text-bw-black font-bold">Create</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-        credits.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No vendor credits found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+        credits.length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No vendor credits found</CardContent></Card> :
         <div className="space-y-3">
           {credits.map(vc => (
-            <Card key={vc.vendorcredit_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+            <Card key={vc.vendorcredit_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -184,7 +184,7 @@ export default function VendorCredits() {
                       <h3 className="font-semibold">{vc.vendorcredit_number}</h3>
                       <Badge className={statusColors[vc.status]}>{vc.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <div className="flex gap-4 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{vc.vendor_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{vc.date}</span>
                       <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />{vc.reason}</span>
@@ -193,10 +193,10 @@ export default function VendorCredits() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{vc.total?.toLocaleString('en-IN')}</p>
-                      {vc.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{vc.credits_remaining?.toLocaleString('en-IN')}</p>}
+                      {vc.credits_remaining > 0 && <p className="text-xs text-bw-blue">Available: ₹{vc.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     {vc.credits_remaining > 0 && (
-                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedVC(vc); setApplyAmount(vc.credits_remaining); setShowApplyDialog(true); }}>
+                      <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={() => { setSelectedVC(vc); setApplyAmount(vc.credits_remaining); setShowApplyDialog(true); }}>
                         <ArrowRight className="h-4 w-4 mr-1" /> Apply
                       </Button>
                     )}
@@ -224,12 +224,12 @@ export default function VendorCredits() {
             <div>
               <Label>Amount to Apply *</Label>
               <Input type="number" value={applyAmount} onChange={(e) => setApplyAmount(parseFloat(e.target.value))} max={selectedVC?.credits_remaining} />
-              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Max: ₹{selectedVC?.credits_remaining?.toLocaleString('en-IN')}</p>
+              <p className="text-xs text-bw-white/[0.45] mt-1">Max: ₹{selectedVC?.credits_remaining?.toLocaleString('en-IN')}</p>
             </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowApplyDialog(false)}>Cancel</Button>
-            <Button onClick={handleApplyToBill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Credit</Button>
+            <Button onClick={handleApplyToBill} className="bg-bw-volt text-bw-black font-bold">Apply Credit</Button>
           </div>
         </DialogContent>
       </Dialog>

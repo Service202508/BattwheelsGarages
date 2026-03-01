@@ -15,13 +15,13 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  sent: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
-  viewed: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
-  paid: "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]",
-  partially_paid: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
-  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  sent: "bg-bw-blue/10 text-bw-blue border border-bw-blue/25",
+  viewed: "bg-bw-purple/10 text-bw-purple border border-bw-purple/25",
+  paid: "bg-bw-green/10 text-bw-green border border-bw-green/25",
+  partially_paid: "bg-bw-amber/10 text-bw-amber border border-bw-amber/25",
+  overdue: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  void: "bg-bw-white/5 text-bw-white/25 border border-white/[0.08]"
 };
 
 export default function Invoices() {
@@ -204,12 +204,12 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Invoices</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage your sales invoices</p>
+          <h1 className="text-2xl font-bold text-bw-white">Invoices</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage your sales invoices</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-invoice-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-invoice-btn">
               <Plus className="h-4 w-4 mr-2" />
               Create Invoice
             </Button>
@@ -217,7 +217,7 @@ export default function Invoices() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="create-invoice-description">
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
-              <p id="create-invoice-description" className="text-sm text-[rgba(244,246,240,0.45)]">Add customer and line items to generate a GST invoice</p>
+              <p id="create-invoice-description" className="text-sm text-bw-white/[0.45]">Add customer and line items to generate a GST invoice</p>
             </DialogHeader>
             <div className="space-y-6 py-4">
               {/* Customer Selection */}
@@ -256,7 +256,7 @@ export default function Invoices() {
               </div>
 
               {/* Add Line Items */}
-              <div className="border rounded-lg p-4 bg-[#111820]">
+              <div className="border rounded-lg p-4 bg-bw-panel">
                 <h3 className="font-medium mb-4">Add Items</h3>
                 <Tabs defaultValue="services">
                   <TabsList className="mb-4">
@@ -297,7 +297,7 @@ export default function Invoices() {
                   <div className="mt-4 grid grid-cols-4 gap-4">
                     <div>
                       <Label>Item</Label>
-                      <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
+                      <Input value={newLineItem.item_name} readOnly className="bg-bw-panel" />
                     </div>
                     <div>
                       <Label>Qty</Label>
@@ -316,7 +316,7 @@ export default function Invoices() {
                       />
                     </div>
                     <div className="flex items-end">
-                      <Button onClick={handleAddLineItem} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+                      <Button onClick={handleAddLineItem} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                         Add Item
                       </Button>
                     </div>
@@ -328,13 +328,13 @@ export default function Invoices() {
               {newInvoice.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-[rgba(244,246,240,0.45)]">Item</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Qty</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Rate</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Tax</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Amount</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-bw-white/[0.45]">Item</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Qty</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Rate</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Tax</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Amount</th>
                         <th className="px-4 py-2"></th>
                       </tr>
                     </thead>
@@ -358,7 +358,7 @@ export default function Invoices() {
                         );
                       })}
                     </tbody>
-                    <tfoot className="bg-[#111820]">
+                    <tfoot className="bg-bw-panel">
                       <tr className="border-t">
                         <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
                         <td className="px-4 py-3 text-right font-bold text-lg">₹{calculateTotal().toLocaleString('en-IN')}</td>
@@ -381,7 +381,7 @@ export default function Invoices() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateInvoice} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+              <Button onClick={handleCreateInvoice} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                 Create Invoice
               </Button>
             </div>
@@ -396,10 +396,10 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Revenue</p>
-                  <p className="text-2xl font-bold text-[#F4F6F0]">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
+                  <p className="text-sm text-bw-white/[0.45]">Total Revenue</p>
+                  <p className="text-2xl font-bold text-bw-white">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
                 </div>
-                <IndianRupee className="h-8 w-8 text-[#C8FF00]" />
+                <IndianRupee className="h-8 w-8 text-bw-volt" />
               </div>
             </CardContent>
           </Card>
@@ -407,8 +407,8 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Collected</p>
-                  <p className="text-2xl font-bold text-[#22C55E]">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
+                  <p className="text-sm text-bw-white/[0.45]">Collected</p>
+                  <p className="text-2xl font-bold text-bw-green">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
@@ -418,8 +418,8 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Outstanding</p>
-                  <p className="text-2xl font-bold text-[#FF8C00]">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
+                  <p className="text-sm text-bw-white/[0.45]">Outstanding</p>
+                  <p className="text-2xl font-bold text-bw-orange">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500" />
               </div>
@@ -429,8 +429,8 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Invoices</p>
-                  <p className="text-2xl font-bold text-[#F4F6F0]">{analytics.invoices.total}</p>
+                  <p className="text-sm text-bw-white/[0.45]">Total Invoices</p>
+                  <p className="text-2xl font-bold text-bw-white">{analytics.invoices.total}</p>
                 </div>
                 <FileText className="h-8 w-8 text-blue-500" />
               </div>
@@ -445,7 +445,7 @@ export default function Invoices() {
           variant={statusFilter === "" ? "default" : "outline"}
           size="sm"
           onClick={() => setStatusFilter("")}
-          className={statusFilter === "" ? "bg-[#C8FF00] text-[#080C0F] font-bold hover:bg-[#d4ff1a]" : ""}
+          className={statusFilter === "" ? "bg-bw-volt text-bw-black font-bold hover:bg-bw-volt-hover" : ""}
         >
           All
         </Button>
@@ -455,7 +455,7 @@ export default function Invoices() {
             variant={statusFilter === status ? "default" : "outline"}
             size="sm"
             onClick={() => setStatusFilter(status)}
-            className={statusFilter === status ? "bg-[#C8FF00] text-[#080C0F] font-bold hover:bg-[#d4ff1a]" : ""}
+            className={statusFilter === status ? "bg-bw-volt text-bw-black font-bold hover:bg-bw-volt-hover" : ""}
           >
             {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </Button>
@@ -464,27 +464,27 @@ export default function Invoices() {
 
       {/* Invoice List */}
       {loading ? (
-        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading invoices...</div>
+        <div className="text-center py-12 text-bw-white/[0.45]">Loading invoices...</div>
       ) : invoices.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+          <CardContent className="py-12 text-center text-bw-white/[0.45]">
             No invoices found. Create your first invoice to get started.
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
           {invoices.map((invoice) => (
-            <Card key={invoice.invoice_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors" data-testid={`invoice-card-${invoice.invoice_id}`}>
+            <Card key={invoice.invoice_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors" data-testid={`invoice-card-${invoice.invoice_id}`}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-[#F4F6F0]">{invoice.invoice_number}</h3>
+                      <h3 className="font-semibold text-bw-white">{invoice.invoice_number}</h3>
                       <Badge className={statusColors[invoice.status]}>
                         {invoice.status.replace('_', ' ')}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <div className="flex flex-wrap gap-4 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1">
                         <User className="h-3.5 w-3.5" />
                         {invoice.customer_name}
@@ -501,10 +501,10 @@ export default function Invoices() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-xs text-[rgba(244,246,240,0.25)]">Total</p>
+                      <p className="text-xs text-bw-white/25">Total</p>
                       <p className="font-bold text-lg">₹{invoice.total?.toLocaleString('en-IN')}</p>
                       {invoice.balance_due > 0 && (
-                        <p className="text-xs text-[#FF8C00]">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-bw-orange">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
                       )}
                     </div>
                     <div className="flex gap-1">
@@ -521,31 +521,31 @@ export default function Invoices() {
                           <div className="space-y-4 py-4">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <p className="text-[rgba(244,246,240,0.25)]">Customer</p>
+                                <p className="text-bw-white/25">Customer</p>
                                 <p className="font-medium">{invoice.customer_name}</p>
                               </div>
                               <div>
-                                <p className="text-[rgba(244,246,240,0.25)]">Status</p>
+                                <p className="text-bw-white/25">Status</p>
                                 <Badge className={statusColors[invoice.status]}>{invoice.status}</Badge>
                               </div>
                               <div>
-                                <p className="text-[rgba(244,246,240,0.25)]">Invoice Date</p>
+                                <p className="text-bw-white/25">Invoice Date</p>
                                 <p className="font-medium">{invoice.invoice_date}</p>
                               </div>
                               <div>
-                                <p className="text-[rgba(244,246,240,0.25)]">Due Date</p>
+                                <p className="text-bw-white/25">Due Date</p>
                                 <p className="font-medium">{invoice.due_date}</p>
                               </div>
                             </div>
 
                             <div className="border rounded-lg overflow-hidden">
                               <table className="w-full">
-                                <thead className="bg-[#111820]">
+                                <thead className="bg-bw-panel">
                                   <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-[rgba(244,246,240,0.45)]">Item</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Qty</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Rate</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Amount</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-bw-white/[0.45]">Item</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Qty</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Rate</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-bw-white/[0.45]">Amount</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -558,7 +558,7 @@ export default function Invoices() {
                                     </tr>
                                   ))}
                                 </tbody>
-                                <tfoot className="bg-[#111820]">
+                                <tfoot className="bg-bw-panel">
                                   <tr className="border-t">
                                     <td colSpan={3} className="px-4 py-2 text-right text-sm">Subtotal:</td>
                                     <td className="px-4 py-2 text-right">₹{invoice.subtotal?.toLocaleString('en-IN')}</td>
@@ -577,13 +577,13 @@ export default function Invoices() {
 
                             <div className="flex gap-2 justify-end pt-4">
                               {invoice.status === "draft" && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-[#3B9EFF] hover:bg-blue-600 text-[#080C0F]">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-bw-blue hover:bg-blue-600 text-bw-black">
                                   <Send className="h-4 w-4 mr-2" />
                                   Mark as Sent
                                 </Button>
                               )}
                               {["draft", "sent", "partially_paid"].includes(invoice.status) && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-bw-green hover:bg-bw-green-hover text-bw-black">
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Mark as Paid
                                 </Button>

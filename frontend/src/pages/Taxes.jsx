@@ -90,8 +90,8 @@ export default function Taxes() {
     <div className="space-y-6" data-testid="taxes-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Taxes</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Configure tax rates & groups</p>
+          <h1 className="text-2xl font-bold text-bw-white">Taxes</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Configure tax rates & groups</p>
         </div>
         <div className="flex gap-2">
           <Dialog open={showGroupDialog} onOpenChange={setShowGroupDialog}>
@@ -132,13 +132,13 @@ export default function Taxes() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowGroupDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateGroup} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Group</Button>
+                <Button onClick={handleCreateGroup} className="bg-bw-volt text-bw-black font-bold">Create Group</Button>
               </div>
             </DialogContent>
           </Dialog>
           <Dialog open={showTaxDialog} onOpenChange={setShowTaxDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-tax-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-tax-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Tax
               </Button>
             </DialogTrigger>
@@ -175,7 +175,7 @@ export default function Taxes() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowTaxDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateTax} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Tax</Button>
+                <Button onClick={handleCreateTax} className="bg-bw-volt text-bw-black font-bold">Create Tax</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -189,28 +189,28 @@ export default function Taxes() {
         </TabsList>
 
         <TabsContent value="taxes" className="mt-6">
-          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-            taxes.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No taxes configured</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+            taxes.length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No taxes configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {taxes.map(tax => (
-                <Card key={tax.tax_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+                <Card key={tax.tax_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#C8FF00]/10 rounded-lg">
-                          <Percent className="h-5 w-5 text-[#C8FF00]" />
+                        <div className="p-2 bg-bw-volt/10 rounded-lg">
+                          <Percent className="h-5 w-5 text-bw-volt" />
                         </div>
                         <div>
                           <h3 className="font-semibold">{tax.tax_name}</h3>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{tax.tax_type}</p>
+                          <p className="text-sm text-bw-white/[0.45]">{tax.tax_type}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold">{tax.tax_percentage}%</p>
-                        {tax.is_default && <Badge className="bg-blue-100 text-[#3B9EFF]">Default</Badge>}
+                        {tax.is_default && <Badge className="bg-blue-100 text-bw-blue">Default</Badge>}
                       </div>
                     </div>
-                    {tax.description && <p className="text-sm text-[rgba(244,246,240,0.45)] mt-3">{tax.description}</p>}
+                    {tax.description && <p className="text-sm text-bw-white/[0.45] mt-3">{tax.description}</p>}
                   </CardContent>
                 </Card>
               ))}
@@ -219,23 +219,23 @@ export default function Taxes() {
         </TabsContent>
 
         <TabsContent value="groups" className="mt-6">
-          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-            taxGroups.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No tax groups configured</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+            taxGroups.length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No tax groups configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {taxGroups.map(group => (
-                <Card key={group.tax_group_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+                <Card key={group.tax_group_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
-                          <Layers className="h-5 w-5 text-[#3B9EFF]" />
+                          <Layers className="h-5 w-5 text-bw-blue" />
                         </div>
                         <div>
                           <h3 className="font-semibold">{group.group_name}</h3>
-                          {group.description && <p className="text-sm text-[rgba(244,246,240,0.45)]">{group.description}</p>}
+                          {group.description && <p className="text-sm text-bw-white/[0.45]">{group.description}</p>}
                         </div>
                       </div>
-                      <p className="text-2xl font-bold text-[#C8FF00]">{group.combined_rate}%</p>
+                      <p className="text-2xl font-bold text-bw-volt">{group.combined_rate}%</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {group.taxes?.map(tax => (

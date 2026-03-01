@@ -40,7 +40,7 @@ const GaugeChart = ({ value, max = 100, title, unit = "%", color, zones }) => {
     <div className="flex flex-col items-center p-3 bg-slate-800/50 rounded-lg">
       <span className="text-xs text-slate-400 mb-2">{title}</span>
       <div className="relative w-20 h-10 overflow-hidden">
-        <div className="absolute w-20 h-20 rounded-full border-4 border-[rgba(255,255,255,0.07)] border-700" 
+        <div className="absolute w-20 h-20 rounded-full border-4 border-white/[0.07] border-700" 
              style={{ borderTopColor: 'transparent', borderLeftColor: 'transparent', transform: 'rotate(225deg)' }}>
         </div>
         <div 
@@ -85,8 +85,8 @@ const HorizontalBarChart = ({ data, title, max = 100 }) => (
 
 const InfoCard = ({ title, value, unit, icon: Icon, subtitle }) => (
   <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
-    <div className="w-10 h-10 rounded-full bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
-      {Icon && <Icon className="h-5 w-5 text-[#C8FF00] text-400" />}
+    <div className="w-10 h-10 rounded-full bg-bw-volt/[0.08]0/20 flex items-center justify-center">
+      {Icon && <Icon className="h-5 w-5 text-bw-volt text-400" />}
     </div>
     <div>
       <span className="text-xs text-slate-400">{title}</span>
@@ -175,8 +175,8 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   size="sm"
                   variant={answers[q.id] === opt ? "default" : "outline"}
                   className={answers[q.id] === opt 
-                    ? "bg-[#C8FF00] text-[#080C0F] font-bold" 
-                    : "border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.70)] hover:bg-[rgba(200,255,0,0.08)]"}
+                    ? "bg-bw-volt text-bw-black font-bold" 
+                    : "border-white/[0.07] text-bw-white/70 hover:bg-bw-volt/[0.08]"}
                   onClick={() => handleChange(q.id, opt)}
                 >
                   {opt}
@@ -193,8 +193,8 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   size="sm"
                   variant={(answers[q.id] || []).includes(opt) ? "default" : "outline"}
                   className={(answers[q.id] || []).includes(opt)
-                    ? "bg-[#C8FF00] text-[#080C0F] font-bold"
-                    : "border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.70)] hover:bg-[rgba(200,255,0,0.08)]"}
+                    ? "bg-bw-volt text-bw-black font-bold"
+                    : "border-white/[0.07] text-bw-white/70 hover:bg-bw-volt/[0.08]"}
                   onClick={() => handleMultiSelect(q.id, opt)}
                 >
                   {opt}
@@ -207,7 +207,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
             <input
               type="text"
               placeholder={q.placeholder}
-              className="w-full px-3 py-2 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded text-white text-sm"
+              className="w-full px-3 py-2 bg-slate-800 border border-white/[0.07] border-700 rounded text-white text-sm"
               value={answers[q.id] || ""}
               onChange={(e) => handleChange(q.id, e.target.value)}
             />
@@ -219,7 +219,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
               min={q.min}
               max={q.max}
               placeholder="Enter value"
-              className="w-24 px-3 py-2 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded text-white text-sm"
+              className="w-24 px-3 py-2 bg-slate-800 border border-white/[0.07] border-700 rounded text-white text-sm"
               value={answers[q.id] || ""}
               onChange={(e) => handleChange(q.id, parseFloat(e.target.value))}
             />
@@ -230,7 +230,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
       <Button 
         onClick={() => onSubmit(answers)} 
         disabled={loading}
-        className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
+        className="w-full bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
         Submit Answers & Get Guidance
@@ -242,26 +242,26 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
 // Diagnostic Step Component
 const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
   <div className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-    isDone ? 'bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.30)]' : 'bg-slate-800/50'
+    isDone ? 'bg-bw-volt/[0.08] border border-bw-volt/30' : 'bg-slate-800/50'
   }`}>
     <button
       onClick={() => onMarkDone(index)}
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
         isDone 
-          ? 'bg-[rgba(200,255,0,0.08)]0 border-[rgba(200,255,0,0.50)] text-white' 
-          : 'border-[rgba(255,255,255,0.07)] border-600 hover:border-emerald-400'
+          ? 'bg-bw-volt/[0.08]0 border-bw-volt/50 text-white' 
+          : 'border-white/[0.07] border-600 hover:border-emerald-400'
       }`}
     >
       {isDone && <CheckCircle2 className="h-4 w-4" />}
       {!isDone && <span className="text-xs text-slate-400">{index + 1}</span>}
     </button>
     <div className="flex-1">
-      <p className={`text-sm ${isDone ? 'text-[#C8FF00] text-300 line-through' : 'text-white'}`}>
+      <p className={`text-sm ${isDone ? 'text-bw-volt text-300 line-through' : 'text-white'}`}>
         {step.hinglish || step.action}
       </p>
       {step.expected && (
         <p className="text-xs text-slate-400 mt-1">
-          Expected: <span className="text-[#C8FF00] text-400">{step.expected}</span>
+          Expected: <span className="text-bw-volt text-400">{step.expected}</span>
         </p>
       )}
     </div>
@@ -480,7 +480,7 @@ export default function EFIGuidancePanel({
   
   if (guidance?.enabled === false) {
     return (
-      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-700">
+      <Card className="bg-slate-900/50 border-white/[0.07] border-700">
         <CardContent className="p-6 text-center text-slate-400">
           <Shield className="h-10 w-10 mx-auto mb-3 text-slate-500" />
           <p>EFI Guidance Layer is not enabled for your organization.</p>
@@ -490,18 +490,18 @@ export default function EFIGuidancePanel({
   }
   
   return (
-    <Card className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-700 overflow-hidden" data-testid="efi-guidance-panel">
+    <Card className="bg-slate-900 border-white/[0.07] border-700 overflow-hidden" data-testid="efi-guidance-panel">
       {/* Header */}
-      <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-[rgba(255,255,255,0.07)] border-700 pb-4">
+      <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-white/[0.07] border-700 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
-              <Zap className="h-6 w-6 text-[#C8FF00] text-400" />
+            <div className="w-10 h-10 rounded-lg bg-bw-volt/[0.08]0/20 flex items-center justify-center">
+              <Zap className="h-6 w-6 text-bw-volt text-400" />
             </div>
             <div>
               <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
                 EFI Guidance
-                <Badge variant="outline" className="text-xs border-[rgba(200,255,0,0.50)]/50 text-[#C8FF00] text-400">
+                <Badge variant="outline" className="text-xs border-bw-volt/50/50 text-bw-volt text-400">
                   Hinglish
                 </Badge>
               </CardTitle>
@@ -528,7 +528,7 @@ export default function EFIGuidancePanel({
             
             {/* Refresh/Loading indicator */}
             {loading && (
-              <RefreshCw className="h-4 w-4 animate-spin text-[#C8FF00] text-400" />
+              <RefreshCw className="h-4 w-4 animate-spin text-bw-volt text-400" />
             )}
             
             {/* Mode Toggle */}
@@ -536,7 +536,7 @@ export default function EFIGuidancePanel({
               <Button
                 size="sm"
                 variant={mode === "quick" ? "default" : "ghost"}
-                className={`text-xs px-2 py-1 h-7 ${mode === "quick" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
+                className={`text-xs px-2 py-1 h-7 ${mode === "quick" ? "bg-bw-volt text-bw-black font-bold" : "text-bw-white/[0.45]"}`}
                 onClick={() => setMode("quick")}
               >
                 Quick
@@ -544,7 +544,7 @@ export default function EFIGuidancePanel({
               <Button
                 size="sm"
                 variant={mode === "deep" ? "default" : "ghost"}
-                className={`text-xs px-2 py-1 h-7 ${mode === "deep" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
+                className={`text-xs px-2 py-1 h-7 ${mode === "deep" ? "bg-bw-volt text-bw-black font-bold" : "text-bw-white/[0.45]"}`}
                 onClick={() => setMode("deep")}
               >
                 Deep
@@ -557,19 +557,19 @@ export default function EFIGuidancePanel({
         {isSupervisorOrAdmin && guidance?.confidence && (
           <div className="mt-3 flex items-center gap-2">
             <Badge className={`text-xs ${
-              guidance.confidence === 'high' ? 'bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400' :
+              guidance.confidence === 'high' ? 'bg-bw-volt/[0.08]0/20 text-bw-volt text-400' :
               guidance.confidence === 'medium' ? 'bg-amber-500/20 text-amber-400' :
               'bg-rose-500/20 text-rose-400'
             }`}>
               {guidance.confidence} confidence
             </Badge>
             {guidance.sources_count > 0 && (
-              <Badge variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-400">
+              <Badge variant="outline" className="text-xs border-white/[0.07] border-600 text-slate-400">
                 {guidance.sources_count} sources
               </Badge>
             )}
             {guidance.generation_time_ms && (
-              <Badge variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-400">
+              <Badge variant="outline" className="text-xs border-white/[0.07] border-600 text-slate-400">
                 {guidance.generation_time_ms}ms
               </Badge>
             )}
@@ -580,7 +580,7 @@ export default function EFIGuidancePanel({
       <CardContent className="p-0">
         {loading && !guidance ? (
           <div className="flex items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00] text-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-bw-volt text-400" />
             <span className="ml-3 text-slate-400">Generating guidance...</span>
           </div>
         ) : guidance?.needs_ask_back && guidance.ask_back_questions?.length > 0 ? (
@@ -614,7 +614,7 @@ export default function EFIGuidancePanel({
           </div>
         ) : (
           <Tabs defaultValue="steps" className="w-full">
-            <TabsList className="w-full bg-slate-800/50 border-b border-[rgba(255,255,255,0.07)] border-700 rounded-none p-0">
+            <TabsList className="w-full bg-slate-800/50 border-b border-white/[0.07] border-700 rounded-none p-0">
               <TabsTrigger value="steps" className="flex-1 py-3 data-[state=active]:bg-slate-700">
                 <ClipboardList className="h-4 w-4 mr-2" />
                 Steps
@@ -656,7 +656,7 @@ export default function EFIGuidancePanel({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-[#C8FF00] text-400" />
+                    <ClipboardList className="h-4 w-4 text-bw-volt text-400" />
                     Diagnostic Steps ({mode === "quick" ? "Quick Mode" : "Deep Mode"})
                   </h4>
                   <span className="text-xs text-slate-500">
@@ -700,12 +700,12 @@ export default function EFIGuidancePanel({
               
               {/* Recommended Fix */}
               {guidance?.recommended_fix && (
-                <div className="p-3 bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/30 rounded-lg">
-                  <h4 className="text-sm font-medium text-[#C8FF00] text-400 mb-2 flex items-center gap-2">
+                <div className="p-3 bg-bw-volt/[0.08]0/10 border border-bw-volt/50/30 rounded-lg">
+                  <h4 className="text-sm font-medium text-bw-volt text-400 mb-2 flex items-center gap-2">
                     <Wrench className="h-4 w-4" />
                     Recommended Fix
                   </h4>
-                  <p className="text-sm text-[#C8FF00] text-200">{guidance.recommended_fix}</p>
+                  <p className="text-sm text-bw-volt text-200">{guidance.recommended_fix}</p>
                 </div>
               )}
               
@@ -718,7 +718,7 @@ export default function EFIGuidancePanel({
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {guidance.sources.map((source, i) => (
-                      <Badge key={i} variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-300">
+                      <Badge key={i} variant="outline" className="text-xs border-white/[0.07] border-600 text-slate-300">
                         {source.source_id || source.title || `Source ${i+1}`}
                       </Badge>
                     ))}
@@ -797,7 +797,7 @@ export default function EFIGuidancePanel({
             {/* ESTIMATE TAB */}
             <TabsContent value="estimate" className="p-4 space-y-4 m-0">
               <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-[#C8FF00] text-400" />
+                <Wrench className="h-4 w-4 text-bw-volt text-400" />
                 Suggested Parts & Labour
               </h4>
               
@@ -811,7 +811,7 @@ export default function EFIGuidancePanel({
                       >
                         <div className="flex items-center gap-3">
                           <Badge className={`text-xs ${
-                            item.type === "part" ? "bg-blue-500/20 text-blue-400" : "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400"
+                            item.type === "part" ? "bg-blue-500/20 text-blue-400" : "bg-bw-purple/[0.08]0/20 text-purple-400"
                           }`}>
                             {item.type}
                           </Badge>
@@ -823,7 +823,7 @@ export default function EFIGuidancePanel({
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-medium text-[#C8FF00] text-400">
+                          <p className="text-sm font-medium text-bw-volt text-400">
                             ₹{item.estimated_cost?.toLocaleString()}
                           </p>
                         </div>
@@ -831,13 +831,13 @@ export default function EFIGuidancePanel({
                     ))}
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 bg-[rgba(200,255,0,0.08)]0/10 rounded-lg">
-                    <span className="text-sm text-[rgba(244,246,240,0.70)]">
+                  <div className="flex justify-between items-center p-3 bg-bw-volt/[0.08]0/10 rounded-lg">
+                    <span className="text-sm text-bw-white/70">
                       Total: ₹{guidance.estimate_suggestions.reduce((sum, i) => sum + (i.estimated_cost || 0), 0).toLocaleString()}
                     </span>
                     <Button
                       onClick={() => addToEstimate(guidance.estimate_suggestions)}
-                      className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
+                      className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
                       data-testid="add-all-to-estimate-btn"
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -857,7 +857,7 @@ export default function EFIGuidancePanel({
         
         {/* Footer Actions */}
         {guidance && !guidance.needs_ask_back && (
-          <div className="p-4 border-t border-[rgba(255,255,255,0.07)] border-700 flex items-center justify-between">
+          <div className="p-4 border-t border-white/[0.07] border-700 flex items-center justify-between">
             {/* Feedback */}
             {!feedbackGiven ? (
               <div className="flex items-center gap-2">
@@ -866,7 +866,7 @@ export default function EFIGuidancePanel({
                   size="sm"
                   variant="ghost"
                   onClick={() => submitFeedback(true)}
-                  className="text-[#C8FF00] text-400 hover:bg-[rgba(200,255,0,0.08)]0/20"
+                  className="text-bw-volt text-400 hover:bg-bw-volt/[0.08]0/20"
                 >
                   <ThumbsUp className="h-4 w-4" />
                 </Button>
@@ -880,7 +880,7 @@ export default function EFIGuidancePanel({
                 </Button>
               </div>
             ) : (
-              <span className="text-xs text-[#C8FF00] text-400">Dhanyavaad for feedback!</span>
+              <span className="text-xs text-bw-volt text-400">Dhanyavaad for feedback!</span>
             )}
             
             {/* Escalate */}

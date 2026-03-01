@@ -81,7 +81,7 @@ export default function HRDashboard({ user }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]" data-testid="hr-dashboard-loading">
-        <Loader2 className="w-8 h-8 animate-spin text-[#C8FF00]" />
+        <Loader2 className="w-8 h-8 animate-spin text-bw-volt" />
       </div>
     );
   }
@@ -261,7 +261,7 @@ function StatBar({ label, value, total, color }) {
 
 function QuickLink({ label, onClick, icon: Icon, testId }) {
   return (
-    <Button variant="outline" className="justify-start gap-2 h-auto py-3 text-zinc-300 hover:text-[#C8FF00] border-zinc-800 hover:border-[#C8FF00]/30" onClick={onClick} data-testid={testId}>
+    <Button variant="outline" className="justify-start gap-2 h-auto py-3 text-zinc-300 hover:text-bw-volt border-zinc-800 hover:border-bw-volt/30" onClick={onClick} data-testid={testId}>
       <Icon className="w-4 h-4" /> {label}
     </Button>
   );

@@ -46,46 +46,46 @@ export function formatNumberCompact(num) {
 // Variant configurations - Dark Volt Theme
 const variants = {
   default: {
-    card: "bg-[#111820] border-[rgba(255,255,255,0.07)]",
-    iconContainer: "bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]",
-    icon: "text-[#C8FF00]",
-    value: "text-[#C8FF00]"
+    card: "bg-bw-panel border-white/[0.07]",
+    iconContainer: "bg-bw-volt/[0.08] border border-bw-volt/15",
+    icon: "text-bw-volt",
+    value: "text-bw-volt"
   },
   success: {
-    card: "bg-[#111820] border-[rgba(34,197,94,0.25)]",
-    iconContainer: "bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.2)]",
-    icon: "text-[#22C55E]",
-    value: "text-[#22C55E]"
+    card: "bg-bw-panel border-bw-green/25",
+    iconContainer: "bg-bw-green/10 border border-bw-green/20",
+    icon: "text-bw-green",
+    value: "text-bw-green"
   },
   warning: {
-    card: "bg-[#111820] border-[rgba(255,140,0,0.25)]",
-    iconContainer: "bg-[rgba(255,140,0,0.1)] border border-[rgba(255,140,0,0.2)]",
-    icon: "text-[#FF8C00]",
-    value: "text-[#FF8C00]"
+    card: "bg-bw-panel border-bw-orange/25",
+    iconContainer: "bg-bw-orange/10 border border-bw-orange/20",
+    icon: "text-bw-orange",
+    value: "text-bw-orange"
   },
   danger: {
-    card: "bg-[#111820] border-[rgba(255,59,47,0.25)]",
-    iconContainer: "bg-[rgba(255,59,47,0.1)] border border-[rgba(255,59,47,0.2)]",
-    icon: "text-[#FF3B2F]",
-    value: "text-[#FF3B2F]"
+    card: "bg-bw-panel border-bw-red/25",
+    iconContainer: "bg-bw-red/10 border border-bw-red/20",
+    icon: "text-bw-red",
+    value: "text-bw-red"
   },
   info: {
-    card: "bg-[#111820] border-[rgba(59,158,255,0.25)]",
-    iconContainer: "bg-[rgba(59,158,255,0.1)] border border-[rgba(59,158,255,0.2)]",
-    icon: "text-[#3B9EFF]",
-    value: "text-[#3B9EFF]"
+    card: "bg-bw-panel border-bw-blue/25",
+    iconContainer: "bg-bw-blue/10 border border-bw-blue/20",
+    icon: "text-bw-blue",
+    value: "text-bw-blue"
   },
   purple: {
-    card: "bg-[#111820] border-[rgba(139,92,246,0.25)]",
-    iconContainer: "bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)]",
-    icon: "text-[#8B5CF6]",
-    value: "text-[#8B5CF6]"
+    card: "bg-bw-panel border-bw-purple/25",
+    iconContainer: "bg-bw-purple/10 border border-bw-purple/20",
+    icon: "text-bw-purple",
+    value: "text-bw-purple"
   },
   teal: {
-    card: "bg-[#111820] border-[rgba(20,184,166,0.25)]",
-    iconContainer: "bg-[rgba(20,184,166,0.1)] border border-[rgba(20,184,166,0.2)]",
-    icon: "text-[#14B8A6]",
-    value: "text-[#14B8A6]"
+    card: "bg-bw-panel border-bw-teal/25",
+    iconContainer: "bg-bw-teal/10 border border-bw-teal/20",
+    icon: "text-bw-teal",
+    value: "text-bw-teal"
   }
 };
 
@@ -114,11 +114,11 @@ const StatCard = React.forwardRef(({
         <CardContent className="pt-4 pb-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-24 bg-[rgba(255,255,255,0.05)]" />
-              <Skeleton className="h-7 w-16 bg-[rgba(255,255,255,0.05)]" />
-              {subtitle && <Skeleton className="h-3 w-20 bg-[rgba(255,255,255,0.05)]" />}
+              <Skeleton className="h-4 w-24 bg-white/5" />
+              <Skeleton className="h-7 w-16 bg-white/5" />
+              {subtitle && <Skeleton className="h-3 w-20 bg-white/5" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded bg-[rgba(255,255,255,0.05)]" />
+            <Skeleton className="h-10 w-10 rounded bg-white/5" />
           </div>
         </CardContent>
       </Card>
@@ -130,13 +130,13 @@ const StatCard = React.forwardRef(({
       <CardContent className="pt-4 pb-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] text-[rgba(244,246,240,0.45)] font-medium uppercase tracking-[0.08em] truncate">
+            <p className="text-[11px] text-bw-white/[0.45] font-medium uppercase tracking-[0.08em] truncate">
               {title}
             </p>
             <p 
               className={cn(
                 "text-lg sm:text-xl md:text-2xl font-bold mt-1 truncate",
-                isZeroValue ? "text-[rgba(244,246,240,0.2)]" : variantStyles.value,
+                isZeroValue ? "text-bw-white/20" : variantStyles.value,
                 !isZeroValue && variant === "default" && "text-shadow-volt"
               )}
               style={!isZeroValue && variant === "default" ? { textShadow: '0 0 24px rgba(200,255,0,0.25)' } : undefined}
@@ -145,14 +145,14 @@ const StatCard = React.forwardRef(({
               {value}
             </p>
             {subtitle && (
-              <p className="text-[11px] text-[rgba(244,246,240,0.25)] mt-1 truncate">
+              <p className="text-[11px] text-bw-white/25 mt-1 truncate">
                 {subtitle}
               </p>
             )}
             {trend && (
               <div className={cn(
                 "flex items-center gap-1 mt-1 text-xs",
-                trend === "up" ? "text-[#22C55E]" : "text-[#FF3B2F]"
+                trend === "up" ? "text-bw-green" : "text-bw-red"
               )}>
                 {trend === "up" ? "↑" : "↓"} {trendValue}
               </div>
@@ -195,11 +195,11 @@ const MetricCard = React.forwardRef(({
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-32 bg-[rgba(255,255,255,0.05)]" />
-              <Skeleton className="h-10 w-20 bg-[rgba(255,255,255,0.05)]" />
-              {subtitle && <Skeleton className="h-3 w-24 bg-[rgba(255,255,255,0.05)]" />}
+              <Skeleton className="h-4 w-32 bg-white/5" />
+              <Skeleton className="h-10 w-20 bg-white/5" />
+              {subtitle && <Skeleton className="h-3 w-24 bg-white/5" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded bg-[rgba(255,255,255,0.05)]" />
+            <Skeleton className="h-10 w-10 rounded bg-white/5" />
           </div>
         </CardContent>
       </Card>
@@ -235,7 +235,7 @@ const MetricCard = React.forwardRef(({
               "h-10 w-10 rounded metric-card-icon flex items-center justify-center shrink-0",
               iconClassName
             )}>
-              <Icon className="h-5 w-5 text-[#C8FF00]" strokeWidth={1.5} />
+              <Icon className="h-5 w-5 text-bw-volt" strokeWidth={1.5} />
             </div>
           )}
         </div>
@@ -259,10 +259,10 @@ const GradientStatCard = React.forwardRef(({
   ...props
 }, ref) => {
   const gradientStyles = {
-    volt: "bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00]",
-    blue: "bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.2)] text-[#3B9EFF]",
-    green: "bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-[#22C55E]",
-    orange: "bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.2)] text-[#FF8C00]"
+    volt: "bg-bw-volt/[0.08] border border-bw-volt/20 text-bw-volt",
+    blue: "bg-bw-blue/[0.08] border border-bw-blue/20 text-bw-blue",
+    green: "bg-bw-green/[0.08] border border-bw-green/20 text-bw-green",
+    orange: "bg-bw-orange/[0.08] border border-bw-orange/20 text-bw-orange"
   };
 
   const currentStyle = gradientStyles[variant] || gradientStyles.volt;
@@ -273,11 +273,11 @@ const GradientStatCard = React.forwardRef(({
         <CardContent className="pt-4 pb-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-3 w-24 bg-[rgba(255,255,255,0.1)]" />
-              <Skeleton className="h-7 w-20 bg-[rgba(255,255,255,0.1)]" />
-              {subtitle && <Skeleton className="h-3 w-16 bg-[rgba(255,255,255,0.1)]" />}
+              <Skeleton className="h-3 w-24 bg-white/10" />
+              <Skeleton className="h-7 w-20 bg-white/10" />
+              {subtitle && <Skeleton className="h-3 w-16 bg-white/10" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded-full bg-[rgba(255,255,255,0.1)]" />
+            <Skeleton className="h-10 w-10 rounded-full bg-white/10" />
           </div>
         </CardContent>
       </Card>
@@ -356,10 +356,10 @@ const MiniStatCard = React.forwardRef(({
   if (loading) {
     return (
       <div ref={ref} className={cn("flex items-center gap-2 p-2 rounded border", variantStyles.card, className)} {...props}>
-        <Skeleton className="h-6 w-6 rounded bg-[rgba(255,255,255,0.05)]" />
+        <Skeleton className="h-6 w-6 rounded bg-white/5" />
         <div className="space-y-1">
-          <Skeleton className="h-3 w-12 bg-[rgba(255,255,255,0.05)]" />
-          <Skeleton className="h-4 w-8 bg-[rgba(255,255,255,0.05)]" />
+          <Skeleton className="h-3 w-12 bg-white/5" />
+          <Skeleton className="h-4 w-8 bg-white/5" />
         </div>
       </div>
     );
@@ -373,7 +373,7 @@ const MiniStatCard = React.forwardRef(({
         </div>
       )}
       <div>
-        <p className="text-xs text-[rgba(244,246,240,0.45)]">{label}</p>
+        <p className="text-xs text-bw-white/[0.45]">{label}</p>
         <p className={cn("text-sm font-bold", variantStyles.value)}>{value}</p>
       </div>
     </div>

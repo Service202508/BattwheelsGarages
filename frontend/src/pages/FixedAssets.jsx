@@ -20,10 +20,10 @@ import { API } from "@/App";
 import PageHeader from "@/components/PageHeader";
 
 const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  fully_depreciated: "bg-blue-100 text-[#3B9EFF]",
-  disposed: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]",
-  written_off: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
+  active: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  fully_depreciated: "bg-blue-100 text-bw-blue",
+  disposed: "bg-white/5 text-bw-white/[0.45]",
+  written_off: "bg-bw-red/10 text-bw-red border border-bw-red/25"
 };
 
 const assetTypeIcons = {
@@ -265,7 +265,7 @@ export default function FixedAssets() {
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]" 
+            className="bg-bw-volt text-bw-white hover:bg-bw-volt-hover font-semibold hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]" 
             data-testid="create-asset-btn"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -403,21 +403,21 @@ export default function FixedAssets() {
 
               {/* Calculation Preview */}
               {newAsset.purchase_price > 0 && (
-                <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                <Card className="bg-bw-panel border border-white/[0.07]">
                   <CardContent className="pt-4">
-                    <h4 className="font-medium mb-2 text-[#F4F6F0]">Depreciation Preview</h4>
+                    <h4 className="font-medium mb-2 text-bw-white">Depreciation Preview</h4>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Depreciable Value:</span>
-                        <p className="font-medium text-[#F4F6F0]">₹{(newAsset.purchase_price - newAsset.salvage_value).toLocaleString()}</p>
+                        <span className="text-bw-white/[0.45]">Depreciable Value:</span>
+                        <p className="font-medium text-bw-white">₹{(newAsset.purchase_price - newAsset.salvage_value).toLocaleString()}</p>
                       </div>
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Annual Depreciation:</span>
-                        <p className="font-medium text-[#FF8C00]">₹{((newAsset.purchase_price - newAsset.salvage_value) / newAsset.useful_life_years).toLocaleString()}</p>
+                        <span className="text-bw-white/[0.45]">Annual Depreciation:</span>
+                        <p className="font-medium text-bw-orange">₹{((newAsset.purchase_price - newAsset.salvage_value) / newAsset.useful_life_years).toLocaleString()}</p>
                       </div>
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Monthly Depreciation:</span>
-                        <p className="font-medium text-[#FF8C00]">₹{((newAsset.purchase_price - newAsset.salvage_value) / newAsset.useful_life_years / 12).toLocaleString()}</p>
+                        <span className="text-bw-white/[0.45]">Monthly Depreciation:</span>
+                        <p className="font-medium text-bw-orange">₹{((newAsset.purchase_price - newAsset.salvage_value) / newAsset.useful_life_years / 12).toLocaleString()}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -503,37 +503,37 @@ export default function FixedAssets() {
             <Card>
               <CardContent className="p-0">
                 <table className="w-full">
-                  <thead className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                  <thead className="bg-bw-panel border-b border-white/[0.07]">
                     <tr>
-                      <th className="text-left p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Asset</th>
-                      <th className="text-left p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Type</th>
-                      <th className="text-left p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Purchase Date</th>
-                      <th className="text-right p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Purchase Price</th>
-                      <th className="text-right p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Book Value</th>
-                      <th className="text-center p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Status</th>
-                      <th className="text-right p-4 font-medium text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Actions</th>
+                      <th className="text-left p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Asset</th>
+                      <th className="text-left p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Type</th>
+                      <th className="text-left p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Purchase Date</th>
+                      <th className="text-right p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Purchase Price</th>
+                      <th className="text-right p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Book Value</th>
+                      <th className="text-center p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Status</th>
+                      <th className="text-right p-4 font-medium text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.map(asset => {
                       const Icon = assetTypeIcons[asset.asset_type] || Package;
                       return (
-                        <tr key={asset.asset_id} className="border-b border-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.03)] cursor-pointer" onClick={() => openDetail(asset)}>
+                        <tr key={asset.asset_id} className="border-b border-white/[0.07] hover:bg-white/[0.03] cursor-pointer" onClick={() => openDetail(asset)}>
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded">
-                                <Icon className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                              <div className="p-2 bg-white/5 rounded">
+                                <Icon className="h-4 w-4 text-bw-white/[0.45]" />
                               </div>
                               <div>
-                                <div className="font-medium text-[#F4F6F0]">{asset.asset_name}</div>
-                                <div className="text-sm text-[#C8FF00] font-mono tracking-wider">{asset.asset_number}</div>
+                                <div className="font-medium text-bw-white">{asset.asset_name}</div>
+                                <div className="text-sm text-bw-volt font-mono tracking-wider">{asset.asset_number}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="p-4 capitalize text-[#F4F6F0]">{asset.asset_type?.replace("_", " ")}</td>
-                          <td className="p-4 text-[#F4F6F0]">{asset.purchase_date}</td>
-                          <td className="p-4 text-right text-[#F4F6F0]">₹{asset.purchase_price?.toLocaleString()}</td>
-                          <td className="p-4 text-right font-medium text-[#F4F6F0]">₹{asset.book_value?.toLocaleString()}</td>
+                          <td className="p-4 capitalize text-bw-white">{asset.asset_type?.replace("_", " ")}</td>
+                          <td className="p-4 text-bw-white">{asset.purchase_date}</td>
+                          <td className="p-4 text-right text-bw-white">₹{asset.purchase_price?.toLocaleString()}</td>
+                          <td className="p-4 text-right font-medium text-bw-white">₹{asset.book_value?.toLocaleString()}</td>
                           <td className="p-4 text-center">
                             <Badge className={statusColors[asset.status]}>{asset.status?.replace("_", " ")}</Badge>
                           </td>
@@ -547,7 +547,7 @@ export default function FixedAssets() {
                     })}
                     {data.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-[rgba(244,246,240,0.45)]">
+                        <td colSpan={7} className="p-8 text-center text-bw-white/[0.45]">
                           No assets found
                         </td>
                       </tr>
@@ -572,53 +572,53 @@ export default function FixedAssets() {
                 {/* Asset Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-[rgba(244,246,240,0.45)]">Asset Number</Label>
-                    <p className="font-medium text-[#C8FF00] font-mono tracking-wider">{selectedAsset.asset_number}</p>
+                    <Label className="text-bw-white/[0.45]">Asset Number</Label>
+                    <p className="font-medium text-bw-volt font-mono tracking-wider">{selectedAsset.asset_number}</p>
                   </div>
                   <div>
-                    <Label className="text-[rgba(244,246,240,0.45)]">Type</Label>
-                    <p className="font-medium capitalize text-[#F4F6F0]">{selectedAsset.asset_type?.replace("_", " ")}</p>
+                    <Label className="text-bw-white/[0.45]">Type</Label>
+                    <p className="font-medium capitalize text-bw-white">{selectedAsset.asset_type?.replace("_", " ")}</p>
                   </div>
                   <div>
-                    <Label className="text-[rgba(244,246,240,0.45)]">Purchase Date</Label>
-                    <p className="font-medium text-[#F4F6F0]">{selectedAsset.purchase_date}</p>
+                    <Label className="text-bw-white/[0.45]">Purchase Date</Label>
+                    <p className="font-medium text-bw-white">{selectedAsset.purchase_date}</p>
                   </div>
                   <div>
-                    <Label className="text-[rgba(244,246,240,0.45)]">Location</Label>
-                    <p className="font-medium text-[#F4F6F0]">{selectedAsset.location || "-"}</p>
+                    <Label className="text-bw-white/[0.45]">Location</Label>
+                    <p className="font-medium text-bw-white">{selectedAsset.location || "-"}</p>
                   </div>
                 </div>
 
                 {/* Financial Info */}
-                <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                <Card className="bg-bw-panel border border-white/[0.07]">
                   <CardContent className="pt-4">
-                    <h4 className="font-medium mb-3 text-[#F4F6F0]">Financial Details</h4>
+                    <h4 className="font-medium mb-3 text-bw-white">Financial Details</h4>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Purchase Price</Label>
-                        <p className="font-bold text-lg text-[#F4F6F0]">₹{selectedAsset.purchase_price?.toLocaleString()}</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Purchase Price</Label>
+                        <p className="font-bold text-lg text-bw-white">₹{selectedAsset.purchase_price?.toLocaleString()}</p>
                       </div>
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Accumulated Depreciation</Label>
-                        <p className="font-bold text-lg text-[#FF8C00]">₹{selectedAsset.accumulated_depreciation?.toLocaleString()}</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Accumulated Depreciation</Label>
+                        <p className="font-bold text-lg text-bw-orange">₹{selectedAsset.accumulated_depreciation?.toLocaleString()}</p>
                       </div>
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Book Value</Label>
-                        <p className="font-bold text-lg text-[#22C55E]">₹{selectedAsset.book_value?.toLocaleString()}</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Book Value</Label>
+                        <p className="font-bold text-lg text-bw-green">₹{selectedAsset.book_value?.toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Salvage Value</Label>
-                        <p className="font-medium text-[#F4F6F0]">₹{selectedAsset.salvage_value?.toLocaleString()}</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Salvage Value</Label>
+                        <p className="font-medium text-bw-white">₹{selectedAsset.salvage_value?.toLocaleString()}</p>
                       </div>
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Useful Life</Label>
-                        <p className="font-medium text-[#F4F6F0]">{selectedAsset.useful_life_years} years</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Useful Life</Label>
+                        <p className="font-medium text-bw-white">{selectedAsset.useful_life_years} years</p>
                       </div>
                       <div>
-                        <Label className="text-[rgba(244,246,240,0.45)] text-sm">Annual Depreciation</Label>
-                        <p className="font-medium text-[#FF8C00]">₹{selectedAsset.annual_depreciation?.toLocaleString()}</p>
+                        <Label className="text-bw-white/[0.45] text-sm">Annual Depreciation</Label>
+                        <p className="font-medium text-bw-orange">₹{selectedAsset.annual_depreciation?.toLocaleString()}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -627,22 +627,22 @@ export default function FixedAssets() {
                 {/* Depreciation History */}
                 {selectedAsset.depreciation_entries?.length > 0 && (
                   <div>
-                    <h4 className="font-medium mb-2 text-[#F4F6F0]">Depreciation History</h4>
-                    <div className="border border-[rgba(255,255,255,0.07)] rounded max-h-40 overflow-y-auto">
+                    <h4 className="font-medium mb-2 text-bw-white">Depreciation History</h4>
+                    <div className="border border-white/[0.07] rounded max-h-40 overflow-y-auto">
                       <table className="w-full text-sm">
-                        <thead className="bg-[#111820] sticky top-0 border-b border-[rgba(255,255,255,0.07)]">
+                        <thead className="bg-bw-panel sticky top-0 border-b border-white/[0.07]">
                           <tr>
-                            <th className="text-left p-2 text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Period</th>
-                            <th className="text-right p-2 text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Amount</th>
-                            <th className="text-right p-2 text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Book Value After</th>
+                            <th className="text-left p-2 text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Period</th>
+                            <th className="text-right p-2 text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Amount</th>
+                            <th className="text-right p-2 text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Book Value After</th>
                           </tr>
                         </thead>
                         <tbody>
                           {selectedAsset.depreciation_entries.map((entry, idx) => (
-                            <tr key={idx} className="border-t border-[rgba(255,255,255,0.07)]">
-                              <td className="p-2 text-[#F4F6F0]">{entry.period}</td>
-                              <td className="p-2 text-right text-[#FF8C00]">₹{entry.amount?.toLocaleString()}</td>
-                              <td className="p-2 text-right text-[#F4F6F0]">₹{entry.book_value_after?.toLocaleString()}</td>
+                            <tr key={idx} className="border-t border-white/[0.07]">
+                              <td className="p-2 text-bw-white">{entry.period}</td>
+                              <td className="p-2 text-right text-bw-orange">₹{entry.amount?.toLocaleString()}</td>
+                              <td className="p-2 text-right text-bw-white">₹{entry.book_value_after?.toLocaleString()}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -732,7 +732,7 @@ export default function FixedAssets() {
                 value={disposeData.disposal_amount}
                 onChange={e => setDisposeData({ ...disposeData, disposal_amount: parseFloat(e.target.value) || 0 })}
               />
-              <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">
+              <p className="text-sm text-bw-white/[0.45] mt-1">
                 Book Value: ₹{selectedAsset?.book_value?.toLocaleString()} | 
                 {disposeData.disposal_amount >= (selectedAsset?.book_value || 0) 
                   ? ` Gain: ₹${(disposeData.disposal_amount - (selectedAsset?.book_value || 0)).toLocaleString()}`

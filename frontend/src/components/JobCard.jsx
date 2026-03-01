@@ -24,15 +24,15 @@ import EFIGuidancePanel from "./ai/EFIGuidancePanel";
 import EstimateItemsPanel from "./EstimateItemsPanel";
 
 const statusColors = {
-  open: "bg-[rgba(234,179,8,0.08)]0",
+  open: "bg-bw-amber/[0.08]0",
   technician_assigned: "bg-blue-500",
-  estimate_shared: "bg-[rgba(139,92,246,0.08)]0",
+  estimate_shared: "bg-bw-purple/[0.08]0",
   estimate_approved: "bg-indigo-500",
-  work_in_progress: "bg-[rgba(255,140,0,0.08)]0",
+  work_in_progress: "bg-bw-orange/[0.08]0",
   work_completed: "bg-teal-500",
-  resolved: "bg-[rgba(34,197,94,0.08)]0",
-  closed: "bg-[#111820]0",
-  in_progress: "bg-[rgba(255,140,0,0.08)]0",  // Legacy alias
+  resolved: "bg-bw-green/[0.08]0",
+  closed: "bg-bw-panel0",
+  in_progress: "bg-bw-orange/[0.08]0",  // Legacy alias
 };
 
 const statusLabels = {
@@ -527,7 +527,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               <div className="text-right">
                 <h3 className="text-xl font-semibold">Job Card</h3>
                 <p className="text-muted-foreground font-mono">{localTicket.ticket_id}</p>
-                <Badge className={statusColors[localTicket.status] || "bg-[#111820]0"}>
+                <Badge className={statusColors[localTicket.status] || "bg-bw-panel0"}>
                   {statusLabels[localTicket.status] || localTicket.status}
                 </Badge>
               </div>
@@ -707,7 +707,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                           </div>
                         </div>
                         {activity.edited_at && (
-                          <p className="text-xs text-[#EAB308] mt-1">Edited by {activity.edited_by}</p>
+                          <p className="text-xs text-bw-amber mt-1">Edited by {activity.edited_by}</p>
                         )}
                       </li>
                     )) : (
@@ -866,23 +866,23 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
 
       {/* EFI Side Panel - Only for technicians and admins */}
       {(isTechnician || isAdmin) && efiPanelOpen && (
-        <div className="w-[420px] border-l border-[rgba(255,255,255,0.07)] border-700 bg-slate-900/95 flex flex-col overflow-hidden">
+        <div className="w-[420px] border-l border-white/[0.07] border-700 bg-slate-900/95 flex flex-col overflow-hidden">
           {/* Panel Header with Mode Toggle */}
-          <div className="p-3 border-b border-[rgba(255,255,255,0.07)] border-700 flex items-center justify-between bg-slate-800/50">
+          <div className="p-3 border-b border-white/[0.07] border-700 flex items-center justify-between bg-slate-800/50">
             <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-[#C8FF00] text-400" />
+              <Brain className="h-5 w-5 text-bw-volt text-400" />
               <span className="font-semibold text-white">EFI Assistant</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex bg-slate-700 rounded p-0.5 text-xs">
                 <button
-                  className={`px-2 py-1 rounded ${efiMode === "guidance" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
+                  className={`px-2 py-1 rounded ${efiMode === "guidance" ? "bg-bw-volt text-bw-black font-bold" : "text-bw-white/[0.45]"}`}
                   onClick={() => setEfiMode("guidance")}
                 >
                   Hinglish
                 </button>
                 <button
-                  className={`px-2 py-1 rounded ${efiMode === "legacy" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
+                  className={`px-2 py-1 rounded ${efiMode === "legacy" ? "bg-bw-volt text-bw-black font-bold" : "text-bw-white/[0.45]"}`}
                   onClick={() => setEfiMode("legacy")}
                 >
                   Classic
@@ -890,7 +890,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </div>
               <button
                 onClick={() => setEfiPanelOpen(false)}
-                className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] p-1"
+                className="text-bw-white/[0.45] hover:text-bw-white p-1"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>

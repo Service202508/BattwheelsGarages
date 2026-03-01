@@ -422,9 +422,9 @@ export default function PaymentsReceived() {
       return <Badge variant="destructive">Refunded</Badge>;
     }
     if (payment.is_retainer) {
-      return <Badge className="bg-purple-100 text-[#8B5CF6]">Retainer</Badge>;
+      return <Badge className="bg-purple-100 text-bw-purple">Retainer</Badge>;
     }
-    return <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Recorded</Badge>;
+    return <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25">Recorded</Badge>;
   };
 
   // Payment mode icon
@@ -444,7 +444,7 @@ export default function PaymentsReceived() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold">Payments Received</h1>
-          <p className="text-[rgba(244,246,240,0.45)]">Record and manage customer payments</p>
+          <p className="text-bw-white/[0.45]">Record and manage customer payments</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportPayments}>
@@ -462,7 +462,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">This Month</p>
+                <p className="text-sm text-bw-white/[0.45]">This Month</p>
                 <p className="text-2xl font-bold">₹{(summary.total_received || 0).toLocaleString('en-IN')}</p>
               </div>
               <IndianRupee className="h-8 w-8 text-green-500" />
@@ -473,7 +473,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Invoice Payments</p>
+                <p className="text-sm text-bw-white/[0.45]">Invoice Payments</p>
                 <p className="text-2xl font-bold">₹{(summary.invoice_payments || 0).toLocaleString('en-IN')}</p>
               </div>
               <FileText className="h-8 w-8 text-blue-500" />
@@ -484,7 +484,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Retainer Payments</p>
+                <p className="text-sm text-bw-white/[0.45]">Retainer Payments</p>
                 <p className="text-2xl font-bold">₹{(summary.retainer_payments || 0).toLocaleString('en-IN')}</p>
               </div>
               <Wallet className="h-8 w-8 text-purple-500" />
@@ -495,7 +495,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Unused Credits</p>
+                <p className="text-sm text-bw-white/[0.45]">Unused Credits</p>
                 <p className="text-2xl font-bold">₹{(summary.unused_credits || 0).toLocaleString('en-IN')}</p>
               </div>
               <CreditCard className="h-8 w-8 text-orange-500" />
@@ -516,7 +516,7 @@ export default function PaymentsReceived() {
           
           <div className="flex gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
               <Input
                 className="pl-9 w-64"
                 placeholder="Search payments..."
@@ -564,7 +564,7 @@ export default function PaymentsReceived() {
               {/* Payments Table */}
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#111820] border-b">
+                  <thead className="bg-bw-panel border-b">
                     <tr>
                       <th className="px-4 py-3 text-left w-10">
                         <Checkbox
@@ -578,28 +578,28 @@ export default function PaymentsReceived() {
                           }}
                         />
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Payment #</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Customer</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Invoice #</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Mode</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Amount</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Status</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Actions</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Payment #</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Invoice #</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Mode</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-bw-white/[0.45] uppercase">Amount</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-bw-white/[0.45] uppercase">Status</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-bw-white/[0.45] uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {loading ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">Loading...</td>
+                        <td colSpan={9} className="px-4 py-8 text-center text-bw-white/[0.45]">Loading...</td>
                       </tr>
                     ) : payments.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">No payments found</td>
+                        <td colSpan={9} className="px-4 py-8 text-center text-bw-white/[0.45]">No payments found</td>
                       </tr>
                     ) : (
                       payments.map((payment) => (
-                        <tr key={payment.payment_id} className="hover:bg-[#111820]">
+                        <tr key={payment.payment_id} className="hover:bg-bw-panel">
                           <td className="px-4 py-3">
                             <Checkbox
                               checked={selectedPayments.includes(payment.payment_id)}
@@ -615,7 +615,7 @@ export default function PaymentsReceived() {
                           <td className="px-4 py-3 text-sm">{payment.payment_date}</td>
                           <td className="px-4 py-3">
                             <button
-                              className="text-[#3B9EFF] hover:underline font-medium"
+                              className="text-bw-blue hover:underline font-medium"
                               onClick={() => viewPayment(payment.payment_id)}
                             >
                               {payment.payment_number}
@@ -626,7 +626,7 @@ export default function PaymentsReceived() {
                             {payment.invoice_numbers?.length > 0 ? (
                               payment.invoice_numbers.join(", ")
                             ) : (
-                              <span className="text-[rgba(244,246,240,0.45)]">—</span>
+                              <span className="text-bw-white/[0.45]">—</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -681,7 +681,7 @@ export default function PaymentsReceived() {
               {/* Pagination */}
               {pagination.total > pagination.per_page && (
                 <div className="p-4 border-t flex justify-between items-center">
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                  <p className="text-sm text-bw-white/[0.45]">
                     Showing {((pagination.page - 1) * pagination.per_page) + 1} to {Math.min(pagination.page * pagination.per_page, pagination.total)} of {pagination.total}
                   </p>
                   <div className="flex gap-2">
@@ -712,7 +712,7 @@ export default function PaymentsReceived() {
         <TabsContent value="invoice">
           <Card>
             <CardContent className="p-4">
-              <p className="text-[rgba(244,246,240,0.45)]">Payments applied to specific invoices</p>
+              <p className="text-bw-white/[0.45]">Payments applied to specific invoices</p>
               {/* Reuse similar table structure with filtered data */}
             </CardContent>
           </Card>
@@ -722,7 +722,7 @@ export default function PaymentsReceived() {
         <TabsContent value="retainer">
           <Card>
             <CardContent className="p-4">
-              <p className="text-[rgba(244,246,240,0.45)]">Advance payments and retainers</p>
+              <p className="text-bw-white/[0.45]">Advance payments and retainers</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -737,23 +737,23 @@ export default function PaymentsReceived() {
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#111820] border-b">
+                  <thead className="bg-bw-panel border-b">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Customer</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Source</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Type</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Amount</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Source</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-bw-white/[0.45] uppercase">Type</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-bw-white/[0.45] uppercase">Amount</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-bw-white/[0.45] uppercase">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {allCredits.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">No available credits</td>
+                        <td colSpan={5} className="px-4 py-8 text-center text-bw-white/[0.45]">No available credits</td>
                       </tr>
                     ) : (
                       allCredits.map((credit) => (
-                        <tr key={credit.credit_id} className="hover:bg-[#111820]">
+                        <tr key={credit.credit_id} className="hover:bg-bw-panel">
                           <td className="px-4 py-3 font-medium">{credit.customer_name}</td>
                           <td className="px-4 py-3 text-sm">{credit.source_number}</td>
                           <td className="px-4 py-3">
@@ -763,7 +763,7 @@ export default function PaymentsReceived() {
                             ₹{credit.amount?.toLocaleString('en-IN')}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Available</Badge>
+                            <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25">Available</Badge>
                           </td>
                         </tr>
                       ))
@@ -797,15 +797,15 @@ export default function PaymentsReceived() {
                     data-testid="payment-customer-search"
                   />
                   {customers.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-bw-panel border border-white/[0.13] rounded max-h-48 overflow-y-auto">
                       {customers.map(c => (
                         <div
                           key={c.contact_id}
-                          className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+                          className="px-3 py-2 hover:bg-white/5 cursor-pointer"
                           onClick={() => selectCustomer(c)}
                         >
                           <p className="font-medium">{c.name}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name}</p>
+                          <p className="text-xs text-bw-white/[0.45]">{c.company_name}</p>
                         </div>
                       ))}
                     </div>
@@ -814,7 +814,7 @@ export default function PaymentsReceived() {
                 {selectedCustomer && (
                   <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
                     <p className="font-medium">{selectedCustomer.name}</p>
-                    <p className="text-xs text-[rgba(244,246,240,0.35)]">{selectedCustomer.email}</p>
+                    <p className="text-xs text-bw-white/35">{selectedCustomer.email}</p>
                   </div>
                 )}
               </div>
@@ -925,7 +925,7 @@ export default function PaymentsReceived() {
                 <Label className="text-base font-medium">Apply to Invoices</Label>
                 <div className="mt-2 border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-3 py-2 text-left">Invoice Date</th>
                         <th className="px-3 py-2 text-left">Invoice #</th>
@@ -973,7 +973,7 @@ export default function PaymentsReceived() {
 
             {/* Available Credits */}
             {customerCredits.length > 0 && (
-              <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg">
+              <div className="p-3 bg-bw-green/[0.08] rounded-lg">
                 <p className="text-sm font-medium text-green-700">
                   Available Credits: ₹{customerCredits.reduce((sum, c) => sum + c.amount, 0).toLocaleString('en-IN')}
                 </p>
@@ -983,13 +983,13 @@ export default function PaymentsReceived() {
 
             {/* Retainer Option */}
             {paymentForm.allocations.length === 0 && paymentForm.amount > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-[rgba(139,92,246,0.08)] rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-bw-purple/[0.08] rounded-lg">
                 <Checkbox
                   id="is_retainer"
                   checked={paymentForm.is_retainer}
                   onCheckedChange={(checked) => setPaymentForm(prev => ({ ...prev, is_retainer: checked }))}
                 />
-                <Label htmlFor="is_retainer" className="text-[#8B5CF6]">
+                <Label htmlFor="is_retainer" className="text-bw-purple">
                   Record as Retainer/Advance Payment (will be available as customer credit)
                 </Label>
               </div>
@@ -997,13 +997,13 @@ export default function PaymentsReceived() {
 
             {/* Summary */}
             {paymentForm.amount > 0 && (
-              <div className="p-4 bg-[#111820] rounded-lg">
+              <div className="p-4 bg-bw-panel rounded-lg">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Amount Received:</span>
                   <span className="font-medium">₹{paymentForm.amount.toLocaleString('en-IN')}</span>
                 </div>
                 {paymentForm.bank_charges > 0 && (
-                  <div className="flex justify-between text-sm mb-2 text-[rgba(244,246,240,0.35)]">
+                  <div className="flex justify-between text-sm mb-2 text-bw-white/35">
                     <span>Bank Charges:</span>
                     <span>-₹{paymentForm.bank_charges.toLocaleString('en-IN')}</span>
                   </div>
@@ -1067,7 +1067,7 @@ export default function PaymentsReceived() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold">{selectedPayment.payment_number}</h3>
-                  <p className="text-[rgba(244,246,240,0.45)]">{selectedPayment.customer_name}</p>
+                  <p className="text-bw-white/[0.45]">{selectedPayment.customer_name}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-green-600">₹{selectedPayment.amount?.toLocaleString('en-IN')}</p>
@@ -1080,22 +1080,22 @@ export default function PaymentsReceived() {
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-[rgba(244,246,240,0.45)]">Payment Date</p>
+                  <p className="text-bw-white/[0.45]">Payment Date</p>
                   <p className="font-medium">{selectedPayment.payment_date}</p>
                 </div>
                 <div>
-                  <p className="text-[rgba(244,246,240,0.45)]">Payment Mode</p>
+                  <p className="text-bw-white/[0.45]">Payment Mode</p>
                   <p className="font-medium capitalize flex items-center gap-1">
                     {getPaymentModeIcon(selectedPayment.payment_mode)}
                     {selectedPayment.payment_mode?.replace("_", " ")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[rgba(244,246,240,0.45)]">Deposit Account</p>
+                  <p className="text-bw-white/[0.45]">Deposit Account</p>
                   <p className="font-medium">{selectedPayment.deposit_to_account}</p>
                 </div>
                 <div>
-                  <p className="text-[rgba(244,246,240,0.45)]">Reference #</p>
+                  <p className="text-bw-white/[0.45]">Reference #</p>
                   <p className="font-medium">{selectedPayment.reference_number || "—"}</p>
                 </div>
               </div>
@@ -1106,7 +1106,7 @@ export default function PaymentsReceived() {
                   <h4 className="font-medium mb-2">Applied to Invoices</h4>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#111820]">
+                      <thead className="bg-bw-panel">
                         <tr>
                           <th className="px-3 py-2 text-left">Invoice #</th>
                           <th className="px-3 py-2 text-left">Date</th>
@@ -1131,7 +1131,7 @@ export default function PaymentsReceived() {
 
               {/* Overpayment */}
               {selectedPayment.overpayment_amount > 0 && (
-                <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg flex justify-between items-center">
+                <div className="p-3 bg-bw-green/[0.08] rounded-lg flex justify-between items-center">
                   <div>
                     <p className="font-medium text-green-700">Overpayment Credited</p>
                     <p className="text-sm text-green-600">Available for future invoices</p>
@@ -1144,7 +1144,7 @@ export default function PaymentsReceived() {
               {selectedPayment.notes && (
                 <div>
                   <h4 className="font-medium mb-1">Notes</h4>
-                  <p className="text-sm text-[rgba(244,246,240,0.35)]">{selectedPayment.notes}</p>
+                  <p className="text-sm text-bw-white/35">{selectedPayment.notes}</p>
                 </div>
               )}
 

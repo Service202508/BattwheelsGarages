@@ -18,11 +18,11 @@ const ENTITY_TYPES = {
   invoice: { label: "Invoice", color: "bg-blue-100 text-blue-800", icon: FileText },
   bill: { label: "Bill", color: "bg-orange-100 text-orange-800", icon: FileText },
   expense: { label: "Expense", color: "bg-red-100 text-red-800", icon: FileText },
-  contact: { label: "Contact", color: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: User },
-  customer: { label: "Customer", color: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: User },
+  contact: { label: "Contact", color: "bg-bw-green/10 text-bw-green", icon: User },
+  customer: { label: "Customer", color: "bg-bw-green/10 text-bw-green", icon: User },
   vendor: { label: "Vendor", color: "bg-yellow-100 text-yellow-800", icon: User },
   item: { label: "Item", color: "bg-purple-100 text-purple-800", icon: FileText },
-  payment: { label: "Payment", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-800", icon: FileText },
+  payment: { label: "Payment", color: "bg-bw-volt/10 text-bw-volt text-800", icon: FileText },
   project: { label: "Project", color: "bg-indigo-100 text-indigo-800", icon: FileText },
   estimate: { label: "Estimate", color: "bg-cyan-100 text-cyan-800", icon: FileText },
   creditnote: { label: "Credit Note", color: "bg-pink-100 text-pink-800", icon: FileText },
@@ -31,14 +31,14 @@ const ENTITY_TYPES = {
 
 // Action types with icons and colors
 const ACTION_TYPES = {
-  created: { label: "Created", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Plus },
-  updated: { label: "Updated", color: "bg-blue-100 text-[#3B9EFF]", icon: Edit },
-  deleted: { label: "Deleted", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: Trash2 },
-  viewed: { label: "Viewed", color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: Eye },
-  sent: { label: "Sent", color: "bg-purple-100 text-[#8B5CF6]", icon: FileText },
-  paid: { label: "Paid", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700", icon: FileText },
-  approved: { label: "Approved", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: FileText },
-  voided: { label: "Voided", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: FileText }
+  created: { label: "Created", color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", icon: Plus },
+  updated: { label: "Updated", color: "bg-blue-100 text-bw-blue", icon: Edit },
+  deleted: { label: "Deleted", color: "bg-bw-red/10 text-bw-red border border-bw-red/25", icon: Trash2 },
+  viewed: { label: "Viewed", color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]", icon: Eye },
+  sent: { label: "Sent", color: "bg-purple-100 text-bw-purple", icon: FileText },
+  paid: { label: "Paid", color: "bg-bw-volt/10 text-bw-volt text-700", icon: FileText },
+  approved: { label: "Approved", color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", icon: FileText },
+  voided: { label: "Voided", color: "bg-bw-red/10 text-bw-red border border-bw-red/25", icon: FileText }
 };
 
 export default function ActivityLogs() {
@@ -78,7 +78,7 @@ export default function ActivityLogs() {
   const getEntityTypeBadge = (type) => {
     const config = ENTITY_TYPES[type?.toLowerCase()] || { 
       label: type, 
-      color: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]" 
+      color: "bg-white/5 text-bw-white" 
     };
     return <Badge className={config.color}>{config.label}</Badge>;
   };
@@ -86,7 +86,7 @@ export default function ActivityLogs() {
   const getActionBadge = (action) => {
     const config = ACTION_TYPES[action?.toLowerCase()] || { 
       label: action, 
-      color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]" 
+      color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]" 
     };
     const Icon = config.icon || Activity;
     return (
@@ -126,8 +126,8 @@ export default function ActivityLogs() {
     <div className="space-y-6" data-testid="activity-logs-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Activity Logs</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Audit trail of all system activities</p>
+          <h1 className="text-2xl font-bold text-bw-white">Activity Logs</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Audit trail of all system activities</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={entityTypeFilter || "all"} onValueChange={(v) => { setEntityTypeFilter(v === "all" ? "" : v); setPage(1); }}>
@@ -153,10 +153,10 @@ export default function ActivityLogs() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Activity className="h-5 w-5 text-[#3B9EFF]" />
+                <Activity className="h-5 w-5 text-bw-blue" />
               </div>
               <div>
-                <p className="text-xs text-[#3B9EFF]">Total Activities</p>
+                <p className="text-xs text-bw-blue">Total Activities</p>
                 <p className="text-xl font-bold text-blue-800">{pageContext.total}</p>
               </div>
             </div>
@@ -165,12 +165,12 @@ export default function ActivityLogs() {
         <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
+              <div className="p-2 bg-bw-green/10 rounded-lg">
                 <Plus className="h-5 w-5 text-green-600" />
               </div>
               <div>
                 <p className="text-xs text-green-600">Created</p>
-                <p className="text-xl font-bold text-[#22C55E]">
+                <p className="text-xl font-bold text-bw-green">
                   {logs.filter(l => l.action?.toLowerCase() === 'created').length}
                 </p>
               </div>
@@ -213,10 +213,10 @@ export default function ActivityLogs() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-12 text-bw-white/[0.45]">
               <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No activity logs found</p>
               <p className="text-sm">Activities will appear here as users interact with the system</p>
@@ -225,7 +225,7 @@ export default function ActivityLogs() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#111820]">
+                  <TableRow className="bg-bw-panel">
                     <TableHead className="w-[180px]">Timestamp</TableHead>
                     <TableHead>Entity Type</TableHead>
                     <TableHead>Entity ID</TableHead>
@@ -239,30 +239,30 @@ export default function ActivityLogs() {
                     <TableRow key={log.log_id}>
                       <TableCell>
                         <div className="flex items-center gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
-                          <span className="text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.timestamp)}</span>
+                          <Clock className="h-4 w-4 text-bw-white/[0.45]" />
+                          <span className="text-bw-white/35">{formatTimestamp(log.timestamp)}</span>
                         </div>
                       </TableCell>
                       <TableCell>{getEntityTypeBadge(log.entity_type)}</TableCell>
                       <TableCell>
-                        <span className="font-mono text-sm text-[rgba(244,246,240,0.35)]">
+                        <span className="font-mono text-sm text-bw-white/35">
                           {log.entity_id?.slice(0, 20) || "-"}
                         </span>
                       </TableCell>
                       <TableCell>{getActionBadge(log.action)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                          <User className="h-4 w-4 text-bw-white/[0.45]" />
                           <span className="text-sm">{log.user_name || log.user_id || "System"}</span>
                         </div>
                       </TableCell>
                       <TableCell className="max-w-[200px]">
                         {log.details && Object.keys(log.details).length > 0 ? (
-                          <span className="text-xs text-[rgba(244,246,240,0.45)] truncate block">
+                          <span className="text-xs text-bw-white/[0.45] truncate block">
                             {JSON.stringify(log.details).slice(0, 50)}...
                           </span>
                         ) : (
-                          <span className="text-[rgba(244,246,240,0.45)]">-</span>
+                          <span className="text-bw-white/[0.45]">-</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -273,7 +273,7 @@ export default function ActivityLogs() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t">
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                  <p className="text-sm text-bw-white/[0.45]">
                     Showing {((page - 1) * pageContext.per_page) + 1} to {Math.min(page * pageContext.per_page, pageContext.total)} of {pageContext.total} entries
                   </p>
                   <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export default function ActivityLogs() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-sm text-[rgba(244,246,240,0.35)]">
+                    <span className="text-sm text-bw-white/35">
                       Page {page} of {totalPages}
                     </span>
                     <Button

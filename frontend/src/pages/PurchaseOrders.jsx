@@ -20,12 +20,12 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  issued: "bg-blue-100 text-[#3B9EFF]",
-  partially_billed: "bg-yellow-100 text-[#EAB308]",
-  billed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  closed: "bg-purple-100 text-[#8B5CF6]",
-  cancelled: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  issued: "bg-blue-100 text-bw-blue",
+  partially_billed: "bg-yellow-100 text-bw-amber",
+  billed: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  closed: "bg-purple-100 text-bw-purple",
+  cancelled: "bg-bw-red/10 text-bw-red border border-bw-red/25"
 };
 
 export default function PurchaseOrders() {
@@ -172,7 +172,7 @@ export default function PurchaseOrders() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+                <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                   <Plus className="h-4 w-4 mr-2" /> New Purchase Order
                 </Button>
               </DialogTrigger>
@@ -222,7 +222,7 @@ export default function PurchaseOrders() {
                     </div>
                   </div>
 
-                  <div className="border rounded-lg p-4 bg-[#111820]">
+                  <div className="border rounded-lg p-4 bg-bw-panel">
                     <h3 className="font-medium mb-3">Add Parts/Items</h3>
                     <Select onValueChange={handleSelectItem}>
                       <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
@@ -232,10 +232,10 @@ export default function PurchaseOrders() {
                     </Select>
                     {newLineItem.item_name && (
                       <div className="mt-3 grid grid-cols-4 gap-3">
-                        <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
+                        <Input value={newLineItem.item_name} readOnly className="bg-bw-panel" />
                         <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                         <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                        <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
+                        <Button onClick={handleAddLineItem} className="bg-bw-volt text-bw-black font-bold">Add</Button>
                       </div>
                     )}
                   </div>
@@ -243,7 +243,7 @@ export default function PurchaseOrders() {
                   {newPO.line_items.length > 0 && (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-[#111820]">
+                        <thead className="bg-bw-panel">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Qty</th>
@@ -261,7 +261,7 @@ export default function PurchaseOrders() {
                             </tr>
                           ))}
                         </tbody>
-                        <tfoot className="bg-[#111820] font-semibold">
+                        <tfoot className="bg-bw-panel font-semibold">
                           <tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td></tr>
                         </tfoot>
                       </table>
@@ -276,7 +276,7 @@ export default function PurchaseOrders() {
                       setShowCreateDialog(false);
                     }
                   }}>Cancel</Button>
-                  <Button onClick={handleCreatePO} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+                  <Button onClick={handleCreatePO} className="bg-bw-volt text-bw-black font-bold">
                     <Save className="h-4 w-4 mr-2" /> Create PO
                   </Button>
                 </div>
@@ -340,13 +340,13 @@ export default function PurchaseOrders() {
         {["", "draft", "issued", "partially_billed", "billed"].map(s => (
           <Button key={s} size="sm" variant={statusFilter === s ? "default" : "outline"}
             onClick={() => setStatusFilter(s)}
-            className={statusFilter === s ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}>
+            className={statusFilter === s ? "bg-bw-volt text-bw-black font-bold" : ""}>
             {s ? s.replace('_', ' ') : "All"}
           </Button>
         ))}
       </div>
 
-      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+      {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
         orders.length === 0 ? (
           <Card>
             <EmptyState
@@ -361,7 +361,7 @@ export default function PurchaseOrders() {
         ) :
         <div className="space-y-3">
           {orders.map(po => (
-            <Card key={po.po_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+            <Card key={po.po_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -369,7 +369,7 @@ export default function PurchaseOrders() {
                       <h3 className="font-semibold">{po.po_number}</h3>
                       <Badge className={statusColors[po.status]}>{po.status?.replace('_', ' ')}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <div className="flex gap-4 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{po.vendor_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{po.order_date}</span>
                       <span className="flex items-center gap-1"><Package className="h-3.5 w-3.5" />{po.line_items?.length || 0} items</span>
@@ -380,7 +380,7 @@ export default function PurchaseOrders() {
                       <p className="font-bold text-lg">₹{po.total?.toLocaleString('en-IN')}</p>
                     </div>
                     {po.status === "draft" && (
-                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvertToBill(po.po_id)}>
+                      <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={() => handleConvertToBill(po.po_id)}>
                         <ArrowRight className="h-4 w-4 mr-1" /> Create Bill
                       </Button>
                     )}

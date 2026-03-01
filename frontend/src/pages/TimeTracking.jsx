@@ -52,11 +52,11 @@ const ActiveTimer = ({ timer, onStop }) => {
   }, []);
   
   return (
-    <Card className="border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)]">
+    <Card className="border-bw-green/25 bg-bw-green/[0.08]">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-[#22C55E] flex items-center justify-center animate-pulse">
+            <div className="h-12 w-12 rounded-full bg-bw-green flex items-center justify-center animate-pulse">
               <Timer className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -336,7 +336,7 @@ const StartTimerDialog = ({ open, onClose, onStart, tickets, currentUser }) => {
         
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleStart} className="bg-[#22C55E] hover:bg-[#16a34a]">
+          <Button onClick={handleStart} className="bg-bw-green hover:bg-bw-green-hover">
             <Play className="h-4 w-4 mr-2" />
             Start Timer
           </Button>
@@ -532,7 +532,7 @@ export default function TimeTracking({ user }) {
             <Plus className="h-4 w-4 mr-2" />
             Log Time
           </Button>
-          <Button onClick={() => setShowStartTimer(true)} className="bg-[#22C55E] hover:bg-[#16a34a]">
+          <Button onClick={() => setShowStartTimer(true)} className="bg-bw-green hover:bg-bw-green-hover">
             <Play className="h-4 w-4 mr-2" />
             Start Timer
           </Button>
@@ -562,7 +562,7 @@ export default function TimeTracking({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-[#3B9EFF]" />
+                <Clock className="h-5 w-5 text-bw-blue" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{unbilled?.total_hours || 0}</p>
@@ -575,7 +575,7 @@ export default function TimeTracking({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-bw-green/10 flex items-center justify-center">
                 <DollarSign className="h-5 w-5 text-green-600" />
               </div>
               <div>
@@ -590,7 +590,7 @@ export default function TimeTracking({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-[#FF8C00]" />
+                <FileText className="h-5 w-5 text-bw-orange" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{unbilled?.entry_count || 0}</p>
@@ -699,7 +699,7 @@ export default function TimeTracking({ user }) {
                         </TableCell>
                         <TableCell>
                           {entry.billed ? (
-                            <Badge className="bg-[rgba(34,197,94,0.10)] text-[#22C55E]">
+                            <Badge className="bg-bw-green/10 text-bw-green">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Billed
                             </Badge>

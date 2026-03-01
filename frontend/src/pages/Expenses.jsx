@@ -17,11 +17,11 @@ import {
 import { API } from "@/App";
 
 const statusConfig = {
-  DRAFT: { label: "Draft", bg: "bg-[rgba(244,246,240,0.10)]", text: "text-[rgba(244,246,240,0.65)]" },
-  SUBMITTED: { label: "Submitted", bg: "bg-[rgba(59,158,255,0.10)]", text: "text-[#3B9EFF]" },
-  APPROVED: { label: "Approved", bg: "bg-[rgba(200,255,0,0.10)]", text: "text-[#C8FF00]" },
-  REJECTED: { label: "Rejected", bg: "bg-[rgba(255,59,47,0.10)]", text: "text-[#FF3B2F]" },
-  PAID: { label: "Paid", bg: "bg-[rgba(26,255,228,0.10)]", text: "text-[#1AFFE4]" }
+  DRAFT: { label: "Draft", bg: "bg-bw-white/10", text: "text-bw-white/[0.65]" },
+  SUBMITTED: { label: "Submitted", bg: "bg-bw-blue/10", text: "text-bw-blue" },
+  APPROVED: { label: "Approved", bg: "bg-bw-volt/10", text: "text-bw-volt" },
+  REJECTED: { label: "Rejected", bg: "bg-bw-red/10", text: "text-bw-red" },
+  PAID: { label: "Paid", bg: "bg-bw-teal/10", text: "text-bw-teal" }
 };
 
 const paymentModes = [
@@ -401,16 +401,16 @@ export default function Expenses() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]" style={{ fontFamily: "'DM Serif Display', serif" }}>
+          <h1 className="text-2xl font-bold text-bw-white" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Expenses
           </h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">
+          <p className="text-bw-white/[0.45] text-sm mt-1">
             Record, approve and track business expenditure
           </p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={(open) => { setShowCreateDialog(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="new-expense-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="new-expense-btn">
               <Plus className="h-4 w-4 mr-2" /> New Expense
             </Button>
           </DialogTrigger>
@@ -431,7 +431,7 @@ export default function Expenses() {
                     <SelectContent>
                       {categories.map(c => (
                         <SelectItem key={c.category_id} value={c.category_id}>
-                          {c.name} {c.is_itc_eligible && <span className="text-[#1AFFE4]">(ITC)</span>}
+                          {c.name} {c.is_itc_eligible && <span className="text-bw-teal">(ITC)</span>}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -455,13 +455,13 @@ export default function Expenses() {
                     value={formData.vendor_gstin} 
                     onChange={(e) => setFormData({...formData, vendor_gstin: e.target.value.toUpperCase()})} 
                     placeholder="e.g., 27AABCU9603R1ZM"
-                    className={isValidGstin === false ? "border-[#FF3B2F]" : isValidGstin ? "border-[#C8FF00]" : ""}
+                    className={isValidGstin === false ? "border-bw-red" : isValidGstin ? "border-bw-volt" : ""}
                   />
                   {isValidGstin && (
-                    <p className="text-xs text-[#1AFFE4] mt-1">ITC eligible - GST amounts will be tracked for input credit</p>
+                    <p className="text-xs text-bw-teal mt-1">ITC eligible - GST amounts will be tracked for input credit</p>
                   )}
                   {isValidGstin === false && formData.vendor_gstin && (
-                    <p className="text-xs text-[#FF3B2F] mt-1">Invalid GSTIN format</p>
+                    <p className="text-xs text-bw-red mt-1">Invalid GSTIN format</p>
                   )}
                 </div>
               </div>
@@ -493,32 +493,32 @@ export default function Expenses() {
               </div>
               
               {/* GST Calculation Preview */}
-              <div className="bg-[#141E27] p-4 rounded-lg border border-[rgba(255,255,255,0.07)]">
+              <div className="bg-bw-card p-4 rounded-lg border border-white/[0.07]">
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.45)]">Base Amount:</span>
+                    <span className="text-bw-white/[0.45]">Base Amount:</span>
                     <span>₹{gstCalculation.base}</span>
                   </div>
                   {formData.is_igst ? (
                     <div className="flex justify-between">
-                      <span className="text-[rgba(244,246,240,0.45)]">IGST ({formData.gst_rate}%):</span>
+                      <span className="text-bw-white/[0.45]">IGST ({formData.gst_rate}%):</span>
                       <span>₹{gstCalculation.igst}</span>
                     </div>
                   ) : (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">CGST ({formData.gst_rate/2}%):</span>
+                        <span className="text-bw-white/[0.45]">CGST ({formData.gst_rate/2}%):</span>
                         <span>₹{gstCalculation.cgst}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">SGST ({formData.gst_rate/2}%):</span>
+                        <span className="text-bw-white/[0.45]">SGST ({formData.gst_rate/2}%):</span>
                         <span>₹{gstCalculation.sgst}</span>
                       </div>
                     </>
                   )}
-                  <div className="flex justify-between border-t border-[rgba(255,255,255,0.07)] pt-2 mt-2">
+                  <div className="flex justify-between border-t border-white/[0.07] pt-2 mt-2">
                     <span className="font-medium">Total:</span>
-                    <span className="font-bold text-[#C8FF00]">₹{gstCalculation.total}</span>
+                    <span className="font-bold text-bw-volt">₹{gstCalculation.total}</span>
                   </div>
                 </div>
               </div>
@@ -548,12 +548,12 @@ export default function Expenses() {
               <Button variant="outline" onClick={() => { setShowCreateDialog(false); resetForm(); }}>Cancel</Button>
               <Button variant="outline" onClick={() => handleCreateExpense(false)}>Save as Draft</Button>
               {!isEditing && (
-                <Button onClick={() => handleCreateExpense(true)} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+                <Button onClick={() => handleCreateExpense(true)} className="bg-bw-volt text-bw-black font-bold">
                   Save & Submit
                 </Button>
               )}
               {isEditing && (
-                <Button onClick={() => handleCreateExpense(false)} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+                <Button onClick={() => handleCreateExpense(false)} className="bg-bw-volt text-bw-black font-bold">
                   Save Changes
                 </Button>
               )}
@@ -564,42 +564,42 @@ export default function Expenses() {
 
       {/* Stats Strip */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border-white/[0.07]">
           <CardContent className="p-4">
-            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Total This Month</div>
-            <div className="text-2xl font-bold text-[#C8FF00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-xs text-bw-white/[0.45] mb-1">Total This Month</div>
+            <div className="text-2xl font-bold text-bw-volt" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               ₹{stats.totalThisMonth.toLocaleString('en-IN')}
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border-white/[0.07]">
           <CardContent className="p-4">
-            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Pending Approval</div>
-            <div className="text-2xl font-bold text-[#FF8C00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-xs text-bw-white/[0.45] mb-1">Pending Approval</div>
+            <div className="text-2xl font-bold text-bw-orange" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               {stats.pendingCount}
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border-white/[0.07]">
           <CardContent className="p-4">
-            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Approved This Month</div>
-            <div className="text-2xl font-bold text-[#1AFFE4]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-xs text-bw-white/[0.45] mb-1">Approved This Month</div>
+            <div className="text-2xl font-bold text-bw-teal" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               ₹{stats.approvedThisMonth.toLocaleString('en-IN')}
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border-white/[0.07]">
           <CardContent className="p-4">
-            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">ITC Eligible</div>
-            <div className="text-2xl font-bold text-[#1AFFE4]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-xs text-bw-white/[0.45] mb-1">ITC Eligible</div>
+            <div className="text-2xl font-bold text-bw-teal" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               ₹{stats.itcAmount.toLocaleString('en-IN')}
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border-white/[0.07]">
           <CardContent className="p-4">
-            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Rejected</div>
-            <div className="text-2xl font-bold text-[#FF3B2F]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="text-xs text-bw-white/[0.45] mb-1">Rejected</div>
+            <div className="text-2xl font-bold text-bw-red" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               {stats.rejectedCount}
             </div>
           </CardContent>
@@ -609,7 +609,7 @@ export default function Expenses() {
       {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-shrink-0">
-          <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <TabsList className="bg-bw-panel border border-white/[0.07]">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="draft">Draft</TabsTrigger>
             <TabsTrigger value="submitted">Submitted</TabsTrigger>
@@ -627,7 +627,7 @@ export default function Expenses() {
             className="w-36"
             placeholder="From"
           />
-          <span className="text-[rgba(244,246,240,0.45)]">to</span>
+          <span className="text-bw-white/[0.45]">to</span>
           <Input 
             type="date" 
             value={dateTo} 
@@ -637,7 +637,7 @@ export default function Expenses() {
         </div>
         
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.35)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/35" />
           <Input 
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)} 
@@ -653,55 +653,55 @@ export default function Expenses() {
       </div>
 
       {/* Expenses Table */}
-      <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+      <Card className="bg-bw-panel border-white/[0.07]">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.07)]">
-                  <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Expense No.</th>
-                  <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Date</th>
-                  <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Vendor</th>
-                  <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Category</th>
-                  <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Description</th>
-                  <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Amount</th>
-                  <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">GST</th>
-                  <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Total</th>
-                  <th className="text-center p-3 text-xs text-[rgba(244,246,240,0.45)]">ITC</th>
-                  <th className="text-center p-3 text-xs text-[rgba(244,246,240,0.45)]">Status</th>
-                  <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Actions</th>
+                <tr className="border-b border-white/[0.07]">
+                  <th className="text-left p-3 text-xs text-bw-white/[0.45]">Expense No.</th>
+                  <th className="text-left p-3 text-xs text-bw-white/[0.45]">Date</th>
+                  <th className="text-left p-3 text-xs text-bw-white/[0.45]">Vendor</th>
+                  <th className="text-left p-3 text-xs text-bw-white/[0.45]">Category</th>
+                  <th className="text-left p-3 text-xs text-bw-white/[0.45]">Description</th>
+                  <th className="text-right p-3 text-xs text-bw-white/[0.45]">Amount</th>
+                  <th className="text-right p-3 text-xs text-bw-white/[0.45]">GST</th>
+                  <th className="text-right p-3 text-xs text-bw-white/[0.45]">Total</th>
+                  <th className="text-center p-3 text-xs text-bw-white/[0.45]">ITC</th>
+                  <th className="text-center p-3 text-xs text-bw-white/[0.45]">Status</th>
+                  <th className="text-right p-3 text-xs text-bw-white/[0.45]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={11} className="text-center py-8 text-[rgba(244,246,240,0.45)]">Loading...</td></tr>
+                  <tr><td colSpan={11} className="text-center py-8 text-bw-white/[0.45]">Loading...</td></tr>
                 ) : expenses.length === 0 ? (
-                  <tr><td colSpan={11} className="text-center py-8 text-[rgba(244,246,240,0.45)]">No expenses found</td></tr>
+                  <tr><td colSpan={11} className="text-center py-8 text-bw-white/[0.45]">No expenses found</td></tr>
                 ) : expenses.map(expense => {
                   const status = statusConfig[expense.status] || statusConfig.DRAFT;
                   const gstAmount = (expense.cgst_amount || 0) + (expense.sgst_amount || 0) + (expense.igst_amount || 0);
                   
                   return (
-                    <tr key={expense.expense_id} className="border-b border-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.02)]">
+                    <tr key={expense.expense_id} className="border-b border-white/[0.07] hover:bg-white/[0.02]">
                       <td className="p-3">
-                        <span className="font-mono text-sm text-[#C8FF00]">{expense.expense_number}</span>
+                        <span className="font-mono text-sm text-bw-volt">{expense.expense_number}</span>
                       </td>
                       <td className="p-3">
-                        <span className="font-mono text-sm text-[rgba(244,246,240,0.65)]">{expense.expense_date}</span>
+                        <span className="font-mono text-sm text-bw-white/[0.65]">{expense.expense_date}</span>
                       </td>
                       <td className="p-3 text-sm">{expense.vendor_name || '-'}</td>
                       <td className="p-3">
                         <Badge variant="outline" className="text-xs">{expense.category_name || 'Unknown'}</Badge>
                       </td>
-                      <td className="p-3 text-sm text-[rgba(244,246,240,0.65)] max-w-[200px] truncate">{expense.description}</td>
+                      <td className="p-3 text-sm text-bw-white/[0.65] max-w-[200px] truncate">{expense.description}</td>
                       <td className="p-3 text-sm text-right font-mono">₹{expense.amount?.toLocaleString('en-IN')}</td>
-                      <td className="p-3 text-sm text-right font-mono text-[rgba(244,246,240,0.45)]">₹{gstAmount.toLocaleString('en-IN')}</td>
-                      <td className="p-3 text-sm text-right font-bold font-mono text-[#C8FF00]">₹{expense.total_amount?.toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-sm text-right font-mono text-bw-white/[0.45]">₹{gstAmount.toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-sm text-right font-bold font-mono text-bw-volt">₹{expense.total_amount?.toLocaleString('en-IN')}</td>
                       <td className="p-3 text-center">
                         {expense.is_itc_eligible ? (
-                          <Badge className="bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] text-xs">ITC</Badge>
+                          <Badge className="bg-bw-teal/10 text-bw-teal text-xs">ITC</Badge>
                         ) : (
-                          <span className="text-xs text-[rgba(244,246,240,0.35)]">No ITC</span>
+                          <span className="text-xs text-bw-white/35">No ITC</span>
                         )}
                       </td>
                       <td className="p-3 text-center">
@@ -715,18 +715,18 @@ export default function Expenses() {
                           {expense.status === 'DRAFT' && (
                             <>
                               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => openEdit(expense)}>Edit</Button>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#3B9EFF]" onClick={() => handleSubmit(expense)}>Submit</Button>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#FF3B2F]" onClick={() => handleDelete(expense)}>Delete</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-bw-blue" onClick={() => handleSubmit(expense)}>Submit</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-bw-red" onClick={() => handleDelete(expense)}>Delete</Button>
                             </>
                           )}
                           {expense.status === 'SUBMITTED' && (
                             <>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#C8FF00]" onClick={() => handleApprove(expense)}>Approve</Button>
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#FF3B2F]" onClick={() => { setSelectedExpense(expense); setShowRejectDialog(true); }}>Reject</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-bw-volt" onClick={() => handleApprove(expense)}>Approve</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-bw-red" onClick={() => { setSelectedExpense(expense); setShowRejectDialog(true); }}>Reject</Button>
                             </>
                           )}
                           {expense.status === 'APPROVED' && (
-                            <Button size="sm" variant="ghost" className="h-7 text-xs text-[#1AFFE4]" onClick={() => { setSelectedExpense(expense); setShowPayDialog(true); }}>Mark Paid</Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-bw-teal" onClick={() => { setSelectedExpense(expense); setShowPayDialog(true); }}>Mark Paid</Button>
                           )}
                           {expense.status === 'REJECTED' && (
                             <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => openEdit(expense)}>Re-submit</Button>
@@ -752,8 +752,8 @@ export default function Expenses() {
             <div className="space-y-4 py-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-mono text-lg text-[#C8FF00]">{selectedExpense.expense_number}</p>
-                  <p className="text-sm text-[rgba(244,246,240,0.45)]">{selectedExpense.expense_date}</p>
+                  <p className="font-mono text-lg text-bw-volt">{selectedExpense.expense_number}</p>
+                  <p className="text-sm text-bw-white/[0.45]">{selectedExpense.expense_date}</p>
                 </div>
                 <Badge className={`${statusConfig[selectedExpense.status]?.bg} ${statusConfig[selectedExpense.status]?.text}`}>
                   {statusConfig[selectedExpense.status]?.label}
@@ -762,76 +762,76 @@ export default function Expenses() {
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Vendor</span>
+                  <span className="text-bw-white/[0.45]">Vendor</span>
                   <p className="font-medium">{selectedExpense.vendor_name || '-'}</p>
                 </div>
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">GSTIN</span>
+                  <span className="text-bw-white/[0.45]">GSTIN</span>
                   <p className="font-mono">{selectedExpense.vendor_gstin || '-'}</p>
                 </div>
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Category</span>
+                  <span className="text-bw-white/[0.45]">Category</span>
                   <p>{selectedExpense.category_name || 'Unknown'}</p>
                 </div>
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Payment Mode</span>
+                  <span className="text-bw-white/[0.45]">Payment Mode</span>
                   <p>{selectedExpense.payment_mode}</p>
                 </div>
               </div>
               
               <div>
-                <span className="text-[rgba(244,246,240,0.45)] text-sm">Description</span>
+                <span className="text-bw-white/[0.45] text-sm">Description</span>
                 <p>{selectedExpense.description}</p>
               </div>
               
-              <div className="bg-[#141E27] p-4 rounded-lg">
+              <div className="bg-bw-card p-4 rounded-lg">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.45)]">Base Amount:</span>
+                    <span className="text-bw-white/[0.45]">Base Amount:</span>
                     <span>₹{selectedExpense.amount?.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.45)]">GST Rate:</span>
+                    <span className="text-bw-white/[0.45]">GST Rate:</span>
                     <span>{selectedExpense.gst_rate}%</span>
                   </div>
                   {selectedExpense.is_igst ? (
                     <div className="flex justify-between">
-                      <span className="text-[rgba(244,246,240,0.45)]">IGST:</span>
+                      <span className="text-bw-white/[0.45]">IGST:</span>
                       <span>₹{selectedExpense.igst_amount?.toLocaleString('en-IN')}</span>
                     </div>
                   ) : (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">CGST:</span>
+                        <span className="text-bw-white/[0.45]">CGST:</span>
                         <span>₹{selectedExpense.cgst_amount?.toLocaleString('en-IN')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">SGST:</span>
+                        <span className="text-bw-white/[0.45]">SGST:</span>
                         <span>₹{selectedExpense.sgst_amount?.toLocaleString('en-IN')}</span>
                       </div>
                     </>
                   )}
                 </div>
-                <div className="flex justify-between border-t border-[rgba(255,255,255,0.07)] pt-2 mt-2">
+                <div className="flex justify-between border-t border-white/[0.07] pt-2 mt-2">
                   <span className="font-medium">Total:</span>
-                  <span className="font-bold text-[#C8FF00]">₹{selectedExpense.total_amount?.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-bw-volt">₹{selectedExpense.total_amount?.toLocaleString('en-IN')}</span>
                 </div>
                 {selectedExpense.is_itc_eligible && (
-                  <div className="mt-2 text-xs text-[#1AFFE4]">
+                  <div className="mt-2 text-xs text-bw-teal">
                     ITC Eligible - Input tax credit can be claimed
                   </div>
                 )}
               </div>
               
               {selectedExpense.rejection_reason && (
-                <div className="bg-[rgba(255,59,47,0.10)] p-3 rounded text-sm">
-                  <span className="text-[#FF3B2F] font-medium">Rejection Reason:</span>
+                <div className="bg-bw-red/10 p-3 rounded text-sm">
+                  <span className="text-bw-red font-medium">Rejection Reason:</span>
                   <p className="mt-1">{selectedExpense.rejection_reason}</p>
                 </div>
               )}
               
               {selectedExpense.journal_entry_id && (
-                <div className="text-xs text-[rgba(244,246,240,0.45)]">
+                <div className="text-xs text-bw-white/[0.45]">
                   Journal Entry: {selectedExpense.journal_entry_id}
                 </div>
               )}
@@ -841,12 +841,12 @@ export default function Expenses() {
             <Button variant="outline" onClick={() => setShowDetailDialog(false)}>Close</Button>
             {selectedExpense?.status === 'SUBMITTED' && (
               <>
-                <Button variant="outline" className="text-[#FF3B2F]" onClick={() => setShowRejectDialog(true)}>Reject</Button>
-                <Button onClick={() => handleApprove(selectedExpense)} className="bg-[#C8FF00] text-[#080C0F]">Approve</Button>
+                <Button variant="outline" className="text-bw-red" onClick={() => setShowRejectDialog(true)}>Reject</Button>
+                <Button onClick={() => handleApprove(selectedExpense)} className="bg-bw-volt text-bw-black">Approve</Button>
               </>
             )}
             {selectedExpense?.status === 'APPROVED' && (
-              <Button onClick={() => setShowPayDialog(true)} className="bg-[#1AFFE4] text-[#080C0F]">Mark Paid</Button>
+              <Button onClick={() => setShowPayDialog(true)} className="bg-bw-teal text-bw-black">Mark Paid</Button>
             )}
           </DialogFooter>
         </DialogContent>
@@ -869,7 +869,7 @@ export default function Expenses() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowRejectDialog(false); setRejectReason(""); }}>Cancel</Button>
-            <Button onClick={handleReject} className="bg-[#FF3B2F] text-white">Reject Expense</Button>
+            <Button onClick={handleReject} className="bg-bw-red text-white">Reject Expense</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -894,9 +894,9 @@ export default function Expenses() {
               </Select>
             </div>
             {selectedExpense && (
-              <div className="bg-[#141E27] p-3 rounded text-sm">
+              <div className="bg-bw-card p-3 rounded text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[rgba(244,246,240,0.45)]">Amount:</span>
+                  <span className="text-bw-white/[0.45]">Amount:</span>
                   <span className="font-bold">₹{selectedExpense.total_amount?.toLocaleString('en-IN')}</span>
                 </div>
               </div>
@@ -904,7 +904,7 @@ export default function Expenses() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPayDialog(false)}>Cancel</Button>
-            <Button onClick={handleMarkPaid} className="bg-[#1AFFE4] text-[#080C0F]">Confirm Payment</Button>
+            <Button onClick={handleMarkPaid} className="bg-bw-teal text-bw-black">Confirm Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

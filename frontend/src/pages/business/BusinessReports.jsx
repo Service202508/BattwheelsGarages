@@ -131,7 +131,7 @@ export default function BusinessReports({ user }) {
         <>
           {/* Summary Stats */}
           <div className="grid grid-cols-4 gap-4">
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -145,35 +145,35 @@ export default function BusinessReports({ user }) {
               </CardContent>
             </Card>
             
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">Total Invoiced</p>
                     <p className="text-2xl font-bold text-slate-900">{formatCurrency(reportData?.financials?.total_invoiced)}</p>
                   </div>
-                  <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                    <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
+                  <div className="p-3 rounded bg-bw-volt/[0.08]">
+                    <IndianRupee className="h-5 w-5 text-bw-volt text-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">Paid</p>
-                    <p className="text-2xl font-bold text-[#C8FF00] text-600">{formatCurrency(reportData?.financials?.total_paid)}</p>
+                    <p className="text-2xl font-bold text-bw-volt text-600">{formatCurrency(reportData?.financials?.total_paid)}</p>
                   </div>
-                  <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                    <TrendingUp className="h-5 w-5 text-[#C8FF00] text-600" />
+                  <div className="p-3 rounded bg-bw-volt/[0.08]">
+                    <TrendingUp className="h-5 w-5 text-bw-volt text-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -191,7 +191,7 @@ export default function BusinessReports({ user }) {
           {/* Charts Row */}
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Tickets by Status */}
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChart className="h-5 w-5 text-indigo-600" />
@@ -211,7 +211,7 @@ export default function BusinessReports({ user }) {
                       </div>
                       <div className="flex items-center gap-2">
                         <div 
-                          className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]"
+                          className="h-2 rounded-full bg-white/5"
                           style={{ width: "100px" }}
                         >
                           <div 
@@ -231,7 +231,7 @@ export default function BusinessReports({ user }) {
             </Card>
 
             {/* Tickets by Priority */}
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-600" />
@@ -251,7 +251,7 @@ export default function BusinessReports({ user }) {
                       </div>
                       <div className="flex items-center gap-2">
                         <div 
-                          className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]"
+                          className="h-2 rounded-full bg-white/5"
                           style={{ width: "100px" }}
                         >
                           <div 
@@ -272,7 +272,7 @@ export default function BusinessReports({ user }) {
           </div>
 
           {/* Vehicle Breakdown */}
-          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+          <Card className="bg-bw-panel border-white/[0.07] border-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Car className="h-5 w-5 text-indigo-600" />
@@ -295,7 +295,7 @@ export default function BusinessReports({ user }) {
           </Card>
 
           {/* Financial Summary */}
-          <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-[rgba(255,255,255,0.13)]">
+          <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-white/[0.13]">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-indigo-100 mb-4">Financial Summary</h3>
               <div className="grid md:grid-cols-3 gap-6">

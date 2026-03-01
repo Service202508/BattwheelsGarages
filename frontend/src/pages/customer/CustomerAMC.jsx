@@ -57,10 +57,10 @@ export default function CustomerAMC({ user }) {
 
   const getStatusConfig = (status) => {
     const configs = {
-      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200", icon: CheckCircle, label: "Active" },
-      expiring: { color: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border-orange-200", icon: AlertCircle, label: "Expiring Soon" },
-      expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200", icon: Clock, label: "Expired" },
-      cancelled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)] border-[rgba(255,255,255,0.07)]", icon: Clock, label: "Cancelled" }
+      active: { color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25 border-green-200", icon: CheckCircle, label: "Active" },
+      expiring: { color: "bg-bw-orange/10 text-bw-orange border-orange-200", icon: AlertCircle, label: "Expiring Soon" },
+      expired: { color: "bg-bw-red/10 text-bw-red border border-bw-red/25 border-red-200", icon: Clock, label: "Expired" },
+      cancelled: { color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08] border-white/[0.07]", icon: Clock, label: "Cancelled" }
     };
     return configs[status] || configs.active;
   };
@@ -86,14 +86,14 @@ export default function CustomerAMC({ user }) {
     <div className="space-y-6" data-testid="customer-amc">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#F4F6F0]">AMC Plans</h1>
-        <p className="text-[rgba(244,246,240,0.35)]">Manage your Annual Maintenance Contracts</p>
+        <h1 className="text-2xl font-bold text-bw-white">AMC Plans</h1>
+        <p className="text-bw-white/35">Manage your Annual Maintenance Contracts</p>
       </div>
 
       {/* Active Subscriptions */}
       {subscriptions.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-[#F4F6F0]">Your Subscriptions</h2>
+          <h2 className="text-lg font-semibold text-bw-white">Your Subscriptions</h2>
           
           {subscriptions.map((sub) => {
             const statusConfig = getStatusConfig(sub.status);
@@ -123,15 +123,15 @@ export default function CustomerAMC({ user }) {
                   {/* Validity & Usage */}
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Validity Period</p>
+                      <p className="text-sm text-bw-white/[0.45] mb-1">Validity Period</p>
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                        <Calendar className="h-4 w-4 text-bw-white/[0.45]" />
                         <span className="font-medium">
                           {new Date(sub.start_date).toLocaleDateString()} - {new Date(sub.end_date).toLocaleDateString()}
                         </span>
                       </div>
                       {sub.status === 'expiring' && (
-                        <p className="text-[#FF8C00] text-sm mt-1 flex items-center gap-1">
+                        <p className="text-bw-orange text-sm mt-1 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" />
                           Expires in {Math.ceil((new Date(sub.end_date) - new Date()) / (1000 * 60 * 60 * 24))} days
                         </p>
@@ -139,7 +139,7 @@ export default function CustomerAMC({ user }) {
                     </div>
                     
                     <div>
-                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Service Usage</p>
+                      <p className="text-sm text-bw-white/[0.45] mb-1">Service Usage</p>
                       <div className="flex items-center gap-3">
                         <Progress value={usagePercent} className="flex-1 h-2" />
                         <span className="font-medium text-sm whitespace-nowrap">
@@ -151,22 +151,22 @@ export default function CustomerAMC({ user }) {
 
                   {/* Features */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-3 rounded-lg bg-[#111820]">
-                      <Wrench className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
+                    <div className="text-center p-3 rounded-lg bg-bw-panel">
+                      <Wrench className="h-5 w-5 mx-auto mb-1 text-bw-volt text-600" />
                       <p className="text-sm font-medium">{sub.max_services} Services</p>
                     </div>
                     {sub.includes_parts && (
-                      <div className="text-center p-3 rounded-lg bg-[#111820]">
-                        <Gift className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
+                      <div className="text-center p-3 rounded-lg bg-bw-panel">
+                        <Gift className="h-5 w-5 mx-auto mb-1 text-bw-volt text-600" />
                         <p className="text-sm font-medium">{sub.parts_discount_percent}% Parts Discount</p>
                       </div>
                     )}
-                    <div className="text-center p-3 rounded-lg bg-[#111820]">
-                      <Phone className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
+                    <div className="text-center p-3 rounded-lg bg-bw-panel">
+                      <Phone className="h-5 w-5 mx-auto mb-1 text-bw-volt text-600" />
                       <p className="text-sm font-medium">Priority Support</p>
                     </div>
-                    <div className="text-center p-3 rounded-lg bg-[#111820]">
-                      <Car className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
+                    <div className="text-center p-3 rounded-lg bg-bw-panel">
+                      <Car className="h-5 w-5 mx-auto mb-1 text-bw-volt text-600" />
                       <p className="text-sm font-medium">Roadside Assist</p>
                     </div>
                   </div>
@@ -174,7 +174,7 @@ export default function CustomerAMC({ user }) {
                   {/* Actions */}
                   {(sub.status === 'expiring' || sub.status === 'expired') && (
                     <div className="flex gap-3 pt-2">
-                      <Button className="flex-1 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+                      <Button className="flex-1 bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Renew Plan
                       </Button>
@@ -192,15 +192,15 @@ export default function CustomerAMC({ user }) {
 
       {/* Available Plans */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-[#F4F6F0]">
+        <h2 className="text-lg font-semibold text-bw-white">
           {subscriptions.length > 0 ? "Upgrade or Add Another Plan" : "Available AMC Plans"}
         </h2>
         
         {availablePlans.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
-              <p className="text-[rgba(244,246,240,0.35)]">No plans available at the moment</p>
+              <Shield className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
+              <p className="text-bw-white/35">No plans available at the moment</p>
             </CardContent>
           </Card>
         ) : (
@@ -208,12 +208,12 @@ export default function CustomerAMC({ user }) {
             {availablePlans.map((plan) => (
               <Card 
                 key={plan.plan_id} 
-                className={`overflow-hidden hover:border-[rgba(255,255,255,0.12)] transition-all ${
+                className={`overflow-hidden hover:border-white/[0.12] transition-all ${
                   plan.tier === 'premium' ? 'ring-2 ring-purple-500' : ''
                 }`}
               >
                 {plan.tier === 'premium' && (
-                  <div className="bg-[rgba(139,92,246,0.08)]0 text-white text-center text-xs font-bold py-1">
+                  <div className="bg-bw-purple/[0.08]0 text-white text-center text-xs font-bold py-1">
                     <Sparkles className="h-3 w-3 inline mr-1" />
                     MOST POPULAR
                   </div>
@@ -227,32 +227,32 @@ export default function CustomerAMC({ user }) {
 
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
-                    <p className="text-4xl font-bold text-[#F4F6F0]">
+                    <p className="text-4xl font-bold text-bw-white">
                       ₹{plan.price.toLocaleString()}
                     </p>
-                    <p className="text-[rgba(244,246,240,0.45)]">for {plan.duration_months} months</p>
+                    <p className="text-bw-white/[0.45]">for {plan.duration_months} months</p>
                   </div>
 
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
+                      <CheckCircle className="h-4 w-4 text-bw-volt text-500" />
                       {plan.max_service_visits} Free Services
                     </li>
                     {plan.includes_parts && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500" />
                         {plan.parts_discount_percent}% Discount on Parts
                       </li>
                     )}
                     {plan.priority_support && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500" />
                         Priority Support
                       </li>
                     )}
                     {plan.roadside_assistance && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500" />
                         24/7 Roadside Assistance
                       </li>
                     )}
@@ -261,8 +261,8 @@ export default function CustomerAMC({ user }) {
                   <Button 
                     className={`w-full ${
                       plan.tier === 'premium' 
-                        ? 'bg-[#8B5CF6] hover:bg-[#7c3aed] text-white font-bold' 
-                        : 'bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold'
+                        ? 'bg-bw-purple hover:bg-bw-purple text-white font-bold' 
+                        : 'bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold'
                     }`}
                     onClick={() => setSelectedPlan(plan)}
                   >
@@ -288,19 +288,19 @@ export default function CustomerAMC({ user }) {
           
           {selectedPlan && (
             <div className="space-y-4 py-4">
-              <div className="p-4 bg-[#111820] rounded-lg">
+              <div className="p-4 bg-bw-panel rounded-lg">
                 <h4 className="font-semibold mb-2">Plan Summary</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)]">Plan</span>
+                    <span className="text-bw-white/35">Plan</span>
                     <span className="font-medium">{selectedPlan.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)]">Duration</span>
+                    <span className="text-bw-white/35">Duration</span>
                     <span className="font-medium">{selectedPlan.duration_months} months</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[rgba(244,246,240,0.35)]">Services Included</span>
+                    <span className="text-bw-white/35">Services Included</span>
                     <span className="font-medium">{selectedPlan.max_service_visits}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2 mt-2">
@@ -323,7 +323,7 @@ export default function CustomerAMC({ user }) {
                 <Button variant="outline" className="flex-1" onClick={() => setSelectedPlan(null)}>
                   Cancel
                 </Button>
-                <Button className="flex-1 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
+                <Button className="flex-1 bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold">
                   <Phone className="h-4 w-4 mr-2" />
                   Request Callback
                 </Button>

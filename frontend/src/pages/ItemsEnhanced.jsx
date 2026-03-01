@@ -27,11 +27,11 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const itemTypeColors = {
-  inventory: "bg-blue-100 text-[#3B9EFF]",
-  non_inventory: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  service: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  sales: "bg-purple-100 text-[#8B5CF6]",
-  sales_and_purchases: "bg-orange-100 text-[#FF8C00]"
+  inventory: "bg-blue-100 text-bw-blue",
+  non_inventory: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  service: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  sales: "bg-purple-100 text-bw-purple",
+  sales_and_purchases: "bg-orange-100 text-bw-orange"
 };
 
 const itemTypeLabels = {
@@ -839,7 +839,7 @@ export default function ItemsEnhanced() {
             <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button onClick={() => setShowItemDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-item-btn">
+            <Button onClick={() => setShowItemDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-item-btn">
               <Plus className="h-4 w-4" /> New Item
             </Button>
           </div>
@@ -881,7 +881,7 @@ export default function ItemsEnhanced() {
           <div className="flex flex-col lg:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 flex-wrap">
               <div className="relative flex-1 min-w-[200px] max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
                 <Input 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
@@ -945,7 +945,7 @@ export default function ItemsEnhanced() {
           {/* Bulk Actions */}
           {selectedItems.length > 0 && (
             <div className="flex items-center gap-4 p-3 bg-blue-50 rounded-lg">
-              <span className="text-sm font-medium text-[#3B9EFF]">{selectedItems.length} items selected</span>
+              <span className="text-sm font-medium text-bw-blue">{selectedItems.length} items selected</span>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => handleBulkAction("activate")}>
                   <CheckCircle2 className="h-4 w-4 mr-1" /> Activate
@@ -971,8 +971,8 @@ export default function ItemsEnhanced() {
             <div className="text-center py-8">Loading...</div>
           ) : items.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-                <Package className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+              <CardContent className="py-12 text-center text-bw-white/[0.45]">
+                <Package className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
                 <p>No items found</p>
                 <Button onClick={() => setShowItemDialog(true)} className="mt-4">Create your first item</Button>
               </CardContent>
@@ -980,9 +980,9 @@ export default function ItemsEnhanced() {
           ) : (
             <>
               {/* Desktop Table */}
-              <div className="hidden md:block border rounded-lg overflow-hidden bg-[#111820]">
+              <div className="hidden md:block border rounded-lg overflow-hidden bg-bw-panel">
                 <table className="w-full text-sm">
-                  <thead className="bg-[#111820] border-b">
+                  <thead className="bg-bw-panel border-b">
                     <tr>
                       <th className="px-4 py-3 text-left w-10">
                         <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
@@ -1000,7 +1000,7 @@ export default function ItemsEnhanced() {
                   </thead>
                   <tbody>
                     {items.map(item => (
-                      <tr key={item.item_id} className="border-t hover:bg-[#111820]" data-testid={`item-row-${item.item_id}`}>
+                      <tr key={item.item_id} className="border-t hover:bg-bw-panel" data-testid={`item-row-${item.item_id}`}>
                         <td className="px-4 py-3">
                           <Checkbox
                             checked={selectedItems.includes(item.item_id)}
@@ -1012,34 +1012,34 @@ export default function ItemsEnhanced() {
                             {item.image_url ? (
                               <img src={item.image_url} alt="" className="w-10 h-10 rounded object-cover" />
                             ) : (
-                              <div className="w-10 h-10 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
-                                <Package className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                              <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center">
+                                <Package className="h-5 w-5 text-bw-white/[0.45]" />
                               </div>
                             )}
                             <div>
-                              <p className="font-medium hover:text-[#3B9EFF] cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
-                              {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
+                              <p className="font-medium hover:text-bw-blue cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
+                              {item.hsn_code && <p className="text-xs text-bw-white/[0.45]">HSN: {item.hsn_code}</p>}
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.sku || '-'}</td>
+                        <td className="px-4 py-3 text-bw-white/35">{item.sku || '-'}</td>
                         <td className="px-4 py-3">
-                          <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>
+                          <Badge className={itemTypeColors[item.item_type] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]"}>
                             {itemTypeLabels[item.item_type] || item.item_type}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.group_name || '-'}</td>
-                        <td className="px-4 py-3 text-right text-[rgba(244,246,240,0.35)]">₹{(item.purchase_rate || 0).toLocaleString('en-IN')}</td>
+                        <td className="px-4 py-3 text-bw-white/35">{item.group_name || '-'}</td>
+                        <td className="px-4 py-3 text-right text-bw-white/35">₹{(item.purchase_rate || 0).toLocaleString('en-IN')}</td>
                         <td className="px-4 py-3 text-right font-medium">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">
                           {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") ? (
-                            <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-[#FF3B2F] font-medium" : ""}>
+                            <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-bw-red font-medium" : ""}>
                               {item.total_stock ?? item.stock_on_hand ?? 0} {item.unit}
                             </span>
                           ) : '-'}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}>
+                          <Badge className={item.is_active !== false ? "bg-bw-volt/10 text-bw-volt border border-bw-volt/25" : "bg-white/5 text-bw-white/[0.45]"}>
                             {item.is_active !== false ? "Active" : "Inactive"}
                           </Badge>
                         </td>
@@ -1069,7 +1069,7 @@ export default function ItemsEnhanced() {
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeleteItem(item.item_id)}>
+                              <DropdownMenuItem className="text-bw-red" onClick={() => handleDeleteItem(item.item_id)}>
                                 <Trash2 className="h-4 w-4 mr-2" /> Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -1082,7 +1082,7 @@ export default function ItemsEnhanced() {
               </div>
 
               {/* Mobile Cards */}
-              <div className="md:hidden border rounded-lg overflow-hidden bg-[#111820] divide-y divide-[rgba(255,255,255,0.06)]">
+              <div className="md:hidden border rounded-lg overflow-hidden bg-bw-panel divide-y divide-white/[0.06]">
                 {items.map(item => {
                   const stock = item.total_stock ?? item.stock_on_hand ?? 0;
                   const isLowStock = stock <= (item.reorder_level || 0);
@@ -1095,36 +1095,36 @@ export default function ItemsEnhanced() {
                     >
                       {/* Top: Icon + Name + Type badge */}
                       <div className="flex items-start gap-3 mb-2">
-                        <div className="w-9 h-9 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center flex-shrink-0">
-                          <Package className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                        <div className="w-9 h-9 rounded bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <Package className="h-4 w-4 text-bw-white/[0.45]" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-medium text-[#F4F6F0] text-sm truncate">{item.name}</p>
-                            <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"} style={{ fontSize: "10px", padding: "1px 5px" }}>
+                            <p className="font-medium text-bw-white text-sm truncate">{item.name}</p>
+                            <Badge className={itemTypeColors[item.item_type] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]"} style={{ fontSize: "10px", padding: "1px 5px" }}>
                               {itemTypeLabels[item.item_type] || item.item_type}
                             </Badge>
                           </div>
-                          <p className="text-xs text-[rgba(244,246,240,0.35)] font-mono mt-0.5">{item.sku || '—'}</p>
+                          <p className="text-xs text-bw-white/35 font-mono mt-0.5">{item.sku || '—'}</p>
                         </div>
                       </div>
 
                       {/* Middle: Price + Stock */}
                       <div className="flex items-center gap-4 mb-3">
                         <div>
-                          <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide">Sell Price</p>
-                          <p className="text-sm font-semibold text-[#F4F6F0]">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</p>
+                          <p className="text-[10px] text-bw-white/35 uppercase tracking-wide">Sell Price</p>
+                          <p className="text-sm font-semibold text-bw-white">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</p>
                         </div>
                         {isInventory && (
                           <div>
-                            <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide">Stock</p>
-                            <p className={`text-sm font-semibold ${isLowStock ? "text-[#FF3B2F]" : "text-[#C8FF00]"}`}>
+                            <p className="text-[10px] text-bw-white/35 uppercase tracking-wide">Stock</p>
+                            <p className={`text-sm font-semibold ${isLowStock ? "text-bw-red" : "text-bw-volt"}`}>
                               {stock} {item.unit || ""}
                             </p>
                           </div>
                         )}
                         <div className="ml-auto">
-                          <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"} style={{ fontSize: "10px" }}>
+                          <Badge className={item.is_active !== false ? "bg-bw-volt/10 text-bw-volt border border-bw-volt/25" : "bg-white/5 text-bw-white/[0.45]"} style={{ fontSize: "10px" }}>
                             {item.is_active !== false ? "Active" : "Inactive"}
                           </Badge>
                         </div>
@@ -1170,12 +1170,12 @@ export default function ItemsEnhanced() {
         {/* Groups Tab */}
         <TabsContent value="groups" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowGroupDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-group-btn">
+            <Button onClick={() => setShowGroupDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-group-btn">
               <Plus className="h-4 w-4" /> New Group
             </Button>
           </div>
           {groups.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><FolderTree className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No item groups yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><FolderTree className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No item groups yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {groups.map(group => (
@@ -1187,9 +1187,9 @@ export default function ItemsEnhanced() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-[rgba(244,246,240,0.35)] mb-2">{group.description || "No description"}</p>
+                    <p className="text-sm text-bw-white/35 mb-2">{group.description || "No description"}</p>
                     <div className="flex justify-between text-sm">
-                      <span className="text-[rgba(244,246,240,0.45)]">Items:</span>
+                      <span className="text-bw-white/[0.45]">Items:</span>
                       <span className="font-medium">{group.item_count || 0}</span>
                     </div>
                   </CardContent>
@@ -1202,31 +1202,31 @@ export default function ItemsEnhanced() {
         {/* Warehouses Tab */}
         <TabsContent value="warehouses" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowWarehouseDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-warehouse-btn">
+            <Button onClick={() => setShowWarehouseDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-warehouse-btn">
               <Plus className="h-4 w-4" /> New Warehouse
             </Button>
           </div>
           {warehouses.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><Warehouse className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No warehouses yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><Warehouse className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No warehouses yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
-                <Card key={wh.warehouse_id} className={wh.is_primary ? "border-green-300 bg-[rgba(34,197,94,0.08)]" : ""}>
+                <Card key={wh.warehouse_id} className={wh.is_primary ? "border-green-300 bg-bw-green/[0.08]" : ""}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{wh.name}</CardTitle>
-                      {wh.is_primary && <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] text-xs">Primary</Badge>}
+                      {wh.is_primary && <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25 text-xs">Primary</Badge>}
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-[rgba(244,246,240,0.35)] mb-3">{wh.location || "No location set"}</p>
+                    <p className="text-sm text-bw-white/35 mb-3">{wh.location || "No location set"}</p>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Items</p>
+                      <div className="bg-white/5 rounded p-2 text-center">
+                        <p className="text-bw-white/[0.45] text-xs">Items</p>
                         <p className="font-bold">{wh.total_items || 0}</p>
                       </div>
-                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Stock</p>
+                      <div className="bg-white/5 rounded p-2 text-center">
+                        <p className="text-bw-white/[0.45] text-xs">Stock</p>
                         <p className="font-bold">{wh.total_stock || 0}</p>
                       </div>
                     </div>
@@ -1240,20 +1240,20 @@ export default function ItemsEnhanced() {
         {/* Price Lists Tab */}
         <TabsContent value="priceLists" className="space-y-4">
           <div className="flex justify-between">
-            <div className="text-sm text-[rgba(244,246,240,0.45)]">
+            <div className="text-sm text-bw-white/[0.45]">
               Manage pricing strategies for customers and vendors
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => { fetchContacts(); setShowAssignPriceListDialog(true); }} className="gap-2">
                 <Users className="h-4 w-4" /> Assign to Contact
               </Button>
-              <Button onClick={() => setShowPriceListDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-pricelist-btn">
+              <Button onClick={() => setShowPriceListDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-pricelist-btn">
                 <Plus className="h-4 w-4" /> New Price List
               </Button>
             </div>
           </div>
           {priceLists.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><Tags className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No price lists yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><Tags className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No price lists yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {priceLists.map(pl => (
@@ -1262,7 +1262,7 @@ export default function ItemsEnhanced() {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{pl.name}</CardTitle>
-                        <Badge className={pl.price_list_type === "sales" ? "bg-blue-100 text-[#3B9EFF]" : "bg-orange-100 text-[#FF8C00]"}>
+                        <Badge className={pl.price_list_type === "sales" ? "bg-blue-100 text-bw-blue" : "bg-orange-100 text-bw-orange"}>
                           {pl.price_list_type || "sales"}
                         </Badge>
                       </div>
@@ -1275,7 +1275,7 @@ export default function ItemsEnhanced() {
                             <Tags className="h-4 w-4 mr-2" /> Set Bulk Prices
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeletePriceList(pl.pricelist_id)}>
+                          <DropdownMenuItem className="text-bw-red" onClick={() => handleDeletePriceList(pl.pricelist_id)}>
                             <Trash2 className="h-4 w-4 mr-2" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -1283,18 +1283,18 @@ export default function ItemsEnhanced() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-[rgba(244,246,240,0.35)] mb-3">{pl.description || "No description"}</p>
+                    <p className="text-sm text-bw-white/35 mb-3">{pl.description || "No description"}</p>
                     <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Discount</p>
+                      <div className="bg-white/5 rounded p-2 text-center">
+                        <p className="text-bw-white/[0.45] text-xs">Discount</p>
                         <p className="font-bold">{pl.discount_percentage || 0}%</p>
                       </div>
-                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Markup</p>
+                      <div className="bg-white/5 rounded p-2 text-center">
+                        <p className="text-bw-white/[0.45] text-xs">Markup</p>
                         <p className="font-bold">{pl.markup_percentage || 0}%</p>
                       </div>
-                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Items</p>
+                      <div className="bg-white/5 rounded p-2 text-center">
+                        <p className="text-bw-white/[0.45] text-xs">Items</p>
                         <p className="font-bold">{pl.item_count || 0}</p>
                       </div>
                     </div>
@@ -1308,16 +1308,16 @@ export default function ItemsEnhanced() {
         {/* Adjustments Tab */}
         <TabsContent value="adjustments" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowAdjustmentDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-adjustment-btn">
+            <Button onClick={() => setShowAdjustmentDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-adjustment-btn">
               <Plus className="h-4 w-4" /> New Adjustment
             </Button>
           </div>
           {adjustments.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><ArrowUpDown className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No inventory adjustments yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><ArrowUpDown className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No inventory adjustments yet</p></CardContent></Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden bg-[#111820]">
+            <div className="border rounded-lg overflow-hidden bg-bw-panel">
               <table className="w-full text-sm">
-                <thead className="bg-[#111820]">
+                <thead className="bg-bw-panel">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Date</th>
                     <th className="px-4 py-3 text-left font-medium">Item</th>
@@ -1330,12 +1330,12 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {adjustments.map(adj => (
-                    <tr key={adj.adjustment_id} className="border-t hover:bg-[#111820]">
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{new Date(adj.date || adj.created_time).toLocaleDateString('en-IN')}</td>
+                    <tr key={adj.adjustment_id} className="border-t hover:bg-bw-panel">
+                      <td className="px-4 py-3 text-bw-white/35">{new Date(adj.date || adj.created_time).toLocaleDateString('en-IN')}</td>
                       <td className="px-4 py-3 font-medium">{adj.item_name}</td>
                       <td className="px-4 py-3">{adj.warehouse_name}</td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={adj.adjustment_type === "add" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : adj.adjustment_type === "value" ? "bg-blue-100 text-[#3B9EFF]" : "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"}>
+                        <Badge className={adj.adjustment_type === "add" ? "bg-bw-volt/10 text-bw-volt border border-bw-volt/25" : adj.adjustment_type === "value" ? "bg-blue-100 text-bw-blue" : "bg-bw-red/10 text-bw-red border border-bw-red/25"}>
                           {adj.adjustment_type === "add" ? "+" : adj.adjustment_type === "value" ? "Value" : "-"}{adj.adjustment_type !== "value" && adj.quantity}
                         </Badge>
                       </td>
@@ -1357,34 +1357,34 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <TrendingUp className="h-5 w-5 text-[#22C55E]" /> Sales by Item
+                  <TrendingUp className="h-5 w-5 text-bw-green" /> Sales by Item
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {salesReport ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-[rgba(34,197,94,0.08)] rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Total Revenue</p>
+                      <div className="bg-bw-green/[0.08] rounded p-2">
+                        <p className="text-bw-white/[0.45] text-xs">Total Revenue</p>
                         <p className="font-bold text-green-700">₹{(salesReport.summary?.total_revenue || 0).toLocaleString('en-IN')}</p>
                       </div>
                       <div className="bg-blue-50 rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Qty Sold</p>
-                        <p className="font-bold text-[#3B9EFF]">{salesReport.summary?.total_quantity_sold || 0}</p>
+                        <p className="text-bw-white/[0.45] text-xs">Qty Sold</p>
+                        <p className="font-bold text-bw-blue">{salesReport.summary?.total_quantity_sold || 0}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">
-                      <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Top Selling Items</p>
+                      <p className="text-xs text-bw-white/[0.45] mb-2">Top Selling Items</p>
                       {(salesReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-white/[0.07]">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-[#22C55E] font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
+                          <span className="text-bw-green font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-4 text-sm">Loading...</p>
+                  <p className="text-center text-bw-white/[0.45] py-4 text-sm">Loading...</p>
                 )}
               </CardContent>
             </Card>
@@ -1393,34 +1393,34 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <ShoppingCart className="h-5 w-5 text-[#FF8C00]" /> Purchases by Item
+                  <ShoppingCart className="h-5 w-5 text-bw-orange" /> Purchases by Item
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {purchasesReport ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-[rgba(255,140,0,0.08)] rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Total Cost</p>
-                        <p className="font-bold text-[#FF8C00]">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
+                      <div className="bg-bw-orange/[0.08] rounded p-2">
+                        <p className="text-bw-white/[0.45] text-xs">Total Cost</p>
+                        <p className="font-bold text-bw-orange">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
                       </div>
                       <div className="bg-blue-50 rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Qty Purchased</p>
-                        <p className="font-bold text-[#3B9EFF]">{purchasesReport.summary?.total_quantity_purchased || 0}</p>
+                        <p className="text-bw-white/[0.45] text-xs">Qty Purchased</p>
+                        <p className="font-bold text-bw-blue">{purchasesReport.summary?.total_quantity_purchased || 0}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">
-                      <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Most Purchased Items</p>
+                      <p className="text-xs text-bw-white/[0.45] mb-2">Most Purchased Items</p>
                       {(purchasesReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-white/[0.07]">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-[#FF8C00] font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
+                          <span className="text-bw-orange font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-4 text-sm">Loading...</p>
+                  <p className="text-center text-bw-white/[0.45] py-4 text-sm">Loading...</p>
                 )}
               </CardContent>
             </Card>
@@ -1429,7 +1429,7 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <DollarSign className="h-5 w-5 text-[#3B9EFF]" /> Inventory Valuation
+                  <DollarSign className="h-5 w-5 text-bw-blue" /> Inventory Valuation
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1437,26 +1437,26 @@ export default function ItemsEnhanced() {
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="bg-blue-50 rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Total Value</p>
-                        <p className="font-bold text-[#3B9EFF]">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
+                        <p className="text-bw-white/[0.45] text-xs">Total Value</p>
+                        <p className="font-bold text-bw-blue">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
                       </div>
-                      <div className="bg-[rgba(139,92,246,0.08)] rounded p-2">
-                        <p className="text-[rgba(244,246,240,0.45)] text-xs">Method</p>
-                        <p className="font-bold text-[#8B5CF6]">{valuationReport.valuation_method || 'FIFO'}</p>
+                      <div className="bg-bw-purple/[0.08] rounded p-2">
+                        <p className="text-bw-white/[0.45] text-xs">Method</p>
+                        <p className="font-bold text-bw-purple">{valuationReport.valuation_method || 'FIFO'}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">
-                      <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Highest Value Items</p>
+                      <p className="text-xs text-bw-white/[0.45] mb-2">Highest Value Items</p>
                       {(valuationReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-white/[0.07]">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-[#3B9EFF] font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
+                          <span className="text-bw-blue font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-4 text-sm">Loading...</p>
+                  <p className="text-center text-bw-white/[0.45] py-4 text-sm">Loading...</p>
                 )}
               </CardContent>
             </Card>
@@ -1478,16 +1478,16 @@ export default function ItemsEnhanced() {
             </CardHeader>
             <CardContent>
               {itemHistory.length === 0 ? (
-                <p className="text-center text-[rgba(244,246,240,0.45)] py-8">Select an item to view its history</p>
+                <p className="text-center text-bw-white/[0.45] py-8">Select an item to view its history</p>
               ) : (
                 <div className="space-y-3">
                   {itemHistory.map((entry, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-[#111820] rounded-lg">
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-bw-panel rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        entry.action === "created" ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E]" :
-                        entry.action === "updated" ? "bg-blue-100 text-[#3B9EFF]" :
-                        entry.action === "stock_adjusted" ? "bg-orange-100 text-[#FF8C00]" :
-                        "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]"
+                        entry.action === "created" ? "bg-bw-green/10 text-bw-green" :
+                        entry.action === "updated" ? "bg-blue-100 text-bw-blue" :
+                        entry.action === "stock_adjusted" ? "bg-orange-100 text-bw-orange" :
+                        "bg-white/5 text-bw-white/35"
                       }`}>
                         {entry.action === "created" && <Plus className="h-4 w-4" />}
                         {entry.action === "updated" && <Edit className="h-4 w-4" />}
@@ -1495,9 +1495,9 @@ export default function ItemsEnhanced() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium capitalize">{entry.action.replace("_", " ")}</p>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{entry.user_name} • {new Date(entry.timestamp).toLocaleString('en-IN')}</p>
+                        <p className="text-sm text-bw-white/[0.45]">{entry.user_name} • {new Date(entry.timestamp).toLocaleString('en-IN')}</p>
                         {Object.keys(entry.changes || {}).length > 0 && (
-                          <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">{JSON.stringify(entry.changes)}</p>
+                          <p className="text-xs text-bw-white/[0.45] mt-1">{JSON.stringify(entry.changes)}</p>
                         )}
                       </div>
                     </div>
@@ -1840,7 +1840,7 @@ export default function ItemsEnhanced() {
                       </div>
                       <div>
                         <Label>Opening Stock Value</Label>
-                        <Input type="number" value={newItem.opening_stock_value} onChange={(e) => setNewItem({ ...newItem, opening_stock_value: parseFloat(e.target.value) || 0 })} className="bg-[#111820]" />
+                        <Input type="number" value={newItem.opening_stock_value} onChange={(e) => setNewItem({ ...newItem, opening_stock_value: parseFloat(e.target.value) || 0 })} className="bg-bw-panel" />
                       </div>
                     </div>
                   </div>
@@ -1866,7 +1866,7 @@ export default function ItemsEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateItem} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-item-submit">Create Item</Button>
+            <Button onClick={handleCreateItem} className="bg-bw-volt text-bw-black font-bold" data-testid="create-item-submit">Create Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1919,8 +1919,8 @@ export default function ItemsEnhanced() {
                   <div><Label>Reorder Level</Label><Input type="number" value={editItem.reorder_level || 0} onChange={(e) => setEditItem({ ...editItem, reorder_level: parseInt(e.target.value) || 0 })} /></div>
                   <div>
                     <Label>Current Stock (read-only)</Label>
-                    <Input type="number" value={editItem.total_stock ?? editItem.stock_on_hand ?? 0} disabled className="bg-[rgba(255,255,255,0.05)]" />
-                    <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Use Adjustments tab to modify stock</p>
+                    <Input type="number" value={editItem.total_stock ?? editItem.stock_on_hand ?? 0} disabled className="bg-white/5" />
+                    <p className="text-xs text-bw-white/[0.45] mt-1">Use Adjustments tab to modify stock</p>
                   </div>
                 </div>
               )}
@@ -1928,7 +1928,7 @@ export default function ItemsEnhanced() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditItem(null)}>Cancel</Button>
-            <Button onClick={handleUpdateItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Update Item</Button>
+            <Button onClick={handleUpdateItem} className="bg-bw-volt text-bw-black font-bold">Update Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1953,7 +1953,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowGroupDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateGroup} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-group-submit">Create</Button>
+            <Button onClick={handleCreateGroup} className="bg-bw-volt text-bw-black font-bold" data-testid="create-group-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1972,7 +1972,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowWarehouseDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateWarehouse} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-warehouse-submit">Create</Button>
+            <Button onClick={handleCreateWarehouse} className="bg-bw-volt text-bw-black font-bold" data-testid="create-warehouse-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2001,7 +2001,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPriceListDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreatePriceList} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-pricelist-submit">Create</Button>
+            <Button onClick={handleCreatePriceList} className="bg-bw-volt text-bw-black font-bold" data-testid="create-pricelist-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2064,7 +2064,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdjustmentDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateAdjustment} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-adjustment-submit">Create Adjustment</Button>
+            <Button onClick={handleCreateAdjustment} className="bg-bw-volt text-bw-black font-bold" data-testid="create-adjustment-submit">Create Adjustment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2078,13 +2078,13 @@ export default function ItemsEnhanced() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="border-2 border-dashed rounded-lg p-6 text-center">
-              <Upload className="h-10 w-10 mx-auto text-[rgba(244,246,240,0.45)] mb-2" />
+              <Upload className="h-10 w-10 mx-auto text-bw-white/[0.45] mb-2" />
               <input type="file" accept=".csv" onChange={(e) => setImportFile(e.target.files?.[0] || null)} className="hidden" id="import-file" />
               <label htmlFor="import-file" className="cursor-pointer">
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">Click to select a CSV file</p>
-                <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Max file size: 1MB</p>
+                <p className="text-sm text-bw-white/35">Click to select a CSV file</p>
+                <p className="text-xs text-bw-white/[0.45] mt-1">Max file size: 1MB</p>
               </label>
-              {importFile && <p className="mt-2 text-sm font-medium text-[#22C55E]">{importFile.name}</p>}
+              {importFile && <p className="mt-2 text-sm font-medium text-bw-green">{importFile.name}</p>}
             </div>
             <div className="flex items-center gap-2">
               <Checkbox checked={importOverwrite} onCheckedChange={(v) => setImportOverwrite(v)} />
@@ -2096,7 +2096,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportFile(null); }}>Cancel</Button>
-            <Button onClick={handleImport} disabled={!importFile} className="bg-[#C8FF00] text-[#080C0F] font-bold">Import</Button>
+            <Button onClick={handleImport} disabled={!importFile} className="bg-bw-volt text-bw-black font-bold">Import</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2112,7 +2112,7 @@ export default function ItemsEnhanced() {
                   <div key={cf.field_id} className="p-3 flex items-center justify-between">
                     <div>
                       <p className="font-medium">{cf.field_name}</p>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{cf.field_type} {cf.is_required && "• Required"}</p>
+                      <p className="text-xs text-bw-white/[0.45]">{cf.field_type} {cf.is_required && "• Required"}</p>
                     </div>
                     <Button size="sm" variant="ghost" onClick={async () => {
                       await fetch(`${API}/items-enhanced/custom-fields/${cf.field_id}`, { method: "DELETE", headers });
@@ -2151,7 +2151,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCustomFieldDialog(false)}>Close</Button>
-            <Button onClick={handleCreateCustomField} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add Field</Button>
+            <Button onClick={handleCreateCustomField} className="bg-bw-volt text-bw-black font-bold">Add Field</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2175,32 +2175,32 @@ export default function ItemsEnhanced() {
                 autoFocus
                 data-testid="barcode-input"
               />
-              <Button onClick={handleBarcodeLookup} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+              <Button onClick={handleBarcodeLookup} className="bg-bw-volt text-bw-black font-bold">
                 <Search className="h-4 w-4" />
               </Button>
             </div>
             
             {barcodeResult && (
-              <div className="border rounded-lg p-4 bg-[rgba(34,197,94,0.08)]">
+              <div className="border rounded-lg p-4 bg-bw-green/[0.08]">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded bg-[#111820] flex items-center justify-center">
-                    <Package className="h-6 w-6 text-[rgba(244,246,240,0.45)]" />
+                  <div className="w-12 h-12 rounded bg-bw-panel flex items-center justify-center">
+                    <Package className="h-6 w-6 text-bw-white/[0.45]" />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-lg">{barcodeResult.name}</p>
-                    <p className="text-sm text-[rgba(244,246,240,0.35)]">SKU: {barcodeResult.sku || '-'}</p>
+                    <p className="text-sm text-bw-white/35">SKU: {barcodeResult.sku || '-'}</p>
                     <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Price:</span>
+                        <span className="text-bw-white/[0.45]">Price:</span>
                         <span className="font-medium ml-1">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')}</span>
                       </div>
                       <div>
-                        <span className="text-[rgba(244,246,240,0.45)]">Stock:</span>
+                        <span className="text-bw-white/[0.45]">Stock:</span>
                         <span className="font-medium ml-1">{barcodeResult.stock_on_hand || barcodeResult.available_stock || 0} {barcodeResult.unit}</span>
                       </div>
                     </div>
                     {barcodeResult.hsn_code && (
-                      <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">HSN: {barcodeResult.hsn_code}</p>
+                      <p className="text-xs text-bw-white/[0.45] mt-1">HSN: {barcodeResult.hsn_code}</p>
                     )}
                   </div>
                 </div>
@@ -2244,7 +2244,7 @@ export default function ItemsEnhanced() {
                   id="bulk-price-percentage"
                 />
               </div>
-              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Positive = markup, Negative = discount</p>
+              <p className="text-xs text-bw-white/[0.45] mt-1">Positive = markup, Negative = discount</p>
             </div>
           </div>
           <DialogFooter>
@@ -2256,7 +2256,7 @@ export default function ItemsEnhanced() {
                   handleBulkSetPrices(selectedPriceList.pricelist_id, percentage);
                 }
               }}
-              className="bg-[#C8FF00] text-[#080C0F] font-bold"
+              className="bg-bw-volt text-bw-black font-bold"
             >
               Apply to All Items
             </Button>
@@ -2336,7 +2336,7 @@ export default function ItemsEnhanced() {
                   toast.error("Please select a contact");
                 }
               }}
-              className="bg-[#C8FF00] text-[#080C0F] font-bold"
+              className="bg-bw-volt text-bw-black font-bold"
             >
               Assign Price List
             </Button>
@@ -2357,7 +2357,7 @@ export default function ItemsEnhanced() {
             <div className="space-y-6 py-4">
               {/* SKU Settings */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-[rgba(244,246,240,0.35)] border-b pb-2">SKU Settings</h3>
+                <h3 className="font-semibold text-sm text-bw-white/35 border-b pb-2">SKU Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center justify-between">
                     <Label>Enable SKU</Label>
@@ -2395,7 +2395,7 @@ export default function ItemsEnhanced() {
 
               {/* HSN/SAC Settings */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-[rgba(244,246,240,0.35)] border-b pb-2">HSN/SAC Settings</h3>
+                <h3 className="font-semibold text-sm text-bw-white/35 border-b pb-2">HSN/SAC Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center justify-between">
                     <Label>Require HSN/SAC</Label>
@@ -2423,7 +2423,7 @@ export default function ItemsEnhanced() {
 
               {/* Alerts */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-[rgba(244,246,240,0.35)] border-b pb-2">Alerts & Notifications</h3>
+                <h3 className="font-semibold text-sm text-bw-white/35 border-b pb-2">Alerts & Notifications</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center justify-between">
                     <Label>Low Stock Alerts</Label>
@@ -2444,7 +2444,7 @@ export default function ItemsEnhanced() {
 
               {/* Defaults */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-[rgba(244,246,240,0.35)] border-b pb-2">Default Values</h3>
+                <h3 className="font-semibold text-sm text-bw-white/35 border-b pb-2">Default Values</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Default Unit</Label>
@@ -2485,7 +2485,7 @@ export default function ItemsEnhanced() {
 
               {/* Features */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-[rgba(244,246,240,0.35)] border-b pb-2">Features</h3>
+                <h3 className="font-semibold text-sm text-bw-white/35 border-b pb-2">Features</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="flex items-center justify-between">
                     <Label>Enable Images</Label>
@@ -2514,7 +2514,7 @@ export default function ItemsEnhanced() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
-            <Button onClick={handleSavePreferences} className="bg-[#C8FF00] text-[#080C0F] font-bold gap-2">
+            <Button onClick={handleSavePreferences} className="bg-bw-volt text-bw-black font-bold gap-2">
               <Save className="h-4 w-4" /> Save Preferences
             </Button>
           </DialogFooter>
@@ -2533,7 +2533,7 @@ export default function ItemsEnhanced() {
           <div className="py-4">
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-[#111820]">
+                <thead className="bg-bw-panel">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Field</th>
                     <th className="px-4 py-3 text-center font-medium">Active</th>
@@ -2551,7 +2551,7 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {fieldConfig.map((field, idx) => (
-                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-[#111820]" : "bg-[#111820]"}>
+                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-bw-panel" : "bg-bw-panel"}>
                       <td className="px-4 py-2 font-medium">{field.display_name || field.field_name}</td>
                       <td className="px-4 py-2 text-center">
                         <Switch 
@@ -2581,7 +2581,7 @@ export default function ItemsEnhanced() {
                       </td>
                       <td className="px-4 py-2 text-center">
                         {field.is_mandatory ? (
-                          <Lock className="h-4 w-4 mx-auto text-[rgba(244,246,240,0.45)]" />
+                          <Lock className="h-4 w-4 mx-auto text-bw-white/[0.45]" />
                         ) : (
                           <Checkbox 
                             checked={field.is_mandatory} 
@@ -2597,7 +2597,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFieldConfigDialog(false)}>Cancel</Button>
-            <Button onClick={handleSaveFieldConfig} className="bg-[#C8FF00] text-[#080C0F] font-bold gap-2">
+            <Button onClick={handleSaveFieldConfig} className="bg-bw-volt text-bw-black font-bold gap-2">
               <Save className="h-4 w-4" /> Save Configuration
             </Button>
           </DialogFooter>
@@ -2633,14 +2633,14 @@ export default function ItemsEnhanced() {
             </div>
             {isScannerActive && (
               <div className="text-center">
-                <p className="text-sm text-[rgba(244,246,240,0.45)] mb-2">Scanning... Point at barcode</p>
+                <p className="text-sm text-bw-white/[0.45] mb-2">Scanning... Point at barcode</p>
                 <Button variant="outline" onClick={stopScanner}>Stop Scanner</Button>
               </div>
             )}
             {barcodeResult && (
-              <div className="border rounded-lg p-3 bg-[rgba(34,197,94,0.08)]">
+              <div className="border rounded-lg p-3 bg-bw-green/[0.08]">
                 <p className="font-medium">{barcodeResult.name}</p>
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')} • Stock: {barcodeResult.stock_on_hand || 0}</p>
+                <p className="text-sm text-bw-white/35">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')} • Stock: {barcodeResult.stock_on_hand || 0}</p>
               </div>
             )}
           </div>
@@ -2652,7 +2652,7 @@ export default function ItemsEnhanced() {
 
       {/* Low Stock Alert Section */}
       {lowStockItems.length > 0 && (
-        <Card className="border-red-200 bg-[rgba(255,59,47,0.08)]">
+        <Card className="border-red-200 bg-bw-red/[0.08]">
           <CardHeader>
             <CardTitle className="text-red-700 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" /> Low Stock Alerts ({lowStockItems.length} items)
@@ -2661,18 +2661,18 @@ export default function ItemsEnhanced() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {lowStockItems.slice(0, 6).map(item => (
-                <div key={item.item_id} className="bg-[#111820] rounded-lg p-3 border border-red-200">
+                <div key={item.item_id} className="bg-bw-panel rounded-lg p-3 border border-red-200">
                   <p className="font-medium text-sm">{item.name}</p>
                   <div className="flex justify-between mt-1 text-xs">
-                    <span className="text-[rgba(244,246,240,0.45)]">Current: <span className="text-[#FF3B2F] font-bold">{item.current_stock}</span></span>
-                    <span className="text-[rgba(244,246,240,0.45)]">Reorder: {item.reorder_level}</span>
+                    <span className="text-bw-white/[0.45]">Current: <span className="text-bw-red font-bold">{item.current_stock}</span></span>
+                    <span className="text-bw-white/[0.45]">Reorder: {item.reorder_level}</span>
                   </div>
-                  <p className="text-xs text-[#FF3B2F] mt-1">Shortage: {item.shortage} units</p>
+                  <p className="text-xs text-bw-red mt-1">Shortage: {item.shortage} units</p>
                 </div>
               ))}
             </div>
             {lowStockItems.length > 6 && (
-              <p className="text-sm text-[#FF3B2F] mt-3">+ {lowStockItems.length - 6} more items need attention</p>
+              <p className="text-sm text-bw-red mt-3">+ {lowStockItems.length - 6} more items need attention</p>
             )}
           </CardContent>
         </Card>

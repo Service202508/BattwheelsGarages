@@ -202,7 +202,7 @@ export default function CommandPalette() {
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Zap className="h-3 w-3 text-[#C8FF00]" />
+          <Zap className="h-3 w-3 text-bw-volt" />
           <span>Powered by Battwheels OS</span>
         </div>
       </div>

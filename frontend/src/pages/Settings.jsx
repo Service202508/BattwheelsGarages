@@ -157,7 +157,7 @@ export default function Settings({ user }) {
                   data-testid="email-notifications-switch"
                 />
               </div>
-              <Separator className="bg-[#111820]/10" />
+              <Separator className="bg-bw-panel/10" />
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">System Alerts</p>
@@ -169,7 +169,7 @@ export default function Settings({ user }) {
                   data-testid="alerts-notifications-switch"
                 />
               </div>
-              <Separator className="bg-[#111820]/10" />
+              <Separator className="bg-bw-panel/10" />
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Ticket Updates</p>
@@ -269,7 +269,7 @@ export default function Settings({ user }) {
                   <p className="text-sm text-muted-foreground capitalize">{user?.role || "Customer"}</p>
                 </div>
               </div>
-              <Separator className="bg-[#111820]/10" />
+              <Separator className="bg-bw-panel/10" />
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">User ID</span>

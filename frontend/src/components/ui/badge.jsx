@@ -9,48 +9,48 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-[rgba(200,255,0,0.25)] bg-[rgba(200,255,0,0.10)] text-[#C8FF00]",
+          "border-bw-volt/25 bg-bw-volt/10 text-bw-volt",
         secondary:
-          "border-[rgba(255,255,255,0.08)] bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)]",
+          "border-white/[0.08] bg-bw-white/5 text-bw-white/35",
         destructive:
-          "border-[rgba(255,59,47,0.25)] bg-[rgba(255,59,47,0.10)] text-[#FF3B2F]",
+          "border-bw-red/25 bg-bw-red/10 text-bw-red",
         outline: 
-          "border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.7)]",
+          "border-white/[0.13] text-bw-white/70",
         // Status variants
         open:
-          "border-[rgba(200,255,0,0.25)] bg-[rgba(200,255,0,0.10)] text-[#C8FF00]",
+          "border-bw-volt/25 bg-bw-volt/10 text-bw-volt",
         new:
-          "border-[rgba(200,255,0,0.25)] bg-[rgba(200,255,0,0.10)] text-[#C8FF00]",
+          "border-bw-volt/25 bg-bw-volt/10 text-bw-volt",
         "in-progress":
-          "border-[rgba(255,140,0,0.25)] bg-[rgba(255,140,0,0.10)] text-[#FF8C00]",
+          "border-bw-orange/25 bg-bw-orange/10 text-bw-orange",
         active:
-          "border-[rgba(255,140,0,0.25)] bg-[rgba(255,140,0,0.10)] text-[#FF8C00]",
+          "border-bw-orange/25 bg-bw-orange/10 text-bw-orange",
         assigned:
-          "border-[rgba(59,158,255,0.25)] bg-[rgba(59,158,255,0.10)] text-[#3B9EFF]",
+          "border-bw-blue/25 bg-bw-blue/10 text-bw-blue",
         approved:
-          "border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+          "border-bw-green/25 bg-bw-green/10 text-bw-green",
         closed:
-          "border-[rgba(255,255,255,0.08)] bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)]",
+          "border-white/[0.08] bg-bw-white/5 text-bw-white/35",
         resolved:
-          "border-[rgba(255,255,255,0.08)] bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)]",
+          "border-white/[0.08] bg-bw-white/5 text-bw-white/35",
         escalated:
-          "border-[rgba(255,59,47,0.25)] bg-[rgba(255,59,47,0.10)] text-[#FF3B2F]",
+          "border-bw-red/25 bg-bw-red/10 text-bw-red",
         critical:
-          "border-[rgba(255,59,47,0.25)] bg-[rgba(255,59,47,0.10)] text-[#FF3B2F]",
+          "border-bw-red/25 bg-bw-red/10 text-bw-red",
         // Priority variants
         high:
-          "border-[rgba(255,59,47,0.20)] bg-[rgba(255,59,47,0.10)] text-[#FF3B2F]",
+          "border-bw-red/20 bg-bw-red/10 text-bw-red",
         medium:
-          "border-[rgba(234,179,8,0.20)] bg-[rgba(234,179,8,0.10)] text-[#EAB308]",
+          "border-bw-amber/20 bg-bw-amber/10 text-bw-amber",
         low:
-          "border-[rgba(34,197,94,0.20)] bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+          "border-bw-green/20 bg-bw-green/10 text-bw-green",
         // General semantic variants
         success:
-          "border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+          "border-bw-green/25 bg-bw-green/10 text-bw-green",
         warning:
-          "border-[rgba(234,179,8,0.25)] bg-[rgba(234,179,8,0.10)] text-[#EAB308]",
+          "border-bw-amber/25 bg-bw-amber/10 text-bw-amber",
         info:
-          "border-[rgba(59,158,255,0.25)] bg-[rgba(59,158,255,0.10)] text-[#3B9EFF]",
+          "border-bw-blue/25 bg-bw-blue/10 text-bw-blue",
       },
     },
     defaultVariants: {

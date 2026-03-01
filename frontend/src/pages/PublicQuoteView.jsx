@@ -16,13 +16,13 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  sent: "bg-blue-100 text-[#3B9EFF]",
-  customer_viewed: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)]",
-  accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  declined: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  expired: "bg-orange-100 text-[#FF8C00]",
-  converted: "bg-purple-100 text-[#8B5CF6]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  sent: "bg-blue-100 text-bw-blue",
+  customer_viewed: "bg-bw-teal/10 text-bw-teal border border-bw-teal/25",
+  accepted: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  declined: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  expired: "bg-orange-100 text-bw-orange",
+  converted: "bg-purple-100 text-bw-purple"
 };
 
 const statusLabels = {
@@ -164,9 +164,9 @@ export default function PublicQuoteView() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center">
+      <div className="min-h-screen bg-bw-black flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-[#0B462F] mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-bw-panel mx-auto mb-4" />
           <p className="text-gray-600">Loading estimate...</p>
         </div>
       </div>
@@ -176,10 +176,10 @@ export default function PublicQuoteView() {
   // Password required
   if (passwordRequired) {
     return (
-      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-bw-black flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <Lock className="h-12 w-12 text-[#0B462F] mx-auto mb-4" />
+            <Lock className="h-12 w-12 text-bw-panel mx-auto mb-4" />
             <CardTitle>Password Protected</CardTitle>
             <p className="text-sm text-gray-500 mt-2">This estimate is password protected. Please enter the password to view.</p>
           </CardHeader>
@@ -194,7 +194,7 @@ export default function PublicQuoteView() {
                 onKeyUp={(e) => e.key === 'Enter' && handlePasswordSubmit()}
               />
             </div>
-            <Button onClick={handlePasswordSubmit} className="w-full bg-[#0B462F] hover:bg-[#0d5739]">
+            <Button onClick={handlePasswordSubmit} className="w-full bg-bw-panel hover:bg-bw-card">
               View Estimate
             </Button>
           </CardContent>
@@ -206,11 +206,11 @@ export default function PublicQuoteView() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-bw-black flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-6">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-[#F4F6F0] mb-2">Unable to Load Estimate</h2>
+            <h2 className="text-xl font-semibold text-bw-white mb-2">Unable to Load Estimate</h2>
             <p className="text-gray-600">{error}</p>
           </CardContent>
         </Card>
@@ -220,10 +220,10 @@ export default function PublicQuoteView() {
 
   // Main estimate view
   return (
-    <div className="min-h-screen bg-[#0B0B0F] py-8 px-4">
+    <div className="min-h-screen bg-bw-black py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-[#0B462F] text-white rounded-t-xl p-6">
+        <div className="bg-bw-panel text-white rounded-t-xl p-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold">Battwheels OS</h1>
@@ -237,13 +237,13 @@ export default function PublicQuoteView() {
         </div>
 
         {/* Status Bar */}
-        <div className="bg-[#111820] border-x border-b p-4 flex items-center justify-between flex-wrap gap-4">
+        <div className="bg-bw-panel border-x border-b p-4 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <Badge className={`${statusColors[estimate?.status]} px-3 py-1 text-sm`}>
               {statusLabels[estimate?.status]}
             </Badge>
             {estimate?.status === "customer_viewed" && (
-              <span className="text-sm text-[#1AFFE4] flex items-center gap-1">
+              <span className="text-sm text-bw-teal flex items-center gap-1">
                 <Eye className="h-4 w-4" /> You are viewing this estimate
               </span>
             )}
@@ -258,7 +258,7 @@ export default function PublicQuoteView() {
           <CardContent className="p-6 space-y-6">
             {/* Customer & Date Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#14141B] rounded-lg p-4">
+              <div className="bg-bw-panel rounded-lg p-4">
                 <p className="text-xs text-gray-500 uppercase mb-1">Bill To</p>
                 <p className="font-semibold text-lg">{estimate?.customer_name}</p>
                 {estimate?.customer_email && (
@@ -268,7 +268,7 @@ export default function PublicQuoteView() {
                   <p className="text-gray-600 text-sm font-mono">GSTIN: {estimate?.customer_gstin}</p>
                 )}
               </div>
-              <div className="bg-[#14141B] rounded-lg p-4">
+              <div className="bg-bw-panel rounded-lg p-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-xs text-gray-500 uppercase">Date</p>
@@ -301,7 +301,7 @@ export default function PublicQuoteView() {
               <h3 className="font-semibold mb-3">Items</h3>
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-[#0B462F] text-white">
+                  <thead className="bg-bw-panel text-white">
                     <tr>
                       <th className="px-4 py-3 text-left">#</th>
                       <th className="px-4 py-3 text-left">Item & Description</th>
@@ -364,7 +364,7 @@ export default function PublicQuoteView() {
                   </div>
                 )}
                 <Separator />
-                <div className="flex justify-between text-lg font-bold text-[#0B462F]">
+                <div className="flex justify-between text-lg font-bold text-bw-panel">
                   <span>Grand Total:</span>
                   <span>₹{estimate?.grand_total?.toLocaleString('en-IN')}</span>
                 </div>
@@ -377,15 +377,15 @@ export default function PublicQuoteView() {
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {estimate?.terms_and_conditions && (
-                    <div className="bg-[#14141B] rounded-lg p-4">
+                    <div className="bg-bw-panel rounded-lg p-4">
                       <p className="text-xs text-gray-500 uppercase mb-2">Terms & Conditions</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.7)] whitespace-pre-wrap">{estimate?.terms_and_conditions}</p>
+                      <p className="text-sm text-bw-white/70 whitespace-pre-wrap">{estimate?.terms_and_conditions}</p>
                     </div>
                   )}
                   {estimate?.notes && (
-                    <div className="bg-[#14141B] rounded-lg p-4">
+                    <div className="bg-bw-panel rounded-lg p-4">
                       <p className="text-xs text-gray-500 uppercase mb-2">Notes</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.7)] whitespace-pre-wrap">{estimate?.notes}</p>
+                      <p className="text-sm text-bw-white/70 whitespace-pre-wrap">{estimate?.notes}</p>
                     </div>
                   )}
                 </div>
@@ -404,7 +404,7 @@ export default function PublicQuoteView() {
                     {attachments.map((att) => (
                       <div 
                         key={att.attachment_id} 
-                        className="flex items-center justify-between bg-[#14141B] rounded-lg p-3 cursor-pointer hover:bg-[rgba(255,255,255,0.05)]"
+                        className="flex items-center justify-between bg-bw-panel rounded-lg p-3 cursor-pointer hover:bg-white/5"
                         onClick={() => handleDownloadAttachment(att.attachment_id, att.filename)}
                       >
                         <div className="flex items-center gap-2">
@@ -444,7 +444,7 @@ export default function PublicQuoteView() {
                       <Button 
                         variant="outline"
                         onClick={() => setShowDeclineDialog(true)}
-                        className="text-red-600 border-red-300 hover:bg-[rgba(255,59,47,0.08)] gap-2"
+                        className="text-red-600 border-red-300 hover:bg-bw-red/[0.08] gap-2"
                         data-testid="public-decline-btn"
                       >
                         <XCircle className="h-4 w-4" /> Decline
@@ -457,7 +457,7 @@ export default function PublicQuoteView() {
 
             {/* Already Accepted/Declined Message */}
             {estimate?.status === "accepted" && (
-              <div className="bg-[rgba(34,197,94,0.08)] rounded-lg p-4 text-center">
+              <div className="bg-bw-green/[0.08] rounded-lg p-4 text-center">
                 <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <p className="text-green-800 font-medium">This estimate has been accepted</p>
                 {estimate?.accepted_date && (
@@ -466,7 +466,7 @@ export default function PublicQuoteView() {
               </div>
             )}
             {estimate?.status === "declined" && (
-              <div className="bg-[rgba(255,59,47,0.08)] rounded-lg p-4 text-center">
+              <div className="bg-bw-red/[0.08] rounded-lg p-4 text-center">
                 <XCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
                 <p className="text-red-800 font-medium">This estimate has been declined</p>
                 {estimate?.decline_reason && (

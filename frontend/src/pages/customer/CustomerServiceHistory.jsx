@@ -69,13 +69,13 @@ export default function CustomerServiceHistory({ user }) {
 
   const getStatusConfig = (status) => {
     const configs = {
-      open: { color: "bg-yellow-100 text-[#EAB308]", icon: AlertCircle, label: "Open" },
-      technician_assigned: { color: "bg-blue-100 text-[#3B9EFF]", icon: User, label: "Assigned" },
-      estimate_shared: { color: "bg-purple-100 text-[#8B5CF6]", icon: FileText, label: "Estimate Shared" },
+      open: { color: "bg-yellow-100 text-bw-amber", icon: AlertCircle, label: "Open" },
+      technician_assigned: { color: "bg-blue-100 text-bw-blue", icon: User, label: "Assigned" },
+      estimate_shared: { color: "bg-purple-100 text-bw-purple", icon: FileText, label: "Estimate Shared" },
       estimate_approved: { color: "bg-indigo-100 text-indigo-700", icon: CheckCircle, label: "Approved" },
-      in_progress: { color: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00]", icon: Clock, label: "In Progress" },
-      resolved: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle, label: "Resolved" },
-      closed: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: CheckCircle, label: "Closed" }
+      in_progress: { color: "bg-bw-orange/10 text-bw-orange", icon: Clock, label: "In Progress" },
+      resolved: { color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", icon: CheckCircle, label: "Resolved" },
+      closed: { color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]", icon: CheckCircle, label: "Closed" }
     };
     return configs[status] || configs.open;
   };
@@ -99,8 +99,8 @@ export default function CustomerServiceHistory({ user }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Service History</h1>
-          <p className="text-[rgba(244,246,240,0.35)]">Track all your vehicle services and repairs</p>
+          <h1 className="text-2xl font-bold text-bw-white">Service History</h1>
+          <p className="text-bw-white/35">Track all your vehicle services and repairs</p>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ export default function CustomerServiceHistory({ user }) {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
               <Input
                 placeholder="Search by ticket ID, vehicle, or issue..."
                 value={searchTerm}
@@ -138,9 +138,9 @@ export default function CustomerServiceHistory({ user }) {
       {filteredServices.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <ClipboardList className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
-            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Services Found</h3>
-            <p className="text-[rgba(244,246,240,0.35)]">
+            <ClipboardList className="h-16 w-16 mx-auto mb-4 text-bw-white/20" />
+            <h3 className="text-lg font-semibold text-bw-white mb-2">No Services Found</h3>
+            <p className="text-bw-white/35">
               {searchTerm || statusFilter !== "all" 
                 ? "Try adjusting your filters"
                 : "Your service history will appear here"
@@ -157,7 +157,7 @@ export default function CustomerServiceHistory({ user }) {
             return (
               <Card 
                 key={service.ticket_id}
-                className="hover:border-[rgba(255,255,255,0.12)] transition-all cursor-pointer"
+                className="hover:border-white/[0.12] transition-all cursor-pointer"
                 onClick={() => fetchServiceDetail(service.ticket_id)}
               >
                 <CardContent className="p-4">
@@ -168,11 +168,11 @@ export default function CustomerServiceHistory({ user }) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-[#F4F6F0] truncate">{service.title}</h3>
+                          <h3 className="font-semibold text-bw-white truncate">{service.title}</h3>
                           <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
                         </div>
-                        <p className="text-sm text-[rgba(244,246,240,0.35)] line-clamp-2 mb-2">{service.description}</p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                        <p className="text-sm text-bw-white/35 line-clamp-2 mb-2">{service.description}</p>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-bw-white/[0.45]">
                           <span className="flex items-center gap-1">
                             <Car className="h-4 w-4" />
                             {service.vehicle_number}
@@ -192,9 +192,9 @@ export default function CustomerServiceHistory({ user }) {
                     </div>
                     <div className="text-right flex-shrink-0">
                       {service.total_cost > 0 && (
-                        <p className="font-semibold text-[#F4F6F0]">₹{service.total_cost.toLocaleString()}</p>
+                        <p className="font-semibold text-bw-white">₹{service.total_cost.toLocaleString()}</p>
                       )}
-                      <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)] mt-2 ml-auto" />
+                      <ChevronRight className="h-5 w-5 text-bw-white/[0.45] mt-2 ml-auto" />
                     </div>
                   </div>
                 </CardContent>
@@ -222,50 +222,50 @@ export default function CustomerServiceHistory({ user }) {
                 {/* Ticket Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Ticket ID</p>
+                    <p className="text-sm text-bw-white/[0.45]">Ticket ID</p>
                     <p className="font-mono font-medium">{selectedService.ticket_id}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Vehicle</p>
+                    <p className="text-sm text-bw-white/[0.45]">Vehicle</p>
                     <p className="font-medium">{selectedService.vehicle_number}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Created</p>
+                    <p className="text-sm text-bw-white/[0.45]">Created</p>
                     <p className="font-medium">{new Date(selectedService.created_at).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Technician</p>
+                    <p className="text-sm text-bw-white/[0.45]">Technician</p>
                     <p className="font-medium">{selectedService.technician_name || "Not assigned"}</p>
                   </div>
                 </div>
 
                 {/* Issue */}
                 <div>
-                  <h4 className="font-semibold text-[#F4F6F0] mb-2">Issue Reported</h4>
-                  <p className="text-[rgba(244,246,240,0.35)]">{selectedService.title}</p>
+                  <h4 className="font-semibold text-bw-white mb-2">Issue Reported</h4>
+                  <p className="text-bw-white/35">{selectedService.title}</p>
                   {selectedService.description && (
-                    <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{selectedService.description}</p>
+                    <p className="text-bw-white/[0.45] text-sm mt-1">{selectedService.description}</p>
                   )}
                 </div>
 
                 {/* Status Timeline */}
                 {selectedService.status_history && selectedService.status_history.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-[#F4F6F0] mb-3">Service Timeline</h4>
+                    <h4 className="font-semibold text-bw-white mb-3">Service Timeline</h4>
                     <div className="space-y-3">
                       {selectedService.status_history.map((item, index) => (
                         <div key={index} className="flex items-start gap-3">
                           <div className="flex flex-col items-center">
-                            <div className="h-3 w-3 rounded-full bg-[rgba(200,255,0,0.08)]0"></div>
+                            <div className="h-3 w-3 rounded-full bg-bw-volt/[0.08]0"></div>
                             {index < selectedService.status_history.length - 1 && (
-                              <div className="w-0.5 h-8 bg-[#141E27] mt-1"></div>
+                              <div className="w-0.5 h-8 bg-bw-card mt-1"></div>
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-[#F4F6F0]">
+                            <p className="font-medium text-bw-white">
                               {getStatusConfig(item.status).label}
                             </p>
-                            <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                            <p className="text-sm text-bw-white/[0.45]">
                               {new Date(item.timestamp).toLocaleString()}
                               {item.updated_by && ` • ${item.updated_by}`}
                             </p>
@@ -278,10 +278,10 @@ export default function CustomerServiceHistory({ user }) {
 
                 {/* Cost */}
                 {selectedService.total_cost > 0 && (
-                  <div className="bg-[#111820] rounded-lg p-4">
+                  <div className="bg-bw-panel rounded-lg p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[rgba(244,246,240,0.35)]">Total Cost</span>
-                      <span className="text-xl font-bold text-[#F4F6F0]">
+                      <span className="text-bw-white/35">Total Cost</span>
+                      <span className="text-xl font-bold text-bw-white">
                         ₹{selectedService.total_cost.toLocaleString()}
                       </span>
                     </div>

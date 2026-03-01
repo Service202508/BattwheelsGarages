@@ -58,7 +58,7 @@ export default function Alerts({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-red-500/30 bg-[rgba(255,59,47,0.05)]">
+        <Card className="border-red-500/30 bg-bw-red/5">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm text-red-400">Critical</p>
@@ -67,7 +67,7 @@ export default function Alerts({ user }) {
             <AlertTriangle className="h-8 w-8 text-red-400" />
           </CardContent>
         </Card>
-        <Card className="border-orange-500/30 bg-[rgba(255,140,0,0.05)]">
+        <Card className="border-orange-500/30 bg-bw-orange/5">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm text-orange-400">Warnings</p>
@@ -98,7 +98,7 @@ export default function Alerts({ user }) {
             <div className="p-8 text-center text-muted-foreground">Loading alerts...</div>
           ) : alerts.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
-              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-[#C8FF00] text-400" />
+              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-bw-volt text-400" />
               <p>All systems operational. No alerts at this time.</p>
             </div>
           ) : (
@@ -110,9 +110,9 @@ export default function Alerts({ user }) {
                     key={alert.alert_id}
                     className={`p-4 rounded-lg border transition-all hover:border-white/20 ${
                       alert.severity === "critical"
-                        ? "border-red-500/30 bg-[rgba(255,59,47,0.05)]"
+                        ? "border-red-500/30 bg-bw-red/5"
                         : alert.severity === "warning"
-                        ? "border-orange-500/30 bg-[rgba(255,140,0,0.05)]"
+                        ? "border-orange-500/30 bg-bw-orange/5"
                         : "border-white/10 bg-background/50"
                     }`}
                     data-testid={`alert-${alert.alert_id}`}
@@ -120,9 +120,9 @@ export default function Alerts({ user }) {
                     <div className="flex items-start gap-4">
                       <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                         alert.severity === "critical"
-                          ? "bg-[rgba(255,59,47,0.20)]"
+                          ? "bg-bw-red/20"
                           : alert.severity === "warning"
-                          ? "bg-[rgba(255,140,0,0.20)]"
+                          ? "bg-bw-orange/20"
                           : "bg-primary/20"
                       }`}>
                         <Icon className={`h-5 w-5 ${

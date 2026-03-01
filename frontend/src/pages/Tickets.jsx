@@ -16,13 +16,13 @@ import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
 
 const statusColors = {
-  open: "bg-[rgba(234,179,8,0.10)]",
+  open: "bg-bw-amber/10",
   technician_assigned: "bg-blue-500",
-  estimate_shared: "bg-[rgba(139,92,246,0.10)]",
+  estimate_shared: "bg-bw-purple/10",
   estimate_approved: "bg-indigo-500",
-  in_progress: "bg-[rgba(255,140,0,0.10)]",
-  resolved: "bg-[rgba(34,197,94,0.10)]",
-  closed: "bg-[#111820]0",
+  in_progress: "bg-bw-orange/10",
+  resolved: "bg-bw-green/10",
+  closed: "bg-bw-panel0",
 };
 
 const statusLabels = {
@@ -36,10 +36,10 @@ const statusLabels = {
 };
 
 const priorityColors = {
-  low: "bg-[rgba(200,255,0,0.20)] text-[#C8FF00]",
-  medium: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
-  high: "bg-[rgba(255,140,0,0.20)] text-orange-400",
-  critical: "bg-[rgba(255,59,47,0.20)] text-red-400"
+  low: "bg-bw-volt/20 text-bw-volt",
+  medium: "bg-bw-amber/20 text-yellow-400",
+  high: "bg-bw-orange/20 text-orange-400",
+  critical: "bg-bw-red/20 text-red-400"
 };
 
 export default function Tickets({ user }) {
@@ -428,8 +428,8 @@ export default function Tickets({ user }) {
                         <TableCell>
                           <Badge 
                             className={ticket.ticket_type === "workshop" 
-                              ? "bg-[rgba(59,158,255,0.15)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]" 
-                              : "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.20)]"}
+                              ? "bg-bw-blue/15 text-bw-blue border border-bw-blue/25" 
+                              : "bg-bw-volt/10 text-bw-volt border border-bw-volt/20"}
                             data-testid={`ticket-type-${ticket.ticket_id}`}
                           >
                             {ticket.ticket_type === "workshop" ? "Workshop" : "Onsite"}
@@ -449,12 +449,12 @@ export default function Tickets({ user }) {
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">{ticket.title}</TableCell>
                         <TableCell>
-                          <Badge className={priorityColors[ticket.priority] || "bg-[#111820]"}>
+                          <Badge className={priorityColors[ticket.priority] || "bg-bw-panel"}>
                             {ticket.priority}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge className={statusColors[ticket.status] || "bg-[#111820]"}>
+                          <Badge className={statusColors[ticket.status] || "bg-bw-panel"}>
                             {statusLabels[ticket.status] || ticket.status}
                           </Badge>
                         </TableCell>
@@ -472,7 +472,7 @@ export default function Tickets({ user }) {
               </div>
 
               {/* Mobile Cards */}
-              <div className="md:hidden divide-y divide-[rgba(255,255,255,0.06)]">
+              <div className="md:hidden divide-y divide-white/[0.06]">
                 {paginatedTickets.map((ticket) => (
                   <div
                     key={ticket.ticket_id}
@@ -482,32 +482,32 @@ export default function Tickets({ user }) {
                   >
                     {/* Top row: ID + Priority + Status */}
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-xs text-[rgba(244,246,240,0.40)]">
+                      <span className="font-mono text-xs text-bw-white/40">
                         {ticket.ticket_id}
                       </span>
                       <div className="flex items-center gap-2">
-                        <Badge className={priorityColors[ticket.priority] || "bg-[#111820]"} style={{ fontSize: "10px", padding: "2px 6px" }}>
+                        <Badge className={priorityColors[ticket.priority] || "bg-bw-panel"} style={{ fontSize: "10px", padding: "2px 6px" }}>
                           {ticket.priority}
                         </Badge>
-                        <Badge className={statusColors[ticket.status] || "bg-[#111820]"} style={{ fontSize: "10px", padding: "2px 6px" }}>
+                        <Badge className={statusColors[ticket.status] || "bg-bw-panel"} style={{ fontSize: "10px", padding: "2px 6px" }}>
                           {statusLabels[ticket.status] || ticket.status}
                         </Badge>
                       </div>
                     </div>
 
                     {/* Middle: Customer + Vehicle + Title */}
-                    <p className="font-semibold text-[#F4F6F0] text-sm mb-0.5">{ticket.customer_name || "N/A"}</p>
-                    <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">
+                    <p className="font-semibold text-bw-white text-sm mb-0.5">{ticket.customer_name || "N/A"}</p>
+                    <p className="text-xs text-bw-white/[0.45] mb-1">
                       {ticket.vehicle_number || "—"} {ticket.vehicle_type ? `· ${ticket.vehicle_type.replace("_", " ")}` : ""}
                     </p>
-                    <p className="text-sm text-[rgba(244,246,240,0.70)] truncate mb-3">{ticket.title}</p>
+                    <p className="text-sm text-bw-white/70 truncate mb-3">{ticket.title}</p>
 
                     {/* Bottom: SLA + Start Work button */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <SLACell ticket={ticket} data-testid={`sla-cell-${ticket.ticket_id}`} />
                         {ticket.assigned_technician_name && (
-                          <span className="text-xs text-[rgba(244,246,240,0.35)]">· {ticket.assigned_technician_name}</span>
+                          <span className="text-xs text-bw-white/35">· {ticket.assigned_technician_name}</span>
                         )}
                       </div>
                       <div className="flex gap-2">
@@ -602,7 +602,7 @@ export default function Tickets({ user }) {
                 </DialogDescription>
               </div>
               {selectedTicket && (
-                <Link to={`/tickets/${selectedTicket.ticket_id}`} className="text-xs text-[#C8FF00] hover:underline font-mono" data-testid="view-full-page-link">
+                <Link to={`/tickets/${selectedTicket.ticket_id}`} className="text-xs text-bw-volt hover:underline font-mono" data-testid="view-full-page-link">
                   Open Full Page →
                 </Link>
               )}

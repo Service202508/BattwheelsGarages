@@ -12,10 +12,10 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  active: "bg-bw-volt/10 text-bw-volt text-700",
+  expired: "bg-bw-red/10 text-bw-red border border-bw-red/25",
   pending: "bg-amber-100 text-amber-700",
-  cancelled: "bg-[rgba(255,255,255,0.05)] text-slate-600",
+  cancelled: "bg-white/5 text-slate-600",
 };
 
 export default function BusinessAMC({ user }) {
@@ -106,21 +106,21 @@ export default function BusinessAMC({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Active Contracts</p>
-                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-bw-volt text-600">{stats.active}</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
+              <div className="p-3 rounded bg-bw-volt/[0.08]">
+                <Shield className="h-5 w-5 text-bw-volt text-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -134,14 +134,14 @@ export default function BusinessAMC({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Contract Value</p>
                 <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.totalValue)}</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(139,92,246,0.08)]">
+              <div className="p-3 rounded bg-bw-purple/[0.08]">
                 <IndianRupee className="h-5 w-5 text-purple-600" />
               </div>
             </div>
@@ -155,7 +155,7 @@ export default function BusinessAMC({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
         </div>
       ) : contracts.length === 0 ? (
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="py-12 text-center">
             <Shield className="h-16 w-16 mx-auto text-slate-300 mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">No AMC Contracts</h3>
@@ -177,7 +177,7 @@ export default function BusinessAMC({ user }) {
             return (
               <Card 
                 key={contract.amc_id || contract.contract_id} 
-                className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer"
+                className="bg-bw-panel border-white/[0.07] border-200 hover:border-bw-volt/20 transition-colors cursor-pointer"
                 onClick={() => { setSelectedContract(contract); setShowDetailDialog(true); }}
                 data-testid={`amc-card-${contract.amc_id || contract.contract_id}`}
               >
@@ -222,7 +222,7 @@ export default function BusinessAMC({ user }) {
                   
                   {/* Services Used */}
                   {contract.services_used !== undefined && (
-                    <div className="flex items-center justify-between pt-3 border-t border-[rgba(255,255,255,0.07)] border-100">
+                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.07] border-100">
                       <span className="text-sm text-slate-500">Services Used</span>
                       <span className="font-medium text-slate-900">
                         {contract.services_used} / {contract.max_services || "Unlimited"}
@@ -250,7 +250,7 @@ export default function BusinessAMC({ user }) {
           <h2 className="text-xl font-bold text-slate-900 mb-4">Available AMC Plans</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {plans.map((plan) => (
-              <Card key={plan.plan_id} className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-colors">
+              <Card key={plan.plan_id} className="bg-bw-panel border-white/[0.07] border-200 hover:border-indigo-200 transition-colors">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 rounded-lg bg-indigo-50">
@@ -267,13 +267,13 @@ export default function BusinessAMC({ user }) {
                   <ul className="space-y-2 mb-4">
                     {plan.features?.slice(0, 4).map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
                   </ul>
                   
-                  <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.07)] border-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/[0.07] border-100">
                     <span className="text-2xl font-bold text-indigo-600">
                       {formatCurrency(plan.price)}
                     </span>
@@ -333,9 +333,9 @@ export default function BusinessAMC({ user }) {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(200,255,0,0.08)]">
-                <span className="text-sm text-[#C8FF00] text-700">Contract Value</span>
-                <span className="text-xl font-bold text-[#C8FF00] text-700">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-bw-volt/[0.08]">
+                <span className="text-sm text-bw-volt text-700">Contract Value</span>
+                <span className="text-xl font-bold text-bw-volt text-700">
                   {formatCurrency(selectedContract.contract_value)}
                 </span>
               </div>

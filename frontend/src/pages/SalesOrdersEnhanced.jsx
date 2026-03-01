@@ -23,12 +23,12 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]",
-  confirmed: "bg-blue-100 text-[#3B9EFF]",
-  open: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
-  partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
-  fulfilled: "bg-purple-100 text-[#8B5CF6]",
-  closed: "bg-[#141E27] text-[rgba(244,246,240,0.45)]",
+  draft: "bg-white/5 text-bw-white",
+  confirmed: "bg-blue-100 text-bw-blue",
+  open: "bg-bw-green/10 text-bw-green",
+  partially_fulfilled: "bg-yellow-100 text-bw-amber",
+  fulfilled: "bg-purple-100 text-bw-purple",
+  closed: "bg-bw-card text-bw-white/[0.45]",
   void: "bg-red-100 text-red-500"
 };
 
@@ -43,9 +43,9 @@ const statusLabels = {
 };
 
 const fulfillmentColors = {
-  unfulfilled: "bg-red-100 text-[#FF3B2F]",
-  partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
-  fulfilled: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]"
+  unfulfilled: "bg-red-100 text-bw-red",
+  partially_fulfilled: "bg-yellow-100 text-bw-amber",
+  fulfilled: "bg-bw-green/10 text-bw-green"
 };
 
 export default function SalesOrdersEnhanced() {
@@ -440,25 +440,25 @@ export default function SalesOrdersEnhanced() {
           <CardContent>
             <div className="flex items-center justify-between text-xs">
               <div className="text-center">
-                <p className="text-[rgba(244,246,240,0.45)]">Unfulfilled</p>
-                <p className="text-xl font-bold text-[#FF3B2F]">{fulfillmentSummary.unfulfilled}</p>
-                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-bw-white/[0.45]">Unfulfilled</p>
+                <p className="text-xl font-bold text-bw-red">{fulfillmentSummary.unfulfilled}</p>
+                <p className="text-bw-white/25">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[rgba(244,246,240,0.20)]" />
+              <ChevronRight className="h-4 w-4 text-bw-white/20" />
               <div className="text-center">
-                <p className="text-[rgba(244,246,240,0.45)]">Partially Fulfilled</p>
-                <p className="text-xl font-bold text-[#EAB308]">{fulfillmentSummary.partially_fulfilled}</p>
-                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-bw-white/[0.45]">Partially Fulfilled</p>
+                <p className="text-xl font-bold text-bw-amber">{fulfillmentSummary.partially_fulfilled}</p>
+                <p className="text-bw-white/25">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[rgba(244,246,240,0.20)]" />
+              <ChevronRight className="h-4 w-4 text-bw-white/20" />
               <div className="text-center">
-                <p className="text-[rgba(244,246,240,0.45)]">Fulfilled</p>
-                <p className="text-xl font-bold text-[#22C55E]">{fulfillmentSummary.fulfilled}</p>
-                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-bw-white/[0.45]">Fulfilled</p>
+                <p className="text-xl font-bold text-bw-green">{fulfillmentSummary.fulfilled}</p>
+                <p className="text-bw-white/25">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <div className="text-center ml-8 border-l pl-8">
-                <p className="text-[rgba(244,246,240,0.45)]">Fulfillment Rate</p>
-                <p className="text-2xl font-bold text-[#22C55E]">{fulfillmentSummary.fulfillment_rate}%</p>
+                <p className="text-bw-white/[0.45]">Fulfillment Rate</p>
+                <p className="text-2xl font-bold text-bw-green">{fulfillmentSummary.fulfillment_rate}%</p>
               </div>
             </div>
           </CardContent>
@@ -477,7 +477,7 @@ export default function SalesOrdersEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/25" />
                 <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchOrders()} placeholder="Search orders..." className="pl-10" data-testid="search-orders" />
               </div>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setTimeout(fetchOrders, 100); }}>
@@ -501,17 +501,17 @@ export default function SalesOrdersEnhanced() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setActiveTab("create")} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-order-btn">
+            <Button onClick={() => setActiveTab("create")} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-order-btn">
               <Plus className="h-4 w-4" /> New Sales Order
             </Button>
           </div>
 
           {loading ? <div className="text-center py-8">Loading...</div> : orders.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No sales orders found</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No sales orders found</p></CardContent></Card>
           ) : (
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-[#111820]">
+                <thead className="bg-bw-panel">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Order #</th>
                     <th className="px-4 py-3 text-left font-medium">Customer</th>
@@ -525,11 +525,11 @@ export default function SalesOrdersEnhanced() {
                 </thead>
                 <tbody>
                   {orders.map(order => (
-                    <tr key={order.salesorder_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820] cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
+                    <tr key={order.salesorder_id} className="border-b border-white/[0.04] hover:bg-bw-panel cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
                       <td className="px-4 py-3 font-mono font-medium">{order.salesorder_number}</td>
                       <td className="px-4 py-3">{order.customer_name}</td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{order.date}</td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{order.expected_shipment_date}</td>
+                      <td className="px-4 py-3 text-bw-white/[0.45]">{order.date}</td>
+                      <td className="px-4 py-3 text-bw-white/[0.45]">{order.expected_shipment_date}</td>
                       <td className="px-4 py-3 text-right font-medium">₹{(order.grand_total || 0).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-3 text-center">
                         <Badge className={statusColors[order.status]}>{statusLabels[order.status]}</Badge>
@@ -585,11 +585,11 @@ export default function SalesOrdersEnhanced() {
                       data-testid="customer-search"
                     />
                     {contacts.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-bw-panel border border-white/[0.13] rounded max-h-48 overflow-y-auto">
                         {contacts.map((c, idx) => (
                           <div 
                             key={`contact-${c.contact_id}-${idx}`} 
-                            className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+                            className="px-3 py-2 hover:bg-white/5 cursor-pointer"
                             onClick={() => {
                               setSelectedContact(c);
                               setNewOrder(prev => ({ ...prev, customer_id: c.contact_id }));
@@ -598,14 +598,14 @@ export default function SalesOrdersEnhanced() {
                             }}
                           >
                             <p className="font-medium">{c.name}</p>
-                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
+                            <p className="text-xs text-bw-white/[0.45]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   {selectedContact && (
-                    <div className="mt-2 p-2 bg-[#111820] rounded text-xs">
+                    <div className="mt-2 p-2 bg-bw-panel rounded text-xs">
                       <p><strong>{selectedContact.name}</strong></p>
                       {selectedContact.email && <p>{selectedContact.email}</p>}
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
@@ -700,7 +700,7 @@ export default function SalesOrdersEnhanced() {
                 {newOrder.line_items.length > 0 && (
                   <div className="border rounded-lg overflow-hidden mb-4">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#111820]">
+                      <thead className="bg-bw-panel">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -774,7 +774,7 @@ export default function SalesOrdersEnhanced() {
               {/* Actions */}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={resetForm}>Reset</Button>
-                <Button onClick={handleCreateOrder} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-order-submit">Create Sales Order</Button>
+                <Button onClick={handleCreateOrder} className="bg-bw-volt text-bw-black font-bold" data-testid="create-order-submit">Create Sales Order</Button>
               </div>
             </CardContent>
           </Card>
@@ -802,14 +802,14 @@ export default function SalesOrdersEnhanced() {
               <div className="space-y-4 py-4">
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Order Date</p><p className="font-medium">{selectedOrder.date}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Expected Shipment</p><p className="font-medium">{selectedOrder.expected_shipment_date}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Reference</p><p className="font-medium">{selectedOrder.reference_number || '-'}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedOrder.customer_gstin || '-'}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Order Date</p><p className="font-medium">{selectedOrder.date}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Expected Shipment</p><p className="font-medium">{selectedOrder.expected_shipment_date}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Reference</p><p className="font-medium">{selectedOrder.reference_number || '-'}</p></div>
+                  <div><p className="text-bw-white/[0.45]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedOrder.customer_gstin || '-'}</p></div>
                 </div>
 
                 {selectedOrder.from_estimate_number && (
-                  <div className="bg-[rgba(59,158,255,0.08)] rounded-lg p-3 text-sm">
+                  <div className="bg-bw-blue/[0.08] rounded-lg p-3 text-sm">
                     <strong>From Estimate:</strong> {selectedOrder.from_estimate_number}
                   </div>
                 )}
@@ -822,7 +822,7 @@ export default function SalesOrdersEnhanced() {
                   {selectedOrder.line_items?.length > 0 && (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-[#111820]">
+                        <thead className="bg-bw-panel">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Ordered</th>
@@ -837,11 +837,11 @@ export default function SalesOrdersEnhanced() {
                             <tr key={idx} className="border-t">
                               <td className="px-3 py-2">
                                 <p className="font-medium">{item.name}</p>
-                                {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
+                                {item.hsn_code && <p className="text-xs text-bw-white/[0.45]">HSN: {item.hsn_code}</p>}
                               </td>
                               <td className="px-3 py-2 text-right">{item.quantity_ordered || item.quantity} {item.unit}</td>
-                              <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled || 0}</td>
-                              <td className="px-3 py-2 text-right text-[#FF8C00]">{(item.quantity_ordered || item.quantity) - (item.quantity_fulfilled || 0)}</td>
+                              <td className="px-3 py-2 text-right text-bw-green">{item.quantity_fulfilled || 0}</td>
+                              <td className="px-3 py-2 text-right text-bw-orange">{(item.quantity_ordered || item.quantity) - (item.quantity_fulfilled || 0)}</td>
                               <td className="px-3 py-2 text-right">₹{item.rate?.toLocaleString('en-IN')}</td>
                               <td className="px-3 py-2 text-right font-medium">₹{item.total?.toLocaleString('en-IN')}</td>
                             </tr>
@@ -856,13 +856,13 @@ export default function SalesOrdersEnhanced() {
                 <div className="flex justify-end">
                   <div className="w-64 space-y-1 text-sm">
                     <div className="flex justify-between"><span>Subtotal:</span><span>₹{selectedOrder.subtotal?.toLocaleString('en-IN')}</span></div>
-                    {selectedOrder.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-₹{selectedOrder.total_discount?.toLocaleString('en-IN')}</span></div>}
+                    {selectedOrder.total_discount > 0 && <div className="flex justify-between text-bw-red"><span>Discount:</span><span>-₹{selectedOrder.total_discount?.toLocaleString('en-IN')}</span></div>}
                     <div className="flex justify-between"><span>Tax ({selectedOrder.gst_type?.toUpperCase()}):</span><span>₹{selectedOrder.total_tax?.toLocaleString('en-IN')}</span></div>
                     {selectedOrder.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>₹{selectedOrder.shipping_charge?.toLocaleString('en-IN')}</span></div>}
                     <Separator />
                     <div className="flex justify-between font-bold text-lg"><span>Grand Total:</span><span>₹{selectedOrder.grand_total?.toLocaleString('en-IN')}</span></div>
                     {selectedOrder.invoiced_amount > 0 && (
-                      <div className="flex justify-between text-[#22C55E]"><span>Invoiced:</span><span>₹{selectedOrder.invoiced_amount?.toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-bw-green"><span>Invoiced:</span><span>₹{selectedOrder.invoiced_amount?.toLocaleString('en-IN')}</span></div>
                     )}
                   </div>
                 </div>
@@ -875,10 +875,10 @@ export default function SalesOrdersEnhanced() {
                     <h4 className="font-medium mb-2">Fulfillments</h4>
                     <div className="space-y-2">
                       {selectedOrder.fulfillments.map((f, idx) => (
-                        <div key={idx} className="bg-[#111820] rounded-lg p-3 text-sm">
+                        <div key={idx} className="bg-bw-panel rounded-lg p-3 text-sm">
                           <div className="flex justify-between">
                             <span className="font-medium">{f.fulfillment_id}</span>
-                            <span className="text-[rgba(244,246,240,0.45)]">{f.shipment_date}</span>
+                            <span className="text-bw-white/[0.45]">{f.shipment_date}</span>
                           </div>
                           {f.tracking_number && <p className="text-xs">Tracking: {f.tracking_number}</p>}
                         </div>
@@ -891,13 +891,13 @@ export default function SalesOrdersEnhanced() {
                 <div className="flex flex-wrap gap-2">
                   {selectedOrder.status === "draft" && (
                     <>
-                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-[#3B9EFF] hover:bg-blue-600 text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
+                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-bw-blue hover:bg-blue-600 text-bw-black"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteOrder(selectedOrder.salesorder_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                     </>
                   )}
                   {["confirmed", "open", "partially_fulfilled"].includes(selectedOrder.status) && (
                     <>
-                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
+                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-bw-green hover:bg-bw-green-hover text-bw-black"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
                       <Button variant="outline" onClick={() => handleConvertToInvoice(selectedOrder.salesorder_id)}><Receipt className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                     </>
                   )}
@@ -912,8 +912,8 @@ export default function SalesOrdersEnhanced() {
 
                 {/* Converted To */}
                 {selectedOrder.converted_to && (
-                  <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
-                    <p className="text-sm text-[#8B5CF6]">
+                  <div className="bg-bw-purple/[0.08] rounded-lg p-3">
+                    <p className="text-sm text-bw-purple">
                       <strong>Converted to:</strong> {selectedOrder.converted_to}
                     </p>
                   </div>
@@ -925,7 +925,7 @@ export default function SalesOrdersEnhanced() {
                     <h4 className="font-medium mb-2">History</h4>
                     <div className="space-y-2 text-sm">
                       {selectedOrder.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)]">
+                        <div key={idx} className="flex justify-between text-bw-white/[0.45]">
                           <span>{h.action}: {h.details}</span>
                           <span className="text-xs">{new Date(h.timestamp).toLocaleString('en-IN')}</span>
                         </div>
@@ -949,7 +949,7 @@ export default function SalesOrdersEnhanced() {
           <div className="space-y-4 py-4">
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-[#111820]">
+                <thead className="bg-bw-panel">
                   <tr>
                     <th className="px-3 py-2 text-left">Item</th>
                     <th className="px-3 py-2 text-right">Ordered</th>
@@ -965,8 +965,8 @@ export default function SalesOrdersEnhanced() {
                       <tr key={idx} className="border-t">
                         <td className="px-3 py-2">{item.name}</td>
                         <td className="px-3 py-2 text-right">{item.quantity_ordered}</td>
-                        <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled}</td>
-                        <td className="px-3 py-2 text-right text-[#FF8C00]">{remaining}</td>
+                        <td className="px-3 py-2 text-right text-bw-green">{item.quantity_fulfilled}</td>
+                        <td className="px-3 py-2 text-right text-bw-orange">{remaining}</td>
                         <td className="px-3 py-2 text-right">
                           <Input 
                             type="number" 
@@ -991,7 +991,7 @@ export default function SalesOrdersEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFulfillDialog(false)}>Cancel</Button>
-            <Button onClick={handleFulfill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Fulfillment</Button>
+            <Button onClick={handleFulfill} className="bg-bw-volt text-bw-black font-bold">Create Fulfillment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1015,7 +1015,7 @@ export default function SalesOrdersEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendOrder} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Order</Button>
+            <Button onClick={handleSendOrder} className="bg-bw-volt text-bw-black font-bold">Send Order</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

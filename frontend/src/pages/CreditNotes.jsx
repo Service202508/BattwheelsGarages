@@ -14,8 +14,8 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-[#3B9EFF]",
-  closed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
+  open: "bg-blue-100 text-bw-blue",
+  closed: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25"
 };
 
 const refundStatusConfig = {
@@ -202,12 +202,12 @@ export default function CreditNotes() {
     <div className="space-y-6" data-testid="credit-notes-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Credit Notes</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Customer refunds & adjustments</p>
+          <h1 className="text-2xl font-bold text-bw-white">Credit Notes</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Customer refunds & adjustments</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-cn-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-cn-btn">
               <Plus className="h-4 w-4 mr-2" /> New Credit Note
             </Button>
           </DialogTrigger>
@@ -244,20 +244,20 @@ export default function CreditNotes() {
                 </div>
               </div>
 
-              <div className="border rounded-lg p-4 bg-[#111820]">
+              <div className="border rounded-lg p-4 bg-bw-panel">
                 <h3 className="font-medium mb-3">Add Items</h3>
                 <div className="grid grid-cols-4 gap-3">
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-bw-volt text-bw-black font-bold">Add</Button>
                 </div>
               </div>
 
               {newCN.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right">Qty</th>
@@ -281,7 +281,7 @@ export default function CreditNotes() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-[#111820] font-semibold">
+                    <tfoot className="bg-bw-panel font-semibold">
                       <tr><td colSpan={3} className="px-3 py-2 text-right">Total Credit:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr>
                     </tfoot>
                   </table>
@@ -295,17 +295,17 @@ export default function CreditNotes() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateCN} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Credit Note</Button>
+              <Button onClick={handleCreateCN} className="bg-bw-volt text-bw-black font-bold">Create Credit Note</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-        creditNotes.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No credit notes found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+        creditNotes.length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No credit notes found</CardContent></Card> :
         <div className="space-y-3">
           {creditNotes.map(cn => (
-            <Card key={cn.creditnote_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+            <Card key={cn.creditnote_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -323,13 +323,13 @@ export default function CreditNotes() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <div className="flex gap-4 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{cn.customer_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{cn.date}</span>
                       <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />{cn.reason}</span>
                     </div>
                     {cn.refund_amount && (
-                      <p className="text-xs text-[rgba(244,246,240,0.4)] mt-1">
+                      <p className="text-xs text-bw-white/40 mt-1">
                         Refund: ₹{cn.refund_amount?.toLocaleString('en-IN')}
                         {cn.refund_initiated_at && ` on ${new Date(cn.refund_initiated_at).toLocaleDateString('en-IN')}`}
                       </p>
@@ -338,14 +338,14 @@ export default function CreditNotes() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{cn.total?.toLocaleString('en-IN')}</p>
-                      {cn.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
+                      {cn.credits_remaining > 0 && <p className="text-xs text-bw-blue">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     <div className="flex gap-2">
                       {!cn.refund_status && (
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-[rgba(255,255,255,0.15)] hover:border-[#C8FF00] text-sm"
+                          className="border-white/15 hover:border-bw-volt text-sm"
                           data-testid={`process-refund-btn-${cn.creditnote_id}`}
                           onClick={() => handleOpenRefundDialog(cn)}
                         >
@@ -353,7 +353,7 @@ export default function CreditNotes() {
                         </Button>
                       )}
                       {cn.credits_remaining > 0 && (
-                        <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
+                        <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
                           <ArrowRight className="h-4 w-4 mr-1" /> Apply
                         </Button>
                       )}
@@ -389,12 +389,12 @@ export default function CreditNotes() {
             <div>
               <Label>Amount to Apply *</Label>
               <Input type="number" value={applyAmount} onChange={(e) => setApplyAmount(parseFloat(e.target.value))} max={selectedCN?.credits_remaining} />
-              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Max: ₹{selectedCN?.credits_remaining?.toLocaleString('en-IN')}</p>
+              <p className="text-xs text-bw-white/[0.45] mt-1">Max: ₹{selectedCN?.credits_remaining?.toLocaleString('en-IN')}</p>
             </div>
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowApplyDialog(false)}>Cancel</Button>
-            <Button onClick={handleApplyToInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Credit</Button>
+            <Button onClick={handleApplyToInvoice} className="bg-bw-volt text-bw-black font-bold">Apply Credit</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -404,17 +404,17 @@ export default function CreditNotes() {
         <DialogContent data-testid="refund-dialog">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-[#C8FF00]" />
+              <Receipt className="h-5 w-5 text-bw-volt" />
               Process Refund via Razorpay
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {razorpayPayment ? (
               <>
-                <div className="bg-[#111820] rounded-lg p-3 border border-[rgba(200,255,0,0.15)]">
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Original Razorpay Payment</p>
-                  <p className="font-semibold text-[#C8FF00]">₹{razorpayPayment.amount?.toLocaleString('en-IN')}</p>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">ID: {razorpayPayment.payment_id}</p>
+                <div className="bg-bw-panel rounded-lg p-3 border border-bw-volt/15">
+                  <p className="text-xs text-bw-white/[0.45] mb-1">Original Razorpay Payment</p>
+                  <p className="font-semibold text-bw-volt">₹{razorpayPayment.amount?.toLocaleString('en-IN')}</p>
+                  <p className="text-xs text-bw-white/[0.45]">ID: {razorpayPayment.payment_id}</p>
                 </div>
                 <div>
                   <Label>Refund Amount (₹) *</Label>
@@ -425,7 +425,7 @@ export default function CreditNotes() {
                     max={selectedCN?.total}
                     data-testid="refund-amount-input"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+                  <p className="text-xs text-bw-white/[0.45] mt-1">
                     Credit note value: ₹{selectedCN?.total?.toLocaleString('en-IN')}
                   </p>
                 </div>
@@ -447,11 +447,11 @@ export default function CreditNotes() {
               </>
             ) : (
               <div className="text-center py-6">
-                <Receipt className="h-10 w-10 text-[rgba(244,246,240,0.2)] mx-auto mb-3" />
-                <p className="text-[rgba(244,246,240,0.45)] text-sm">
+                <Receipt className="h-10 w-10 text-bw-white/20 mx-auto mb-3" />
+                <p className="text-bw-white/[0.45] text-sm">
                   No Razorpay payment found for this credit note's invoice.
                 </p>
-                <p className="text-xs text-[rgba(244,246,240,0.3)] mt-1">
+                <p className="text-xs text-bw-white/30 mt-1">
                   Refund is only available when the original invoice was paid via Razorpay.
                 </p>
               </div>
@@ -463,7 +463,7 @@ export default function CreditNotes() {
               <Button
                 onClick={handleInitiateRefund}
                 disabled={refundLoading || !refundForm.amount}
-                className="bg-[#C8FF00] text-[#080C0F] font-bold"
+                className="bg-bw-volt text-bw-black font-bold"
                 data-testid="confirm-refund-btn"
               >
                 {refundLoading ? "Initiating..." : "Initiate Refund via Razorpay"}

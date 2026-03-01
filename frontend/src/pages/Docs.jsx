@@ -108,21 +108,21 @@ export default function Docs() {
   const [active, setActive] = useState('getting-started');
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[#F4F6F0] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-bw-black text-bw-white font-sans overflow-x-hidden">
       {/* Grain */}
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-60" style={{ backgroundImage: GRAIN }} />
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-bw-black/85 backdrop-blur-xl">
         <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
+          <div className="w-7 h-7 bg-bw-volt rounded flex items-center justify-center">
+            <Zap className="w-4 h-4 text-bw-black" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight group-hover:text-[#C8FF00] transition">Battwheels OS</span>
+          <span className="text-lg font-extrabold tracking-tight group-hover:text-bw-volt transition">Battwheels OS</span>
         </button>
         <div className="flex items-center gap-3">
           <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest">Documentation</span>
-          <button onClick={() => navigate('/register')} className="px-4 py-2 text-[12px] font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] transition rounded-sm">
+          <button onClick={() => navigate('/register')} className="px-4 py-2 text-[12px] font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover transition rounded-sm">
             Free Trial
           </button>
         </div>
@@ -137,7 +137,7 @@ export default function Docs() {
               <button
                 key={s.id}
                 onClick={() => { setActive(s.id); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded text-left text-[12px] transition group ${active === s.id ? 'bg-[#C8FF00]/10 text-[#C8FF00]' : 'text-white/40 hover:text-white/80'}`}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded text-left text-[12px] transition group ${active === s.id ? 'bg-bw-volt/10 text-bw-volt' : 'text-white/40 hover:text-white/80'}`}
               >
                 <s.icon className="w-3.5 h-3.5 shrink-0" />
                 <span className="font-mono">{s.label}</span>
@@ -150,12 +150,12 @@ export default function Docs() {
         <main className="flex-1 max-w-3xl mx-auto px-6 md:px-12 py-14">
           {/* Page header */}
           <div className="mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-[#C8FF00] border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded-sm font-mono">
-              <span className="w-1.5 h-1.5 bg-[#C8FF00] rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
+              <span className="w-1.5 h-1.5 bg-bw-volt rounded-full animate-pulse" />
               EFI Engine · Active · India
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-              Battwheels OS<br /><span className="text-[#C8FF00]">Documentation</span>
+              Battwheels OS<br /><span className="text-bw-volt">Documentation</span>
             </h1>
             <p className="text-white/45 text-base leading-relaxed max-w-xl">
               Everything you need to deploy, operate, and extend the platform — from onboarding to the REST API.
@@ -166,8 +166,8 @@ export default function Docs() {
           {sections.map(s => (
             <section key={s.id} id={s.id} className="mb-16 scroll-mt-24">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-[#C8FF00]/10 border border-[#C8FF00]/20 rounded flex items-center justify-center">
-                  <s.icon className="w-4 h-4 text-[#C8FF00]" />
+                <div className="w-8 h-8 bg-bw-volt/10 border border-bw-volt/20 rounded flex items-center justify-center">
+                  <s.icon className="w-4 h-4 text-bw-volt" />
                 </div>
                 <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest">{s.label}</span>
               </div>
@@ -175,7 +175,7 @@ export default function Docs() {
               <div className="flex flex-col gap-6">
                 {s.content.map((c, i) => (
                   <div key={i} className="border border-white/[0.07] rounded p-6 bg-white/[0.02]">
-                    <h3 className="text-[13px] font-semibold text-[#C8FF00] mb-2 font-mono uppercase tracking-wide">{c.heading}</h3>
+                    <h3 className="text-[13px] font-semibold text-bw-volt mb-2 font-mono uppercase tracking-wide">{c.heading}</h3>
                     <p className="text-white/60 text-sm leading-relaxed">{c.body}</p>
                   </div>
                 ))}
@@ -185,11 +185,11 @@ export default function Docs() {
           ))}
 
           {/* CTA */}
-          <div className="mt-8 p-8 border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded">
-            <p className="text-[10px] font-mono text-[#C8FF00] uppercase tracking-widest mb-3">Ready to start?</p>
+          <div className="mt-8 p-8 border border-bw-volt/20 bg-bw-volt/5 rounded">
+            <p className="text-[10px] font-mono text-bw-volt uppercase tracking-widest mb-3">Ready to start?</p>
             <h3 className="text-xl font-bold mb-2">Your first workshop, live in 10 minutes.</h3>
             <p className="text-white/45 text-sm mb-5">No credit card required. 14-day free trial includes all Professional features.</p>
-            <button onClick={() => navigate('/register')} className="inline-flex items-center gap-2 px-6 py-3 bg-[#C8FF00] text-[#080C0F] text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-[#d4ff1a] transition">
+            <button onClick={() => navigate('/register')} className="inline-flex items-center gap-2 px-6 py-3 bg-bw-volt text-bw-black text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-bw-volt-hover transition">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -202,7 +202,7 @@ export default function Docs() {
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-bw-volt transition font-mono">{label}</button>
             </li>
           ))}
         </ul>

@@ -12,11 +12,11 @@ import { Plus, Layers, TrendingUp, TrendingDown, Wallet, DollarSign, PiggyBank }
 import { API } from "@/App";
 
 const accountTypeColors = {
-  asset: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  liability: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  equity: "bg-blue-100 text-[#3B9EFF]",
-  income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  expense: "bg-orange-100 text-[#FF8C00]"
+  asset: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  liability: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  equity: "bg-blue-100 text-bw-blue",
+  income: "bg-bw-volt/10 text-bw-volt text-700",
+  expense: "bg-orange-100 text-bw-orange"
 };
 
 const accountTypeIcons = {
@@ -81,12 +81,12 @@ export default function ChartOfAccounts() {
     <div className="space-y-6" data-testid="chart-of-accounts-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Chart of Accounts</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage your account structure</p>
+          <h1 className="text-2xl font-bold text-bw-white">Chart of Accounts</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage your account structure</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-account-btn">
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-account-btn">
               <Plus className="h-4 w-4 mr-2" /> New Account
             </Button>
           </DialogTrigger>
@@ -121,7 +121,7 @@ export default function ChartOfAccounts() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Account</Button>
+              <Button onClick={handleCreate} className="bg-bw-volt text-bw-black font-bold">Create Account</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -138,8 +138,8 @@ export default function ChartOfAccounts() {
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-            Object.keys(groupedAccounts).length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No accounts found</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div> :
+            Object.keys(groupedAccounts).length === 0 ? <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No accounts found</CardContent></Card> :
             <div className="space-y-6">
               {Object.entries(groupedAccounts).map(([type, accs]) => {
                 const Icon = accountTypeIcons[type] || Layers;
@@ -154,12 +154,12 @@ export default function ChartOfAccounts() {
                     <CardContent>
                       <div className="space-y-2">
                         {accs.map(account => (
-                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-[#111820] rounded hover:bg-[rgba(255,255,255,0.05)] transition-colors border border-[rgba(255,255,255,0.07)]">
+                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-bw-panel rounded hover:bg-white/5 transition-colors border border-white/[0.07]">
                             <div className="flex items-center gap-3">
-                              {account.account_code && <span className="text-xs bg-[#141E27] px-2 py-1 rounded text-[#C8FF00] font-mono tracking-wider">{account.account_code}</span>}
+                              {account.account_code && <span className="text-xs bg-bw-card px-2 py-1 rounded text-bw-volt font-mono tracking-wider">{account.account_code}</span>}
                               <div>
-                                <p className="font-medium text-[#F4F6F0]">{account.account_name}</p>
-                                {account.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{account.description}</p>}
+                                <p className="font-medium text-bw-white">{account.account_name}</p>
+                                {account.description && <p className="text-xs text-bw-white/[0.45]">{account.description}</p>}
                               </div>
                             </div>
                             <Badge className={accountTypeColors[account.account_type]}>{account.account_type}</Badge>

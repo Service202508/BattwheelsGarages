@@ -7,8 +7,8 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http:
 const Section = ({ icon: Icon, num, title, children }) => (
   <section className="mb-12">
     <div className="flex items-center gap-3 mb-5">
-      <div className="w-7 h-7 bg-[#C8FF00]/10 border border-[#C8FF00]/20 rounded flex items-center justify-center shrink-0">
-        <Icon className="w-3.5 h-3.5 text-[#C8FF00]" />
+      <div className="w-7 h-7 bg-bw-volt/10 border border-bw-volt/20 rounded flex items-center justify-center shrink-0">
+        <Icon className="w-3.5 h-3.5 text-bw-volt" />
       </div>
       <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest mr-1">{num}</span>
       <h2 className="text-lg font-bold">{title}</h2>
@@ -29,16 +29,16 @@ export default function Terms() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[#F4F6F0] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-bw-black text-bw-white font-sans overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-60" style={{ backgroundImage: GRAIN }} />
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-bw-black/85 backdrop-blur-xl">
         <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
+          <div className="w-7 h-7 bg-bw-volt rounded flex items-center justify-center">
+            <Zap className="w-4 h-4 text-bw-black" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight group-hover:text-[#C8FF00] transition">Battwheels OS</span>
+          <span className="text-lg font-extrabold tracking-tight group-hover:text-bw-volt transition">Battwheels OS</span>
         </button>
         <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest">Terms of Service</span>
       </nav>
@@ -46,12 +46,12 @@ export default function Terms() {
       <main className="pt-[73px] max-w-3xl mx-auto px-6 md:px-12 py-14">
         {/* Header */}
         <div className="mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-[#C8FF00] border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded-sm font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
             <Scale className="w-3 h-3" />
             Last updated: 24 February 2026
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Terms of <span className="text-[#C8FF00]">Service</span>
+            Terms of <span className="text-bw-volt">Service</span>
           </h1>
           <p className="text-white/45 text-sm leading-relaxed max-w-xl">
             These Terms of Service ("Terms") constitute a binding agreement between Battwheels Services Private Limited ("Battwheels", "we", "our") and the organisation ("Customer", "you") that registers for and uses Battwheels OS. By creating an account, you accept these Terms on behalf of your organisation.
@@ -79,7 +79,7 @@ export default function Terms() {
                 {plans.map((p, i) => (
                   <tr key={i} className="border-b border-white/[0.05] hover:bg-white/[0.02]">
                     <td className="py-2.5 px-3 font-medium text-white/70">{p.name}</td>
-                    <td className="py-2.5 px-3 font-mono text-[#C8FF00]">{p.price} <span className="text-white/30">{p.duration}</span></td>
+                    <td className="py-2.5 px-3 font-mono text-bw-volt">{p.price} <span className="text-white/30">{p.duration}</span></td>
                     <td className="py-2.5 px-3 text-white/45">{p.features}</td>
                   </tr>
                 ))}
@@ -128,13 +128,13 @@ export default function Terms() {
 
         <Section icon={Scale} num="07" title="Governing Law & Disputes">
           <p>These Terms are governed by the laws of India. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka, India.</p>
-          <p>Before initiating legal proceedings, you agree to first contact us at <a href="mailto:legal@battwheels.com" className="text-[#C8FF00] hover:underline">legal@battwheels.com</a> and allow 30 days for good-faith resolution.</p>
+          <p>Before initiating legal proceedings, you agree to first contact us at <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a> and allow 30 days for good-faith resolution.</p>
         </Section>
 
         <Section icon={FileText} num="08" title="Changes to These Terms">
           <p>We may update these Terms as the platform and applicable regulations evolve. Material changes will be communicated to registered admin users by email at least 14 days before they take effect.</p>
           <p>Continued use of Battwheels OS after the effective date of changes constitutes acceptance of the updated Terms.</p>
-          <p>Questions? Email <a href="mailto:legal@battwheels.com" className="text-[#C8FF00] hover:underline">legal@battwheels.com</a></p>
+          <p>Questions? Email <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a></p>
         </Section>
       </main>
 
@@ -144,7 +144,7 @@ export default function Terms() {
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-bw-volt transition font-mono">{label}</button>
             </li>
           ))}
         </ul>

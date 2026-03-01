@@ -17,11 +17,11 @@ import {
 import { API } from "@/App";
 
 const statusConfig = {
-  draft: { label: "Draft", color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: Clock },
-  pending: { label: "Pending", color: "bg-yellow-100 text-[#EAB308]", icon: Clock },
-  in_transit: { label: "In Transit", color: "bg-blue-100 text-[#3B9EFF]", icon: Truck },
-  received: { label: "Received", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle2 },
-  void: { label: "Void", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: XCircle },
+  draft: { label: "Draft", color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]", icon: Clock },
+  pending: { label: "Pending", color: "bg-yellow-100 text-bw-amber", icon: Clock },
+  in_transit: { label: "In Transit", color: "bg-blue-100 text-bw-blue", icon: Truck },
+  received: { label: "Received", color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", icon: CheckCircle2 },
+  void: { label: "Void", color: "bg-bw-red/10 text-bw-red border border-bw-red/25", icon: XCircle },
 };
 
 export default function StockTransfers() {
@@ -264,8 +264,8 @@ export default function StockTransfers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Stock Transfers</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Transfer inventory between warehouses</p>
+          <h1 className="text-2xl font-bold text-bw-white">Stock Transfers</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Transfer inventory between warehouses</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchData} disabled={loading}>
@@ -274,7 +274,7 @@ export default function StockTransfers() {
           </Button>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-transfer-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="create-transfer-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Transfer
               </Button>
             </DialogTrigger>
@@ -329,15 +329,15 @@ export default function StockTransfers() {
                 {/* Visual Arrow */}
                 {newTransfer.source_warehouse_id && newTransfer.destination_warehouse_id && (
                   <div className="flex items-center justify-center gap-4 py-2">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                      <Warehouse className="h-4 w-4 text-[rgba(244,246,240,0.35)]" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg">
+                      <Warehouse className="h-4 w-4 text-bw-white/35" />
                       <span className="text-sm font-medium">
                         {warehouses.find(w => w.warehouse_id === newTransfer.source_warehouse_id)?.name}
                       </span>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-[#C8FF00]" />
-                    <div className="flex items-center gap-2 px-3 py-2 bg-[#C8FF00]/10 rounded-lg">
-                      <Warehouse className="h-4 w-4 text-[#C8FF00]" />
+                    <ArrowRight className="h-5 w-5 text-bw-volt" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-bw-volt/10 rounded-lg">
+                      <Warehouse className="h-4 w-4 text-bw-volt" />
                       <span className="text-sm font-medium">
                         {warehouses.find(w => w.warehouse_id === newTransfer.destination_warehouse_id)?.name}
                       </span>
@@ -380,7 +380,7 @@ export default function StockTransfers() {
                       <div className="border rounded-lg overflow-hidden">
                         <Table>
                           <TableHeader>
-                            <TableRow className="bg-[#111820]">
+                            <TableRow className="bg-bw-panel">
                               <TableHead>Item</TableHead>
                               <TableHead className="text-right">Quantity</TableHead>
                               <TableHead className="w-12"></TableHead>
@@ -391,7 +391,7 @@ export default function StockTransfers() {
                               <TableRow key={idx}>
                                 <TableCell>
                                   <div className="font-medium">{item.item_name}</div>
-                                  <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</div>
+                                  <div className="text-xs text-bw-white/[0.45]">{item.sku}</div>
                                 </TableCell>
                                 <TableCell className="text-right">{item.quantity}</TableCell>
                                 <TableCell>
@@ -428,7 +428,7 @@ export default function StockTransfers() {
                 </Button>
                 <Button 
                   onClick={handleCreateTransfer} 
-                  className="bg-[#C8FF00] text-[#080C0F] font-bold"
+                  className="bg-bw-volt text-bw-black font-bold"
                   disabled={newTransfer.items.length === 0}
                 >
                   Create Transfer
@@ -445,11 +445,11 @@ export default function StockTransfers() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                  <Package className="h-5 w-5 text-[rgba(244,246,240,0.35)]" />
+                <div className="p-2 bg-white/5 rounded-lg">
+                  <Package className="h-5 w-5 text-bw-white/35" />
                 </div>
                 <div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Transfers</p>
+                  <p className="text-xs text-bw-white/[0.45]">Total Transfers</p>
                   <p className="text-xl font-bold">{stats.total_transfers || 0}</p>
                 </div>
               </div>
@@ -459,10 +459,10 @@ export default function StockTransfers() {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Clock className="h-5 w-5 text-[#EAB308]" />
+                  <Clock className="h-5 w-5 text-bw-amber" />
                 </div>
                 <div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Pending</p>
+                  <p className="text-xs text-bw-white/[0.45]">Pending</p>
                   <p className="text-xl font-bold">{stats.by_status?.draft || 0}</p>
                 </div>
               </div>
@@ -472,10 +472,10 @@ export default function StockTransfers() {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-100 rounded-lg">
-                  <Truck className="h-5 w-5 text-[#3B9EFF]" />
+                  <Truck className="h-5 w-5 text-bw-blue" />
                 </div>
                 <div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">In Transit</p>
+                  <p className="text-xs text-bw-white/[0.45]">In Transit</p>
                   <p className="text-xl font-bold">{stats.by_status?.in_transit || 0}</p>
                 </div>
               </div>
@@ -484,11 +484,11 @@ export default function StockTransfers() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-[#22C55E]" />
+                <div className="p-2 bg-bw-green/10 rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-bw-green" />
                 </div>
                 <div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Received</p>
+                  <p className="text-xs text-bw-white/[0.45]">Received</p>
                   <p className="text-xl font-bold">{stats.by_status?.received || 0}</p>
                 </div>
               </div>
@@ -508,7 +508,7 @@ export default function StockTransfers() {
           </TabsList>
         </Tabs>
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
           <Input 
             placeholder="Search transfers..." 
             value={searchQuery}
@@ -523,18 +523,18 @@ export default function StockTransfers() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
             </div>
           ) : filteredTransfers.length === 0 ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
-              <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+            <div className="text-center py-12 text-bw-white/[0.45]">
+              <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
               <p>No transfers found</p>
               <p className="text-sm">Create a new transfer to move stock between warehouses</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#111820]">
+                <TableRow className="bg-bw-panel">
                   <TableHead>Transfer #</TableHead>
                   <TableHead>From</TableHead>
                   <TableHead>To</TableHead>
@@ -549,19 +549,19 @@ export default function StockTransfers() {
                   const status = statusConfig[transfer.status] || statusConfig.draft;
                   const StatusIcon = status.icon;
                   return (
-                    <TableRow key={transfer.transfer_id} className="hover:bg-[#111820]">
+                    <TableRow key={transfer.transfer_id} className="hover:bg-bw-panel">
                       <TableCell className="font-medium">
                         {transfer.transfer_order_number}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                          <Building2 className="h-4 w-4 text-bw-white/[0.45]" />
                           {transfer.source_warehouse_name}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                          <Building2 className="h-4 w-4 text-bw-white/[0.45]" />
                           {transfer.destination_warehouse_name}
                         </div>
                       </TableCell>
@@ -590,7 +590,7 @@ export default function StockTransfers() {
                           {transfer.status === "in_transit" && (
                             <Button 
                               size="sm" 
-                              className="bg-[#22C55E] hover:bg-[#16a34a] text-white"
+                              className="bg-bw-green hover:bg-bw-green-hover text-white"
                               onClick={() => handleReceiveTransfer(transfer.transfer_id)}
                               data-testid={`receive-${transfer.transfer_id}`}
                             >
@@ -633,17 +633,17 @@ export default function StockTransfers() {
                 </Badge>
               </div>
               
-              <div className="flex items-center justify-center gap-4 py-4 bg-[#111820] rounded-lg">
+              <div className="flex items-center justify-center gap-4 py-4 bg-bw-panel rounded-lg">
                 <div className="text-center">
-                  <Building2 className="h-6 w-6 mx-auto text-[rgba(244,246,240,0.45)] mb-1" />
+                  <Building2 className="h-6 w-6 mx-auto text-bw-white/[0.45] mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.source_warehouse_name}</p>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Source</p>
+                  <p className="text-xs text-bw-white/[0.45]">Source</p>
                 </div>
-                <ArrowRight className="h-6 w-6 text-[#C8FF00]" />
+                <ArrowRight className="h-6 w-6 text-bw-volt" />
                 <div className="text-center">
-                  <Building2 className="h-6 w-6 mx-auto text-[#C8FF00] mb-1" />
+                  <Building2 className="h-6 w-6 mx-auto text-bw-volt mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.destination_warehouse_name}</p>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Destination</p>
+                  <p className="text-xs text-bw-white/[0.45]">Destination</p>
                 </div>
               </div>
 
@@ -654,7 +654,7 @@ export default function StockTransfers() {
                     <div key={idx} className="p-3 flex justify-between">
                       <div>
                         <p className="font-medium">{item.item_name}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</p>
+                        <p className="text-xs text-bw-white/[0.45]">{item.sku}</p>
                       </div>
                       <Badge variant="outline">{item.quantity} units</Badge>
                     </div>
@@ -665,7 +665,7 @@ export default function StockTransfers() {
               {selectedTransfer.notes && (
                 <div>
                   <h4 className="font-medium mb-1">Notes</h4>
-                  <p className="text-sm text-[rgba(244,246,240,0.35)]">{selectedTransfer.notes}</p>
+                  <p className="text-sm text-bw-white/35">{selectedTransfer.notes}</p>
                 </div>
               )}
 
@@ -699,7 +699,7 @@ export default function StockTransfers() {
                     </Button>
                     <Button 
                       size="sm"
-                      className="bg-[#22C55E] hover:bg-[#16a34a] text-white"
+                      className="bg-bw-green hover:bg-bw-green-hover text-white"
                       onClick={() => handleReceiveTransfer(selectedTransfer.transfer_id)}
                     >
                       <PackageCheck className="h-4 w-4 mr-1" /> Receive

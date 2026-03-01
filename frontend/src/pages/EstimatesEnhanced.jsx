@@ -1090,7 +1090,7 @@ export default function EstimatesEnhanced() {
         description="Create, send, and convert estimates to invoices"
         icon={FileText}
         actions={
-          <Button onClick={fetchData} variant="outline" className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]" data-testid="refresh-btn">
+          <Button onClick={fetchData} variant="outline" className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white" data-testid="refresh-btn">
             <RefreshCw className="h-4 w-4" /> Refresh
           </Button>
         }
@@ -1165,7 +1165,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => handleExport("csv")}
-            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
+            className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white"
             data-testid="export-csv-btn"
           >
             <FileDown className="h-4 w-4" /> Export CSV
@@ -1174,7 +1174,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => setShowImportDialog(true)}
-            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
+            className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white"
             data-testid="import-btn"
           >
             <FileUp className="h-4 w-4" /> Import
@@ -1184,7 +1184,7 @@ export default function EstimatesEnhanced() {
               variant="outline" 
               size="sm" 
               onClick={() => setShowBulkActionDialog(true)}
-              className="gap-2 bg-[rgba(59,158,255,0.08)] border-[rgba(59,158,255,0.25)] text-[#3B9EFF] hover:bg-[rgba(59,158,255,0.15)]"
+              className="gap-2 bg-bw-blue/[0.08] border-bw-blue/25 text-bw-blue hover:bg-bw-blue/15"
               data-testid="bulk-action-btn"
             >
               <ListChecks className="h-4 w-4" /> Bulk Actions ({selectedIds.length})
@@ -1196,7 +1196,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchCustomFields(); setShowCustomFieldsDialog(true); }}
-            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
+            className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white"
             data-testid="custom-fields-btn"
           >
             <Edit className="h-4 w-4" /> Custom Fields
@@ -1205,7 +1205,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchPdfTemplates(); setShowTemplateDialog(true); }}
-            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
+            className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white"
             data-testid="templates-btn"
           >
             <LayoutTemplate className="h-4 w-4" /> Templates
@@ -1214,7 +1214,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}
-            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
+            className="gap-2 bg-transparent border-white/[0.13] text-bw-white/70 hover:border-bw-volt/30 hover:text-bw-white"
             data-testid="preferences-btn"
           >
             <Settings className="h-4 w-4" /> Preferences
@@ -1224,33 +1224,33 @@ export default function EstimatesEnhanced() {
 
       {/* Conversion Funnel */}
       {funnel && (
-        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-          <CardHeader className="pb-2 border-b border-[rgba(255,255,255,0.07)]">
-            <CardTitle className="text-sm flex items-center gap-2 text-[#F4F6F0]"><TrendingUp className="h-4 w-4 text-[#C8FF00]" /> Conversion Funnel</CardTitle>
+        <Card className="bg-bw-panel border border-white/[0.07]">
+          <CardHeader className="pb-2 border-b border-white/[0.07]">
+            <CardTitle className="text-sm flex items-center gap-2 text-bw-white"><TrendingUp className="h-4 w-4 text-bw-volt" /> Conversion Funnel</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between text-xs">
               <div className="text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Created</p>
-                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.total_created}</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bw-white/[0.45]">Created</p>
+                <p className="text-xl font-bold text-bw-white">{funnel.total_created}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
+              <ChevronRight className="h-4 w-4 text-white/15" />
               <div className="text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Sent</p>
-                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.sent_to_customer}</p>
-                <p className="text-[#3B9EFF] text-xs">{funnel.send_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bw-white/[0.45]">Sent</p>
+                <p className="text-xl font-bold text-bw-white">{funnel.sent_to_customer}</p>
+                <p className="text-bw-blue text-xs">{funnel.send_rate}%</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
+              <ChevronRight className="h-4 w-4 text-white/15" />
               <div className="text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Accepted</p>
-                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.accepted}</p>
-                <p className="text-[#C8FF00] text-xs">{funnel.acceptance_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bw-white/[0.45]">Accepted</p>
+                <p className="text-xl font-bold text-bw-white">{funnel.accepted}</p>
+                <p className="text-bw-volt text-xs">{funnel.acceptance_rate}%</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
+              <ChevronRight className="h-4 w-4 text-white/15" />
               <div className="text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Converted</p>
-                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.converted}</p>
-                <p className="text-[#8B5CF6] text-xs">{funnel.conversion_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-bw-white/[0.45]">Converted</p>
+                <p className="text-xl font-bold text-bw-white">{funnel.converted}</p>
+                <p className="text-bw-purple text-xs">{funnel.conversion_rate}%</p>
               </div>
             </div>
           </CardContent>
@@ -1259,13 +1259,13 @@ export default function EstimatesEnhanced() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1">
-          <TabsTrigger value="estimates" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Estimates</TabsTrigger>
-          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">
+        <TabsList className="bg-bw-panel border border-white/[0.07] p-1">
+          <TabsTrigger value="estimates" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">Estimates</TabsTrigger>
+          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">
             <Ticket className="h-4 w-4" />
             Ticket Estimates ({ticketEstimates.length})
           </TabsTrigger>
-          <TabsTrigger value="create" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Create New</TabsTrigger>
+          <TabsTrigger value="create" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">Create New</TabsTrigger>
         </TabsList>
 
         {/* Estimates Tab */}
@@ -1273,24 +1273,24 @@ export default function EstimatesEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
-                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchEstimates()} placeholder="Search estimates..." className="pl-10 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00]" data-testid="search-estimates" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/25" />
+                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchEstimates()} placeholder="Search estimates..." className="pl-10 bg-bw-panel border-white/[0.07] text-bw-white placeholder:text-bw-white/25 focus:border-bw-volt" data-testid="search-estimates" />
               </div>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setTimeout(fetchEstimates, 100); }}>
-                <SelectTrigger className="w-36 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
-                  <SelectItem value="all" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">All Status</SelectItem>
-                  <SelectItem value="draft" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Draft</SelectItem>
-                  <SelectItem value="sent" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Sent</SelectItem>
-                  <SelectItem value="customer_viewed" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Viewed</SelectItem>
-                  <SelectItem value="accepted" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Accepted</SelectItem>
-                  <SelectItem value="declined" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Declined</SelectItem>
-                  <SelectItem value="expired" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Expired</SelectItem>
-                  <SelectItem value="converted" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Converted</SelectItem>
+                <SelectTrigger className="w-36 bg-bw-panel border-white/[0.07] text-bw-white"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-bw-panel border-white/10">
+                  <SelectItem value="all" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">All Status</SelectItem>
+                  <SelectItem value="draft" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Draft</SelectItem>
+                  <SelectItem value="sent" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Sent</SelectItem>
+                  <SelectItem value="customer_viewed" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Viewed</SelectItem>
+                  <SelectItem value="accepted" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Accepted</SelectItem>
+                  <SelectItem value="declined" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Declined</SelectItem>
+                  <SelectItem value="expired" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Expired</SelectItem>
+                  <SelectItem value="converted" className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">Converted</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setActiveTab("create")} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2 rounded-[3px] hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]" data-testid="new-estimate-btn">
+            <Button onClick={() => setActiveTab("create")} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2 rounded-[3px] hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]" data-testid="new-estimate-btn">
               <Plus className="h-4 w-4" /> New Estimate
             </Button>
           </div>
@@ -1298,7 +1298,7 @@ export default function EstimatesEnhanced() {
           {loading ? (
             <TableSkeleton columns={8} rows={5} />
           ) : estimates.length === 0 ? (
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+            <Card className="bg-bw-panel border-white/[0.07]">
               <EmptyState
                 icon={FileText}
                 title="No estimates found"
@@ -1309,50 +1309,50 @@ export default function EstimatesEnhanced() {
               />
             </Card>
           ) : (
-            <div className="bg-[#0D1317] border border-[rgba(255,255,255,0.07)] rounded">
+            <div className="bg-bw-off-black border border-white/[0.07] rounded">
               <ResponsiveTable>
-                <thead className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                <thead className="bg-bw-panel border-b border-white/[0.07]">
                   <tr>
                     <th className="px-2 py-3 text-center w-10">
                       <input 
                         type="checkbox" 
                         checked={selectedIds.length === estimates.length && estimates.length > 0}
                         onChange={toggleSelectAll}
-                        className="h-4 w-4 rounded border-[rgba(255,255,255,0.2)] bg-transparent"
+                        className="h-4 w-4 rounded border-white/20 bg-transparent"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </th>
-                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Estimate #</th>
-                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Customer</th>
-                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Date</th>
-                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Expiry</th>
-                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Amount</th>
-                    <th className="px-4 py-3 text-center font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Status</th>
-                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Actions</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Estimate #</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Customer</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Date</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Expiry</th>
+                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Amount</th>
+                    <th className="px-4 py-3 text-center font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Status</th>
+                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-bw-white/25">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {estimates.map(est => (
-                    <tr key={est.estimate_id} className={`border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(200,255,0,0.03)] cursor-pointer transition-colors ${selectedIds.includes(est.estimate_id) ? 'bg-[rgba(59,158,255,0.08)]' : ''}`} onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
+                    <tr key={est.estimate_id} className={`border-b border-white/[0.04] hover:bg-bw-volt/[0.03] cursor-pointer transition-colors ${selectedIds.includes(est.estimate_id) ? 'bg-bw-blue/[0.08]' : ''}`} onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
                       <td className="px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input 
                           type="checkbox" 
                           checked={selectedIds.includes(est.estimate_id)}
                           onChange={() => toggleSelect(est.estimate_id)}
-                          className="h-4 w-4 rounded border-[rgba(255,255,255,0.2)] bg-transparent"
+                          className="h-4 w-4 rounded border-white/20 bg-transparent"
                         />
                       </td>
-                      <td className="px-4 py-3 font-mono font-medium text-sm text-[#C8FF00] tracking-[0.06em]">{est.estimate_number}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-[#F4F6F0]">{est.customer_name}</td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] text-sm">{est.date}</td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] text-sm">{est.expiry_date}</td>
-                      <td className="px-4 py-3 text-right font-bold text-sm text-[#C8FF00]">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
+                      <td className="px-4 py-3 font-mono font-medium text-sm text-bw-volt tracking-[0.06em]">{est.estimate_number}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-bw-white">{est.customer_name}</td>
+                      <td className="px-4 py-3 text-bw-white/[0.45] text-sm">{est.date}</td>
+                      <td className="px-4 py-3 text-bw-white/[0.45] text-sm">{est.expiry_date}</td>
+                      <td className="px-4 py-3 text-right font-bold text-sm text-bw-volt">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-3 text-center">
                         <EstimateStatusBadge status={est.status} />
                       </td>
                       <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Eye className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Copy className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)} className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"><Eye className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)} className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"><Copy className="h-4 w-4" /></Button>
                       </td>
                     </tr>
                   ))}
@@ -1384,7 +1384,7 @@ export default function EstimatesEnhanced() {
               ) : (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-4 py-3 text-left font-medium">Estimate #</th>
                         <th className="px-4 py-3 text-left font-medium">Linked Ticket</th>
@@ -1398,7 +1398,7 @@ export default function EstimatesEnhanced() {
                     </thead>
                     <tbody>
                       {ticketEstimates.map((est) => (
-                        <tr key={est.estimate_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
+                        <tr key={est.estimate_id} className="border-b border-white/[0.04] hover:bg-bw-panel">
                           <td className="px-4 py-3 font-mono text-sm">{est.estimate_number}</td>
                           <td className="px-4 py-3">
                             <a 
@@ -1412,17 +1412,17 @@ export default function EstimatesEnhanced() {
                           <td className="px-4 py-3">{est.customer_name || '-'}</td>
                           <td className="px-4 py-3">
                             {est.vehicle_number ? (
-                              <span>{est.vehicle_number} <span className="text-xs text-[rgba(244,246,240,0.45)]">{est.vehicle_model}</span></span>
+                              <span>{est.vehicle_number} <span className="text-xs text-bw-white/[0.45]">{est.vehicle_model}</span></span>
                             ) : '-'}
                           </td>
                           <td className="px-4 py-3">
                             <Badge 
                               variant="outline" 
                               className={
-                                est.status === 'approved' ? 'bg-[rgba(34,197,94,0.12)] text-[#22C55E] border-[rgba(34,197,94,0.25)]' :
-                                est.status === 'sent' ? 'bg-[rgba(59,158,255,0.12)] text-[#3B9EFF] border-[rgba(59,158,255,0.25)]' :
-                                est.locked_at ? 'bg-[rgba(255,140,0,0.12)] text-[#FF8C00] border-[rgba(255,140,0,0.25)]' :
-                                'bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]'
+                                est.status === 'approved' ? 'bg-bw-green/[0.12] text-bw-green border-bw-green/25' :
+                                est.status === 'sent' ? 'bg-bw-blue/[0.12] text-bw-blue border-bw-blue/25' :
+                                est.locked_at ? 'bg-bw-orange/[0.12] text-bw-orange border-bw-orange/25' :
+                                'bg-white/5 text-bw-white'
                               }
                             >
                               {est.locked_at ? 'Locked' : est.status}
@@ -1431,7 +1431,7 @@ export default function EstimatesEnhanced() {
                           <td className="px-4 py-3 text-right font-mono font-semibold">
                             ₹{(est.grand_total || 0).toLocaleString('en-IN')}
                           </td>
-                          <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)]">
+                          <td className="px-4 py-3 text-xs text-bw-white/[0.45]">
                             {new Date(est.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -1523,11 +1523,11 @@ export default function EstimatesEnhanced() {
                       data-testid="customer-search"
                     />
                     {contacts.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-bw-panel border border-white/[0.13] rounded max-h-48 overflow-y-auto">
                         {contacts.map(c => (
                           <div 
                             key={c.contact_id} 
-                            className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+                            className="px-3 py-2 hover:bg-white/5 cursor-pointer"
                             onClick={() => {
                               setSelectedContact(c);
                               setNewEstimate(prev => ({ ...prev, customer_id: c.contact_id }));
@@ -1538,20 +1538,20 @@ export default function EstimatesEnhanced() {
                             }}
                           >
                             <p className="font-medium">{c.name}</p>
-                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
+                            <p className="text-xs text-bw-white/[0.45]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   {selectedContact && (
-                    <div className="mt-2 p-2 bg-[#111820] rounded text-xs">
+                    <div className="mt-2 p-2 bg-bw-panel rounded text-xs">
                       <p><strong>{selectedContact.name}</strong></p>
                       {selectedContact.email && <p>{selectedContact.email}</p>}
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
                       {customerPricing?.sales_price_list && (
                         <div className="mt-1 flex items-center gap-1">
-                          <Badge variant="outline" className="text-xs bg-[rgba(34,197,94,0.08)] text-[#22C55E] border-[rgba(34,197,94,0.25)]">
+                          <Badge variant="outline" className="text-xs bg-bw-green/[0.08] text-bw-green border-bw-green/25">
                             <IndianRupee className="h-3 w-3 mr-1" />
                             {customerPricing.sales_price_list.name}
                             {customerPricing.sales_price_list.discount_percentage > 0 && ` (-${customerPricing.sales_price_list.discount_percentage}%)`}
@@ -1586,7 +1586,7 @@ export default function EstimatesEnhanced() {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="font-medium">Item Table</h4>
-                  <Button variant="outline" size="sm" className="text-[#3B9EFF]" onClick={() => setShowBulkActionDialog(true)}>
+                  <Button variant="outline" size="sm" className="text-bw-blue" onClick={() => setShowBulkActionDialog(true)}>
                     <Settings className="h-4 w-4 mr-1" /> Bulk Actions
                   </Button>
                 </div>
@@ -1594,7 +1594,7 @@ export default function EstimatesEnhanced() {
                 {/* Enhanced Line Items Table */}
                 <div className="border rounded-lg overflow-visible">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820] border-b">
+                    <thead className="bg-bw-panel border-b">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium w-[280px]">ITEM DETAILS</th>
                         <th className="px-3 py-2 text-center font-medium w-20">QUANTITY</th>
@@ -1622,11 +1622,11 @@ export default function EstimatesEnhanced() {
                       ))}
                       
                       {/* New Item Row - Searchable */}
-                      <tr className="border-t bg-[rgba(59,158,255,0.08)]/30">
+                      <tr className="border-t bg-bw-blue/[0.08]/30">
                         <td className="px-3 py-2">
                           <div className="relative">
                             <div className="flex items-center gap-1">
-                              <Package className="h-4 w-4 text-[rgba(244,246,240,0.25)]" />
+                              <Package className="h-4 w-4 text-bw-white/25" />
                               <Input 
                                 value={newLineItem.name}
                                 onChange={(e) => {
@@ -1640,28 +1640,28 @@ export default function EstimatesEnhanced() {
                             </div>
                             {/* Item Search Dropdown */}
                             {newLineItem.name && newLineItem.name.length >= 1 && !newLineItem.item_id && (
-                              <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-64 overflow-y-auto">
+                              <div className="absolute z-50 left-0 right-0 mt-1 bg-bw-panel border border-white/[0.13] rounded max-h-64 overflow-y-auto">
                                 {items
                                   .filter(item => item.name?.toLowerCase().includes(newLineItem.name.toLowerCase()) || item.sku?.toLowerCase().includes(newLineItem.name.toLowerCase()))
                                   .slice(0, 10)
                                   .map(item => (
                                     <div 
                                       key={item.item_id}
-                                      className="px-3 py-2 hover:bg-[rgba(200,255,0,0.08)] cursor-pointer border-b last:border-0"
+                                      className="px-3 py-2 hover:bg-bw-volt/[0.08] cursor-pointer border-b last:border-0"
                                       onClick={() => selectItem(item)}
                                     >
                                       <div className="flex justify-between">
                                         <div>
-                                          <div className="font-medium text-[#F4F6F0]">{item.name}</div>
-                                          <div className="text-xs text-[rgba(244,246,240,0.45)]">
+                                          <div className="font-medium text-bw-white">{item.name}</div>
+                                          <div className="text-xs text-bw-white/[0.45]">
                                             {item.sku && <span>SKU: {item.sku}</span>}
                                             {item.rate && <span className="ml-2">Rate: ₹{item.rate?.toLocaleString('en-IN')}</span>}
                                           </div>
                                         </div>
                                         <div className="text-right">
-                                          <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-[rgba(244,246,240,0.45)]'}`}>
+                                          <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-bw-white/[0.45]'}`}>
                                             {item.stock_on_hand !== undefined && (
-                                              <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-[#22C55E]'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
+                                              <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-bw-green'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
                                             )}
                                           </div>
                                         </div>
@@ -1670,7 +1670,7 @@ export default function EstimatesEnhanced() {
                                   ))}
                                 {/* Add New Item Option */}
                                 <div 
-                                  className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer border-t flex items-center gap-2 text-[#3B9EFF]"
+                                  className="px-3 py-2 hover:bg-bw-blue/[0.08] cursor-pointer border-t flex items-center gap-2 text-bw-blue"
                                   onClick={() => {
                                     setQuickAddItem({...quickAddItem, name: newLineItem.name});
                                     setShowAddItemDialog(true);
@@ -1749,11 +1749,11 @@ export default function EstimatesEnhanced() {
                             </SelectContent>
                           </Select>
                         </td>
-                        <td className="px-3 py-2 text-right font-medium text-[rgba(244,246,240,0.25)]">
+                        <td className="px-3 py-2 text-right font-medium text-bw-white/25">
                           ₹{((newLineItem.quantity || 0) * (newLineItem.rate || 0)).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                         </td>
                         <td className="px-3 py-2">
-                          <Button size="sm" onClick={addLineItem} className="h-7 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" disabled={!newLineItem.name}>
+                          <Button size="sm" onClick={addLineItem} className="h-7 bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" disabled={!newLineItem.name}>
                             <Plus className="h-4 w-4" />
                           </Button>
                         </td>
@@ -1808,7 +1808,7 @@ export default function EstimatesEnhanced() {
               {/* Actions */}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={resetForm}>Reset</Button>
-                <Button onClick={handleCreateEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-estimate-submit">Create Estimate</Button>
+                <Button onClick={handleCreateEstimate} className="bg-bw-volt text-bw-black font-bold" data-testid="create-estimate-submit">Create Estimate</Button>
               </div>
             </CardContent>
           </Card>
@@ -1836,19 +1836,19 @@ export default function EstimatesEnhanced() {
               <div className="space-y-4 py-4 flex-1 overflow-y-auto min-h-0">
                 {/* Linked Ticket Banner - For ticket estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
-                  <div className="bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.25)] rounded-lg px-4 py-3 flex items-center justify-between">
+                  <div className="bg-bw-blue/[0.08] border border-bw-blue/25 rounded-lg px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Ticket className="h-5 w-5 text-[#3B9EFF]" />
+                      <Ticket className="h-5 w-5 text-bw-blue" />
                       <div>
-                        <p className="text-sm font-medium text-[#3B9EFF]">Linked Service Ticket</p>
-                        <p className="text-xs text-[#3B9EFF]">{selectedEstimate.ticket_id}</p>
+                        <p className="text-sm font-medium text-bw-blue">Linked Service Ticket</p>
+                        <p className="text-xs text-bw-blue">{selectedEstimate.ticket_id}</p>
                       </div>
                     </div>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => window.open(`/tickets?id=${selectedEstimate.ticket_id}`, '_blank')}
-                      className="text-[#3B9EFF] border-[rgba(59,158,255,0.35)] hover:bg-[rgba(59,158,255,0.08)]"
+                      className="text-bw-blue border-bw-blue/35 hover:bg-bw-blue/[0.08]"
                     >
                       <Wrench className="h-4 w-4 mr-1" />
                       Open Job Card
@@ -1858,7 +1858,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Lock Banner */}
                 {selectedEstimate.locked_at && (
-                  <div className="bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.25)] rounded-lg px-4 py-3 flex items-center gap-2 text-[#FF8C00]">
+                  <div className="bg-bw-orange/[0.08] border border-bw-orange/25 rounded-lg px-4 py-3 flex items-center gap-2 text-bw-orange">
                     <AlertTriangle className="h-5 w-5" />
                     <div>
                       <p className="font-medium">Estimate Locked</p>
@@ -1869,26 +1869,26 @@ export default function EstimatesEnhanced() {
 
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Date</p><p className="font-medium">{selectedEstimate.date}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date || '-'}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">Reference</p><p className="font-medium">{selectedEstimate.reference_number || '-'}</p></div>
-                  <div><p className="text-[rgba(244,246,240,0.45)]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Date</p><p className="font-medium">{selectedEstimate.date}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date || '-'}</p></div>
+                  <div><p className="text-bw-white/[0.45]">Reference</p><p className="font-medium">{selectedEstimate.reference_number || '-'}</p></div>
+                  <div><p className="text-bw-white/[0.45]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
                 </div>
 
                 {/* Vehicle Info for Ticket Estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.vehicle_number && (
-                  <div className="grid grid-cols-3 gap-4 text-sm bg-[#111820] p-3 rounded-lg">
-                    <div><p className="text-[rgba(244,246,240,0.45)]">Vehicle</p><p className="font-medium">{selectedEstimate.vehicle_number}</p></div>
-                    <div><p className="text-[rgba(244,246,240,0.45)]">Model</p><p className="font-medium">{selectedEstimate.vehicle_model || '-'}</p></div>
-                    <div><p className="text-[rgba(244,246,240,0.45)]">Technician</p><p className="font-medium">{selectedEstimate.assigned_technician_name || '-'}</p></div>
+                  <div className="grid grid-cols-3 gap-4 text-sm bg-bw-panel p-3 rounded-lg">
+                    <div><p className="text-bw-white/[0.45]">Vehicle</p><p className="font-medium">{selectedEstimate.vehicle_number}</p></div>
+                    <div><p className="text-bw-white/[0.45]">Model</p><p className="font-medium">{selectedEstimate.vehicle_model || '-'}</p></div>
+                    <div><p className="text-bw-white/[0.45]">Technician</p><p className="font-medium">{selectedEstimate.assigned_technician_name || '-'}</p></div>
                   </div>
                 )}
 
                 {/* Price List Info */}
                 {selectedEstimate.price_list_name && (
-                  <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] rounded-lg px-3 py-2 text-sm flex items-center gap-2">
-                    <IndianRupee className="h-4 w-4 text-[#22C55E]" />
-                    <span className="text-[#22C55E]">
+                  <div className="bg-bw-green/[0.08] border border-bw-green/25 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
+                    <IndianRupee className="h-4 w-4 text-bw-green" />
+                    <span className="text-bw-green">
                       Price List Applied: <strong>{selectedEstimate.price_list_name}</strong>
                     </span>
                   </div>
@@ -1944,13 +1944,13 @@ export default function EstimatesEnhanced() {
                   {(selectedEstimate.status === "sent" || selectedEstimate.status === "customer_viewed") && (
                     <>
                       <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Resend</Button>
-                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-[rgba(34,197,94,0.85)] text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
+                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-bw-green hover:bg-bw-green/85 text-bw-black"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
                       <Button variant="outline" onClick={() => handleMarkDeclined(selectedEstimate.estimate_id)}><XCircle className="h-4 w-4 mr-1" /> Mark Declined</Button>
                     </>
                   )}
                   {selectedEstimate.status === "accepted" && (
                     <>
-                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-[#8B5CF6] hover:bg-purple-600 text-white"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
+                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-bw-purple hover:bg-purple-600 text-white"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                       <Button variant="outline" onClick={() => handleConvertToSO(selectedEstimate.estimate_id)}><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Sales Order</Button>
                     </>
                   )}
@@ -1968,8 +1968,8 @@ export default function EstimatesEnhanced() {
 
                 {/* Customer Viewed Info */}
                 {selectedEstimate.status === "customer_viewed" && selectedEstimate.first_viewed_at && (
-                  <div className="bg-[rgba(26,255,228,0.08)] border border-[rgba(26,255,228,0.20)] rounded-lg p-3">
-                    <p className="text-sm text-[#1AFFE4] flex items-center gap-2">
+                  <div className="bg-bw-teal/[0.08] border border-bw-teal/20 rounded-lg p-3">
+                    <p className="text-sm text-bw-teal flex items-center gap-2">
                       <Eye className="h-4 w-4" />
                       <strong>Customer viewed on:</strong> {new Date(selectedEstimate.first_viewed_at).toLocaleString('en-IN')}
                     </p>
@@ -1978,8 +1978,8 @@ export default function EstimatesEnhanced() {
 
                 {/* Converted To */}
                 {selectedEstimate.converted_to && (
-                  <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
-                    <p className="text-sm text-[#8B5CF6]">
+                  <div className="bg-bw-purple/[0.08] rounded-lg p-3">
+                    <p className="text-sm text-bw-purple">
                       <strong>Converted to:</strong> {selectedEstimate.converted_to}
                     </p>
                   </div>
@@ -1991,7 +1991,7 @@ export default function EstimatesEnhanced() {
                     <h4 className="font-medium mb-2">History</h4>
                     <div className="space-y-2 text-sm">
                       {selectedEstimate.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)]">
+                        <div key={idx} className="flex justify-between text-bw-white/[0.45]">
                           <span>{h.action}: {h.details}</span>
                           <span className="text-xs">{new Date(h.timestamp).toLocaleString('en-IN')}</span>
                         </div>
@@ -2024,7 +2024,7 @@ export default function EstimatesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Estimate</Button>
+            <Button onClick={handleSendEstimate} className="bg-bw-volt text-bw-black font-bold">Send Estimate</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2092,7 +2092,7 @@ export default function EstimatesEnhanced() {
                 <Button 
                   onClick={handleCreateShareLink} 
                   disabled={shareLoading}
-                  className="w-full bg-[#C8FF00] text-[#080C0F] font-bold"
+                  className="w-full bg-bw-volt text-bw-black font-bold"
                   data-testid="generate-share-link-btn"
                 >
                   {shareLoading ? "Generating..." : "Generate Share Link"}
@@ -2100,8 +2100,8 @@ export default function EstimatesEnhanced() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] rounded-lg p-4">
-                  <p className="text-sm text-[#22C55E] font-medium mb-2">Share link created successfully!</p>
+                <div className="bg-bw-green/[0.08] border border-bw-green/25 rounded-lg p-4">
+                  <p className="text-sm text-bw-green font-medium mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input 
                       value={shareLink.full_url} 
@@ -2113,7 +2113,7 @@ export default function EstimatesEnhanced() {
                     </Button>
                   </div>
                 </div>
-                <div className="text-xs text-[rgba(244,246,240,0.45)] space-y-1">
+                <div className="text-xs text-bw-white/[0.45] space-y-1">
                   <p><strong>Expires:</strong> {new Date(shareLink.expires_at).toLocaleDateString('en-IN')}</p>
                   <p><strong>Can Accept:</strong> {shareLink.allow_accept ? 'Yes' : 'No'}</p>
                   <p><strong>Can Decline:</strong> {shareLink.allow_decline ? 'Yes' : 'No'}</p>
@@ -2141,7 +2141,7 @@ export default function EstimatesEnhanced() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             {/* Upload Area */}
-            <div className="border-2 border-dashed border-[rgba(255,255,255,0.13)] rounded-lg p-4 text-center">
+            <div className="border-2 border-dashed border-white/[0.13] rounded-lg p-4 text-center">
               <input 
                 type="file" 
                 id="attachment-upload" 
@@ -2150,11 +2150,11 @@ export default function EstimatesEnhanced() {
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt,.csv"
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                <Upload className="h-8 w-8 mx-auto text-bw-white/25 mb-2" />
+                <p className="text-sm text-bw-white/[0.45]">
                   {uploading ? "Uploading..." : "Click to upload a file"}
                 </p>
-                <p className="text-xs text-[rgba(244,246,240,0.25)] mt-1">PDF, Images, Word, Excel (max 10MB)</p>
+                <p className="text-xs text-bw-white/25 mt-1">PDF, Images, Word, Excel (max 10MB)</p>
               </label>
             </div>
 
@@ -2163,12 +2163,12 @@ export default function EstimatesEnhanced() {
               <div className="space-y-2">
                 <Label>Attached Files ({attachments.length}/3)</Label>
                 {attachments.map((att) => (
-                  <div key={att.attachment_id} className="flex items-center justify-between bg-[#111820] rounded-lg p-2">
+                  <div key={att.attachment_id} className="flex items-center justify-between bg-bw-panel rounded-lg p-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <FileText className="h-4 w-4 text-[rgba(244,246,240,0.25)] flex-shrink-0" />
+                      <FileText className="h-4 w-4 text-bw-white/25 flex-shrink-0" />
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{att.filename}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.25)]">{(att.file_size / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-bw-white/25">{(att.file_size / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -2182,7 +2182,7 @@ export default function EstimatesEnhanced() {
                       <Button 
                         size="sm" 
                         variant="ghost" 
-                        className="text-red-500 hover:text-[#FF3B2F]"
+                        className="text-red-500 hover:text-bw-red"
                         onClick={() => handleDeleteAttachment(att.attachment_id)}
                       >
                         <X className="h-4 w-4" />
@@ -2192,7 +2192,7 @@ export default function EstimatesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[rgba(244,246,240,0.45)] text-center">No attachments yet</p>
+              <p className="text-sm text-bw-white/[0.45] text-center">No attachments yet</p>
             )}
           </div>
         </DialogContent>
@@ -2212,7 +2212,7 @@ export default function EstimatesEnhanced() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Auto-convert accepted estimates</Label>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Automatically create invoices when estimates are accepted</p>
+                  <p className="text-xs text-bw-white/[0.45]">Automatically create invoices when estimates are accepted</p>
                 </div>
                 <input 
                   type="checkbox" 
@@ -2300,7 +2300,7 @@ export default function EstimatesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
-            <Button onClick={handleSavePreferences} className="bg-[#C8FF00] text-[#080C0F] font-bold">Save Preferences</Button>
+            <Button onClick={handleSavePreferences} className="bg-bw-volt text-bw-black font-bold">Save Preferences</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2313,7 +2313,7 @@ export default function EstimatesEnhanced() {
             <DialogDescription>Upload a CSV file to import estimates in bulk</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="border-2 border-dashed border-[rgba(255,255,255,0.13)] rounded-lg p-6 text-center">
+            <div className="border-2 border-dashed border-white/[0.13] rounded-lg p-6 text-center">
               <input 
                 type="file" 
                 id="import-file" 
@@ -2322,8 +2322,8 @@ export default function EstimatesEnhanced() {
                 onChange={(e) => setImportFile(e.target.files[0])}
               />
               <label htmlFor="import-file" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                <Upload className="h-10 w-10 mx-auto text-bw-white/25 mb-2" />
+                <p className="text-sm text-bw-white/[0.45]">
                   {importFile ? importFile.name : "Click to select CSV file"}
                 </p>
               </label>
@@ -2331,13 +2331,13 @@ export default function EstimatesEnhanced() {
             <Button variant="outline" onClick={downloadImportTemplate} className="w-full gap-2">
               <Download className="h-4 w-4" /> Download Template
             </Button>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">
+            <p className="text-xs text-bw-white/[0.45]">
               Template includes: customer_name, date, item_name, quantity, rate, tax_percentage
             </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportFile(null); }}>Cancel</Button>
-            <Button onClick={handleImport} disabled={!importFile || importing} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+            <Button onClick={handleImport} disabled={!importFile || importing} className="bg-bw-volt text-bw-black font-bold">
               {importing ? "Importing..." : "Import"}
             </Button>
           </DialogFooter>
@@ -2365,13 +2365,13 @@ export default function EstimatesEnhanced() {
               </Select>
             </div>
             {bulkAction === "void" && (
-              <div className="bg-[rgba(255,140,0,0.08)] p-3 rounded-lg text-sm text-[#FF8C00]">
+              <div className="bg-bw-orange/[0.08] p-3 rounded-lg text-sm text-bw-orange">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Voiding estimates is irreversible. Converted estimates cannot be voided.
               </div>
             )}
             {bulkAction === "delete" && (
-              <div className="bg-[rgba(255,59,47,0.08)] p-3 rounded-lg text-sm text-[#FF3B2F]">
+              <div className="bg-bw-red/[0.08] p-3 rounded-lg text-sm text-bw-red">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Only draft estimates will be deleted. This action is irreversible.
               </div>
@@ -2382,7 +2382,7 @@ export default function EstimatesEnhanced() {
             <Button 
               onClick={handleBulkAction} 
               disabled={!bulkAction}
-              className={bulkAction === "delete" || bulkAction === "void" ? "bg-[#FF3B2F] hover:bg-[rgba(255,59,47,0.85)]" : "bg-[#C8FF00] text-[#080C0F] font-bold"}
+              className={bulkAction === "delete" || bulkAction === "void" ? "bg-bw-red hover:bg-bw-red/85" : "bg-bw-volt text-bw-black font-bold"}
             >
               Apply to {selectedIds.length} Estimates
             </Button>
@@ -2403,10 +2403,10 @@ export default function EstimatesEnhanced() {
               <div className="space-y-2">
                 <Label>Existing Fields</Label>
                 {customFields.map((field, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-[#111820] rounded-lg p-3">
+                  <div key={idx} className="flex items-center justify-between bg-bw-panel rounded-lg p-3">
                     <div>
                       <p className="font-medium text-sm">{field.field_name}</p>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">
+                      <p className="text-xs text-bw-white/[0.45]">
                         {field.field_type} {field.is_required && "• Required"} 
                         {field.show_in_pdf && " • PDF"} {field.show_in_portal && " • Portal"}
                       </p>
@@ -2414,7 +2414,7 @@ export default function EstimatesEnhanced() {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="text-red-500 hover:text-[#FF3B2F]"
+                      className="text-red-500 hover:text-bw-red"
                       onClick={() => handleDeleteCustomField(field.field_name)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -2423,7 +2423,7 @@ export default function EstimatesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[rgba(244,246,240,0.45)] text-center py-4">No custom fields defined yet</p>
+              <p className="text-sm text-bw-white/[0.45] text-center py-4">No custom fields defined yet</p>
             )}
             
             <Separator />
@@ -2476,7 +2476,7 @@ export default function EstimatesEnhanced() {
                   Show in PDF
                 </label>
               </div>
-              <Button onClick={handleAddCustomField} className="w-full bg-[#C8FF00] text-[#080C0F] font-bold">
+              <Button onClick={handleAddCustomField} className="w-full bg-bw-volt text-bw-black font-bold">
                 <Plus className="h-4 w-4 mr-2" /> Add Field
               </Button>
             </div>
@@ -2497,15 +2497,15 @@ export default function EstimatesEnhanced() {
                 key={template.id}
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   selectedTemplate === template.id 
-                    ? 'border-[#C8FF00] bg-[rgba(34,197,94,0.08)]' 
-                    : 'border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.13)]'
+                    ? 'border-bw-volt bg-bw-green/[0.08]' 
+                    : 'border-white/[0.07] hover:border-white/[0.13]'
                 }`}
                 onClick={() => setSelectedTemplate(template.id)}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{template.name}</p>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{template.description}</p>
+                    <p className="text-sm text-bw-white/[0.45]">{template.description}</p>
                   </div>
                   <div 
                     className="w-8 h-8 rounded-full"
@@ -2523,7 +2523,7 @@ export default function EstimatesEnhanced() {
                   handleDownloadWithTemplate(selectedEstimate.estimate_id, selectedTemplate);
                   setShowTemplateDialog(false);
                 }}
-                className="bg-[#C8FF00] text-[#080C0F] font-bold"
+                className="bg-bw-volt text-bw-black font-bold"
               >
                 <Download className="h-4 w-4 mr-2" /> Download with {selectedTemplate}
               </Button>
@@ -2601,7 +2601,7 @@ export default function EstimatesEnhanced() {
                 </div>
                 <div className="border rounded-lg overflow-visible">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820] border-b">
+                    <thead className="bg-bw-panel border-b">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium w-[250px]">ITEM DETAILS</th>
                         <th className="px-3 py-2 text-center font-medium w-20">QTY</th>
@@ -2630,11 +2630,11 @@ export default function EstimatesEnhanced() {
                         const total = taxableAmount + taxAmount;
                         
                         return (
-                          <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
+                          <tr key={idx} className="border-b border-white/[0.04] hover:bg-bw-panel">
                             <td className="px-3 py-2">
                               <div className="relative">
                                 <div className="flex items-center gap-1">
-                                  <Package className="h-4 w-4 text-[rgba(244,246,240,0.25)] flex-shrink-0" />
+                                  <Package className="h-4 w-4 text-bw-white/25 flex-shrink-0" />
                                   <Input 
                                     value={editActiveItemIndex === idx ? editItemSearch : item.name}
                                     onChange={(e) => {
@@ -2665,25 +2665,25 @@ export default function EstimatesEnhanced() {
                                 </div>
                                 {/* Search Results Dropdown */}
                                 {editActiveItemIndex === idx && editItemSearch.length >= 1 && !item.item_id && editSearchResults.length > 0 && (
-                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
+                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-bw-panel border border-white/[0.13] rounded max-h-48 overflow-y-auto">
                                     {editSearchResults.slice(0, 8).map(searchItem => (
                                       <div 
                                         key={searchItem.item_id}
-                                        className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer flex justify-between items-center"
+                                        className="px-3 py-2 hover:bg-bw-blue/[0.08] cursor-pointer flex justify-between items-center"
                                         onClick={() => selectEditItem(searchItem, idx)}
                                       >
                                         <div>
                                           <p className="font-medium text-sm">{searchItem.name}</p>
-                                          <p className="text-xs text-[rgba(244,246,240,0.45)]">SKU: {searchItem.sku || 'N/A'}</p>
+                                          <p className="text-xs text-bw-white/[0.45]">SKU: {searchItem.sku || 'N/A'}</p>
                                         </div>
-                                        <span className="text-sm font-mono text-[rgba(244,246,240,0.45)]">₹{(searchItem.rate || searchItem.sales_rate || 0).toLocaleString()}</span>
+                                        <span className="text-sm font-mono text-bw-white/[0.45]">₹{(searchItem.rate || searchItem.sales_rate || 0).toLocaleString()}</span>
                                       </div>
                                     ))}
                                   </div>
                                 )}
                                 {/* Show SKU if item is selected */}
                                 {item.item_id && (
-                                  <p className="text-xs text-[rgba(244,246,240,0.25)] mt-0.5 ml-5">SKU: {item.sku || item.item_id?.slice(0, 8)}</p>
+                                  <p className="text-xs text-bw-white/25 mt-0.5 ml-5">SKU: {item.sku || item.item_id?.slice(0, 8)}</p>
                                 )}
                               </div>
                             </td>
@@ -2763,7 +2763,7 @@ export default function EstimatesEnhanced() {
                       })}
                       {editEstimate.line_items.length === 0 && (
                         <tr>
-                          <td colSpan={7} className="px-3 py-8 text-center text-[rgba(244,246,240,0.25)]">
+                          <td colSpan={7} className="px-3 py-8 text-center text-bw-white/25">
                             No items added. Click "+ Add Row" to start.
                           </td>
                         </tr>
@@ -2833,7 +2833,7 @@ export default function EstimatesEnhanced() {
           
           <DialogFooter className="flex-shrink-0 border-t pt-4 mt-4">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdateEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="save-estimate-btn">Save Changes</Button>
+            <Button onClick={handleUpdateEstimate} className="bg-bw-volt text-bw-black font-bold" data-testid="save-estimate-btn">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2940,7 +2940,7 @@ export default function EstimatesEnhanced() {
               setShowAddItemDialog(false);
               setQuickAddItem({ name: newLineItem.name || "", sku: "", rate: 0, description: "", unit: "pcs", tax_percentage: 18, hsn_code: "", item_type: "product" });
             }}>Cancel</Button>
-            <Button onClick={handleQuickAddItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+            <Button onClick={handleQuickAddItem} className="bg-bw-volt text-bw-black font-bold">
               <Plus className="h-4 w-4 mr-2" /> Create & Add
             </Button>
           </DialogFooter>

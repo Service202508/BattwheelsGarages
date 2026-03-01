@@ -69,7 +69,7 @@ export function UnsavedChangesDialog({
               {title}
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="text-[rgba(244,246,240,0.35)] mt-2">
+          <AlertDialogDescription className="text-bw-white/35 mt-2">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -98,7 +98,7 @@ export function UnsavedChangesDialog({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full sm:w-auto bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
+            className="w-full sm:w-auto bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
             data-testid="unsaved-save-btn"
           >
             <Save className="h-4 w-4 mr-2" />
@@ -217,7 +217,7 @@ export function AutoSaveIndicator({ lastSaved, isSaving, isDirty }) {
 
   if (isSaving) {
     return (
-      <div className="flex items-center gap-1.5 text-xs text-[rgba(244,246,240,0.45)]">
+      <div className="flex items-center gap-1.5 text-xs text-bw-white/[0.45]">
         <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
         <span>Saving...</span>
       </div>
@@ -235,8 +235,8 @@ export function AutoSaveIndicator({ lastSaved, isSaving, isDirty }) {
 
   if (lastSaved) {
     return (
-      <div className="flex items-center gap-1.5 text-xs text-[rgba(244,246,240,0.45)]">
-        <div className="h-2 w-2 rounded-full bg-[#C8FF00]" />
+      <div className="flex items-center gap-1.5 text-xs text-bw-white/[0.45]">
+        <div className="h-2 w-2 rounded-full bg-bw-volt" />
         <span>Saved {formatTime(lastSaved)}</span>
       </div>
     );

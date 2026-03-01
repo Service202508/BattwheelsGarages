@@ -13,11 +13,11 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  present: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
-  absent: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
+  present: "bg-bw-volt/[0.08]0/20 text-bw-volt text-400 border-bw-volt/50/30",
+  absent: "bg-bw-red/[0.08]0/20 text-red-400 border-red-500/30",
   late: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   half_day: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  leave: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
+  leave: "bg-bw-purple/[0.08]0/20 text-purple-400 border-purple-500/30",
 };
 
 const statusIcons = {
@@ -142,7 +142,7 @@ export default function TechnicianAttendance({ user }) {
           {canCheckIn && (
             <Button 
               onClick={() => { setCheckType('in'); setShowCheckDialog(true); }}
-              className="bg-[#22C55E] hover:bg-[#16a34a]"
+              className="bg-bw-green hover:bg-bw-green-hover"
               data-testid="check-in-btn"
             >
               <Play className="h-4 w-4 mr-2" />
@@ -153,7 +153,7 @@ export default function TechnicianAttendance({ user }) {
             <Button 
               onClick={() => { setCheckType('out'); setShowCheckDialog(true); }}
               variant="outline"
-              className="border-red-500/30 text-red-400 hover:bg-[rgba(255,59,47,0.08)]0/10"
+              className="border-red-500/30 text-red-400 hover:bg-bw-red/[0.08]0/10"
               data-testid="check-out-btn"
             >
               <Square className="h-4 w-4 mr-2" />
@@ -177,12 +177,12 @@ export default function TechnicianAttendance({ user }) {
                         {todayStatus.today || 'Present'}
                       </Badge>
                       <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-white/[0.07] border-700">
                           <Clock className="h-4 w-4 text-green-400" />
                           <span className="text-slate-300">In: {todayStatus.check_in}</span>
                         </div>
                         {todayStatus.check_out && (
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-white/[0.07] border-700">
                             <Clock className="h-4 w-4 text-red-400" />
                             <span className="text-slate-300">Out: {todayStatus.check_out}</span>
                           </div>
@@ -205,35 +205,35 @@ export default function TechnicianAttendance({ user }) {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wider">Present</p>
-                <p className="text-2xl font-bold text-[#C8FF00] text-400 mt-1">{summary.present || 0}</p>
+                <p className="text-2xl font-bold text-bw-volt text-400 mt-1">{summary.present || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-[rgba(200,255,0,0.08)]0/10">
-                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-400" />
+              <div className="p-2.5 rounded-xl bg-bw-volt/[0.08]0/10">
+                <CheckCircle className="h-5 w-5 text-bw-volt text-400" />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wider">Absent</p>
                 <p className="text-2xl font-bold text-red-400 mt-1">{summary.absent || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-[rgba(255,59,47,0.08)]0/10">
+              <div className="p-2.5 rounded-xl bg-bw-red/[0.08]0/10">
                 <AlertCircle className="h-5 w-5 text-red-400" />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -247,7 +247,7 @@ export default function TechnicianAttendance({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -283,7 +283,7 @@ export default function TechnicianAttendance({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-green-500" />
         </div>
       ) : (
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-0">
             <div className="divide-y divide-slate-800">
               {attendanceData.records.length === 0 ? (
@@ -310,10 +310,10 @@ export default function TechnicianAttendance({ user }) {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${record.status === 'present' ? 'bg-[rgba(200,255,0,0.08)]0/10' : 
-                            record.status === 'absent' ? 'bg-[rgba(255,59,47,0.08)]0/10' : 
+                          <div className={`p-2 rounded-lg ${record.status === 'present' ? 'bg-bw-volt/[0.08]0/10' : 
+                            record.status === 'absent' ? 'bg-bw-red/[0.08]0/10' : 
                             record.status === 'late' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
-                            <StatusIcon className={`h-5 w-5 ${record.status === 'present' ? 'text-[#C8FF00] text-400' : 
+                            <StatusIcon className={`h-5 w-5 ${record.status === 'present' ? 'text-bw-volt text-400' : 
                               record.status === 'absent' ? 'text-red-400' : 
                               record.status === 'late' ? 'text-amber-400' : 'text-blue-400'}`} />
                           </div>
@@ -337,7 +337,7 @@ export default function TechnicianAttendance({ user }) {
                           </div>
                         )}
                         {record.working_hours && (
-                          <div className="text-[#C8FF00] text-400 font-medium">
+                          <div className="text-bw-volt text-400 font-medium">
                             {record.working_hours}h
                           </div>
                         )}
@@ -353,14 +353,14 @@ export default function TechnicianAttendance({ user }) {
 
       {/* Check In/Out Dialog */}
       <Dialog open={showCheckDialog} onOpenChange={setShowCheckDialog}>
-        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
+        <DialogContent className="bg-slate-900 border-white/[0.07] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">
               {checkType === 'in' ? 'Check In' : 'Check Out'} Confirmation
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-[rgba(34,197,94,0.08)]0/20' : 'bg-[rgba(255,59,47,0.08)]0/20'} mb-4`}>
+            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-bw-green/[0.08]0/20' : 'bg-bw-red/[0.08]0/20'} mb-4`}>
               {checkType === 'in' ? (
                 <Play className="h-8 w-8 text-green-400" />
               ) : (
@@ -377,13 +377,13 @@ export default function TechnicianAttendance({ user }) {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
+            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-white/[0.07] border-700">
               Cancel
             </Button>
             <Button 
               onClick={() => handleCheckInOut(checkType)}
               disabled={checkingIn}
-              className={checkType === 'in' ? 'bg-[#22C55E] hover:bg-[#16a34a]' : 'bg-red-600 hover:bg-red-700'}
+              className={checkType === 'in' ? 'bg-bw-green hover:bg-bw-green-hover' : 'bg-red-600 hover:bg-red-700'}
             >
               {checkingIn ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               {checkType === 'in' ? 'Check In' : 'Check Out'}

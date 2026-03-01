@@ -28,14 +28,14 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  sent: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
-  viewed: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
-  partially_paid: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
-  paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]",
-  written_off: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]"
+  draft: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  sent: "bg-bw-blue/10 text-bw-blue border border-bw-blue/25",
+  viewed: "bg-bw-purple/10 text-bw-purple border border-bw-purple/25",
+  partially_paid: "bg-bw-amber/10 text-bw-amber border border-bw-amber/25",
+  paid: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  overdue: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  void: "bg-bw-white/5 text-bw-white/25 border border-white/[0.08]",
+  written_off: "bg-bw-orange/10 text-bw-orange border border-bw-orange/25"
 };
 
 const statusLabels = {
@@ -1135,7 +1135,7 @@ export default function InvoicesEnhanced() {
             <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
               <RefreshCw className="h-4 w-4" /> Refresh
             </Button>
-            <Button onClick={() => setShowCreateDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-invoice-btn">
+            <Button onClick={() => setShowCreateDialog(true)} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold gap-2" data-testid="new-invoice-btn">
               <Plus className="h-4 w-4" /> New Invoice
             </Button>
           </div>
@@ -1197,7 +1197,7 @@ export default function InvoicesEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-3xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/25" />
                 <Input 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
@@ -1231,19 +1231,19 @@ export default function InvoicesEnhanced() {
 
           {/* Invoice List */}
           {loading ? (
-            <Card><CardContent className="py-12 text-center"><RefreshCw className="h-8 w-8 animate-spin mx-auto text-[rgba(244,246,240,0.25)]" /></CardContent></Card>
+            <Card><CardContent className="py-12 text-center"><RefreshCw className="h-8 w-8 animate-spin mx-auto text-bw-white/25" /></CardContent></Card>
           ) : invoices.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-                <Receipt className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+              <CardContent className="py-12 text-center text-bw-white/[0.45]">
+                <Receipt className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
                 <p>No invoices found</p>
-                <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-[#C8FF00] text-[#080C0F] font-bold">Create First Invoice</Button>
+                <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-bw-volt text-bw-black font-bold">Create First Invoice</Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="bg-[#111820] rounded-lg border overflow-hidden">
+            <div className="bg-bw-panel rounded-lg border overflow-hidden">
               <table className="w-full">
-                <thead className="bg-[#111820] text-xs text-[rgba(244,246,240,0.45)] uppercase">
+                <thead className="bg-bw-panel text-xs text-bw-white/[0.45] uppercase">
                   <tr>
                     <th className="px-4 py-3 text-left">Invoice #</th>
                     <th className="px-4 py-3 text-left">Customer</th>
@@ -1256,41 +1256,41 @@ export default function InvoicesEnhanced() {
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-[rgba(255,255,255,0.04)]">
+                <tbody className="divide-white/[0.04]">
                   {invoices.map(inv => (
-                    <tr key={inv.invoice_id} className="hover:bg-[#111820] cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
-                      <td className="px-4 py-3 font-medium text-[#3B9EFF]">{inv.invoice_number}</td>
+                    <tr key={inv.invoice_id} className="hover:bg-bw-panel cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
+                      <td className="px-4 py-3 font-medium text-bw-blue">{inv.invoice_number}</td>
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium">{inv.customer_name}</p>
-                          {inv.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {inv.reference_number}</p>}
+                          {inv.reference_number && <p className="text-xs text-bw-white/[0.45]">Ref: {inv.reference_number}</p>}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm">{formatDate(inv.invoice_date)}</td>
                       <td className="px-4 py-3 text-sm">{formatDate(inv.due_date)}</td>
                       <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.grand_total)}</td>
                       <td className="px-4 py-3 text-right">
-                        <span className={inv.balance_due > 0 ? "text-[#FF3B2F] font-medium" : "text-[#22C55E]"}>
+                        <span className={inv.balance_due > 0 ? "text-bw-red font-medium" : "text-bw-green"}>
                           {formatCurrency(inv.balance_due)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{statusLabels[inv.status] || inv.status}</Badge>
+                        <Badge className={statusColors[inv.status] || "bg-white/5"}>{statusLabels[inv.status] || inv.status}</Badge>
                       </td>
                       {einvoiceEnabled && (
                         <td className="px-4 py-3 text-center">
                           {inv.irn && inv.irn_status === "registered" ? (
-                            <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30 text-xs">
+                            <Badge className="bg-bw-green/20 text-green-400 border-green-500/30 text-xs">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               IRN ✓
                             </Badge>
                           ) : inv.irn_status === "cancelled" ? (
-                            <Badge className="bg-[rgba(255,59,47,0.15)] text-[#FF3B2F] border-red-500/30 text-xs">
+                            <Badge className="bg-bw-red/15 text-bw-red border-red-500/30 text-xs">
                               Cancelled
                             </Badge>
                           ) : isB2BInvoice(inv) && inv.status !== "draft" ? (
                             <Badge 
-                              className="bg-[rgba(255,140,0,0.15)] text-[#FF8C00] border-orange-500/30 text-xs cursor-pointer hover:bg-[rgba(255,140,0,0.25)]"
+                              className="bg-bw-orange/15 text-bw-orange border-orange-500/30 text-xs cursor-pointer hover:bg-bw-orange/25"
                               onClick={(e) => { e.stopPropagation(); fetchInvoiceDetail(inv.invoice_id); }}
                             >
                               IRN Pending
@@ -1311,21 +1311,21 @@ export default function InvoicesEnhanced() {
 
         <TabsContent value="overdue">
           {invoices.filter(i => i.status === "overdue").length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-300" /><p>No overdue invoices!</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-300" /><p>No overdue invoices!</p></CardContent></Card>
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "overdue").map(inv => (
-                <Card key={inv.invoice_id} className="border-red-200 bg-[rgba(255,59,47,0.08)] cursor-pointer hover:border-[rgba(200,255,0,0.2)]" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
+                <Card key={inv.invoice_id} className="border-red-200 bg-bw-red/[0.08] cursor-pointer hover:border-bw-volt/20" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
                   <CardContent className="pt-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">{inv.invoice_number}</p>
-                        <p className="text-[rgba(244,246,240,0.45)]">{inv.customer_name}</p>
-                        <p className="text-sm text-[#FF3B2F]">Due: {formatDate(inv.due_date)}</p>
+                        <p className="text-bw-white/[0.45]">{inv.customer_name}</p>
+                        <p className="text-sm text-bw-red">Due: {formatDate(inv.due_date)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-[#FF3B2F]">{formatCurrency(inv.balance_due)}</p>
-                        <Badge className="bg-red-100 text-[#FF3B2F]">Overdue</Badge>
+                        <p className="text-2xl font-bold text-bw-red">{formatCurrency(inv.balance_due)}</p>
+                        <Badge className="bg-red-100 text-bw-red">Overdue</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -1337,21 +1337,21 @@ export default function InvoicesEnhanced() {
 
         <TabsContent value="drafts">
           {invoices.filter(i => i.status === "draft").length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><FileText className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No draft invoices</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]"><FileText className="h-12 w-12 mx-auto mb-4 text-bw-white/20" /><p>No draft invoices</p></CardContent></Card>
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "draft").map(inv => (
-                <Card key={inv.invoice_id} className="cursor-pointer hover:border-[rgba(200,255,0,0.2)]" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
+                <Card key={inv.invoice_id} className="cursor-pointer hover:border-bw-volt/20" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
                   <CardContent className="pt-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">{inv.invoice_number}</p>
-                        <p className="text-[rgba(244,246,240,0.45)]">{inv.customer_name}</p>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Created: {formatDate(inv.created_time)}</p>
+                        <p className="text-bw-white/[0.45]">{inv.customer_name}</p>
+                        <p className="text-sm text-bw-white/[0.45]">Created: {formatDate(inv.created_time)}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold">{formatCurrency(inv.grand_total)}</p>
-                        <Badge className="bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]">Draft</Badge>
+                        <Badge className="bg-white/5 text-bw-white">Draft</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -1432,7 +1432,7 @@ export default function InvoicesEnhanced() {
               
               <div className="space-y-3">
                 {newInvoice.line_items.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-2 items-end bg-[#111820] p-3 rounded-lg">
+                  <div key={idx} className="grid grid-cols-12 gap-2 items-end bg-bw-panel p-3 rounded-lg">
                     <div className="col-span-4">
                       <Label className="text-xs">Item</Label>
                       <Select onValueChange={(v) => selectItem(idx, v)}>
@@ -1497,7 +1497,7 @@ export default function InvoicesEnhanced() {
                 </div>
               </div>
               
-              <div className="bg-[#111820] p-4 rounded-lg space-y-2">
+              <div className="bg-bw-panel p-4 rounded-lg space-y-2">
                 <div className="flex justify-between"><span>Sub Total:</span><span className="font-medium">{formatCurrency(calculateSubtotal())}</span></div>
                 <div className="flex gap-2 items-center">
                   <span>Discount:</span>
@@ -1516,7 +1516,7 @@ export default function InvoicesEnhanced() {
                   <Input type="number" className="w-24" value={newInvoice.shipping_charge} onChange={(e) => setNewInvoice({ ...newInvoice, shipping_charge: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <Separator />
-                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-[#22C55E]">{formatCurrency(calculateTotal())}</span></div>
+                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-bw-green">{formatCurrency(calculateTotal())}</span></div>
               </div>
             </div>
 
@@ -1539,7 +1539,7 @@ export default function InvoicesEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-invoice-submit">Create Invoice</Button>
+            <Button onClick={handleCreateInvoice} className="bg-bw-volt text-bw-black font-bold" data-testid="create-invoice-submit">Create Invoice</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1574,7 +1574,7 @@ export default function InvoicesEnhanced() {
                   <div className="text-right">
                     <p className="text-2xl font-bold">{formatCurrency(selectedInvoice.grand_total)}</p>
                     {selectedInvoice.balance_due > 0 && (
-                      <p className="text-sm text-[#FF3B2F]">Balance: {formatCurrency(selectedInvoice.balance_due)}</p>
+                      <p className="text-sm text-bw-red">Balance: {formatCurrency(selectedInvoice.balance_due)}</p>
                     )}
                   </div>
                 </div>
@@ -1583,10 +1583,10 @@ export default function InvoicesEnhanced() {
               <div className="space-y-6 py-4">
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Invoice Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.invoice_date)}</span></div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Due Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.due_date)}</span></div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Reference:</span><br/><span className="font-medium">{selectedInvoice.reference_number || "-"}</span></div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Payment Terms:</span><br/><span className="font-medium">{selectedInvoice.payment_terms} days</span></div>
+                  <div><span className="text-bw-white/[0.45]">Invoice Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.invoice_date)}</span></div>
+                  <div><span className="text-bw-white/[0.45]">Due Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.due_date)}</span></div>
+                  <div><span className="text-bw-white/[0.45]">Reference:</span><br/><span className="font-medium">{selectedInvoice.reference_number || "-"}</span></div>
+                  <div><span className="text-bw-white/[0.45]">Payment Terms:</span><br/><span className="font-medium">{selectedInvoice.payment_terms} days</span></div>
                 </div>
 
                 {/* ==================== E-INVOICE / IRN STATUS PANEL ==================== */}
@@ -1595,23 +1595,23 @@ export default function InvoicesEnhanced() {
                     <Separator />
                     {/* State 1: IRN Pending */}
                     {needsIRN(selectedInvoice) && !irnLoading && (
-                      <div className="p-4 bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.25)] border-l-[3px] border-l-[#FF8C00] rounded">
+                      <div className="p-4 bg-bw-orange/[0.08] border border-bw-orange/25 border-l-[3px] border-l-bw-orange rounded">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-3">
-                            <div className="w-3 h-3 rounded-full bg-[#FF8C00] animate-pulse mt-1" />
+                            <div className="w-3 h-3 rounded-full bg-bw-orange animate-pulse mt-1" />
                             <div>
-                              <h4 className="font-medium text-[#FF8C00]">IRN Registration Pending</h4>
-                              <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                              <h4 className="font-medium text-bw-orange">IRN Registration Pending</h4>
+                              <p className="text-sm text-bw-white/[0.65] mt-1">
                                 This B2B invoice requires IRN registration before dispatch
                               </p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                              <p className="text-xs text-bw-white/[0.45] mt-2">
                                 Invoice date: {formatDate(selectedInvoice.invoice_date)} · Must register within 3 days of invoice date
                               </p>
                             </div>
                           </div>
                           <Button 
                             onClick={() => handleGenerateIRN(selectedInvoice.invoice_id)}
-                            className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                            className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black"
                             data-testid="generate-irn-btn"
                           >
                             <FileCheck className="h-4 w-4 mr-2" />
@@ -1621,12 +1621,12 @@ export default function InvoicesEnhanced() {
                         
                         {/* Validation Errors */}
                         {irnValidationErrors.length > 0 && (
-                          <div className="mt-4 p-3 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.25)] border-l-[3px] border-l-[#FF3B2F] rounded">
-                            <h5 className="font-medium text-[#FF3B2F] text-sm">Cannot Generate IRN — Validation Failed</h5>
+                          <div className="mt-4 p-3 bg-bw-red/[0.08] border border-bw-red/25 border-l-[3px] border-l-bw-red rounded">
+                            <h5 className="font-medium text-bw-red text-sm">Cannot Generate IRN — Validation Failed</h5>
                             <ul className="mt-2 space-y-1">
                               {irnValidationErrors.map((error, idx) => (
-                                <li key={idx} className="text-sm text-[rgba(244,246,240,0.65)] flex items-start gap-2">
-                                  <XCircle className="h-4 w-4 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                                <li key={idx} className="text-sm text-bw-white/[0.65] flex items-start gap-2">
+                                  <XCircle className="h-4 w-4 text-bw-red mt-0.5 flex-shrink-0" />
                                   {error}
                                 </li>
                               ))}
@@ -1638,12 +1638,12 @@ export default function InvoicesEnhanced() {
                     
                     {/* State 2: IRN Generating (Loading) */}
                     {irnLoading && (
-                      <div className="p-6 bg-[rgba(200,255,0,0.04)] border border-[rgba(200,255,0,0.15)] rounded">
+                      <div className="p-6 bg-bw-volt/[0.04] border border-bw-volt/15 rounded">
                         <div className="flex flex-col items-center justify-center gap-3">
-                          <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                          <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                           <div className="text-center">
                             <p className="font-medium">Submitting to IRP portal...</p>
-                            <p className="text-sm text-[rgba(244,246,240,0.45)]">This usually takes 5–10 seconds</p>
+                            <p className="text-sm text-bw-white/[0.45]">This usually takes 5–10 seconds</p>
                           </div>
                         </div>
                       </div>
@@ -1651,15 +1651,15 @@ export default function InvoicesEnhanced() {
                     
                     {/* State 3: IRN Registered */}
                     {selectedInvoice.irn && selectedInvoice.irn_status === "registered" && !irnLoading && (
-                      <div className="p-4 bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] border-l-[3px] border-l-[#22C55E] rounded">
+                      <div className="p-4 bg-bw-green/[0.08] border border-bw-green/25 border-l-[3px] border-l-bw-green rounded">
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="h-5 w-5 text-[#22C55E] mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-bw-green mt-0.5 flex-shrink-0" />
                           <div className="flex-1 space-y-4">
                             {/* IRN Number */}
                             <div>
-                              <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">IRN</Label>
+                              <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45]">IRN</Label>
                               <div className="flex items-center gap-2 mt-1">
-                                <code className="text-[11px] font-mono text-[#C8FF00] tracking-wider break-all">
+                                <code className="text-[11px] font-mono text-bw-volt tracking-wider break-all">
                                   {selectedInvoice.irn}
                                 </code>
                                 <Button
@@ -1679,29 +1679,29 @@ export default function InvoicesEnhanced() {
                             {/* Ack Number and Date */}
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">Ack Number</Label>
-                                <p className="font-mono text-[#C8FF00] mt-1">{selectedInvoice.irn_ack_no || "-"}</p>
+                                <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45]">Ack Number</Label>
+                                <p className="font-mono text-bw-volt mt-1">{selectedInvoice.irn_ack_no || "-"}</p>
                               </div>
                               <div>
-                                <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">Ack Date</Label>
-                                <p className="font-mono text-[rgba(244,246,240,0.65)] mt-1">{selectedInvoice.irn_ack_date || "-"}</p>
+                                <Label className="text-[10px] uppercase tracking-wider text-bw-white/[0.45]">Ack Date</Label>
+                                <p className="font-mono text-bw-white/[0.65] mt-1">{selectedInvoice.irn_ack_date || "-"}</p>
                               </div>
                             </div>
                             
                             {/* QR Code */}
                             {irnQrCode && (
                               <div className="flex items-start gap-4 pt-2">
-                                <div className="p-2 bg-[#F4F6F0] rounded">
+                                <div className="p-2 bg-bw-white rounded">
                                   <img src={irnQrCode} alt="E-Invoice QR Code" className="w-32 h-32" />
                                 </div>
                                 <div className="flex-1">
-                                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Scan to verify on IRP portal</p>
+                                  <p className="text-xs text-bw-white/[0.45]">Scan to verify on IRP portal</p>
                                   
                                   {/* Cancel IRN Button - only within 24 hours */}
                                   {canCancelIRN(selectedInvoice) ? (
                                     <Button 
                                       variant="ghost" 
-                                      className="mt-4 text-[#FF3B2F] hover:text-red-300 hover:bg-[rgba(255,59,47,0.08)]"
+                                      className="mt-4 text-bw-red hover:text-red-300 hover:bg-bw-red/[0.08]"
                                       onClick={() => setShowIrnCancelDialog(true)}
                                       data-testid="cancel-irn-btn"
                                     >
@@ -1709,7 +1709,7 @@ export default function InvoicesEnhanced() {
                                       Cancel IRN
                                     </Button>
                                   ) : (
-                                    <div className="mt-4 text-xs text-[rgba(244,246,240,0.35)]">
+                                    <div className="mt-4 text-xs text-bw-white/35">
                                       <Info className="h-3 w-3 inline mr-1" />
                                       IRN cancellation window (24 hrs) has passed
                                     </div>
@@ -1724,21 +1724,21 @@ export default function InvoicesEnhanced() {
                     
                     {/* State 4: IRN Cancelled */}
                     {selectedInvoice.irn_status === "cancelled" && (
-                      <div className="p-4 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.25)] border-l-[3px] border-l-[#FF3B2F] rounded">
+                      <div className="p-4 bg-bw-red/[0.08] border border-bw-red/25 border-l-[3px] border-l-bw-red rounded">
                         <div className="flex items-start gap-3">
-                          <XCircle className="h-5 w-5 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                          <XCircle className="h-5 w-5 text-bw-red mt-0.5 flex-shrink-0" />
                           <div>
-                            <h4 className="font-medium text-[#FF3B2F]">IRN CANCELLED</h4>
+                            <h4 className="font-medium text-bw-red">IRN CANCELLED</h4>
                             {selectedInvoice.irn_cancel_reason && (
-                              <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                              <p className="text-sm text-bw-white/[0.65] mt-1">
                                 Reason: {selectedInvoice.irn_cancel_reason === "1" ? "Duplicate invoice" : 
                                         selectedInvoice.irn_cancel_reason === "2" ? "Invoice raised in error" :
                                         selectedInvoice.irn_cancel_reason === "3" ? "Wrong GSTIN entered" :
                                         selectedInvoice.irn_cancel_reason === "4" ? "Wrong invoice amount" : "Other"}
                               </p>
                             )}
-                            <p className="text-xs font-mono text-[rgba(244,246,240,0.35)] mt-2">{selectedInvoice.irn}</p>
-                            <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                            <p className="text-xs font-mono text-bw-white/35 mt-2">{selectedInvoice.irn}</p>
+                            <p className="text-xs text-bw-white/[0.45] mt-2">
                               A new invoice must be raised with a new invoice number
                             </p>
                           </div>
@@ -1756,7 +1756,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3">Line Items</h4>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full text-sm">
-                          <thead className="bg-[#111820]">
+                          <thead className="bg-bw-panel">
                             <tr>
                               <th className="px-3 py-2 text-left">Item</th>
                               <th className="px-3 py-2 text-right">Qty</th>
@@ -1770,7 +1770,7 @@ export default function InvoicesEnhanced() {
                               <tr key={idx} className="border-t">
                                 <td className="px-3 py-2">
                                   <p className="font-medium">{item.name}</p>
-                                  {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
+                                  {item.description && <p className="text-xs text-bw-white/[0.45]">{item.description}</p>}
                                 </td>
                                 <td className="px-3 py-2 text-right">{item.quantity}</td>
                                 <td className="px-3 py-2 text-right">{formatCurrency(item.rate)}</td>
@@ -1786,15 +1786,15 @@ export default function InvoicesEnhanced() {
                 )}
 
                 {/* Totals */}
-                <div className="bg-[#111820] p-4 rounded-lg w-64 ml-auto space-y-1 text-sm">
+                <div className="bg-bw-panel p-4 rounded-lg w-64 ml-auto space-y-1 text-sm">
                   <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
-                  {selectedInvoice.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-{formatCurrency(selectedInvoice.total_discount)}</span></div>}
+                  {selectedInvoice.total_discount > 0 && <div className="flex justify-between text-bw-red"><span>Discount:</span><span>-{formatCurrency(selectedInvoice.total_discount)}</span></div>}
                   <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
                   {selectedInvoice.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>{formatCurrency(selectedInvoice.shipping_charge)}</span></div>}
                   <Separator />
                   <div className="flex justify-between font-bold text-base"><span>Total:</span><span>{formatCurrency(selectedInvoice.grand_total)}</span></div>
-                  {selectedInvoice.amount_paid > 0 && <div className="flex justify-between text-[#22C55E]"><span>Paid:</span><span>-{formatCurrency(selectedInvoice.amount_paid)}</span></div>}
-                  <div className="flex justify-between font-bold text-lg"><span>Balance:</span><span className={selectedInvoice.balance_due > 0 ? "text-[#FF3B2F]" : "text-[#22C55E]"}>{formatCurrency(selectedInvoice.balance_due)}</span></div>
+                  {selectedInvoice.amount_paid > 0 && <div className="flex justify-between text-bw-green"><span>Paid:</span><span>-{formatCurrency(selectedInvoice.amount_paid)}</span></div>}
+                  <div className="flex justify-between font-bold text-lg"><span>Balance:</span><span className={selectedInvoice.balance_due > 0 ? "text-bw-red" : "text-bw-green"}>{formatCurrency(selectedInvoice.balance_due)}</span></div>
                 </div>
 
                 {/* Payments */}
@@ -1805,11 +1805,11 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2"><DollarSign className="h-4 w-4" /> Payments Received</h4>
                       <div className="space-y-2">
                         {selectedInvoice.payments.map(payment => (
-                          <div key={payment.payment_id} className="flex justify-between items-center bg-[rgba(34,197,94,0.08)] p-3 rounded-lg">
+                          <div key={payment.payment_id} className="flex justify-between items-center bg-bw-green/[0.08] p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount)}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(payment.payment_date)} • {payment.payment_mode}</p>
-                              {payment.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {payment.reference_number}</p>}
+                              <p className="text-xs text-bw-white/[0.45]">{formatDate(payment.payment_date)} • {payment.payment_mode}</p>
+                              {payment.reference_number && <p className="text-xs text-bw-white/[0.45]">Ref: {payment.reference_number}</p>}
                             </div>
                             <Button size="icon" variant="ghost" onClick={() => handleDeletePayment(payment.payment_id)}><Trash2 className="h-4 w-4 text-red-400" /></Button>
                           </div>
@@ -1827,12 +1827,12 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payments (New System)</h4>
                       <div className="space-y-2">
                         {selectedInvoice.payments_received.map(payment => (
-                          <div key={payment.payment_id} className="flex justify-between items-center bg-[rgba(34,197,94,0.08)] p-3 rounded-lg">
+                          <div key={payment.payment_id} className="flex justify-between items-center bg-bw-green/[0.08] p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount_applied)}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
                             </div>
-                            <Badge variant="outline" className="text-[#22C55E]">Applied</Badge>
+                            <Badge variant="outline" className="text-bw-green">Applied</Badge>
                           </div>
                         ))}
                       </div>
@@ -1845,22 +1845,22 @@ export default function InvoicesEnhanced() {
                   <>
                     <Separator />
                     <div>
-                      <h4 className="font-medium mb-3 flex items-center gap-2 text-[#FF8C00]"><FileText className="h-4 w-4" /> Credit Notes ({invoiceCreditNotes.length})</h4>
+                      <h4 className="font-medium mb-3 flex items-center gap-2 text-bw-orange"><FileText className="h-4 w-4" /> Credit Notes ({invoiceCreditNotes.length})</h4>
                       <div className="space-y-2">
                         {invoiceCreditNotes.map(cn => (
                           <div 
                             key={cn.credit_note_id} 
-                            className="flex justify-between items-center bg-[rgba(255,140,0,0.06)] p-3 rounded-lg cursor-pointer hover:bg-[rgba(255,140,0,0.10)] transition-colors"
+                            className="flex justify-between items-center bg-bw-orange/[0.06] p-3 rounded-lg cursor-pointer hover:bg-bw-orange/10 transition-colors"
                             onClick={() => { setSelectedCreditNote(cn); setShowCNViewDialog(true); }}
                             data-testid={`credit-note-${cn.credit_note_id}`}
                           >
                             <div>
-                              <p className="font-medium text-[#FF8C00]">{cn.credit_note_number}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{cn.created_at?.slice(0, 10)} — {cn.reason}</p>
+                              <p className="font-medium text-bw-orange">{cn.credit_note_number}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{cn.created_at?.slice(0, 10)} — {cn.reason}</p>
                             </div>
                             <div className="text-right">
                               <p className="font-medium">{formatCurrency(cn.total)}</p>
-                              <Badge className={cn.status === "issued" ? "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]" : cn.status === "applied" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]"}>
+                              <Badge className={cn.status === "issued" ? "bg-bw-blue/10 text-bw-blue border border-bw-blue/25" : cn.status === "applied" ? "bg-bw-volt/10 text-bw-volt border border-bw-volt/25" : "bg-bw-green/10 text-bw-green border border-bw-green/25"}>
                                 {cn.status === "issued" ? "Issued" : cn.status === "applied" ? "Applied" : cn.status === "refunded" ? "Refunded" : cn.status}
                               </Badge>
                             </div>
@@ -1876,18 +1876,18 @@ export default function InvoicesEnhanced() {
                   <>
                     <Separator />
                     <div>
-                      <h4 className="font-medium mb-3 flex items-center gap-2 text-[#FF8C00]"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
+                      <h4 className="font-medium mb-3 flex items-center gap-2 text-bw-orange"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
                       <div className="space-y-2">
                         {selectedInvoice.available_credits.map(credit => (
-                          <div key={credit.credit_id} className="flex justify-between items-center bg-[rgba(255,140,0,0.08)] p-3 rounded-lg">
+                          <div key={credit.credit_id} className="flex justify-between items-center bg-bw-orange/[0.08] p-3 rounded-lg">
                             <div>
-                              <p className="font-medium text-[#FF8C00]">{formatCurrency(credit.amount)}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{credit.source_number} • {credit.source_type}</p>
+                              <p className="font-medium text-bw-orange">{formatCurrency(credit.amount)}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{credit.source_number} • {credit.source_type}</p>
                             </div>
                             <Button 
                               size="sm" 
                               variant="outline"
-                              className="text-[#FF8C00] border-orange-300 hover:bg-orange-100"
+                              className="text-bw-orange border-orange-300 hover:bg-orange-100"
                               onClick={() => handleApplyCredit(credit.credit_id, Math.min(credit.amount, selectedInvoice.balance_due))}
                             >
                               Apply
@@ -1903,14 +1903,14 @@ export default function InvoicesEnhanced() {
                 {selectedInvoice.balance_due > 0 && selectedInvoice.status !== "draft" && (
                   <>
                     <Separator />
-                    <div className="p-4 bg-[rgba(200,255,0,0.05)] rounded-lg border border-[rgba(200,255,0,0.15)]">
+                    <div className="p-4 bg-bw-volt/5 rounded-lg border border-bw-volt/15">
                       <div className="flex items-center justify-between mb-3">
                         <div>
                           <h4 className="font-medium flex items-center gap-2">
-                            <CreditCard className="h-4 w-4 text-[#C8FF00]" /> 
+                            <CreditCard className="h-4 w-4 text-bw-volt" /> 
                             Collect Payment Online
                           </h4>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">
+                          <p className="text-sm text-bw-white/[0.45] mt-1">
                             Accept UPI, Cards, Net Banking, Wallets via Razorpay
                           </p>
                         </div>
@@ -1918,27 +1918,27 @@ export default function InvoicesEnhanced() {
                       
                       {/* Payment Status Display */}
                       {selectedInvoice.razorpay_payment_id && (
-                        <div className="mb-3 p-3 bg-[rgba(34,197,94,0.10)] rounded-lg border border-green-500/20">
+                        <div className="mb-3 p-3 bg-bw-green/10 rounded-lg border border-green-500/20">
                           <div className="flex items-center gap-2 text-green-400 text-sm">
                             <CheckCircle className="h-4 w-4" />
                             <span className="font-medium">Payment Received</span>
                           </div>
-                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[rgba(244,246,240,0.65)]">
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-bw-white/[0.65]">
                             <div>
-                              <span className="text-[rgba(244,246,240,0.45)]">Transaction ID:</span>
+                              <span className="text-bw-white/[0.45]">Transaction ID:</span>
                               <br />
-                              <code className="text-[#C8FF00]">{selectedInvoice.razorpay_payment_id}</code>
+                              <code className="text-bw-volt">{selectedInvoice.razorpay_payment_id}</code>
                             </div>
                             {selectedInvoice.razorpay_payment_method && (
                               <div>
-                                <span className="text-[rgba(244,246,240,0.45)]">Method:</span>
+                                <span className="text-bw-white/[0.45]">Method:</span>
                                 <br />
                                 <span className="capitalize">{selectedInvoice.razorpay_payment_method}</span>
                               </div>
                             )}
                             {selectedInvoice.razorpay_payment_date && (
                               <div>
-                                <span className="text-[rgba(244,246,240,0.45)]">Date:</span>
+                                <span className="text-bw-white/[0.45]">Date:</span>
                                 <br />
                                 {formatDate(selectedInvoice.razorpay_payment_date)}
                               </div>
@@ -1949,10 +1949,10 @@ export default function InvoicesEnhanced() {
                       
                       {/* Payment Link Status */}
                       {(selectedInvoice.payment_link_url || selectedInvoice.has_payment_link) && (
-                        <div className="mb-3 p-3 bg-[rgba(59,158,255,0.08)] rounded-lg border border-blue-500/20">
+                        <div className="mb-3 p-3 bg-bw-blue/[0.08] rounded-lg border border-blue-500/20">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-sm">
-                              <Badge variant="outline" className="text-[#3B9EFF] border-blue-500/30">
+                              <Badge variant="outline" className="text-bw-blue border-blue-500/30">
                                 Payment Link Active
                               </Badge>
                             </div>
@@ -1960,7 +1960,7 @@ export default function InvoicesEnhanced() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="text-[#3B9EFF] hover:text-blue-300"
+                                className="text-bw-blue hover:text-blue-300"
                                 onClick={() => navigator.clipboard.writeText(selectedInvoice.payment_link_url).then(() => toast.success("Link copied!"))}
                               >
                                 <Copy className="h-4 w-4 mr-1" /> Copy
@@ -1968,7 +1968,7 @@ export default function InvoicesEnhanced() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="text-[#3B9EFF] hover:text-blue-300"
+                                className="text-bw-blue hover:text-blue-300"
                                 onClick={() => window.open(selectedInvoice.payment_link_url, "_blank")}
                               >
                                 <ExternalLink className="h-4 w-4 mr-1" /> Open
@@ -1983,7 +1983,7 @@ export default function InvoicesEnhanced() {
                         <div className="flex flex-wrap gap-2">
                           <Button 
                             onClick={() => handleRazorpayCheckout(selectedInvoice)}
-                            className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                            className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black"
                             disabled={razorpayLoading}
                             data-testid="pay-now-btn"
                           >
@@ -2005,7 +2005,7 @@ export default function InvoicesEnhanced() {
                           </Button>
                         </div>
                       ) : (
-                        <div className="p-3 bg-[rgba(234,179,8,0.08)] rounded-lg border border-yellow-500/20">
+                        <div className="p-3 bg-bw-amber/[0.08] rounded-lg border border-yellow-500/20">
                           <p className="text-sm text-yellow-400 flex items-center gap-2">
                             <AlertTriangle className="h-4 w-4" />
                             Razorpay not configured. Go to Organization Settings → Finance to connect.
@@ -2022,9 +2022,9 @@ export default function InvoicesEnhanced() {
                     <Separator />
                     <div>
                       <h4 className="font-medium mb-3 flex items-center gap-2"><Clock className="h-4 w-4" /> History</h4>
-                      <div className="space-y-1 text-xs text-[rgba(244,246,240,0.45)] max-h-32 overflow-y-auto">
+                      <div className="space-y-1 text-xs text-bw-white/[0.45] max-h-32 overflow-y-auto">
                         {selectedInvoice.history.slice(0, 10).map((h, idx) => (
-                          <p key={idx}><span className="text-[rgba(244,246,240,0.25)]">{formatDate(h.timestamp)}</span> - {h.action}: {h.details}</p>
+                          <p key={idx}><span className="text-bw-white/25">{formatDate(h.timestamp)}</span> - {h.action}: {h.details}</p>
                         ))}
                       </div>
                     </div>
@@ -2035,7 +2035,7 @@ export default function InvoicesEnhanced() {
 
                 {/* View Toggle */}
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-sm text-[rgba(244,246,240,0.45)]">View:</span>
+                  <span className="text-sm text-bw-white/[0.45]">View:</span>
                   <Button 
                     size="sm" 
                     variant={detailViewMode === "details" ? "default" : "outline"}
@@ -2055,19 +2055,19 @@ export default function InvoicesEnhanced() {
 
                 {/* Cancelled Invoice Banner (5A) */}
                 {selectedInvoice.status === "cancelled" && (
-                  <div className="p-4 bg-[rgba(255,59,47,0.12)] border border-[rgba(255,59,47,0.4)] rounded-lg">
+                  <div className="p-4 bg-bw-red/[0.12] border border-bw-red/40 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Ban className="h-5 w-5 text-[#FF3B2F]" />
+                      <Ban className="h-5 w-5 text-bw-red" />
                       <div>
-                        <h4 className="font-semibold text-[#FF3B2F]">This invoice has been cancelled</h4>
-                        <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                        <h4 className="font-semibold text-bw-red">This invoice has been cancelled</h4>
+                        <p className="text-sm text-bw-white/[0.65] mt-1">
                           {selectedInvoice.irn ? (
                             <>IRN: <code className="font-mono text-xs">{selectedInvoice.irn}</code> was cancelled on {formatDate(selectedInvoice.irn_cancelled_at || selectedInvoice.updated_time)}.</>
                           ) : (
                             <>Cancelled on {formatDate(selectedInvoice.updated_time)}.</>
                           )}
                         </p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                        <p className="text-xs text-bw-white/[0.45] mt-2">
                           Raise a fresh invoice with a new invoice number.
                         </p>
                       </div>
@@ -2099,7 +2099,7 @@ export default function InvoicesEnhanced() {
                   {selectedInvoice.status !== "draft" && selectedInvoice.status !== "cancelled" && selectedInvoice.balance_due > 0 && (
                     <Button 
                       size="sm" 
-                      className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]" 
+                      className="bg-bw-green hover:bg-bw-green-hover text-bw-black" 
                       onClick={() => { setNewPayment({ ...newPayment, amount: selectedInvoice.balance_due }); setShowPaymentDialog(true); }}
                       data-testid="record-payment-btn"
                     >
@@ -2161,7 +2161,7 @@ export default function InvoicesEnhanced() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setShowCNCreateDialog(true)}
-                      className="text-[#FF8C00] border-[rgba(255,140,0,0.3)] hover:bg-[rgba(255,140,0,0.08)]"
+                      className="text-bw-orange border-bw-orange/30 hover:bg-bw-orange/[0.08]"
                       data-testid="issue-credit-note-btn"
                     >
                       <Minus className="h-4 w-4 mr-1" /> Credit Note
@@ -2179,7 +2179,7 @@ export default function InvoicesEnhanced() {
 
                 {/* Activity Timeline (5D) */}
                 {selectedInvoice.history?.length > 0 && (
-                  <div className="mt-6 pt-4 border-t border-[rgba(244,246,240,0.1)]">
+                  <div className="mt-6 pt-4 border-t border-bw-white/10">
                     <h4 className="font-medium mb-4 flex items-center gap-2">
                       <History className="h-4 w-4" /> Activity Timeline
                     </h4>
@@ -2215,16 +2215,16 @@ export default function InvoicesEnhanced() {
                             />
                             {/* Event details */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-[rgba(244,246,240,0.85)]">
+                              <p className="text-sm text-bw-white/85">
                                 <span className="font-medium" style={{ color: style.color }}>{style.label}</span>
-                                {h.details && <span className="text-[rgba(244,246,240,0.55)]"> — {h.details}</span>}
+                                {h.details && <span className="text-bw-white/[0.55]"> — {h.details}</span>}
                               </p>
                               {h.user && (
-                                <p className="text-xs text-[rgba(244,246,240,0.35)]">by {h.user}</p>
+                                <p className="text-xs text-bw-white/35">by {h.user}</p>
                               )}
                             </div>
                             {/* Timestamp */}
-                            <span className="text-xs font-mono text-[rgba(244,246,240,0.3)] flex-shrink-0">
+                            <span className="text-xs font-mono text-bw-white/30 flex-shrink-0">
                               {new Date(h.timestamp).toLocaleString("en-IN", {
                                 day: '2-digit',
                                 month: 'short',
@@ -2288,7 +2288,7 @@ export default function InvoicesEnhanced() {
                 </div>
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#111820]">
+                    <thead className="bg-bw-panel">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right w-20">Qty</th>
@@ -2394,7 +2394,7 @@ export default function InvoicesEnhanced() {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdateInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="save-invoice-btn">Save Changes</Button>
+            <Button onClick={handleUpdateInvoice} className="bg-bw-volt text-bw-black font-bold" data-testid="save-invoice-btn">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2452,7 +2452,7 @@ export default function InvoicesEnhanced() {
                 <Button 
                   onClick={handleCreateShareLink} 
                   disabled={shareLoading}
-                  className="w-full bg-[#C8FF00] text-[#080C0F] font-bold"
+                  className="w-full bg-bw-volt text-bw-black font-bold"
                   data-testid="generate-share-link-btn"
                 >
                   {shareLoading ? "Generating..." : "Generate Share Link"}
@@ -2460,14 +2460,14 @@ export default function InvoicesEnhanced() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-[#22C55E] mb-2">Share link created successfully!</p>
+                <div className="bg-bw-green/[0.08] border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-bw-green mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input value={shareLink.full_url} readOnly className="text-xs" />
                     <Button size="sm" onClick={copyShareLink}><Link className="h-4 w-4" /></Button>
                   </div>
                 </div>
-                <p className="text-xs text-[rgba(244,246,240,0.45)]">Expires: {new Date(shareLink.expiry_date).toLocaleDateString("en-IN")}</p>
+                <p className="text-xs text-bw-white/[0.45]">Expires: {new Date(shareLink.expiry_date).toLocaleDateString("en-IN")}</p>
                 <Button variant="outline" className="w-full" onClick={() => setShareLink(null)}>Create New Link</Button>
               </div>
             )}
@@ -2493,23 +2493,23 @@ export default function InvoicesEnhanced() {
                 disabled={uploadingAttachment}
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Click to upload or drag & drop</p>
-                <p className="text-xs text-[rgba(244,246,240,0.25)]">PDF, DOC, XLS, Images (max 10MB)</p>
+                <Upload className="h-8 w-8 mx-auto text-bw-white/25 mb-2" />
+                <p className="text-sm text-bw-white/[0.45]">Click to upload or drag & drop</p>
+                <p className="text-xs text-bw-white/25">PDF, DOC, XLS, Images (max 10MB)</p>
               </label>
-              {uploadingAttachment && <p className="text-sm text-[#3B9EFF] mt-2">Uploading...</p>}
+              {uploadingAttachment && <p className="text-sm text-bw-blue mt-2">Uploading...</p>}
             </div>
             
             {/* Attachments List */}
             {attachments.length > 0 ? (
               <div className="space-y-2">
                 {attachments.map(att => (
-                  <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-[#111820] rounded-lg">
+                  <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-bw-panel rounded-lg">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-[#3B9EFF]" />
+                      <FileText className="h-4 w-4 text-bw-blue" />
                       <div>
                         <p className="text-sm font-medium">{att.filename}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{(att.size_bytes / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-bw-white/[0.45]">{(att.size_bytes / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -2520,7 +2520,7 @@ export default function InvoicesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-[rgba(244,246,240,0.45)] py-4">No attachments yet</p>
+              <p className="text-center text-bw-white/[0.45] py-4">No attachments yet</p>
             )}
           </div>
         </DialogContent>
@@ -2556,17 +2556,17 @@ export default function InvoicesEnhanced() {
               {comments.length > 0 ? (
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {comments.map(c => (
-                    <div key={c.comment_id} className="p-3 bg-[#111820] rounded-lg">
+                    <div key={c.comment_id} className="p-3 bg-bw-panel rounded-lg">
                       <div className="flex justify-between items-start">
                         <p className="text-sm">{c.comment}</p>
                         <Button size="icon" variant="ghost" onClick={() => handleDeleteComment(c.comment_id)}><X className="h-3 w-3" /></Button>
                       </div>
-                      <p className="text-xs text-[rgba(244,246,240,0.25)] mt-1">{new Date(c.created_time).toLocaleString("en-IN")}</p>
+                      <p className="text-xs text-bw-white/25 mt-1">{new Date(c.created_time).toLocaleString("en-IN")}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No notes yet</p>
+                <p className="text-center text-bw-white/[0.45] py-8">No notes yet</p>
               )}
             </TabsContent>
             
@@ -2577,14 +2577,14 @@ export default function InvoicesEnhanced() {
                     <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
                       <div>
                         <p className="text-sm font-medium">{h.action}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{h.details}</p>
+                        <p className="text-xs text-bw-white/[0.45]">{h.details}</p>
                       </div>
-                      <span className="text-xs text-[rgba(244,246,240,0.25)]">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
+                      <span className="text-xs text-bw-white/25">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No history available</p>
+                <p className="text-center text-bw-white/[0.45] py-8">No history available</p>
               )}
             </TabsContent>
           </Tabs>
@@ -2610,7 +2610,7 @@ export default function InvoicesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendInvoiceEmail} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Invoice</Button>
+            <Button onClick={handleSendInvoiceEmail} className="bg-bw-volt text-bw-black font-bold">Send Invoice</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2624,10 +2624,10 @@ export default function InvoicesEnhanced() {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            <div className="bg-[#111820] p-3 rounded-lg">
+            <div className="bg-bw-panel p-3 rounded-lg">
               <div className="flex justify-between">
                 <span>Balance Due:</span>
-                <span className="font-bold text-[#FF3B2F]">{formatCurrency(selectedInvoice?.balance_due)}</span>
+                <span className="font-bold text-bw-red">{formatCurrency(selectedInvoice?.balance_due)}</span>
               </div>
             </div>
             
@@ -2675,7 +2675,7 @@ export default function InvoicesEnhanced() {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
-            <Button onClick={handleRecordPayment} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]" data-testid="submit-payment-btn">Record Payment</Button>
+            <Button onClick={handleRecordPayment} className="bg-bw-green hover:bg-bw-green-hover text-bw-black" data-testid="submit-payment-btn">Record Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2685,15 +2685,15 @@ export default function InvoicesEnhanced() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-[#FF3B2F]" />
+              <XCircle className="h-5 w-5 text-bw-red" />
               Cancel IRN Registration
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             {/* Warning */}
-            <div className="p-3 bg-[rgba(255,59,47,0.08)] border-l-[3px] border-l-[#FF3B2F] rounded">
-              <p className="text-sm text-[rgba(244,246,240,0.70)]">
+            <div className="p-3 bg-bw-red/[0.08] border-l-[3px] border-l-bw-red rounded">
+              <p className="text-sm text-bw-white/70">
                 Cancelling this IRN will invalidate the invoice. This action cannot be undone after submission to the IRP portal.
               </p>
             </div>
@@ -2734,7 +2734,7 @@ export default function InvoicesEnhanced() {
               variant="destructive" 
               onClick={handleCancelIRN}
               disabled={!irnCancelReason || irnLoading}
-              className="bg-[#FF3B2F] hover:bg-red-600"
+              className="bg-bw-red hover:bg-red-600"
               data-testid="confirm-cancel-irn-btn"
             >
               {irnLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}

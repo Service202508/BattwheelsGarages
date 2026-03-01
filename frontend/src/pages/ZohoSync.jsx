@@ -198,10 +198,10 @@ export default function ZohoSync() {
   const getStatusBadge = (status) => {
     const styles = {
       started: { class: "bg-blue-100 text-blue-800", icon: Loader2 },
-      completed: { class: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: CheckCircle2 },
-      failed: { class: "bg-[rgba(255,59,47,0.10)] text-red-800", icon: XCircle }
+      completed: { class: "bg-bw-green/10 text-bw-green", icon: CheckCircle2 },
+      failed: { class: "bg-bw-red/10 text-red-800", icon: XCircle }
     };
-    const config = styles[status] || { class: "bg-[rgba(255,255,255,0.05)]", icon: Clock };
+    const config = styles[status] || { class: "bg-white/5", icon: Clock };
     const Icon = config.icon;
     return (
       <Badge className={`${config.class} flex items-center gap-1`}>
@@ -215,8 +215,8 @@ export default function ZohoSync() {
     <div className="space-y-6" data-testid="zoho-sync-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Zoho Books Sync</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Sync data from your Zoho Books account</p>
+          <h1 className="text-2xl font-bold text-bw-white">Zoho Books Sync</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Sync data from your Zoho Books account</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={testConnection} disabled={testingConnection} data-testid="test-connection-btn">
@@ -226,7 +226,7 @@ export default function ZohoSync() {
           <Button 
             onClick={startFullSync} 
             disabled={fullSyncInProgress || connectionStatus?.status !== "connected"}
-            className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold"
+            className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold"
             data-testid="full-sync-btn"
           >
             {fullSyncInProgress ? (
@@ -257,13 +257,13 @@ export default function ZohoSync() {
 
       {/* Connection Status */}
       {connectionStatus && (
-        <Alert className={connectionStatus.status === "connected" ? "border-green-500 bg-[rgba(34,197,94,0.08)]" : "border-red-500 bg-[rgba(255,59,47,0.08)]"}>
+        <Alert className={connectionStatus.status === "connected" ? "border-green-500 bg-bw-green/[0.08]" : "border-red-500 bg-bw-red/[0.08]"}>
           {connectionStatus.status === "connected" ? (
-            <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />
+            <CheckCircle2 className="h-4 w-4 text-bw-green" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-[#FF3B2F]" />
+            <AlertCircle className="h-4 w-4 text-bw-red" />
           )}
-          <AlertTitle className={connectionStatus.status === "connected" ? "text-[#22C55E]" : "text-red-800"}>
+          <AlertTitle className={connectionStatus.status === "connected" ? "text-bw-green" : "text-red-800"}>
             {connectionStatus.status === "connected" ? "Connected to Zoho Books" : "Connection Failed"}
           </AlertTitle>
           <AlertDescription className={connectionStatus.status === "connected" ? "text-green-700" : "text-red-700"}>
@@ -280,10 +280,10 @@ export default function ZohoSync() {
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="py-4">
             <div className="flex items-center gap-4">
-              <Loader2 className="h-8 w-8 animate-spin text-[#3B9EFF]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-blue" />
               <div className="flex-1">
                 <h3 className="font-semibold text-blue-900">Full Sync in Progress</h3>
-                <p className="text-sm text-[#3B9EFF]">Sync ID: {currentSync.sync_id}</p>
+                <p className="text-sm text-bw-blue">Sync ID: {currentSync.sync_id}</p>
                 <Progress value={50} className="h-2 mt-2" />
               </div>
             </div>
@@ -303,31 +303,31 @@ export default function ZohoSync() {
             return (
               <Card 
                 key={module.id} 
-                className={`hover:border-[rgba(200,255,0,0.2)] transition-colors ${
-                  result?.status === "success" ? "border-green-200 bg-[rgba(34,197,94,0.08)]" :
-                  result?.status === "error" ? "border-red-200 bg-[rgba(255,59,47,0.08)]" : ""
+                className={`hover:border-bw-volt/20 transition-colors ${
+                  result?.status === "success" ? "border-green-200 bg-bw-green/[0.08]" :
+                  result?.status === "error" ? "border-red-200 bg-bw-red/[0.08]" : ""
                 }`}
               >
                 <CardContent className="py-4">
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`p-2 rounded-lg ${
-                      result?.status === "success" ? "bg-[rgba(34,197,94,0.10)]" :
-                      result?.status === "error" ? "bg-[rgba(255,59,47,0.10)]" : "bg-[rgba(255,255,255,0.05)]"
+                      result?.status === "success" ? "bg-bw-green/10" :
+                      result?.status === "error" ? "bg-bw-red/10" : "bg-white/5"
                     }`}>
                       <Icon className={`h-5 w-5 ${
-                        result?.status === "success" ? "text-[#22C55E]" :
-                        result?.status === "error" ? "text-[#FF3B2F]" : "text-[rgba(244,246,240,0.35)]"
+                        result?.status === "success" ? "text-bw-green" :
+                        result?.status === "error" ? "text-bw-red" : "text-bw-white/35"
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-sm truncate">{module.name}</h3>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)] truncate">{module.description}</p>
+                      <p className="text-xs text-bw-white/[0.45] truncate">{module.description}</p>
                     </div>
                   </div>
                   
                   {result && (
                     <p className={`text-xs mb-2 truncate ${
-                      result.status === "success" ? "text-[#22C55E]" : "text-[#FF3B2F]"
+                      result.status === "success" ? "text-bw-green" : "text-bw-red"
                     }`}>
                       {result.message}
                     </p>
@@ -379,10 +379,10 @@ export default function ZohoSync() {
         <CardContent>
           {loadingHistory ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-[rgba(244,246,240,0.45)]" />
+              <Loader2 className="h-6 w-6 animate-spin text-bw-white/[0.45]" />
             </div>
           ) : syncHistory.length === 0 ? (
-            <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-8 text-bw-white/[0.45]">
               <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No sync history yet</p>
               <p className="text-sm">Run a sync to see activity here</p>
@@ -390,7 +390,7 @@ export default function ZohoSync() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#111820]">
+                <TableRow className="bg-bw-panel">
                   <TableHead>Sync ID</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
@@ -407,11 +407,11 @@ export default function ZohoSync() {
                       <Badge variant="outline">{log.type || "full_import"}</Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(log.status)}</TableCell>
-                    <TableCell className="text-sm text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.started_at)}</TableCell>
-                    <TableCell className="text-sm text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.completed_at)}</TableCell>
+                    <TableCell className="text-sm text-bw-white/35">{formatTimestamp(log.started_at)}</TableCell>
+                    <TableCell className="text-sm text-bw-white/35">{formatTimestamp(log.completed_at)}</TableCell>
                     <TableCell>
                       {log.results && (
-                        <span className="text-xs text-[rgba(244,246,240,0.45)]">
+                        <span className="text-xs text-bw-white/[0.45]">
                           {Object.keys(log.results).length} modules synced
                         </span>
                       )}
@@ -431,7 +431,7 @@ export default function ZohoSync() {
       <Dialog open={showDisconnectDialog} onOpenChange={setShowDisconnectDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#FF3B2F]">
+            <DialogTitle className="flex items-center gap-2 text-bw-red">
               <AlertTriangle className="h-5 w-5" />
               Disconnect Zoho Books & Purge Data
             </DialogTitle>
@@ -449,7 +449,7 @@ export default function ZohoSync() {
               </AlertDescription>
             </Alert>
             
-            <div className="bg-[rgba(255,59,47,0.08)] border border-red-200 rounded-lg p-4 text-sm">
+            <div className="bg-bw-red/[0.08] border border-red-200 rounded-lg p-4 text-sm">
               <ul className="space-y-1 text-red-800">
                 <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All contacts (customers & vendors)</li>
                 <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All items (products & services)</li>
@@ -460,7 +460,7 @@ export default function ZohoSync() {
               </ul>
             </div>
             
-            <p className="text-sm text-[rgba(244,246,240,0.35)]">
+            <p className="text-sm text-bw-white/35">
               After this, you can start fresh with manual data entry or reconnect to Zoho Books later.
             </p>
           </div>
@@ -496,18 +496,18 @@ export default function ZohoSync() {
         <Dialog open={!!purgeStats} onOpenChange={() => setPurgeStats(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-[#22C55E]">
+              <DialogTitle className="flex items-center gap-2 text-bw-green">
                 <CheckCircle2 className="h-5 w-5" />
                 Data Purge Complete
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-2 py-4">
-              <p className="text-sm text-[rgba(244,246,240,0.35)]">The following data was removed:</p>
-              <div className="bg-[#111820] rounded-lg p-4 text-sm">
+              <p className="text-sm text-bw-white/35">The following data was removed:</p>
+              <div className="bg-bw-panel rounded-lg p-4 text-sm">
                 {Object.entries(purgeStats).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-1 border-b border-[rgba(255,255,255,0.07)] last:border-0">
+                  <div key={key} className="flex justify-between py-1 border-b border-white/[0.07] last:border-0">
                     <span className="capitalize">{key.replace(/_/g, ' ')}</span>
-                    <span className="font-mono text-[rgba(244,246,240,0.35)]">{value} records</span>
+                    <span className="font-mono text-bw-white/35">{value} records</span>
                   </div>
                 ))}
               </div>

@@ -18,22 +18,22 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-[#3B9EFF] border-blue-200",
-  assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
-  technician_assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
+  open: "bg-blue-100 text-bw-blue border-blue-200",
+  assigned: "bg-purple-100 text-bw-purple border-purple-200",
+  technician_assigned: "bg-purple-100 text-bw-purple border-purple-200",
   work_in_progress: "bg-amber-100 text-amber-700 border-amber-200",
-  estimate_sent: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)] border-cyan-200",
-  estimate_approved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-[rgba(200,255,0,0.20)]",
-  work_completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
-  closed: "bg-[rgba(255,255,255,0.05)] text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
-  resolved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
+  estimate_sent: "bg-bw-teal/10 text-bw-teal border border-bw-teal/25 border-cyan-200",
+  estimate_approved: "bg-bw-volt/10 text-bw-volt text-700 border-bw-volt/20",
+  work_completed: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25 border-green-200",
+  closed: "bg-white/5 text-slate-600 border-white/[0.07] border-200",
+  resolved: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25 border-green-200",
 };
 
 const priorityColors = {
-  low: "bg-[rgba(34,197,94,0.08)] text-green-600",
-  medium: "bg-[rgba(234,179,8,0.08)] text-[#EAB308]",
-  high: "bg-[rgba(255,140,0,0.08)] text-[#FF8C00]",
-  critical: "bg-[rgba(255,59,47,0.08)] text-red-600",
+  low: "bg-bw-green/[0.08] text-green-600",
+  medium: "bg-bw-amber/[0.08] text-bw-amber",
+  high: "bg-bw-orange/[0.08] text-bw-orange",
+  critical: "bg-bw-red/[0.08] text-red-600",
 };
 
 export default function BusinessTickets({ user }) {
@@ -183,7 +183,7 @@ export default function BusinessTickets({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -197,7 +197,7 @@ export default function BusinessTickets({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -211,15 +211,15 @@ export default function BusinessTickets({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Completed</p>
-                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.completed}</p>
+                <p className="text-2xl font-bold text-bw-volt text-600">{stats.completed}</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
+              <div className="p-3 rounded bg-bw-volt/[0.08]">
+                <CheckCircle className="h-5 w-5 text-bw-volt text-600" />
               </div>
             </div>
           </CardContent>
@@ -229,7 +229,7 @@ export default function BusinessTickets({ user }) {
       {/* Tabs & Filters */}
       <Tabs value={statusFilter} onValueChange={setStatusFilter}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-[rgba(255,255,255,0.05)]">
+          <TabsList className="bg-white/5">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
@@ -259,7 +259,7 @@ export default function BusinessTickets({ user }) {
               <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
             </div>
           ) : filteredTickets.length === 0 ? (
-            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+            <Card className="bg-bw-panel border-white/[0.07] border-200">
               <CardContent className="py-12 text-center">
                 <Ticket className="h-16 w-16 mx-auto text-slate-300 mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 mb-2">No tickets found</h3>
@@ -273,7 +273,7 @@ export default function BusinessTickets({ user }) {
               {filteredTickets.map((ticket) => (
                 <Card 
                   key={ticket.ticket_id} 
-                  className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer"
+                  className="bg-bw-panel border-white/[0.07] border-200 hover:border-bw-volt/20 transition-colors cursor-pointer"
                   onClick={() => navigate(`/business/tickets/${ticket.ticket_id}`)}
                   data-testid={`ticket-card-${ticket.ticket_id}`}
                 >

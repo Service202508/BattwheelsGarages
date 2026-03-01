@@ -23,15 +23,15 @@ import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
-  available: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  sold: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
-  returned: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
-  damaged: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  packed: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
-  shipped: "bg-[rgba(99,102,241,0.10)] text-[#818CF8] border border-[rgba(99,102,241,0.25)]",
-  delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  pending: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
-  processed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
+  available: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  sold: "bg-bw-blue/10 text-bw-blue border border-bw-blue/25",
+  returned: "bg-bw-amber/10 text-bw-amber border border-bw-amber/25",
+  damaged: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  packed: "bg-bw-purple/10 text-bw-purple border border-bw-purple/25",
+  shipped: "bg-bw-purple/10 text-bw-purple border border-bw-purple/25",
+  delivered: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  pending: "bg-bw-amber/10 text-bw-amber border border-bw-amber/25",
+  processed: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25"
 };
 
 export default function InventoryEnhanced() {
@@ -453,7 +453,7 @@ export default function InventoryEnhanced() {
             <Button variant="outline" size="sm" onClick={() => setShowSerialDialog(true)}>
               <Barcode className="h-4 w-4 mr-1" /> Serial/Batch
             </Button>
-            <Button className="bg-[#C8FF00] text-[#080C0F] font-bold" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
+            <Button className="bg-bw-volt text-bw-black font-bold" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
               <ArrowUpDown className="h-4 w-4 mr-1" /> Adjust Stock
             </Button>
           </div>
@@ -518,28 +518,28 @@ export default function InventoryEnhanced() {
         <TabsContent value="overview" className="space-y-6">
           {/* Low Stock Alert */}
           {lowStockItems.length > 0 && (
-            <Card className="border-l-4 border-l-[#FF3B2F]">
+            <Card className="border-l-4 border-l-bw-red">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2 text-[#FF3B2F]">
+                <CardTitle className="text-lg flex items-center gap-2 text-bw-red">
                   <AlertTriangle className="h-5 w-5" /> Low Stock Alert
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {lowStockItems.slice(0, 5).map(item => (
-                    <div key={item.item_id} className="flex justify-between items-center p-2 bg-[rgba(255,59,47,0.08)] rounded">
+                    <div key={item.item_id} className="flex justify-between items-center p-2 bg-bw-red/[0.08] rounded">
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</p>
+                        <p className="text-xs text-bw-white/[0.45]">{item.sku}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[#FF3B2F] font-bold">{item.total_stock} in stock</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Reorder at: {item.reorder_level}</p>
+                        <p className="text-bw-red font-bold">{item.total_stock} in stock</p>
+                        <p className="text-xs text-bw-white/[0.45]">Reorder at: {item.reorder_level}</p>
                       </div>
                     </div>
                   ))}
                   {lowStockItems.length > 5 && (
-                    <p className="text-sm text-[rgba(244,246,240,0.45)] text-center">+{lowStockItems.length - 5} more items</p>
+                    <p className="text-sm text-bw-white/[0.45] text-center">+{lowStockItems.length - 5} more items</p>
                   )}
                 </div>
               </CardContent>
@@ -557,14 +557,14 @@ export default function InventoryEnhanced() {
               </CardHeader>
               <CardContent>
                 {shipments.filter(s => s.status !== 'delivered').length === 0 ? (
-                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No pending shipments</p>
+                  <p className="text-bw-white/[0.45] text-center py-4">No pending shipments</p>
                 ) : (
                   <div className="space-y-2">
                     {shipments.filter(s => s.status !== 'delivered').slice(0, 5).map(s => (
-                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-[#111820] rounded cursor-pointer hover:bg-[rgba(255,255,255,0.05)]" onClick={() => viewDetail('shipment', s.shipment_id)}>
+                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-bw-panel rounded cursor-pointer hover:bg-white/5" onClick={() => viewDetail('shipment', s.shipment_id)}>
                         <div>
                           <p className="font-medium">{s.package_number}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{s.customer_name}</p>
+                          <p className="text-xs text-bw-white/[0.45]">{s.customer_name}</p>
                         </div>
                         <Badge className={statusColors[s.status]}>{s.status}</Badge>
                       </div>
@@ -583,14 +583,14 @@ export default function InventoryEnhanced() {
               </CardHeader>
               <CardContent>
                 {returns.filter(r => r.status === 'pending').length === 0 ? (
-                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No pending returns</p>
+                  <p className="text-bw-white/[0.45] text-center py-4">No pending returns</p>
                 ) : (
                   <div className="space-y-2">
                     {returns.filter(r => r.status === 'pending').slice(0, 5).map(r => (
-                      <div key={r.return_id} className="flex justify-between items-center p-2 bg-[rgba(234,179,8,0.08)] rounded cursor-pointer hover:bg-yellow-100" onClick={() => viewDetail('return', r.return_id)}>
+                      <div key={r.return_id} className="flex justify-between items-center p-2 bg-bw-amber/[0.08] rounded cursor-pointer hover:bg-yellow-100" onClick={() => viewDetail('return', r.return_id)}>
                         <div>
                           <p className="font-medium">{r.customer_name}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{r.reason}</p>
+                          <p className="text-xs text-bw-white/[0.45]">{r.reason}</p>
                         </div>
                         <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleProcessReturn(r.return_id); }}>
                           Process
@@ -613,23 +613,23 @@ export default function InventoryEnhanced() {
               </Button>
             </div>
             {loading ? (
-              <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
+              <div className="text-center py-12 text-bw-white/[0.45]">Loading...</div>
             ) : warehouses.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
+              <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
             ) : (
               <>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {warehouses.map(wh => (
-                    <Card key={wh.warehouse_id} className={`cursor-pointer border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
+                    <Card key={wh.warehouse_id} className={`cursor-pointer border border-white/[0.07] hover:border-bw-volt/20 transition-colors ${wh.is_primary ? 'border-bw-volt border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold">{wh.name}</h3>
-                            {wh.code && <p className="text-xs text-[rgba(244,246,240,0.45)]">{wh.code}</p>}
+                            {wh.code && <p className="text-xs text-bw-white/[0.45]">{wh.code}</p>}
                           </div>
-                          {wh.is_primary && <Badge className="bg-[#C8FF00] text-[#080C0F] font-bold">Primary</Badge>}
+                          {wh.is_primary && <Badge className="bg-bw-volt text-bw-black font-bold">Primary</Badge>}
                         </div>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
+                        <p className="text-sm text-bw-white/[0.45]">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
                       </CardContent>
                     </Card>
                   ))}
@@ -642,12 +642,12 @@ export default function InventoryEnhanced() {
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {stockTransfers.slice(0, 5).map(t => (
-                        <div key={t.transfer_id} className="flex justify-between items-center p-2 bg-[rgba(255,255,255,0.03)] rounded border border-[rgba(255,255,255,0.06)]">
+                        <div key={t.transfer_id} className="flex justify-between items-center p-2 bg-white/[0.03] rounded border border-white/[0.06]">
                           <div>
                             <p className="text-sm font-medium">{t.from_warehouse_name} → {t.to_warehouse_name}</p>
-                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{t.items?.length} item(s) · {t.created_at?.split("T")[0]}</p>
+                            <p className="text-xs text-bw-white/[0.45]">{t.items?.length} item(s) · {t.created_at?.split("T")[0]}</p>
                           </div>
-                          <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">{t.status}</Badge>
+                          <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25">{t.status}</Badge>
                         </div>
                       ))}
                     </CardContent>
@@ -661,20 +661,20 @@ export default function InventoryEnhanced() {
         {/* Variants Tab */}
         <TabsContent value="variants">
           {variants.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No variants. Create variants for items with multiple options (size, color, etc.)</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No variants. Create variants for items with multiple options (size, color, etc.)</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {variants.map(v => (
-                <Card key={v.variant_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('variant', v.variant_id)}>
+                <Card key={v.variant_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors cursor-pointer" onClick={() => viewDetail('variant', v.variant_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold">{v.variant_name}</h3>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Base: {v.item_name} | SKU: {v.sku}</p>
+                        <p className="text-sm text-bw-white/[0.45]">Base: {v.item_name} | SKU: {v.sku}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold">₹{(v.effective_rate || 0).toLocaleString('en-IN')}</p>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Stock: {v.available_stock || 0}</p>
+                        <p className="text-sm text-bw-white/[0.45]">Stock: {v.available_stock || 0}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -687,16 +687,16 @@ export default function InventoryEnhanced() {
         {/* Bundles Tab */}
         <TabsContent value="bundles">
           {bundles.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No bundles. Create bundles/kits to sell composite items.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No bundles. Create bundles/kits to sell composite items.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {bundles.map(b => (
-                <Card key={b.bundle_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('bundle', b.bundle_id)}>
+                <Card key={b.bundle_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors cursor-pointer" onClick={() => viewDetail('bundle', b.bundle_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold">{b.name}</h3>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">SKU: {b.sku} | {b.component_count} components</p>
+                        <p className="text-sm text-bw-white/[0.45]">SKU: {b.sku} | {b.component_count} components</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -719,7 +719,7 @@ export default function InventoryEnhanced() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
                 <Input
                   placeholder="Search by serial/batch number..."
                   value={serialSearch}
@@ -735,26 +735,26 @@ export default function InventoryEnhanced() {
               !serialSearch || sb.number?.toLowerCase().includes(serialSearch.toLowerCase())
             );
             return filtered.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+              <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">
                 {serialSearch ? `No results for "${serialSearch}"` : "No serial numbers or batches. Track individual units or lot numbers for traceability."}
               </CardContent></Card>
             ) : (
               <div className="space-y-2">
                 {filtered.map(sb => (
-                  <Card key={sb.serial_batch_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
+                  <Card key={sb.serial_batch_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                          <Barcode className="h-8 w-8 text-[rgba(244,246,240,0.45)]" />
+                          <Barcode className="h-8 w-8 text-bw-white/[0.45]" />
                           <div>
                             <h3 className="font-semibold font-mono">{sb.number}</h3>
-                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
-                            {sb.warehouse_id && <p className="text-xs text-[rgba(244,246,240,0.35)]">WH: {warehouses.find(w => w.warehouse_id === sb.warehouse_id)?.name || sb.warehouse_id}</p>}
+                            <p className="text-xs text-bw-white/[0.45]">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
+                            {sb.warehouse_id && <p className="text-xs text-bw-white/35">WH: {warehouses.find(w => w.warehouse_id === sb.warehouse_id)?.name || sb.warehouse_id}</p>}
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge className={statusColors[sb.status] || "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}>{sb.status}</Badge>
-                          {sb.expiry_date && <p className="text-xs text-[rgba(244,246,240,0.35)] mt-1">Exp: {sb.expiry_date}</p>}
+                          <Badge className={statusColors[sb.status] || "bg-white/5 text-bw-white/[0.45]"}>{sb.status}</Badge>
+                          {sb.expiry_date && <p className="text-xs text-bw-white/35 mt-1">Exp: {sb.expiry_date}</p>}
                         </div>
                       </div>
                     </CardContent>
@@ -769,11 +769,11 @@ export default function InventoryEnhanced() {
         {/* Shipments Tab */}
         <TabsContent value="shipments">
           {shipments.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No shipments yet. Shipments are created from Sales Orders.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No shipments yet. Shipments are created from Sales Orders.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {shipments.map(s => (
-                <Card key={s.shipment_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('shipment', s.shipment_id)}>
+                <Card key={s.shipment_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors cursor-pointer" onClick={() => viewDetail('shipment', s.shipment_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -781,8 +781,8 @@ export default function InventoryEnhanced() {
                           <h3 className="font-semibold">{s.package_number}</h3>
                           <Badge className={statusColors[s.status]}>{s.status}</Badge>
                         </div>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{s.customer_name} | {s.carrier || 'No carrier'}</p>
-                        {s.tracking_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Tracking: {s.tracking_number}</p>}
+                        <p className="text-sm text-bw-white/[0.45]">{s.customer_name} | {s.carrier || 'No carrier'}</p>
+                        {s.tracking_number && <p className="text-xs text-bw-white/[0.45]">Tracking: {s.tracking_number}</p>}
                       </div>
                       <div className="flex gap-2">
                         {s.status === 'packed' && (
@@ -791,7 +791,7 @@ export default function InventoryEnhanced() {
                           </Button>
                         )}
                         {s.status === 'shipped' && (
-                          <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={(e) => { e.stopPropagation(); handleShipmentAction(s.shipment_id, 'deliver'); }}>
+                          <Button size="sm" className="bg-bw-volt text-bw-black font-bold" onClick={(e) => { e.stopPropagation(); handleShipmentAction(s.shipment_id, 'deliver'); }}>
                             <CheckCircle className="h-4 w-4 mr-1" /> Deliver
                           </Button>
                         )}
@@ -807,11 +807,11 @@ export default function InventoryEnhanced() {
         {/* Returns Tab */}
         <TabsContent value="returns">
           {returns.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No returns recorded.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">No returns recorded.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {returns.map(r => (
-                <Card key={r.return_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('return', r.return_id)}>
+                <Card key={r.return_id} className="border border-white/[0.07] hover:border-bw-volt/20 transition-colors cursor-pointer" onClick={() => viewDetail('return', r.return_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -819,8 +819,8 @@ export default function InventoryEnhanced() {
                           <h3 className="font-semibold">{r.customer_name}</h3>
                           <Badge className={statusColors[r.status]}>{r.status}</Badge>
                         </div>
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{r.reason}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{r.restock ? 'Restocked' : 'Not restocked'} | Value: ₹{(r.restocked_value || 0).toLocaleString('en-IN')}</p>
+                        <p className="text-sm text-bw-white/[0.45]">{r.reason}</p>
+                        <p className="text-xs text-bw-white/[0.45]">{r.restock ? 'Restocked' : 'Not restocked'} | Value: ₹{(r.restocked_value || 0).toLocaleString('en-IN')}</p>
                       </div>
                       {r.status === 'pending' && (
                         <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleProcessReturn(r.return_id); }}>
@@ -839,8 +839,8 @@ export default function InventoryEnhanced() {
         <TabsContent value="reorder-alerts" className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-[#F4F6F0]">Reorder Point Alerts</h3>
-              <p className="text-xs text-[rgba(244,246,240,0.45)]">Items below reorder level — auto-grouped by vendor for PO creation</p>
+              <h3 className="font-semibold text-bw-white">Reorder Point Alerts</h3>
+              <p className="text-xs text-bw-white/[0.45]">Items below reorder level — auto-grouped by vendor for PO creation</p>
             </div>
             <Button onClick={fetchReorderSuggestions} disabled={loadingReorder} size="sm" data-testid="refresh-reorder-btn">
               {loadingReorder ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />}
@@ -849,38 +849,38 @@ export default function InventoryEnhanced() {
           </div>
 
           {!reorderSuggestions && !loadingReorder && (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+            <Card><CardContent className="py-12 text-center text-bw-white/[0.45]">
               Click Refresh to check reorder levels
             </CardContent></Card>
           )}
 
           {loadingReorder && (
-            <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-[#C8FF00]" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-bw-volt" /></div>
           )}
 
           {reorderSuggestions && !loadingReorder && (
             <>
               {reorderSuggestions.total_items_below_reorder === 0 ? (
                 <Card><CardContent className="py-12 text-center">
-                  <CheckCircle className="h-10 w-10 text-[#22C55E] mx-auto mb-3" />
-                  <p className="text-sm text-[rgba(244,246,240,0.65)]">All items are at or above reorder levels</p>
+                  <CheckCircle className="h-10 w-10 text-bw-green mx-auto mb-3" />
+                  <p className="text-sm text-bw-white/[0.65]">All items are at or above reorder levels</p>
                 </CardContent></Card>
               ) : (
                 <>
-                  <div className="flex items-center gap-3 p-3 rounded bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)]">
-                    <AlertTriangle className="h-5 w-5 text-[#FF3B2F] flex-shrink-0" />
-                    <p className="text-sm text-[#FF3B2F] font-medium">{reorderSuggestions.total_items_below_reorder} item(s) below reorder point</p>
+                  <div className="flex items-center gap-3 p-3 rounded bg-bw-red/[0.08] border border-bw-red/20">
+                    <AlertTriangle className="h-5 w-5 text-bw-red flex-shrink-0" />
+                    <p className="text-sm text-bw-red font-medium">{reorderSuggestions.total_items_below_reorder} item(s) below reorder point</p>
                   </div>
 
                   {reorderSuggestions.grouped_by_vendor?.map((group, gi) => (
-                    <Card key={gi} className="border border-[rgba(255,255,255,0.07)]">
+                    <Card key={gi} className="border border-white/[0.07]">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <div>
                             <CardTitle className="text-sm">{group.vendor_name}</CardTitle>
                             <CardDescription className="text-xs">{group.items.length} items · Est. ₹{group.total_estimated_cost.toLocaleString('en-IN', {maximumFractionDigits: 0})}</CardDescription>
                           </div>
-                          <Button size="sm" onClick={() => handleCreatePoFromGroup(group)} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid={`create-po-btn-${gi}`}>
+                          <Button size="sm" onClick={() => handleCreatePoFromGroup(group)} className="bg-bw-volt text-bw-black font-bold" data-testid={`create-po-btn-${gi}`}>
                             <Plus className="h-4 w-4 mr-1" /> Create PO
                           </Button>
                         </div>
@@ -888,14 +888,14 @@ export default function InventoryEnhanced() {
                       <CardContent className="pt-0">
                         <div className="space-y-2">
                           {group.items.map(item => (
-                            <div key={item.item_id} className="flex items-center justify-between p-2 bg-[rgba(255,255,255,0.03)] rounded">
+                            <div key={item.item_id} className="flex items-center justify-between p-2 bg-white/[0.03] rounded">
                               <div>
                                 <p className="text-sm font-medium">{item.item_name}</p>
-                                <p className="text-xs font-mono text-[rgba(244,246,240,0.45)]">{item.sku}</p>
+                                <p className="text-xs font-mono text-bw-white/[0.45]">{item.sku}</p>
                               </div>
                               <div className="text-right text-xs">
-                                <p className="text-[#FF3B2F]">{item.current_stock} / {item.reorder_level} (short by {item.shortage})</p>
-                                <p className="text-[rgba(244,246,240,0.45)]">Suggest: <span className="text-[#C8FF00] font-mono">{item.suggested_order_qty} units</span></p>
+                                <p className="text-bw-red">{item.current_stock} / {item.reorder_level} (short by {item.shortage})</p>
+                                <p className="text-bw-white/[0.45]">Suggest: <span className="text-bw-volt font-mono">{item.suggested_order_qty} units</span></p>
                               </div>
                             </div>
                           ))}
@@ -913,8 +913,8 @@ export default function InventoryEnhanced() {
         <TabsContent value="stocktake" className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-[#F4F6F0]">Inventory Count / Stocktake</h3>
-              <p className="text-xs text-[rgba(244,246,240,0.45)]">Create count sessions, enter physical quantities, apply variances</p>
+              <h3 className="font-semibold text-bw-white">Inventory Count / Stocktake</h3>
+              <p className="text-xs text-bw-white/[0.45]">Create count sessions, enter physical quantities, apply variances</p>
             </div>
             <Button onClick={() => setShowStocktakeDialog(true)} size="sm" data-testid="new-stocktake-btn">
               <Plus className="h-4 w-4 mr-1" /> New Stocktake
@@ -923,21 +923,21 @@ export default function InventoryEnhanced() {
 
           {/* Active / Open Stocktake */}
           {activeStocktake && (
-            <Card className={`border ${activeStocktake.status === 'finalized' ? 'border-[rgba(200,255,0,0.25)]' : 'border-[rgba(59,158,255,0.25)]'}`}>
+            <Card className={`border ${activeStocktake.status === 'finalized' ? 'border-bw-volt/25' : 'border-bw-blue/25'}`}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-sm flex items-center gap-2">
                       {activeStocktake.status === 'finalized'
-                        ? <CheckCircle className="h-4 w-4 text-[#C8FF00]" />
-                        : <Clock className="h-4 w-4 text-[#3B9EFF]" />
+                        ? <CheckCircle className="h-4 w-4 text-bw-volt" />
+                        : <Clock className="h-4 w-4 text-bw-blue" />
                       }
                       {activeStocktake.name}
                     </CardTitle>
                     <CardDescription className="text-xs">{activeStocktake.warehouse_name} · {activeStocktake.counted_lines || 0}/{activeStocktake.total_lines} counted · Variance: {activeStocktake.total_variance > 0 ? '+' : ''}{activeStocktake.total_variance}</CardDescription>
                   </div>
                   {activeStocktake.status === 'in_progress' && (
-                    <Button size="sm" onClick={() => handleFinalizeStocktake(activeStocktake.stocktake_id)} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="finalize-stocktake-btn">
+                    <Button size="sm" onClick={() => handleFinalizeStocktake(activeStocktake.stocktake_id)} className="bg-bw-volt text-bw-black font-bold" data-testid="finalize-stocktake-btn">
                       Finalize & Apply
                     </Button>
                   )}
@@ -946,10 +946,10 @@ export default function InventoryEnhanced() {
               <CardContent className="pt-0">
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {(activeStocktake.lines || []).map(line => (
-                    <div key={line.item_id} className={`flex items-center gap-3 p-2 rounded ${line.counted ? 'bg-[rgba(200,255,0,0.04)]' : 'bg-[rgba(255,255,255,0.02)]'}`}>
+                    <div key={line.item_id} className={`flex items-center gap-3 p-2 rounded ${line.counted ? 'bg-bw-volt/[0.04]' : 'bg-white/[0.02]'}`}>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{line.item_name}</p>
-                        <p className="text-xs font-mono text-[rgba(244,246,240,0.45)]">{line.item_sku} · System: {line.system_quantity}</p>
+                        <p className="text-xs font-mono text-bw-white/[0.45]">{line.item_sku} · System: {line.system_quantity}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {activeStocktake.status === 'in_progress' ? (
@@ -962,7 +962,7 @@ export default function InventoryEnhanced() {
                           <span className="text-sm font-mono">{line.counted_quantity ?? '—'}</span>
                         )}
                         {line.counted && (
-                          <span className={`text-xs font-mono font-bold ${line.variance > 0 ? 'text-[#22C55E]' : line.variance < 0 ? 'text-[#FF3B2F]' : 'text-[rgba(244,246,240,0.35)]'}`}>
+                          <span className={`text-xs font-mono font-bold ${line.variance > 0 ? 'text-bw-green' : line.variance < 0 ? 'text-bw-red' : 'text-bw-white/35'}`}>
                             {line.variance > 0 ? '+' : ''}{line.variance}
                           </span>
                         )}
@@ -982,13 +982,13 @@ export default function InventoryEnhanced() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {stocktakes.map(st => (
-                  <div key={st.stocktake_id} className="flex items-center justify-between p-2 bg-[rgba(255,255,255,0.03)] rounded border border-[rgba(255,255,255,0.06)]">
+                  <div key={st.stocktake_id} className="flex items-center justify-between p-2 bg-white/[0.03] rounded border border-white/[0.06]">
                     <div>
                       <p className="text-sm font-medium">{st.name}</p>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{st.warehouse_name} · {st.counted_lines}/{st.total_lines} counted · {st.created_at?.split("T")[0]}</p>
+                      <p className="text-xs text-bw-white/[0.45]">{st.warehouse_name} · {st.counted_lines}/{st.total_lines} counted · {st.created_at?.split("T")[0]}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className={st.status === 'finalized' ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' : 'bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]'}>{st.status}</Badge>
+                      <Badge className={st.status === 'finalized' ? 'bg-bw-volt/10 text-bw-volt border border-bw-volt/25' : 'bg-bw-blue/10 text-bw-blue border border-bw-blue/25'}>{st.status}</Badge>
                       {st.status === 'in_progress' && (
                         <Button variant="outline" size="sm" onClick={() => handleLoadStocktake(st.stocktake_id)}>Open</Button>
                       )}
@@ -1046,11 +1046,11 @@ export default function InventoryEnhanced() {
               {newTransfer.items.length > 0 && (
                 <div className="space-y-1 mt-2">
                   {newTransfer.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-2 bg-[rgba(255,255,255,0.03)] rounded text-sm">
+                    <div key={idx} className="flex justify-between items-center p-2 bg-white/[0.03] rounded text-sm">
                       <span>{item.item_name}</span>
                       <div className="flex items-center gap-2">
                         <span className="font-mono">{item.quantity} units</span>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-[#FF3B2F]" onClick={() => setNewTransfer(t => ({ ...t, items: t.items.filter((_, i) => i !== idx) }))}>×</Button>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-bw-red" onClick={() => setNewTransfer(t => ({ ...t, items: t.items.filter((_, i) => i !== idx) }))}>×</Button>
                       </div>
                     </div>
                   ))}
@@ -1061,7 +1061,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowTransferDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateTransfer} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="confirm-transfer-btn">Transfer</Button>
+            <Button onClick={handleCreateTransfer} className="bg-bw-volt text-bw-black font-bold" data-testid="confirm-transfer-btn">Transfer</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1080,11 +1080,11 @@ export default function InventoryEnhanced() {
             </div>
             <div><Label>Session Name</Label><Input value={newStocktake.name} onChange={e => setNewStocktake(s => ({ ...s, name: e.target.value }))} placeholder={`Stocktake ${new Date().toLocaleDateString()}`} /></div>
             <div><Label>Notes</Label><Input value={newStocktake.notes} onChange={e => setNewStocktake(s => ({ ...s, notes: e.target.value }))} placeholder="Optional notes" /></div>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">All items with stock in the selected warehouse will be included for counting.</p>
+            <p className="text-xs text-bw-white/[0.45]">All items with stock in the selected warehouse will be included for counting.</p>
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowStocktakeDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateStocktake} disabled={loadingStocktake} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="start-stocktake-btn">
+            <Button onClick={handleCreateStocktake} disabled={loadingStocktake} className="bg-bw-volt text-bw-black font-bold" data-testid="start-stocktake-btn">
               {loadingStocktake ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Start Stocktake
             </Button>
@@ -1114,7 +1114,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowWarehouseDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateWarehouse} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
+            <Button onClick={handleCreateWarehouse} className="bg-bw-volt text-bw-black font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1156,7 +1156,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowVariantDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateVariant} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
+            <Button onClick={handleCreateVariant} className="bg-bw-volt text-bw-black font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1172,7 +1172,7 @@ export default function InventoryEnhanced() {
             </div>
             <div><Label>Description</Label><Textarea value={newBundle.description} onChange={(e) => setNewBundle({...newBundle, description: e.target.value})} /></div>
             
-            <div className="border rounded p-4 bg-[#111820]">
+            <div className="border rounded p-4 bg-bw-panel">
               <h4 className="font-medium mb-3">Components</h4>
               <div className="flex gap-2 mb-3">
                 <Select onValueChange={(v) => setBundleComponent({...bundleComponent, item_id: v})}>
@@ -1187,10 +1187,10 @@ export default function InventoryEnhanced() {
               {newBundle.components.length > 0 && (
                 <div className="space-y-2">
                   {newBundle.components.map((c, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded border">
+                    <div key={idx} className="flex justify-between items-center p-2 bg-bw-panel rounded border">
                       <span>{c.item_name || c.item_id}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-[rgba(244,246,240,0.45)]">x{c.quantity}</span>
+                        <span className="text-bw-white/[0.45]">x{c.quantity}</span>
                         <Button variant="ghost" size="icon" onClick={() => setNewBundle({...newBundle, components: newBundle.components.filter((_, i) => i !== idx)})}>
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
@@ -1207,7 +1207,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowBundleDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateBundle} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
+            <Button onClick={handleCreateBundle} className="bg-bw-volt text-bw-black font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1258,7 +1258,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowSerialDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateSerial} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
+            <Button onClick={handleCreateSerial} className="bg-bw-volt text-bw-black font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1306,7 +1306,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowAdjustmentDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateAdjustment} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Adjustment</Button>
+            <Button onClick={handleCreateAdjustment} className="bg-bw-volt text-bw-black font-bold">Apply Adjustment</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1323,20 +1323,20 @@ export default function InventoryEnhanced() {
                 {detailType === 'warehouse' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Name</p><p className="font-medium">{detailData.name}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Code</p><p className="font-medium">{detailData.code || '-'}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Name</p><p className="font-medium">{detailData.name}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Code</p><p className="font-medium">{detailData.code || '-'}</p></div>
                     </div>
-                    <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Address</p><p>{detailData.address} {detailData.city} {detailData.state} {detailData.pincode}</p></div>
+                    <div><p className="text-sm text-bw-white/[0.45]">Address</p><p>{detailData.address} {detailData.city} {detailData.state} {detailData.pincode}</p></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Items</p><p className="font-medium">{detailData.item_count || 0}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Total Units</p><p className="font-medium">{detailData.total_units || 0}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Items</p><p className="font-medium">{detailData.item_count || 0}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Total Units</p><p className="font-medium">{detailData.total_units || 0}</p></div>
                     </div>
                     {detailData.stock_items?.length > 0 && (
                       <div>
                         <h4 className="font-medium mb-2">Stock Items</h4>
                         <div className="border rounded max-h-48 overflow-y-auto">
                           <table className="w-full text-sm">
-                            <thead className="bg-[#111820] sticky top-0"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Available</th><th className="px-3 py-2 text-right">Reserved</th></tr></thead>
+                            <thead className="bg-bw-panel sticky top-0"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Available</th><th className="px-3 py-2 text-right">Reserved</th></tr></thead>
                             <tbody>
                               {detailData.stock_items.map((si, idx) => (
                                 <tr key={idx} className="border-t"><td className="px-3 py-2">{si.item_name}</td><td className="px-3 py-2 text-right">{si.available_stock}</td><td className="px-3 py-2 text-right">{si.reserved_stock || 0}</td></tr>
@@ -1351,24 +1351,24 @@ export default function InventoryEnhanced() {
                 {detailType === 'bundle' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Name</p><p className="font-medium">{detailData.name}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">SKU</p><p className="font-medium">{detailData.sku}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Name</p><p className="font-medium">{detailData.name}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">SKU</p><p className="font-medium">{detailData.sku}</p></div>
                     </div>
-                    <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Description</p><p>{detailData.description || '-'}</p></div>
+                    <div><p className="text-sm text-bw-white/[0.45]">Description</p><p>{detailData.description || '-'}</p></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Rate</p><p className="font-bold text-lg">₹{(detailData.rate || 0).toLocaleString('en-IN')}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Max Assemblable</p><p className="font-medium">{detailData.max_assemblable || 0} units</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Rate</p><p className="font-bold text-lg">₹{(detailData.rate || 0).toLocaleString('en-IN')}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Max Assemblable</p><p className="font-medium">{detailData.max_assemblable || 0} units</p></div>
                     </div>
                     {detailData.components?.length > 0 && (
                       <div>
                         <h4 className="font-medium mb-2">Components</h4>
                         <div className="space-y-2">
                           {detailData.components.map((c, idx) => (
-                            <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded">
+                            <div key={idx} className="flex justify-between items-center p-2 bg-bw-panel rounded">
                               <span>{c.item_name}</span>
                               <div className="text-right">
                                 <span className="font-medium">x{c.quantity}</span>
-                                <span className="text-xs text-[rgba(244,246,240,0.45)] ml-2">(Stock: {c.available_stock})</span>
+                                <span className="text-xs text-bw-white/[0.45] ml-2">(Stock: {c.available_stock})</span>
                               </div>
                             </div>
                           ))}
@@ -1380,23 +1380,23 @@ export default function InventoryEnhanced() {
                 {detailType === 'shipment' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Package #</p><p className="font-medium">{detailData.package_number}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Status</p><Badge className={statusColors[detailData.status]}>{detailData.status}</Badge></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Package #</p><p className="font-medium">{detailData.package_number}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Status</p><Badge className={statusColors[detailData.status]}>{detailData.status}</Badge></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Customer</p><p>{detailData.customer_name}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Sales Order</p><p>{detailData.sales_order_number}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Customer</p><p>{detailData.customer_name}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Sales Order</p><p>{detailData.sales_order_number}</p></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Carrier</p><p>{detailData.carrier || '-'}</p></div>
-                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Tracking #</p><p>{detailData.tracking_number || '-'}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Carrier</p><p>{detailData.carrier || '-'}</p></div>
+                      <div><p className="text-sm text-bw-white/[0.45]">Tracking #</p><p>{detailData.tracking_number || '-'}</p></div>
                     </div>
                     {detailData.items?.length > 0 && (
                       <div>
                         <h4 className="font-medium mb-2">Shipped Items</h4>
                         <div className="space-y-2">
                           {detailData.items.map((i, idx) => (
-                            <div key={idx} className="flex justify-between p-2 bg-[#111820] rounded">
+                            <div key={idx} className="flex justify-between p-2 bg-bw-panel rounded">
                               <span>{i.item_name}</span>
                               <span>Qty: {i.quantity_shipped}</span>
                             </div>
@@ -1407,7 +1407,7 @@ export default function InventoryEnhanced() {
                   </>
                 )}
                 {(detailType === 'variant' || detailType === 'serial' || detailType === 'return') && (
-                  <pre className="bg-[#111820] p-4 rounded text-xs overflow-auto">{JSON.stringify(detailData, null, 2)}</pre>
+                  <pre className="bg-bw-panel p-4 rounded text-xs overflow-auto">{JSON.stringify(detailData, null, 2)}</pre>
                 )}
               </div>
             )}

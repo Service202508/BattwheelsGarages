@@ -56,7 +56,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" data-testid="business-layout">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-[rgba(255,255,255,0.07)] border-200 px-4 py-3 flex items-center justify-between shadow-sm">
+      <header className="lg:hidden sticky top-0 z-50 bg-bw-panel border-b border-white/[0.07] border-200 px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -72,7 +72,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
         <div className="flex items-center gap-3">
           <button className="relative text-slate-500 hover:text-slate-700">
             <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-[rgba(255,59,47,0.08)]0 rounded-full"></span>
+            <span className="absolute -top-1 -right-1 h-2 w-2 bg-bw-red/[0.08]0 rounded-full"></span>
           </button>
           <Avatar className="h-8 w-8">
             <AvatarImage src={user?.picture} />
@@ -86,13 +86,13 @@ export default function BusinessLayout({ children, user, onLogout }) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-[#111820] border-r border-[rgba(255,255,255,0.07)] border-200
+          fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-bw-panel border-r border-white/[0.07] border-200
           transform transition-transform duration-200 ease-in-out lg:shadow-none
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo & Business Info */}
-            <div className="hidden lg:block px-6 py-5 border-b border-[rgba(255,255,255,0.07)] border-200">
+            <div className="hidden lg:block px-6 py-5 border-b border-white/[0.07] border-200">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                   <Building2 className="h-7 w-7 text-white" />
@@ -110,7 +110,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
             </div>
 
             {/* Quick Action */}
-            <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)] border-200">
+            <div className="px-4 py-3 border-b border-white/[0.07] border-200">
               <Link to="/business/tickets/new">
                 <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
                   <Plus className="h-4 w-4 mr-2" />
@@ -142,7 +142,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
                     >
                       <div className={`
                         p-2 rounded-lg transition-colors
-                        ${active ? 'bg-indigo-100' : 'bg-[rgba(255,255,255,0.05)] group-hover:bg-slate-200'}
+                        ${active ? 'bg-indigo-100' : 'bg-white/5 group-hover:bg-slate-200'}
                       `}>
                         <Icon className={`h-5 w-5 ${active ? 'text-indigo-600' : 'text-slate-500'}`} />
                       </div>
@@ -155,7 +155,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
             </ScrollArea>
 
             {/* User Info & Logout */}
-            <div className="border-t border-[rgba(255,255,255,0.07)] border-200 p-4 bg-slate-50">
+            <div className="border-t border-white/[0.07] border-200 p-4 bg-slate-50">
               <div className="flex items-center gap-3 mb-3 px-2">
                 <Avatar className="h-10 w-10 ring-2 ring-indigo-100">
                   <AvatarImage src={user?.picture} />
@@ -170,7 +170,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
               </div>
               <Button 
                 variant="outline" 
-                className="w-full justify-start border-[rgba(255,255,255,0.07)] border-300 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-[rgba(255,59,47,0.08)]"
+                className="w-full justify-start border-white/[0.07] border-300 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-bw-red/[0.08]"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

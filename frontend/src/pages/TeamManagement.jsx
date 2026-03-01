@@ -96,7 +96,7 @@ export default function TeamManagement({ user }) {
           toast.info(
             <div className="space-y-2">
               <p>Invite link (dev mode):</p>
-              <code className="text-xs bg-[rgba(255,255,255,0.05)] p-1 rounded block truncate">
+              <code className="text-xs bg-white/5 p-1 rounded block truncate">
                 {window.location.origin}{data.invite_link}
               </code>
             </div>,
@@ -184,23 +184,23 @@ export default function TeamManagement({ user }) {
   const getRoleBadgeColor = (role) => {
     const colors = {
       owner: "bg-amber-100 text-amber-700",
-      admin: "bg-purple-100 text-[#8B5CF6]",
-      manager: "bg-blue-100 text-[#3B9EFF]",
-      technician: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+      admin: "bg-purple-100 text-bw-purple",
+      manager: "bg-blue-100 text-bw-blue",
+      technician: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
       accountant: "bg-teal-100 text-teal-700",
-      viewer: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"
+      viewer: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]"
     };
-    return colors[role] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
+    return colors[role] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]";
   };
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      pending: "bg-yellow-100 text-[#EAB308]",
-      accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-      expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-      cancelled: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"
+      pending: "bg-yellow-100 text-bw-amber",
+      accepted: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+      expired: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+      cancelled: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]"
     };
-    return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
+    return colors[status] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]";
   };
 
   const getInitials = (name) => {
@@ -213,7 +213,7 @@ export default function TeamManagement({ user }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCw className="h-8 w-8 animate-spin text-[rgba(244,246,240,0.45)]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-bw-white/[0.45]" />
       </div>
     );
   }
@@ -223,8 +223,8 @@ export default function TeamManagement({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#F4F6F0]">Team Management</h1>
-          <p className="text-[rgba(244,246,240,0.45)] mt-1">Manage your organization's team members and invitations</p>
+          <h1 className="text-2xl font-semibold text-bw-white">Team Management</h1>
+          <p className="text-bw-white/[0.45] mt-1">Manage your organization's team members and invitations</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={fetchTeamData} variant="outline" size="sm">
@@ -286,7 +286,7 @@ export default function TeamManagement({ user }) {
                       <SelectItem value="viewer">Viewer</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)]">
+                  <p className="text-xs text-bw-white/[0.45]">
                     {inviteForm.role === "admin" && "Full access to all features and settings"}
                     {inviteForm.role === "manager" && "Manage operations, no billing access"}
                     {inviteForm.role === "technician" && "Access to assigned tickets and tasks"}
@@ -324,10 +324,10 @@ export default function TeamManagement({ user }) {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="h-6 w-6 text-[#3B9EFF]" />
+                <Users className="h-6 w-6 text-bw-blue" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Team Members</p>
+                <p className="text-sm text-bw-white/[0.45]">Team Members</p>
                 <p className="text-2xl font-bold">{members.length}</p>
               </div>
             </div>
@@ -337,10 +337,10 @@ export default function TeamManagement({ user }) {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-yellow-100 rounded-lg">
-                <Clock className="h-6 w-6 text-[#EAB308]" />
+                <Clock className="h-6 w-6 text-bw-amber" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Pending Invites</p>
+                <p className="text-sm text-bw-white/[0.45]">Pending Invites</p>
                 <p className="text-2xl font-bold">{pendingInvites.length}</p>
               </div>
             </div>
@@ -349,11 +349,11 @@ export default function TeamManagement({ user }) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[rgba(34,197,94,0.10)] rounded-lg">
+              <div className="p-3 bg-bw-green/10 rounded-lg">
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Admins</p>
+                <p className="text-sm text-bw-white/[0.45]">Admins</p>
                 <p className="text-2xl font-bold">
                   {members.filter(m => m.role === "admin" || m.role === "owner").length}
                 </p>
@@ -384,8 +384,8 @@ export default function TeamManagement({ user }) {
             </CardHeader>
             <CardContent>
               {members.length === 0 ? (
-                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+                <div className="text-center py-8 text-bw-white/[0.45]">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
                   <p>No team members yet</p>
                   <p className="text-sm">Invite your first team member to get started</p>
                 </div>
@@ -420,7 +420,7 @@ export default function TeamManagement({ user }) {
                                   <Badge variant="outline" className="text-xs">You</Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-[rgba(244,246,240,0.45)]">{member.email}</p>
+                              <p className="text-sm text-bw-white/[0.45]">{member.email}</p>
                             </div>
                           </div>
                         </TableCell>
@@ -449,21 +449,21 @@ export default function TeamManagement({ user }) {
                             </Select>
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
+                        <TableCell className="text-sm text-bw-white/[0.45]">
                           {member.joined_at 
                             ? new Date(member.joined_at).toLocaleDateString()
                             : "N/A"
                           }
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Active</Badge>
+                          <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25">Active</Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           {member.role !== "owner" && member.user_id !== user?.user_id && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-red-600 hover:text-red-700 hover:bg-[rgba(255,59,47,0.08)]"
+                              className="text-red-600 hover:text-red-700 hover:bg-bw-red/[0.08]"
                               onClick={() => handleRemoveMember(member.user_id)}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -490,8 +490,8 @@ export default function TeamManagement({ user }) {
             </CardHeader>
             <CardContent>
               {invites.length === 0 ? (
-                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
-                  <Mail className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
+                <div className="text-center py-8 text-bw-white/[0.45]">
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-bw-white/20" />
                   <p>No invitations sent yet</p>
                   <p className="text-sm">Invite team members using the button above</p>
                 </div>
@@ -517,7 +517,7 @@ export default function TeamManagement({ user }) {
                           <TableCell>
                             <div>
                               <p className="font-medium">{invite.name}</p>
-                              <p className="text-sm text-[rgba(244,246,240,0.45)]">{invite.email}</p>
+                              <p className="text-sm text-bw-white/[0.45]">{invite.email}</p>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -533,10 +533,10 @@ export default function TeamManagement({ user }) {
                               {status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
+                          <TableCell className="text-sm text-bw-white/[0.45]">
                             {new Date(invite.invited_at).toLocaleDateString()}
                           </TableCell>
-                          <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
+                          <TableCell className="text-sm text-bw-white/[0.45]">
                             {new Date(invite.expires_at).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-right">
@@ -553,7 +553,7 @@ export default function TeamManagement({ user }) {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-red-600 hover:text-red-700 hover:bg-[rgba(255,59,47,0.08)]"
+                                  className="text-red-600 hover:text-red-700 hover:bg-bw-red/[0.08]"
                                   onClick={() => handleCancelInvite(invite.invite_id)}
                                   title="Cancel invitation"
                                 >

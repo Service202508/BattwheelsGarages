@@ -266,11 +266,11 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
               title={item.name}
               className={`flex items-center justify-center p-2.5 rounded transition-all duration-200 ${
                 isActive
-                  ? "bg-[rgba(200,255,0,0.12)] text-[#C8FF00] border-l-2 border-[#C8FF00]"
-                  : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
+                  ? "bg-bw-volt/[0.12] text-bw-volt border-l-2 border-bw-volt"
+                  : "text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
               }`}
             >
-              <Icon className={`h-5 w-5 ${isActive ? "text-[#C8FF00]" : ""}`} strokeWidth={1.5} />
+              <Icon className={`h-5 w-5 ${isActive ? "text-bw-volt" : ""}`} strokeWidth={1.5} />
             </Link>
           );
         })}
@@ -283,25 +283,25 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
       <CollapsibleTrigger className="w-full">
         <div className={`flex items-center justify-between px-3 py-2.5 rounded transition-all duration-200 group cursor-pointer ${
           hasActiveItem 
-            ? "bg-[rgba(200,255,0,0.08)] text-[#F4F6F0]" 
-            : "text-[rgba(244,246,240,0.45)] hover:bg-[rgba(200,255,0,0.06)]"
+            ? "bg-bw-volt/[0.08] text-bw-white" 
+            : "text-bw-white/[0.45] hover:bg-bw-volt/[0.06]"
         }`}>
           <div className="flex items-center gap-3">
             <div className={`p-1.5 rounded transition-colors ${
-              hasActiveItem ? "bg-[rgba(200,255,0,0.12)]" : "bg-[#111820] group-hover:bg-[rgba(200,255,0,0.08)]"
+              hasActiveItem ? "bg-bw-volt/[0.12]" : "bg-bw-panel group-hover:bg-bw-volt/[0.08]"
             }`}>
-              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.3)]"}`} strokeWidth={1.5} />
+              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-bw-volt" : "text-bw-white/30"}`} strokeWidth={1.5} />
             </div>
-            <span className={`text-sm font-medium nav-section-label ${hasActiveItem ? "text-[#F4F6F0] !text-sm !tracking-normal !normal-case !font-medium" : ""}`} style={{ fontFamily: hasActiveItem ? 'Manrope, sans-serif' : undefined }}>
+            <span className={`text-sm font-medium nav-section-label ${hasActiveItem ? "text-bw-white !text-sm !tracking-normal !normal-case !font-medium" : ""}`} style={{ fontFamily: hasActiveItem ? 'Manrope, sans-serif' : undefined }}>
               {section.section}
             </span>
           </div>
-          <ChevronDown className={`h-4 w-4 text-[rgba(244,246,240,0.25)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown className={`h-4 w-4 text-bw-white/25 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
         </div>
       </CollapsibleTrigger>
       
       <CollapsibleContent className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
-        <div className="ml-4 pl-4 border-l border-[rgba(255,255,255,0.07)] mt-1 space-y-0.5">
+        <div className="ml-4 pl-4 border-l border-white/[0.07] mt-1 space-y-0.5">
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -313,11 +313,11 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
                 data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className={`flex items-center gap-3 px-3 py-2 rounded transition-all duration-200 ${
                   isActive
-                    ? "bg-[rgba(200,255,0,0.12)] text-[#C8FF00] font-semibold border-l-2 border-[#C8FF00] rounded-l-none"
-                    : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
+                    ? "bg-bw-volt/[0.12] text-bw-volt font-semibold border-l-2 border-bw-volt rounded-l-none"
+                    : "text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
                 }`}
               >
-                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.3)]"}`} strokeWidth={1.5} />
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-bw-volt" : "text-bw-white/30"}`} strokeWidth={1.5} />
                 <span className="text-sm">{item.name}</span>
               </Link>
             );
@@ -339,32 +339,32 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#080C0F]">
+    <div className="flex flex-col h-full bg-bw-black">
       {/* Header with Logo */}
-      <div className="p-4 border-b border-[rgba(255,255,255,0.07)]">
+      <div className="p-4 border-b border-white/[0.07]">
         <div className="flex items-center justify-between">
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded bg-[#C8FF00] flex items-center justify-center">
-                <Zap className="h-5 w-5 text-[#080C0F]" strokeWidth={2} />
+              <div className="w-9 h-9 rounded bg-bw-volt flex items-center justify-center">
+                <Zap className="h-5 w-5 text-bw-black" strokeWidth={2} />
               </div>
               <div>
-                <h1 className="text-lg font-extrabold text-[#F4F6F0] tracking-tight" data-testid="sidebar-title">
+                <h1 className="text-lg font-extrabold text-bw-white tracking-tight" data-testid="sidebar-title">
                   Battwheels OS
                 </h1>
-                <p className="text-[9px] text-[rgba(244,246,240,0.35)] font-medium tracking-[0.2em] uppercase font-mono">EV Intelligence</p>
+                <p className="text-[9px] text-bw-white/35 font-medium tracking-[0.2em] uppercase font-mono">EV Intelligence</p>
               </div>
             </div>
           ) : (
-            <div className="w-9 h-9 rounded bg-[#C8FF00] flex items-center justify-center mx-auto">
-              <Zap className="h-5 w-5 text-[#080C0F]" strokeWidth={2} />
+            <div className="w-9 h-9 rounded bg-bw-volt flex items-center justify-center mx-auto">
+              <Zap className="h-5 w-5 text-bw-black" strokeWidth={2} />
             </div>
           )}
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => setCollapsed?.(!collapsed)}
-            className="text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)] hidden lg:flex h-8 w-8"
+            className="text-bw-white/35 hover:text-bw-white hover:bg-bw-volt/[0.06] hidden lg:flex h-8 w-8"
             data-testid="collapse-sidebar-btn"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -374,7 +374,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
               variant="ghost" 
               size="icon" 
               onClick={onClose}
-              className="text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] lg:hidden h-8 w-8"
+              className="text-bw-white/35 hover:text-bw-white lg:hidden h-8 w-8"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -384,18 +384,18 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
 
       {/* Quick Search (Desktop only, expanded) */}
       {!collapsed && (
-        <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)]">
+        <div className="px-4 py-3 border-b border-white/[0.07]">
           <button 
             onClick={() => {
               // Dispatch keyboard event to open command palette
               document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
             }}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded text-[rgba(244,246,240,0.25)] text-sm cursor-pointer hover:border-[rgba(200,255,0,0.2)] transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 bg-bw-panel border border-white/[0.07] rounded text-bw-white/25 text-sm cursor-pointer hover:border-bw-volt/20 transition-colors"
             data-testid="quick-search-btn"
           >
             <Search className="h-4 w-4" />
             <span>Quick search...</span>
-            <kbd className="ml-auto text-[10px] bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.3)] px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.07)] font-mono">⌘K</kbd>
+            <kbd className="ml-auto text-[10px] bg-white/5 text-bw-white/30 px-1.5 py-0.5 rounded border border-white/[0.07] font-mono">⌘K</kbd>
           </button>
         </div>
       )}
@@ -418,25 +418,25 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
       </ScrollArea>
 
       {/* User Profile */}
-      <div className="border-t border-[rgba(255,255,255,0.07)] p-4 bg-[#080C0F]">
+      <div className="border-t border-white/[0.07] p-4 bg-bw-black">
         {!collapsed ? (
-          <div className="flex items-center gap-3 p-2 rounded bg-[#080C0F] mb-3">
-            <Avatar className="h-10 w-10 ring-1 ring-[rgba(200,255,0,0.2)]">
+          <div className="flex items-center gap-3 p-2 rounded bg-bw-black mb-3">
+            <Avatar className="h-10 w-10 ring-1 ring-bw-volt/20">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] font-bold text-sm">
+              <AvatarFallback className="bg-bw-volt/[0.12] border border-bw-volt/20 text-bw-volt font-bold text-sm">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold truncate text-[#F4F6F0]">{user?.name || "User"}</p>
-              <p className="text-[11px] text-[rgba(244,246,240,0.35)] truncate">{user?.role || "Member"}</p>
+              <p className="text-[13px] font-semibold truncate text-bw-white">{user?.name || "User"}</p>
+              <p className="text-[11px] text-bw-white/35 truncate">{user?.role || "Member"}</p>
             </div>
           </div>
         ) : (
           <div className="flex justify-center mb-3">
-            <Avatar className="h-10 w-10 ring-1 ring-[rgba(200,255,0,0.2)]">
+            <Avatar className="h-10 w-10 ring-1 ring-bw-volt/20">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] font-bold text-sm">
+              <AvatarFallback className="bg-bw-volt/[0.12] border border-bw-volt/20 text-bw-volt font-bold text-sm">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
@@ -447,7 +447,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Link 
             to="/settings" 
             onClick={onClose}
-            className={`flex items-center gap-2 px-3 py-2 rounded text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)] transition-all ${collapsed ? "justify-center w-full" : "flex-1"}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded text-bw-white/35 hover:text-bw-white hover:bg-bw-volt/[0.06] transition-all ${collapsed ? "justify-center w-full" : "flex-1"}`}
             data-testid="nav-settings"
           >
             <Settings className="h-4 w-4" strokeWidth={1.5} />
@@ -456,7 +456,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Button 
             variant="ghost" 
             onClick={() => { onLogout(); onClose?.(); }}
-            className={`text-[rgba(244,246,240,0.35)] hover:text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.08)] ${collapsed ? "w-full justify-center" : ""}`}
+            className={`text-bw-white/35 hover:text-bw-red hover:bg-bw-red/[0.08] ${collapsed ? "w-full justify-center" : ""}`}
             data-testid="logout-btn"
           >
             <LogOut className="h-4 w-4" strokeWidth={1.5} />
@@ -464,7 +464,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           </Button>
         </div>
         {!collapsed && (
-          <p className="text-[10px] text-[rgba(244,246,240,0.2)] text-center mt-2 font-mono" data-testid="version-footer">
+          <p className="text-[10px] text-bw-white/20 text-center mt-2 font-mono" data-testid="version-footer">
             Battwheels OS v2.5.0
           </p>
         )}
@@ -487,9 +487,9 @@ export default function Layout({ children, user, onLogout }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0D1317] flex">{/* Desktop Sidebar */}
+    <div className="min-h-screen bg-bw-off-black flex">{/* Desktop Sidebar */}
       <aside 
-        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-[#080C0F] border-r border-[rgba(255,255,255,0.07)] transition-all duration-300 z-50 ${
+        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-bw-black border-r border-white/[0.07] transition-all duration-300 z-50 ${
           collapsed ? "w-[72px]" : "w-72"
         }`}
         data-testid="desktop-sidebar"
@@ -504,7 +504,7 @@ export default function Layout({ children, user, onLogout }) {
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="p-0 w-80 bg-[#080C0F] border-r border-[rgba(255,255,255,0.07)]">
+        <SheetContent side="left" className="p-0 w-80 bg-bw-black border-r border-white/[0.07]">
           <SidebarContent 
             user={user} 
             onLogout={onLogout}
@@ -520,7 +520,7 @@ export default function Layout({ children, user, onLogout }) {
         }`}
       >
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-40 bg-[#080C0F]/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.07)]">
+        <header className="sticky top-0 z-40 bg-bw-black/90 backdrop-blur-md border-b border-white/[0.07]">
           <div className="flex items-center justify-between px-4 lg:px-8 h-16">
             {/* Left side - Mobile menu button */}
             <div className="lg:hidden">
@@ -528,10 +528,10 @@ export default function Layout({ children, user, onLogout }) {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setMobileOpen(true)}
-                className="h-10 w-10 bg-[#111820] hover:bg-[rgba(200,255,0,0.08)] border border-[rgba(255,255,255,0.07)] rounded"
+                className="h-10 w-10 bg-bw-panel hover:bg-bw-volt/[0.08] border border-white/[0.07] rounded"
                 data-testid="mobile-menu-btn"
               >
-                <Menu className="h-5 w-5 text-[rgba(244,246,240,0.7)]" />
+                <Menu className="h-5 w-5 text-bw-white/70" />
               </Button>
             </div>
             
@@ -546,14 +546,14 @@ export default function Layout({ children, user, onLogout }) {
             {/* Right side - Actions */}
             <div className="flex items-center gap-3">
               <NotificationBell />
-              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-[rgba(255,255,255,0.07)]">
+              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-white/[0.07]">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.picture} />
-                  <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] text-xs font-bold">
+                  <AvatarFallback className="bg-bw-volt/[0.12] border border-bw-volt/20 text-bw-volt text-xs font-bold">
                     {user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium text-[#F4F6F0]">{user?.name?.split(' ')[0]}</span>
+                <span className="text-sm font-medium text-bw-white">{user?.name?.split(' ')[0]}</span>
               </div>
             </div>
           </div>

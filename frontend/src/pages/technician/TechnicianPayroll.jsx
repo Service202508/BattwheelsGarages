@@ -10,7 +10,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  paid: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
+  paid: "bg-bw-volt/[0.08]0/20 text-bw-volt text-400 border-bw-volt/50/30",
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   processing: "bg-blue-500/20 text-blue-400 border-blue-500/30",
 };
@@ -86,10 +86,10 @@ export default function TechnicianPayroll({ user }) {
         <Card className="bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-900 border border-green-500/20">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/20">
+              <div className="p-2 rounded-lg bg-bw-green/[0.08]0/20">
                 <IndianRupee className="h-5 w-5 text-green-400" />
               </div>
-              <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30">Latest</Badge>
+              <Badge className="bg-bw-green/[0.08]0/20 text-green-400 border-green-500/30">Latest</Badge>
             </div>
             <p className="text-sm text-slate-400">Latest Salary</p>
             <p className="text-3xl font-bold text-white mt-1">
@@ -101,7 +101,7 @@ export default function TechnicianPayroll({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -116,10 +116,10 @@ export default function TechnicianPayroll({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
+              <div className="p-2 rounded-lg bg-bw-purple/[0.08]0/10">
                 <Wallet className="h-5 w-5 text-purple-400" />
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function TechnicianPayroll({ user }) {
 
       {/* Latest Payslip Detail */}
       {currentMonth && (
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -168,7 +168,7 @@ export default function TechnicianPayroll({ user }) {
                     <span className="text-slate-300">Overtime</span>
                     <span className="text-white font-medium">{formatCurrency(currentMonth.overtime || 0)}</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-lg bg-[rgba(34,197,94,0.08)]0/10 border border-green-500/20">
+                  <div className="flex justify-between p-3 rounded-lg bg-bw-green/[0.08]0/10 border border-green-500/20">
                     <span className="text-green-400 font-medium">Gross Earnings</span>
                     <span className="text-green-400 font-bold">{formatCurrency(currentMonth.gross_pay || 0)}</span>
                   </div>
@@ -195,7 +195,7 @@ export default function TechnicianPayroll({ user }) {
                     <span className="text-slate-300">TDS</span>
                     <span className="text-red-400 font-medium">-{formatCurrency(currentMonth.tds || 0)}</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-lg bg-[rgba(255,59,47,0.08)]0/10 border border-red-500/20">
+                  <div className="flex justify-between p-3 rounded-lg bg-bw-red/[0.08]0/10 border border-red-500/20">
                     <span className="text-red-400 font-medium">Total Deductions</span>
                     <span className="text-red-400 font-bold">{formatCurrency(currentMonth.total_deductions || 0)}</span>
                   </div>
@@ -210,7 +210,7 @@ export default function TechnicianPayroll({ user }) {
                   <p className="text-sm text-green-300">Net Pay</p>
                   <p className="text-3xl font-bold text-white">{formatCurrency(currentMonth.net_pay)}</p>
                 </div>
-                <Button className="bg-[#22C55E] hover:bg-[#16a34a]">
+                <Button className="bg-bw-green hover:bg-bw-green-hover">
                   <Download className="h-4 w-4 mr-2" />
                   Download Payslip
                 </Button>
@@ -221,7 +221,7 @@ export default function TechnicianPayroll({ user }) {
       )}
 
       {/* Payslip History */}
-      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+      <Card className="bg-slate-900/50 border-white/[0.07] border-800">
         <CardHeader>
           <CardTitle className="text-white">Payslip History</CardTitle>
           <CardDescription>Past 12 months</CardDescription>

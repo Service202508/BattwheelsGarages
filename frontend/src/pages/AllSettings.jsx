@@ -43,11 +43,11 @@ const iconMap = {
 
 // Color classes for categories
 const colorClasses = {
-  "#10B981": "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border-[rgba(200,255,0,0.20)]",
+  "#10B981": "bg-bw-volt/10 text-bw-volt border-bw-volt/20",
   "#3B82F6": "bg-blue-500/10 text-blue-500 border-blue-500/20",
   "#F59E0B": "bg-amber-500/10 text-amber-500 border-amber-500/20",
   "#8B5CF6": "bg-violet-500/10 text-violet-500 border-violet-500/20",
-  "#EF4444": "bg-[rgba(255,59,47,0.10)] text-red-500 border-red-500/20",
+  "#EF4444": "bg-bw-red/10 text-red-500 border-red-500/20",
   "#06B6D4": "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
   "#EC4899": "bg-pink-500/10 text-pink-500 border-pink-500/20",
   "#6366F1": "bg-indigo-500/10 text-indigo-500 border-indigo-500/20"
@@ -451,9 +451,9 @@ function UsersPanel({ onRefresh }) {
       admin: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
       manager: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
       dispatcher: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-      technician: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+      technician: "bg-bw-green/10 text-bw-green",
       accountant: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
-      viewer: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] dark:bg-[#080C0F]/30 dark:text-[rgba(244,246,240,0.45)]"
+      viewer: "bg-white/5 text-bw-white dark:bg-bw-black/30 dark:text-bw-white/[0.45]"
     };
     return colors[role] || colors.viewer;
   };
@@ -1326,7 +1326,7 @@ function WorkflowRulesBuilderPanel({ settings, onRefresh }) {
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-4">
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}`}>
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-bw-green/10 text-bw-green" : "bg-white/5 text-bw-white/[0.45]"}`}>
                   <Zap className="h-5 w-5" />
                 </div>
                 <div>
@@ -1870,7 +1870,7 @@ function GSTSettingsPanel({ settings, onUpdate }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 p-4 border rounded-lg bg-[rgba(200,255,0,0.05)]">
+      <div className="flex items-center gap-4 p-4 border rounded-lg bg-bw-volt/5">
         <input type="checkbox" id="gstRegistered" checked={form.is_gst_registered !== false} onChange={(e) => handleChange("is_gst_registered", e.target.checked)} />
         <div>
           <label htmlFor="gstRegistered" className="font-medium">GST Registered</label>

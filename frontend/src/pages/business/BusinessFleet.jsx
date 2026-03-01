@@ -16,8 +16,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  inactive: "bg-[rgba(255,255,255,0.05)] text-slate-600",
+  active: "bg-bw-volt/10 text-bw-volt text-700",
+  inactive: "bg-white/5 text-slate-600",
   in_service: "bg-amber-100 text-amber-700",
 };
 
@@ -199,7 +199,7 @@ export default function BusinessFleet({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -213,21 +213,21 @@ export default function BusinessFleet({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Active</p>
-                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-bw-volt text-600">{stats.active}</p>
               </div>
-              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
-                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
+              <div className="p-3 rounded bg-bw-volt/[0.08]">
+                <CheckCircle className="h-5 w-5 text-bw-volt text-600" />
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -265,7 +265,7 @@ export default function BusinessFleet({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
         </div>
       ) : filteredVehicles.length === 0 ? (
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <CardContent className="py-12 text-center">
             <Car className="h-16 w-16 mx-auto text-slate-300 mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">No vehicles found</h3>
@@ -275,7 +275,7 @@ export default function BusinessFleet({ user }) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
+        <Card className="bg-bw-panel border-white/[0.07] border-200">
           <Table>
             <TableHeader>
               <TableRow>

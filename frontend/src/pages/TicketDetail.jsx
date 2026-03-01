@@ -15,7 +15,7 @@ import { API } from "../App";
 const STATUS_CONFIG = {
   open: { label: "Open", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
   in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  resolved: { label: "Resolved", color: "bg-[#C8FF00]/20 text-[#C8FF00] border-[#C8FF00]/30" },
+  resolved: { label: "Resolved", color: "bg-bw-volt/20 text-bw-volt border-bw-volt/30" },
   closed: { label: "Closed", color: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30" },
   waiting_for_parts: { label: "Waiting Parts", color: "bg-orange-500/20 text-orange-400 border-orange-500/30" },
 };
@@ -223,7 +223,7 @@ export default function TicketDetail({ user }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]" data-testid="ticket-detail-loading">
-        <Loader2 className="w-8 h-8 animate-spin text-[#C8FF00]" />
+        <Loader2 className="w-8 h-8 animate-spin text-bw-volt" />
       </div>
     );
   }
@@ -253,7 +253,7 @@ export default function TicketDetail({ user }) {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold font-mono text-[#C8FF00]" data-testid="ticket-number">
+            <h1 className="text-2xl font-bold font-mono text-bw-volt" data-testid="ticket-number">
               {ticket.ticket_number || ticketId}
             </h1>
             <p className="text-sm text-zinc-400">{ticket.title}</p>
@@ -300,7 +300,7 @@ export default function TicketDetail({ user }) {
               <div><span className="text-zinc-500">Estimated</span><p className="text-zinc-200 font-mono">{ticket.estimated_cost != null ? `₹${Number(ticket.estimated_cost).toLocaleString("en-IN")}` : "—"}</p></div>
               <div><span className="text-zinc-500">Parts Cost</span><p className="text-zinc-200 font-mono">{ticket.parts_cost != null ? `₹${Number(ticket.parts_cost).toLocaleString("en-IN")}` : "—"}</p></div>
               <div><span className="text-zinc-500">Labor Cost</span><p className="text-zinc-200 font-mono">{ticket.labor_cost != null ? `₹${Number(ticket.labor_cost).toLocaleString("en-IN")}` : "—"}</p></div>
-              <div><span className="text-zinc-500">Actual Cost</span><p className="text-[#C8FF00] font-mono font-bold">{ticket.actual_cost != null ? `₹${Number(ticket.actual_cost).toLocaleString("en-IN")}` : "—"}</p></div>
+              <div><span className="text-zinc-500">Actual Cost</span><p className="text-bw-volt font-mono font-bold">{ticket.actual_cost != null ? `₹${Number(ticket.actual_cost).toLocaleString("en-IN")}` : "—"}</p></div>
             </CardContent>
           </Card>
 
@@ -323,7 +323,7 @@ export default function TicketDetail({ user }) {
                 <div className="space-y-3" data-testid="estimate-details">
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div><span className="text-zinc-500">Estimate #</span><p className="text-zinc-200 font-mono">{estimate.estimate_number || estimate.estimate_id}</p></div>
-                    <div><span className="text-zinc-500">Total</span><p className="text-[#C8FF00] font-mono font-bold">{estimate.grand_total != null ? `₹${Number(estimate.grand_total).toLocaleString("en-IN")}` : "—"}</p></div>
+                    <div><span className="text-zinc-500">Total</span><p className="text-bw-volt font-mono font-bold">{estimate.grand_total != null ? `₹${Number(estimate.grand_total).toLocaleString("en-IN")}` : "—"}</p></div>
                   </div>
                   {estimate.line_items && estimate.line_items.length > 0 && (
                     <div className="border-t border-zinc-800 pt-2">
@@ -344,7 +344,7 @@ export default function TicketDetail({ user }) {
               ) : (
                 <div className="text-center py-4">
                   <p className="text-zinc-500 text-sm mb-3">No estimate created for this ticket yet</p>
-                  <Button size="sm" onClick={handleCreateEstimate} disabled={creatingEstimate} className="bg-[#C8FF00] text-black hover:bg-[#b8ef00]" data-testid="create-estimate-btn">
+                  <Button size="sm" onClick={handleCreateEstimate} disabled={creatingEstimate} className="bg-bw-volt text-black hover:bg-bw-volt-hover" data-testid="create-estimate-btn">
                     {creatingEstimate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                     Create Estimate
                   </Button>
@@ -365,7 +365,7 @@ export default function TicketDetail({ user }) {
                   className="bg-zinc-800 border-zinc-700 text-zinc-200 text-sm min-h-[60px]"
                   data-testid="ticket-note-input"
                 />
-                <Button size="sm" onClick={handleAddNote} disabled={addingNote || !newNote.trim()} className="bg-[#C8FF00] text-black hover:bg-[#b8ef00] self-end" data-testid="ticket-add-note-btn">
+                <Button size="sm" onClick={handleAddNote} disabled={addingNote || !newNote.trim()} className="bg-bw-volt text-black hover:bg-bw-volt-hover self-end" data-testid="ticket-add-note-btn">
                   {addingNote ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
@@ -429,7 +429,7 @@ export default function TicketDetail({ user }) {
             <CardContent>
               {ticket.invoice_id ? (
                 <div className="space-y-2 text-sm">
-                  <p className="text-zinc-200">Invoice: <span className="font-mono text-[#C8FF00]">{ticket.invoice_number || ticket.invoice_id}</span></p>
+                  <p className="text-zinc-200">Invoice: <span className="font-mono text-bw-volt">{ticket.invoice_number || ticket.invoice_id}</span></p>
                   {ticket.invoice_status && <Badge variant="outline" className="text-xs">{ticket.invoice_status}</Badge>}
                 </div>
               ) : (
@@ -519,7 +519,7 @@ export default function TicketDetail({ user }) {
       <Dialog open={failureCardModal} onOpenChange={(open) => !open && setFailureCardModal(false)}>
         <DialogContent className="bg-zinc-900 border-zinc-700 text-zinc-200 max-w-lg" data-testid="failure-card-modal">
           <DialogHeader>
-            <DialogTitle className="text-[#C8FF00] font-mono flex items-center gap-2">
+            <DialogTitle className="text-bw-volt font-mono flex items-center gap-2">
               <Brain className="w-5 h-5" /> Complete Failure Card
             </DialogTitle>
             <p className="text-xs text-zinc-500 mt-1">This data improves the EFI diagnostic AI</p>
@@ -600,7 +600,7 @@ export default function TicketDetail({ user }) {
             <Button
               onClick={handleFailureCardSubmit}
               disabled={failureCardSubmitting || !failureCardForm.confirmed_root_cause}
-              className="bg-[#C8FF00] text-black hover:bg-[#C8FF00]/80 font-medium"
+              className="bg-bw-volt text-black hover:bg-bw-volt/80 font-medium"
               data-testid="fc-submit-btn"
             >
               {failureCardSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Brain className="w-4 h-4 mr-1" />}

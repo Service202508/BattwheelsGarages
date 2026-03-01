@@ -216,11 +216,11 @@ export default function RecurringExpenses() {
 
   const getStatusBadge = (status) => {
     const styles = {
-      active: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
-      stopped: "bg-[rgba(255,59,47,0.10)] text-red-800",
-      expired: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]"
+      active: "bg-bw-green/10 text-bw-green",
+      stopped: "bg-bw-red/10 text-red-800",
+      expired: "bg-white/5 text-bw-white"
     };
-    return <Badge className={styles[status] || "bg-[rgba(255,255,255,0.05)]"}>{status}</Badge>;
+    return <Badge className={styles[status] || "bg-white/5"}>{status}</Badge>;
   };
 
   const frequencyLabels = {
@@ -234,8 +234,8 @@ export default function RecurringExpenses() {
     <div className="space-y-6" data-testid="recurring-expenses-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Expenses</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage automated expense schedules</p>
+          <h1 className="text-2xl font-bold text-bw-white">Recurring Expenses</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage automated expense schedules</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
@@ -257,7 +257,7 @@ export default function RecurringExpenses() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="new-recurring-expense-btn">
+              <Button className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="new-recurring-expense-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Recurring
               </Button>
             </DialogTrigger>
@@ -389,7 +389,7 @@ export default function RecurringExpenses() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="save-recurring-btn">
+                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="save-recurring-btn">
                   Create Recurring
                 </Button>
               </DialogFooter>
@@ -402,10 +402,10 @@ export default function RecurringExpenses() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
             </div>
           ) : expenses.length === 0 ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-12 text-bw-white/[0.45]">
               <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No recurring expenses found</p>
               <p className="text-sm">Create your first recurring expense to automate regular payments</p>
@@ -413,7 +413,7 @@ export default function RecurringExpenses() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#111820]">
+                <TableRow className="bg-bw-panel">
                   <TableHead>Name</TableHead>
                   <TableHead>Account</TableHead>
                   <TableHead>Vendor</TableHead>
@@ -442,15 +442,15 @@ export default function RecurringExpenses() {
                       <div className="flex justify-end gap-1">
                         {exp.status === "active" ? (
                           <Button variant="ghost" size="sm" onClick={() => handleStop(exp.recurring_expense_id)} title="Stop">
-                            <Pause className="h-4 w-4 text-[#FF8C00]" />
+                            <Pause className="h-4 w-4 text-bw-orange" />
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" onClick={() => handleResume(exp.recurring_expense_id)} title="Resume">
-                            <Play className="h-4 w-4 text-[#22C55E]" />
+                            <Play className="h-4 w-4 text-bw-green" />
                           </Button>
                         )}
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(exp.recurring_expense_id)} title="Delete">
-                          <Trash2 className="h-4 w-4 text-[#FF3B2F]" />
+                          <Trash2 className="h-4 w-4 text-bw-red" />
                         </Button>
                       </div>
                     </TableCell>

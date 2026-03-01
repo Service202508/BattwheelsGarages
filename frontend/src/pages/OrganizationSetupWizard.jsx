@@ -238,8 +238,8 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#F4F6F0] mb-2">Welcome to Battwheels OS</h1>
-          <p className="text-[rgba(244,246,240,0.35)]">Let's set up your organization in just a few steps</p>
+          <h1 className="text-3xl font-bold text-bw-white mb-2">Welcome to Battwheels OS</h1>
+          <p className="text-bw-white/35">Let's set up your organization in just a few steps</p>
         </div>
 
         {/* Progress */}
@@ -255,12 +255,12 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 <div 
                   key={step.id}
                   className={`flex flex-col items-center ${
-                    isActive ? "text-[#C8FF00] text-600" : isComplete ? "text-[#C8FF00] text-500" : "text-[rgba(244,246,240,0.45)]"
+                    isActive ? "text-bw-volt text-600" : isComplete ? "text-bw-volt text-500" : "text-bw-white/[0.45]"
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                    isActive ? "bg-[rgba(200,255,0,0.10)] ring-2 ring-emerald-500" :
-                    isComplete ? "bg-[#C8FF00] text-[#080C0F]" : "bg-[rgba(255,255,255,0.05)]"
+                    isActive ? "bg-bw-volt/10 ring-2 ring-emerald-500" :
+                    isComplete ? "bg-bw-volt text-bw-black" : "bg-white/5"
                   }`}>
                     {isComplete ? <Check className="h-5 w-5" /> : <StepIcon className="h-5 w-5" />}
                   </div>
@@ -272,12 +272,12 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
         </div>
 
         {/* Step Content */}
-        <Card className="border border-[rgba(255,255,255,0.07)]">
+        <Card className="border border-white/[0.07]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {(() => {
                 const StepIcon = STEPS[currentStep - 1].icon;
-                return <StepIcon className="h-5 w-5 text-[#C8FF00] text-500" />;
+                return <StepIcon className="h-5 w-5 text-bw-volt text-500" />;
               })()}
               {STEPS[currentStep - 1].title}
             </CardTitle>
@@ -483,11 +483,11 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
             {/* Step 3: Invite Team */}
             {currentStep === 3 && (
               <div className="space-y-6">
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">
+                <p className="text-sm text-bw-white/35">
                   Invite your team members to get started. You can always add more later from Settings → Team Management.
                 </p>
 
-                <div className="border rounded-lg p-4 bg-[#111820]">
+                <div className="border rounded-lg p-4 bg-bw-panel">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <Input
                       placeholder="Name"
@@ -526,12 +526,12 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                     {orgData.team_invites.map((invite) => (
                       <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
-                            <Mail className="h-4 w-4 text-[#C8FF00] text-600" />
+                          <div className="w-8 h-8 rounded-full bg-bw-volt/10 flex items-center justify-center">
+                            <Mail className="h-4 w-4 text-bw-volt text-600" />
                           </div>
                           <div>
                             <p className="font-medium">{invite.name}</p>
-                            <p className="text-sm text-[rgba(244,246,240,0.45)]">{invite.email}</p>
+                            <p className="text-sm text-bw-white/[0.45]">{invite.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -574,30 +574,30 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
             {/* Step 4: Complete */}
             {currentStep === 4 && (
               <div className="text-center py-8">
-                <div className="w-20 h-20 bg-[rgba(200,255,0,0.10)] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="h-10 w-10 text-[#C8FF00] text-500" />
+                <div className="w-20 h-20 bg-bw-volt/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Sparkles className="h-10 w-10 text-bw-volt text-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#F4F6F0] mb-2">You're All Set! 🎉</h2>
-                <p className="text-[rgba(244,246,240,0.35)] mb-8 max-w-md mx-auto">
+                <h2 className="text-2xl font-bold text-bw-white mb-2">You're All Set! 🎉</h2>
+                <p className="text-bw-white/35 mb-8 max-w-md mx-auto">
                   Your organization is ready to go. Start managing your EV workshop with AI-powered diagnostics, 
                   invoicing, inventory, and more.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left">
                   <div className="p-4 border rounded-lg">
-                    <Briefcase className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
+                    <Briefcase className="h-6 w-6 text-bw-volt text-500 mb-2" />
                     <h3 className="font-medium">Create Tickets</h3>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Log service requests and track repairs</p>
+                    <p className="text-sm text-bw-white/[0.45]">Log service requests and track repairs</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <IndianRupee className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
+                    <IndianRupee className="h-6 w-6 text-bw-volt text-500 mb-2" />
                     <h3 className="font-medium">Send Invoices</h3>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Generate GST-compliant invoices</p>
+                    <p className="text-sm text-bw-white/[0.45]">Generate GST-compliant invoices</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <Sparkles className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
+                    <Sparkles className="h-6 w-6 text-bw-volt text-500 mb-2" />
                     <h3 className="font-medium">AI Diagnostics</h3>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Get AI-powered repair guidance</p>
+                    <p className="text-sm text-bw-white/[0.45]">Get AI-powered repair guidance</p>
                   </div>
                 </div>
 

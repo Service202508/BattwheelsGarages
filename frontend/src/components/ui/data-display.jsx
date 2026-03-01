@@ -17,7 +17,7 @@ const ResponsiveTable = React.forwardRef(({
     <div 
       ref={ref}
       className={cn(
-        "bg-[#111820] rounded-lg border overflow-hidden",
+        "bg-bw-panel rounded-lg border overflow-hidden",
         className
       )}
       {...props}
@@ -48,9 +48,9 @@ const TableSkeleton = React.forwardRef(({
   ...props 
 }, ref) => {
   return (
-    <div ref={ref} className={cn("bg-[#111820] rounded-lg border overflow-hidden", className)} {...props}>
+    <div ref={ref} className={cn("bg-bw-panel rounded-lg border overflow-hidden", className)} {...props}>
       {/* Header */}
-      <div className="bg-[#111820] border-b px-4 py-3">
+      <div className="bg-bw-panel border-b px-4 py-3">
         <div className="flex gap-4">
           {Array.from({ length: columns }).map((_, i) => (
             <Skeleton key={i} className="h-4 flex-1 max-w-[120px]" />
@@ -169,8 +169,8 @@ const EmptyState = React.forwardRef(({
 }, ref) => {
   const variantStyles = {
     default: {
-      iconBg: "bg-[rgba(255,255,255,0.05)]",
-      iconColor: "text-[rgba(244,246,240,0.45)]"
+      iconBg: "bg-white/5",
+      iconColor: "text-bw-white/[0.45]"
     },
     success: {
       iconBg: "bg-green-100",
@@ -199,16 +199,16 @@ const EmptyState = React.forwardRef(({
           <Icon className={cn("h-7 w-7 sm:h-8 sm:w-8", styles.iconColor)} strokeWidth={1.5} />
         </div>
       )}
-      <h3 className="text-base sm:text-lg font-semibold text-[#F4F6F0] mb-1 text-center">
+      <h3 className="text-base sm:text-lg font-semibold text-bw-white mb-1 text-center">
         {title}
       </h3>
-      <p className="text-sm text-[rgba(244,246,240,0.45)] text-center max-w-sm mb-6">
+      <p className="text-sm text-bw-white/[0.45] text-center max-w-sm mb-6">
         {description}
       </p>
       {actionLabel && onAction && (
         <Button 
           onClick={onAction} 
-          className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold"
+          className="bg-bw-volt text-bw-white hover:bg-bw-volt-hover font-semibold"
         >
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}

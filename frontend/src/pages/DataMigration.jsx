@@ -129,7 +129,7 @@ export default function DataMigration({ user }) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Overall Progress</span>
-              <Badge className={status?.migration_complete ? 'badge-success' : 'bg-[rgba(234,179,8,0.10)]'}>
+              <Badge className={status?.migration_complete ? 'badge-success' : 'bg-bw-amber/10'}>
                 {status?.migration_complete ? 'Complete' : 'Pending'}
               </Badge>
             </div>

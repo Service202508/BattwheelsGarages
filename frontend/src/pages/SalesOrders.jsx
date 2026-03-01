@@ -424,7 +424,7 @@ export default function SalesOrders({ user }) {
                     <span className="mono">₹{totals.subtotal.toLocaleString()}</span>
                   </div>
                   {formData.discount_percent > 0 && (
-                    <div className="flex justify-between text-sm text-[#C8FF00] text-400">
+                    <div className="flex justify-between text-sm text-bw-volt text-400">
                       <span>Discount ({formData.discount_percent}%)</span>
                       <span className="mono">-₹{totals.discount.toLocaleString()}</span>
                     </div>
@@ -534,7 +534,7 @@ export default function SalesOrders({ user }) {
                       <div className="flex justify-end gap-2">
                         {user?.role === "admin" && order.approval_status === "pending" && (
                           <>
-                            <Button size="sm" variant="ghost" onClick={() => handleApprove(order.sales_id, "level1_approved")} className="text-[#C8FF00] text-400">
+                            <Button size="sm" variant="ghost" onClick={() => handleApprove(order.sales_id, "level1_approved")} className="text-bw-volt text-400">
                               <CheckCircle className="h-4 w-4" />
                             </Button>
                             <Button size="sm" variant="ghost" onClick={() => handleApprove(order.sales_id, "rejected")} className="text-red-400">

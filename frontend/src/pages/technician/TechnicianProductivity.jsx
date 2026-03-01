@@ -38,10 +38,10 @@ export default function TechnicianProductivity({ user }) {
   };
 
   const priorityColors = {
-    low: { bg: "bg-[rgba(34,197,94,0.08)]0/10", text: "text-green-400", bar: "bg-[rgba(34,197,94,0.08)]0" },
+    low: { bg: "bg-bw-green/[0.08]0/10", text: "text-green-400", bar: "bg-bw-green/[0.08]0" },
     medium: { bg: "bg-amber-500/10", text: "text-amber-400", bar: "bg-amber-500" },
-    high: { bg: "bg-[rgba(255,140,0,0.08)]0/10", text: "text-orange-400", bar: "bg-[rgba(255,140,0,0.08)]0" },
-    critical: { bg: "bg-[rgba(255,59,47,0.08)]0/10", text: "text-red-400", bar: "bg-[rgba(255,59,47,0.08)]0" },
+    high: { bg: "bg-bw-orange/[0.08]0/10", text: "text-orange-400", bar: "bg-bw-orange/[0.08]0" },
+    critical: { bg: "bg-bw-red/[0.08]0/10", text: "text-red-400", bar: "bg-bw-red/[0.08]0" },
   };
 
   if (loading) {
@@ -66,7 +66,7 @@ export default function TechnicianProductivity({ user }) {
           <h1 className="text-2xl font-bold text-white">My Performance</h1>
           <p className="text-slate-400">Track your productivity metrics</p>
         </div>
-        <Button variant="outline" onClick={fetchProductivity} className="border-[rgba(255,255,255,0.07)] border-700">
+        <Button variant="outline" onClick={fetchProductivity} className="border-white/[0.07] border-700">
           <TrendingUp className="h-4 w-4 mr-2" />
           Refresh
         </Button>
@@ -100,20 +100,20 @@ export default function TechnicianProductivity({ user }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/10">
+              <div className="p-2 rounded-lg bg-bw-green/[0.08]0/10">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
-              <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30">This Month</Badge>
+              <Badge className="bg-bw-green/[0.08]0/20 text-green-400 border-green-500/30">This Month</Badge>
             </div>
             <p className="text-3xl font-bold text-white">{thisMonth.tickets_resolved || 0}</p>
             <p className="text-xs text-slate-500 mt-1">Tickets Resolved</p>
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -138,10 +138,10 @@ export default function TechnicianProductivity({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
+              <div className="p-2 rounded-lg bg-bw-purple/[0.08]0/10">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function TechnicianProductivity({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
@@ -170,7 +170,7 @@ export default function TechnicianProductivity({ user }) {
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Weekly Trend */}
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-green-400" />
@@ -204,7 +204,7 @@ export default function TechnicianProductivity({ user }) {
         </Card>
 
         {/* Priority Breakdown */}
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Ticket className="h-5 w-5 text-purple-400" />
@@ -240,7 +240,7 @@ export default function TechnicianProductivity({ user }) {
             </div>
             
             {/* Total */}
-            <div className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.07)] border-800">
+            <div className="mt-6 pt-4 border-t border-white/[0.07] border-800">
               <div className="flex justify-between">
                 <span className="text-slate-400">Total Resolved</span>
                 <span className="text-xl font-bold text-green-400">
@@ -253,7 +253,7 @@ export default function TechnicianProductivity({ user }) {
       </div>
 
       {/* Performance Tips */}
-      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+      <Card className="bg-slate-900/50 border-white/[0.07] border-800">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Zap className="h-5 w-5 text-amber-400" />
@@ -262,15 +262,15 @@ export default function TechnicianProductivity({ user }) {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
-              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/10 w-fit mb-3">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-white/[0.07] border-700">
+              <div className="p-2 rounded-lg bg-bw-green/[0.08]0/10 w-fit mb-3">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
               <h4 className="text-white font-medium mb-1">Stay Consistent</h4>
               <p className="text-sm text-slate-400">Aim to resolve at least 5 tickets daily to maintain your ranking.</p>
             </div>
             
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-white/[0.07] border-700">
               <div className="p-2 rounded-lg bg-amber-500/10 w-fit mb-3">
                 <Clock className="h-5 w-5 text-amber-400" />
               </div>
@@ -278,8 +278,8 @@ export default function TechnicianProductivity({ user }) {
               <p className="text-sm text-slate-400">Start work on assigned tickets within 1 hour for better metrics.</p>
             </div>
             
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
-              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10 w-fit mb-3">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-white/[0.07] border-700">
+              <div className="p-2 rounded-lg bg-bw-purple/[0.08]0/10 w-fit mb-3">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>
               <h4 className="text-white font-medium mb-1">Prioritize Critical</h4>

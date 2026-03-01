@@ -237,7 +237,7 @@ export default function Reports() {
         {isPeriodReport ? (
           <>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[rgba(244,246,240,0.45)]">From</span>
+              <span className="text-sm text-bw-white/[0.45]">From</span>
               <Input 
                 type="date" 
                 value={dateRange.start_date} 
@@ -247,7 +247,7 @@ export default function Reports() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[rgba(244,246,240,0.45)]">To</span>
+              <span className="text-sm text-bw-white/[0.45]">To</span>
               <Input 
                 type="date" 
                 value={dateRange.end_date} 
@@ -259,7 +259,7 @@ export default function Reports() {
           </>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[rgba(244,246,240,0.45)]">As of</span>
+            <span className="text-sm text-bw-white/[0.45]">As of</span>
             <Input 
               type="date" 
               value={asOfDate} 
@@ -302,8 +302,8 @@ export default function Reports() {
     <div className="space-y-6" data-testid="reports-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Financial Reports</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Comprehensive business analytics & exports</p>
+          <h1 className="text-2xl font-bold text-bw-white">Financial Reports</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Comprehensive business analytics & exports</p>
         </div>
       </div>
 
@@ -354,34 +354,34 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : profitLoss && (
                 <div className="space-y-6">
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <Card className="bg-bw-panel border border-white/[0.07]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-[#22C55E] font-medium">Total Income</p>
-                        <p className="text-xl font-bold text-[#22C55E]">{formatCurrency(profitLoss.total_income)}</p>
+                        <p className="text-xs text-bw-green font-medium">Total Income</p>
+                        <p className="text-xl font-bold text-bw-green">{formatCurrency(profitLoss.total_income)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <Card className="bg-bw-panel border border-white/[0.07]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-[#FF8C00] font-medium">Cost of Goods</p>
-                        <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency(profitLoss.total_cogs)}</p>
+                        <p className="text-xs text-bw-orange font-medium">Cost of Goods</p>
+                        <p className="text-xl font-bold text-bw-orange">{formatCurrency(profitLoss.total_cogs)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <Card className="bg-bw-panel border border-white/[0.07]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-[#3B9EFF] font-medium">Gross Profit</p>
-                        <p className="text-xl font-bold text-[#3B9EFF]">{formatCurrency(profitLoss.gross_profit)}</p>
+                        <p className="text-xs text-bw-blue font-medium">Gross Profit</p>
+                        <p className="text-xl font-bold text-bw-blue">{formatCurrency(profitLoss.gross_profit)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`bg-[#111820] border ${profitLoss.net_profit >= 0 ? 'border-[rgba(200,255,0,0.25)]' : 'border-[rgba(255,59,47,0.25)]'}`}>
+                    <Card className={`bg-bw-panel border ${profitLoss.net_profit >= 0 ? 'border-bw-volt/25' : 'border-bw-red/25'}`}>
                       <CardContent className="p-4">
-                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>Net Profit</p>
-                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-bw-volt' : 'text-bw-red'}`}>Net Profit</p>
+                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-bw-volt' : 'text-bw-red'}`}>
                           {formatCurrency(profitLoss.net_profit)}
                         </p>
                       </CardContent>
@@ -391,56 +391,56 @@ export default function Reports() {
                   {/* Detailed Breakdown */}
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableHead className="font-semibold text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Account</TableHead>
-                        <TableHead className="text-right font-semibold text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Amount</TableHead>
+                      <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                        <TableHead className="font-semibold text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Account</TableHead>
+                        <TableHead className="text-right font-semibold text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Amount</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow className="bg-[rgba(34,197,94,0.08)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#22C55E]">INCOME</TableCell>
+                      <TableRow className="bg-bw-green/[0.08] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-green">INCOME</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="pl-8 text-[#F4F6F0]">Operating Income (Sales)</TableCell>
-                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(profitLoss.total_income)}</TableCell>
+                      <TableRow className="border-b border-white/[0.07]">
+                        <TableCell className="pl-8 text-bw-white">Operating Income (Sales)</TableCell>
+                        <TableCell className="text-right text-bw-white">{formatCurrency(profitLoss.total_income)}</TableCell>
                       </TableRow>
-                      <TableRow className="bg-[rgba(255,255,255,0.03)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#F4F6F0]">Total Income</TableCell>
-                        <TableCell className="text-right font-semibold text-[#22C55E]">{formatCurrency(profitLoss.total_income)}</TableCell>
+                      <TableRow className="bg-white/[0.03] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-white">Total Income</TableCell>
+                        <TableCell className="text-right font-semibold text-bw-green">{formatCurrency(profitLoss.total_income)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[rgba(255,140,0,0.08)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#FF8C00]">COST OF GOODS SOLD</TableCell>
+                      <TableRow className="bg-bw-orange/[0.08] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-orange">COST OF GOODS SOLD</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="pl-8 text-[#F4F6F0]">Direct Costs (Purchases/Bills)</TableCell>
-                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(profitLoss.total_cogs)}</TableCell>
+                      <TableRow className="border-b border-white/[0.07]">
+                        <TableCell className="pl-8 text-bw-white">Direct Costs (Purchases/Bills)</TableCell>
+                        <TableCell className="text-right text-bw-white">{formatCurrency(profitLoss.total_cogs)}</TableCell>
                       </TableRow>
-                      <TableRow className="bg-[rgba(59,158,255,0.08)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#3B9EFF]">Gross Profit</TableCell>
-                        <TableCell className="text-right font-semibold text-[#3B9EFF]">{formatCurrency(profitLoss.gross_profit)}</TableCell>
+                      <TableRow className="bg-bw-blue/[0.08] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-blue">Gross Profit</TableCell>
+                        <TableCell className="text-right font-semibold text-bw-blue">{formatCurrency(profitLoss.gross_profit)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[rgba(255,59,47,0.08)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#FF3B2F]">OPERATING EXPENSES</TableCell>
+                      <TableRow className="bg-bw-red/[0.08] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-red">OPERATING EXPENSES</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       {profitLoss.expenses_breakdown && Object.entries(profitLoss.expenses_breakdown).map(([cat, amt]) => (
-                        <TableRow key={cat} className="border-b border-[rgba(255,255,255,0.07)]">
-                          <TableCell className="pl-8 text-[#F4F6F0]">{cat}</TableCell>
-                          <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(amt)}</TableCell>
+                        <TableRow key={cat} className="border-b border-white/[0.07]">
+                          <TableCell className="pl-8 text-bw-white">{cat}</TableCell>
+                          <TableCell className="text-right text-bw-white">{formatCurrency(amt)}</TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="bg-[rgba(255,255,255,0.03)] border-b border-[rgba(255,255,255,0.07)]">
-                        <TableCell className="font-semibold text-[#F4F6F0]">Total Expenses</TableCell>
-                        <TableCell className="text-right font-semibold text-[#FF3B2F]">{formatCurrency(profitLoss.total_expenses)}</TableCell>
+                      <TableRow className="bg-white/[0.03] border-b border-white/[0.07]">
+                        <TableCell className="font-semibold text-bw-white">Total Expenses</TableCell>
+                        <TableCell className="text-right font-semibold text-bw-red">{formatCurrency(profitLoss.total_expenses)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[rgba(200,255,0,0.10)]">
-                        <TableCell className="font-bold text-lg text-[#C8FF00]">NET PROFIT</TableCell>
-                        <TableCell className={`text-right font-bold text-lg ${profitLoss.net_profit >= 0 ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
+                      <TableRow className="bg-bw-volt/10">
+                        <TableCell className="font-bold text-lg text-bw-volt">NET PROFIT</TableCell>
+                        <TableCell className={`text-right font-bold text-lg ${profitLoss.net_profit >= 0 ? 'text-bw-green' : 'text-bw-red'}`}>
                           {formatCurrency(profitLoss.net_profit)}
                         </TableCell>
                       </TableRow>
@@ -448,9 +448,9 @@ export default function Reports() {
                   </Table>
 
                   {/* Margins */}
-                  <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
-                    <span>Gross Margin: <strong className="text-[#F4F6F0]">{profitLoss.margins?.gross_margin_percent || 0}%</strong></span>
-                    <span>Net Margin: <strong className="text-[#F4F6F0]">{profitLoss.margins?.net_margin_percent || 0}%</strong></span>
+                  <div className="flex gap-4 text-sm text-bw-white/[0.45]">
+                    <span>Gross Margin: <strong className="text-bw-white">{profitLoss.margins?.gross_margin_percent || 0}%</strong></span>
+                    <span>Net Margin: <strong className="text-bw-white">{profitLoss.margins?.net_margin_percent || 0}%</strong></span>
                   </div>
                 </div>
               )}
@@ -473,65 +473,65 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : balanceSheet && (
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Assets */}
-                  <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-                    <CardHeader className="bg-[rgba(34,197,94,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
-                      <CardTitle className="text-lg text-[#22C55E]">Assets</CardTitle>
+                  <Card className="bg-bw-panel border border-white/[0.07]">
+                    <CardHeader className="bg-bw-green/[0.08] py-3 border-b border-white/[0.07]">
+                      <CardTitle className="text-lg text-bw-green">Assets</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4 space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">Accounts Receivable</span>
-                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.accounts_receivable)}</span>
+                        <span className="text-bw-white/[0.45]">Accounts Receivable</span>
+                        <span className="font-medium text-bw-white">{formatCurrency(balanceSheet.assets?.accounts_receivable)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">Bank Balance</span>
-                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.bank_balance)}</span>
+                        <span className="text-bw-white/[0.45]">Bank Balance</span>
+                        <span className="font-medium text-bw-white">{formatCurrency(balanceSheet.assets?.bank_balance)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.45)]">Inventory Value</span>
-                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.inventory_value)}</span>
+                        <span className="text-bw-white/[0.45]">Inventory Value</span>
+                        <span className="font-medium text-bw-white">{formatCurrency(balanceSheet.assets?.inventory_value)}</span>
                       </div>
-                      <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
-                        <span className="font-semibold text-[#22C55E]">Total Assets</span>
-                        <span className="font-bold text-[#22C55E]">{formatCurrency(balanceSheet.assets?.total)}</span>
+                      <div className="flex justify-between pt-3 border-t border-white/[0.07]">
+                        <span className="font-semibold text-bw-green">Total Assets</span>
+                        <span className="font-bold text-bw-green">{formatCurrency(balanceSheet.assets?.total)}</span>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Liabilities & Equity */}
                   <div className="space-y-4">
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-                      <CardHeader className="bg-[rgba(255,59,47,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
-                        <CardTitle className="text-lg text-[#FF3B2F]">Liabilities</CardTitle>
+                    <Card className="bg-bw-panel border border-white/[0.07]">
+                      <CardHeader className="bg-bw-red/[0.08] py-3 border-b border-white/[0.07]">
+                        <CardTitle className="text-lg text-bw-red">Liabilities</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-[rgba(244,246,240,0.45)]">Accounts Payable</span>
-                          <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.liabilities?.accounts_payable)}</span>
+                          <span className="text-bw-white/[0.45]">Accounts Payable</span>
+                          <span className="font-medium text-bw-white">{formatCurrency(balanceSheet.liabilities?.accounts_payable)}</span>
                         </div>
-                        <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
-                          <span className="font-semibold text-[#FF3B2F]">Total Liabilities</span>
-                          <span className="font-bold text-[#FF3B2F]">{formatCurrency(balanceSheet.liabilities?.total)}</span>
+                        <div className="flex justify-between pt-3 border-t border-white/[0.07]">
+                          <span className="font-semibold text-bw-red">Total Liabilities</span>
+                          <span className="font-bold text-bw-red">{formatCurrency(balanceSheet.liabilities?.total)}</span>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-                      <CardHeader className="bg-[rgba(59,158,255,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
-                        <CardTitle className="text-lg text-[#3B9EFF]">Equity</CardTitle>
+                    <Card className="bg-bw-panel border border-white/[0.07]">
+                      <CardHeader className="bg-bw-blue/[0.08] py-3 border-b border-white/[0.07]">
+                        <CardTitle className="text-lg text-bw-blue">Equity</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-[rgba(244,246,240,0.45)]">Retained Earnings</span>
-                          <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.equity?.retained_earnings)}</span>
+                          <span className="text-bw-white/[0.45]">Retained Earnings</span>
+                          <span className="font-medium text-bw-white">{formatCurrency(balanceSheet.equity?.retained_earnings)}</span>
                         </div>
-                        <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
-                          <span className="font-semibold text-[#3B9EFF]">Total Equity</span>
-                          <span className="font-bold text-[#3B9EFF]">{formatCurrency(balanceSheet.equity?.total)}</span>
+                        <div className="flex justify-between pt-3 border-t border-white/[0.07]">
+                          <span className="font-semibold text-bw-blue">Total Equity</span>
+                          <span className="font-bold text-bw-blue">{formatCurrency(balanceSheet.equity?.total)}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -557,68 +557,68 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : arAging && (
                 <div className="space-y-6">
                   {/* Aging Buckets */}
                   <div className="grid grid-cols-5 gap-3">
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#22C55E]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-green">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Current</p>
-                        <p className="text-lg font-bold text-[#22C55E]">{formatCurrency(arAging.aging_data?.current)}</p>
+                        <p className="text-xs text-bw-white/[0.45]">Current</p>
+                        <p className="text-lg font-bold text-bw-green">{formatCurrency(arAging.aging_data?.current)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#EAB308]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-amber">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">1-30 Days</p>
-                        <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(arAging.aging_data?.["1_30"])}</p>
+                        <p className="text-xs text-bw-white/[0.45]">1-30 Days</p>
+                        <p className="text-lg font-bold text-bw-amber">{formatCurrency(arAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF8C00]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-orange">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">31-60 Days</p>
-                        <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(arAging.aging_data?.["31_60"])}</p>
+                        <p className="text-xs text-bw-white/[0.45]">31-60 Days</p>
+                        <p className="text-lg font-bold text-bw-orange">{formatCurrency(arAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-orange-600">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-orange-600">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">61-90 Days</p>
+                        <p className="text-xs text-bw-white/[0.45]">61-90 Days</p>
                         <p className="text-lg font-bold text-orange-600">{formatCurrency(arAging.aging_data?.["61_90"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF3B2F]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-red">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">90+ Days</p>
-                        <p className="text-lg font-bold text-[#FF3B2F]">{formatCurrency(arAging.aging_data?.over_90)}</p>
+                        <p className="text-xs text-bw-white/[0.45]">90+ Days</p>
+                        <p className="text-lg font-bold text-bw-red">{formatCurrency(arAging.aging_data?.over_90)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Total */}
-                  <div className="bg-[rgba(200,255,0,0.10)] p-4 rounded border border-[rgba(200,255,0,0.25)] flex justify-between items-center">
-                    <span className="font-semibold text-[#F4F6F0]">Total Accounts Receivable</span>
-                    <span className="text-2xl font-bold text-[#C8FF00]">{formatCurrency(arAging.total_ar)}</span>
+                  <div className="bg-bw-volt/10 p-4 rounded border border-bw-volt/25 flex justify-between items-center">
+                    <span className="font-semibold text-bw-white">Total Accounts Receivable</span>
+                    <span className="text-2xl font-bold text-bw-volt">{formatCurrency(arAging.total_ar)}</span>
                   </div>
 
                   {/* Invoice Details Table */}
-                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                  <div className="border border-white/[0.07] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Invoice #</TableHead>
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Customer</TableHead>
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
-                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
-                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
+                        <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Invoice #</TableHead>
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Customer</TableHead>
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
+                          <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
+                          <TableHead className="text-right text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {arAging.invoices?.slice(0, 20).map((inv, idx) => (
-                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
-                            <TableCell className="font-medium text-[#F4F6F0]">{inv.invoice_number}</TableCell>
-                            <TableCell className="text-[#F4F6F0]">{inv.customer_name}</TableCell>
-                            <TableCell className="text-[#F4F6F0]">{inv.due_date}</TableCell>
+                          <TableRow key={idx} className="border-b border-white/[0.07]">
+                            <TableCell className="font-medium text-bw-white">{inv.invoice_number}</TableCell>
+                            <TableCell className="text-bw-white">{inv.customer_name}</TableCell>
+                            <TableCell className="text-bw-white">{inv.due_date}</TableCell>
                             <TableCell className="text-center">
                               <Badge variant={
                                 inv.days_overdue <= 0 ? "success" :
@@ -628,13 +628,13 @@ export default function Reports() {
                                 {inv.days_overdue} days
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(inv.balance)}</TableCell>
+                            <TableCell className="text-right font-medium text-bw-white">{formatCurrency(inv.balance)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                     {arAging.invoices?.length > 20 && (
-                      <div className="p-3 bg-[#111820] text-center text-sm text-[rgba(244,246,240,0.45)] border-t border-[rgba(255,255,255,0.07)]">
+                      <div className="p-3 bg-bw-panel text-center text-sm text-bw-white/[0.45] border-t border-white/[0.07]">
                         Showing 20 of {arAging.invoices.length} invoices. Export to see all.
                       </div>
                     )}
@@ -660,68 +660,68 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : apAging && (
                 <div className="space-y-6">
                   {/* Aging Buckets */}
                   <div className="grid grid-cols-5 gap-3">
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#22C55E]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-green">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Current</p>
-                        <p className="text-lg font-bold text-[#22C55E]">{formatCurrency(apAging.aging_data?.current)}</p>
+                        <p className="text-xs text-bw-white/[0.45]">Current</p>
+                        <p className="text-lg font-bold text-bw-green">{formatCurrency(apAging.aging_data?.current)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#EAB308]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-amber">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">1-30 Days</p>
-                        <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(apAging.aging_data?.["1_30"])}</p>
+                        <p className="text-xs text-bw-white/[0.45]">1-30 Days</p>
+                        <p className="text-lg font-bold text-bw-amber">{formatCurrency(apAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF8C00]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-orange">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">31-60 Days</p>
-                        <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(apAging.aging_data?.["31_60"])}</p>
+                        <p className="text-xs text-bw-white/[0.45]">31-60 Days</p>
+                        <p className="text-lg font-bold text-bw-orange">{formatCurrency(apAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-orange-600">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-orange-600">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">61-90 Days</p>
+                        <p className="text-xs text-bw-white/[0.45]">61-90 Days</p>
                         <p className="text-lg font-bold text-orange-600">{formatCurrency(apAging.aging_data?.["61_90"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF3B2F]">
+                    <Card className="bg-bw-panel border border-white/[0.07] border-l-4 border-l-bw-red">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-[rgba(244,246,240,0.45)]">90+ Days</p>
-                        <p className="text-lg font-bold text-[#FF3B2F]">{formatCurrency(apAging.aging_data?.over_90)}</p>
+                        <p className="text-xs text-bw-white/[0.45]">90+ Days</p>
+                        <p className="text-lg font-bold text-bw-red">{formatCurrency(apAging.aging_data?.over_90)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Total */}
-                  <div className="bg-[rgba(255,59,47,0.10)] p-4 rounded border border-[rgba(255,59,47,0.25)] flex justify-between items-center">
-                    <span className="font-semibold text-[#F4F6F0]">Total Accounts Payable</span>
-                    <span className="text-2xl font-bold text-[#FF3B2F]">{formatCurrency(apAging.total_ap)}</span>
+                  <div className="bg-bw-red/10 p-4 rounded border border-bw-red/25 flex justify-between items-center">
+                    <span className="font-semibold text-bw-white">Total Accounts Payable</span>
+                    <span className="text-2xl font-bold text-bw-red">{formatCurrency(apAging.total_ap)}</span>
                   </div>
 
                   {/* Bill Details Table */}
-                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                  <div className="border border-white/[0.07] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Bill #</TableHead>
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Vendor</TableHead>
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
-                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
-                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
+                        <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Bill #</TableHead>
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Vendor</TableHead>
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
+                          <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
+                          <TableHead className="text-right text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {apAging.bills?.slice(0, 20).map((bill, idx) => (
-                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
-                            <TableCell className="font-medium text-[#F4F6F0]">{bill.bill_number}</TableCell>
-                            <TableCell className="text-[#F4F6F0]">{bill.vendor_name}</TableCell>
-                            <TableCell className="text-[#F4F6F0]">{bill.due_date}</TableCell>
+                          <TableRow key={idx} className="border-b border-white/[0.07]">
+                            <TableCell className="font-medium text-bw-white">{bill.bill_number}</TableCell>
+                            <TableCell className="text-bw-white">{bill.vendor_name}</TableCell>
+                            <TableCell className="text-bw-white">{bill.due_date}</TableCell>
                             <TableCell className="text-center">
                               <Badge variant={
                                 bill.days_overdue <= 0 ? "success" :
@@ -731,13 +731,13 @@ export default function Reports() {
                                 {bill.days_overdue} days
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(bill.balance)}</TableCell>
+                            <TableCell className="text-right font-medium text-bw-white">{formatCurrency(bill.balance)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                     {apAging.bills?.length > 20 && (
-                      <div className="p-3 bg-[#111820] text-center text-sm text-[rgba(244,246,240,0.45)] border-t border-[rgba(255,255,255,0.07)]">
+                      <div className="p-3 bg-bw-panel text-center text-sm text-bw-white/[0.45] border-t border-white/[0.07]">
                         Showing 20 of {apAging.bills.length} bills. Export to see all.
                       </div>
                     )}
@@ -763,51 +763,51 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : salesByCustomer && (
                 <div className="space-y-6">
                   {/* Summary */}
                   <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <Card className="bg-bw-panel border border-white/[0.07]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-[#3B9EFF] font-medium">Total Invoices</p>
-                        <p className="text-2xl font-bold text-[#3B9EFF]">{salesByCustomer.total_invoices || 0}</p>
+                        <p className="text-xs text-bw-blue font-medium">Total Invoices</p>
+                        <p className="text-2xl font-bold text-bw-blue">{salesByCustomer.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <Card className="bg-bw-panel border border-white/[0.07]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-[#22C55E] font-medium">Total Sales</p>
-                        <p className="text-2xl font-bold text-[#22C55E]">{formatCurrency(salesByCustomer.total_sales)}</p>
+                        <p className="text-xs text-bw-green font-medium">Total Sales</p>
+                        <p className="text-2xl font-bold text-bw-green">{formatCurrency(salesByCustomer.total_sales)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Customer Table */}
-                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                  <div className="border border-white/[0.07] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                          <TableHead className="w-12 text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">#</TableHead>
-                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Customer Name</TableHead>
-                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Invoices</TableHead>
-                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Total Sales</TableHead>
+                        <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                          <TableHead className="w-12 text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">#</TableHead>
+                          <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Customer Name</TableHead>
+                          <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Invoices</TableHead>
+                          <TableHead className="text-right text-bw-white/25 uppercase text-[10px] tracking-[0.12em] font-mono">Total Sales</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {salesByCustomer.sales_data?.map((item, idx) => (
-                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
-                            <TableCell className="text-[rgba(244,246,240,0.45)]">{idx + 1}</TableCell>
-                            <TableCell className="font-medium text-[#F4F6F0]">{item.customer_name}</TableCell>
-                            <TableCell className="text-center text-[#F4F6F0]">{item.invoice_count}</TableCell>
-                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(item.total_sales)}</TableCell>
+                          <TableRow key={idx} className="border-b border-white/[0.07]">
+                            <TableCell className="text-bw-white/[0.45]">{idx + 1}</TableCell>
+                            <TableCell className="font-medium text-bw-white">{item.customer_name}</TableCell>
+                            <TableCell className="text-center text-bw-white">{item.invoice_count}</TableCell>
+                            <TableCell className="text-right font-medium text-bw-white">{formatCurrency(item.total_sales)}</TableCell>
                           </TableRow>
                         ))}
-                        <TableRow className="bg-[rgba(200,255,0,0.10)] font-bold">
+                        <TableRow className="bg-bw-volt/10 font-bold">
                           <TableCell></TableCell>
-                          <TableCell className="text-[#C8FF00]">TOTAL</TableCell>
-                          <TableCell className="text-center text-[#F4F6F0]">{salesByCustomer.total_invoices}</TableCell>
-                          <TableCell className="text-right text-[#C8FF00]">{formatCurrency(salesByCustomer.total_sales)}</TableCell>
+                          <TableCell className="text-bw-volt">TOTAL</TableCell>
+                          <TableCell className="text-center text-bw-white">{salesByCustomer.total_invoices}</TableCell>
+                          <TableCell className="text-right text-bw-volt">{formatCurrency(salesByCustomer.total_sales)}</TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
@@ -846,7 +846,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : slaReport ? (
                 <div className="space-y-6">
@@ -859,9 +859,9 @@ export default function Reports() {
                       { label: "Resolution Breaches", value: slaReport.summary?.resolution_sla_breaches ?? 0, color: "#FF8C00" },
                       { label: "Auto-Reassigned", value: slaReport.summary?.auto_reassignments_triggered ?? 0, color: "#C8FF00" },
                     ].map(({ label, value, color }) => (
-                      <Card key={label} className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                      <Card key={label} className="bg-bw-panel border border-white/[0.07]">
                         <CardContent className="p-3">
-                          <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">{label}</p>
+                          <p className="text-xs text-bw-white/[0.45] mb-1">{label}</p>
                           <p className="text-2xl font-bold font-mono" style={{ color }}>{value}</p>
                         </CardContent>
                       </Card>
@@ -869,8 +869,8 @@ export default function Reports() {
                   </div>
 
                   {/* Compliance % */}
-                  <div className="flex items-center gap-3 p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#111820]">
-                    <div className="text-4xl font-mono font-bold text-[#C8FF00]">
+                  <div className="flex items-center gap-3 p-4 rounded-lg border border-white/[0.07] bg-bw-panel">
+                    <div className="text-4xl font-mono font-bold text-bw-volt">
                       {slaReport.summary?.sla_compliance_pct ?? 100}%
                     </div>
                     <div>
@@ -881,23 +881,23 @@ export default function Reports() {
 
                   {/* Breach Table */}
                   {slaReport.breaches?.length > 0 ? (
-                    <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                    <div className="border border-white/[0.07] rounded overflow-hidden">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Ticket</TableHead>
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Customer</TableHead>
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Priority</TableHead>
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Breach Type</TableHead>
-                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Reassigned?</TableHead>
+                          <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Ticket</TableHead>
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Customer</TableHead>
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Priority</TableHead>
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Breach Type</TableHead>
+                            <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Reassigned?</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {slaReport.breaches.map((t) => (
-                            <TableRow key={t.ticket_id} className="border-b border-[rgba(255,255,255,0.05)]" data-testid={`sla-breach-row-${t.ticket_id}`}>
-                              <TableCell className="font-mono text-xs text-[#3B9EFF]">{t.ticket_id}</TableCell>
-                              <TableCell className="text-[#F4F6F0]">{t.customer_name || "N/A"}</TableCell>
+                            <TableRow key={t.ticket_id} className="border-b border-white/5" data-testid={`sla-breach-row-${t.ticket_id}`}>
+                              <TableCell className="font-mono text-xs text-bw-blue">{t.ticket_id}</TableCell>
+                              <TableCell className="text-bw-white">{t.customer_name || "N/A"}</TableCell>
                               <TableCell>
                                 <span style={{
                                   padding: "2px 6px", borderRadius: "2px", fontSize: "10px", fontFamily: "monospace",
@@ -905,15 +905,15 @@ export default function Reports() {
                                   color: t.priority === "critical" ? "#FF3B2F" : t.priority === "high" ? "#FF8C00" : "#EAB308"
                                 }}>{t.priority?.toUpperCase()}</span>
                               </TableCell>
-                              <TableCell className="text-[rgba(244,246,240,0.65)]">{t.assigned_technician_name || "Unassigned"}</TableCell>
+                              <TableCell className="text-bw-white/[0.65]">{t.assigned_technician_name || "Unassigned"}</TableCell>
                               <TableCell>
-                                {t.sla_resolution_breached && <span className="text-[#FF3B2F] text-xs">Resolution</span>}
-                                {!t.sla_resolution_breached && t.sla_response_breached && <span className="text-[#FF8C00] text-xs">Response</span>}
+                                {t.sla_resolution_breached && <span className="text-bw-red text-xs">Resolution</span>}
+                                {!t.sla_resolution_breached && t.sla_response_breached && <span className="text-bw-orange text-xs">Response</span>}
                               </TableCell>
                               <TableCell>
                                 {t.sla_auto_reassigned
-                                  ? <span className="text-[#C8FF00] text-xs">Yes → {t.assigned_technician_name}</span>
-                                  : <span className="text-[rgba(244,246,240,0.25)] text-xs">No</span>
+                                  ? <span className="text-bw-volt text-xs">Yes → {t.assigned_technician_name}</span>
+                                  : <span className="text-bw-white/25 text-xs">No</span>
                                 }
                               </TableCell>
                             </TableRow>
@@ -945,17 +945,17 @@ export default function Reports() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-[#C8FF00]" />
+                    <Trophy className="h-5 w-5 text-bw-volt" />
                     Technician Performance
                   </CardTitle>
                   <CardDescription>Ranking, resolution rates, and SLA compliance by technician</CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Period selector */}
-                  <div className="flex rounded border border-[rgba(255,255,255,0.07)] overflow-hidden text-xs">
+                  <div className="flex rounded border border-white/[0.07] overflow-hidden text-xs">
                     {[["this_week","Week"],["this_month","Month"],["this_quarter","Quarter"],["custom","Custom"]].map(([val, label]) => (
                       <button key={val} onClick={() => { setTechPeriod(val); }}
-                        className={`px-2.5 py-1.5 transition-colors ${techPeriod === val ? "bg-[rgba(200,255,0,0.15)] text-[#C8FF00]" : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"}`}>
+                        className={`px-2.5 py-1.5 transition-colors ${techPeriod === val ? "bg-bw-volt/15 text-bw-volt" : "text-bw-white/[0.45] hover:text-bw-white"}`}>
                         {label}
                       </button>
                     ))}
@@ -979,25 +979,25 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
                 </div>
               ) : techReport ? (
                 <div className="space-y-4">
                   {techReport.technicians?.length > 0 ? (
                     <>
-                      <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                      <div className="border border-white/[0.07] rounded overflow-hidden">
                         <Table>
                           <TableHeader>
-                            <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
-                              <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono w-12">Rank</TableHead>
-                              <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Assigned</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Resolved</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Res. Rate</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Avg Resp.</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Avg Res.</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">SLA %</TableHead>
-                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Breaches</TableHead>
+                            <TableRow className="bg-bw-panel border-b border-white/[0.07]">
+                              <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono w-12">Rank</TableHead>
+                              <TableHead className="text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Assigned</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Resolved</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Res. Rate</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Avg Resp.</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Avg Res.</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">SLA %</TableHead>
+                              <TableHead className="text-center text-bw-white/25 uppercase text-[10px] tracking-wide font-mono">Breaches</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1017,7 +1017,7 @@ export default function Reports() {
                               return (
                                 <TableRow
                                   key={tech.technician_id}
-                                  className="border-b border-[rgba(255,255,255,0.05)] cursor-pointer hover:bg-[rgba(200,255,0,0.03)]"
+                                  className="border-b border-white/5 cursor-pointer hover:bg-bw-volt/[0.03]"
                                   onClick={() => setSelectedTech(selectedTech?.technician_id === tech.technician_id ? null : tech)}
                                   data-testid={`tech-row-${tech.rank}`}
                                 >
@@ -1026,17 +1026,17 @@ export default function Reports() {
                                   </TableCell>
                                   <TableCell>
                                     <div className="flex items-center gap-2">
-                                      <div className="w-7 h-7 rounded-full bg-[rgba(200,255,0,0.10)] border border-[rgba(200,255,0,0.20)] flex items-center justify-center flex-shrink-0">
-                                        <span className="text-[9px] font-bold text-[#C8FF00]">{tech.avatar_initials}</span>
+                                      <div className="w-7 h-7 rounded-full bg-bw-volt/10 border border-bw-volt/20 flex items-center justify-center flex-shrink-0">
+                                        <span className="text-[9px] font-bold text-bw-volt">{tech.avatar_initials}</span>
                                       </div>
-                                      <span className="font-medium text-[#F4F6F0] text-sm">{tech.technician_name}</span>
+                                      <span className="font-medium text-bw-white text-sm">{tech.technician_name}</span>
                                     </div>
                                   </TableCell>
-                                  <TableCell className="text-center text-[rgba(244,246,240,0.65)] font-mono">{tech.total_tickets_assigned}</TableCell>
-                                  <TableCell className="text-center text-[rgba(244,246,240,0.65)] font-mono">{tech.total_tickets_resolved}</TableCell>
+                                  <TableCell className="text-center text-bw-white/[0.65] font-mono">{tech.total_tickets_assigned}</TableCell>
+                                  <TableCell className="text-center text-bw-white/[0.65] font-mono">{tech.total_tickets_resolved}</TableCell>
                                   <TableCell className="text-center font-mono font-bold" style={{ color: resRateColor }}>{tech.resolution_rate_pct}%</TableCell>
-                                  <TableCell className="text-center text-[rgba(244,246,240,0.45)] font-mono text-xs">{fmtTime(tech.avg_response_time_minutes)}</TableCell>
-                                  <TableCell className="text-center text-[rgba(244,246,240,0.45)] font-mono text-xs">{fmtTime(tech.avg_resolution_time_minutes)}</TableCell>
+                                  <TableCell className="text-center text-bw-white/[0.45] font-mono text-xs">{fmtTime(tech.avg_response_time_minutes)}</TableCell>
+                                  <TableCell className="text-center text-bw-white/[0.45] font-mono text-xs">{fmtTime(tech.avg_resolution_time_minutes)}</TableCell>
                                   <TableCell className="text-center font-mono font-bold" style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</TableCell>
                                   <TableCell className="text-center font-mono" style={{ color: breachColor }}>
                                     {breachTotal === 0 ? <span className="text-xs">None</span> : breachTotal}
@@ -1050,14 +1050,14 @@ export default function Reports() {
 
                       {/* Drill-down panel */}
                       {selectedTech && (
-                        <Card className="bg-[#111820] border border-[rgba(200,255,0,0.15)]">
+                        <Card className="bg-bw-panel border border-bw-volt/15">
                           <CardHeader className="pb-3">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.25)] flex items-center justify-center">
-                                <span className="text-sm font-bold text-[#C8FF00]">{selectedTech.avatar_initials}</span>
+                              <div className="w-10 h-10 rounded-full bg-bw-volt/[0.12] border border-bw-volt/25 flex items-center justify-center">
+                                <span className="text-sm font-bold text-bw-volt">{selectedTech.avatar_initials}</span>
                               </div>
                               <div>
-                                <CardTitle className="text-base text-[#F4F6F0]">{selectedTech.technician_name}</CardTitle>
+                                <CardTitle className="text-base text-bw-white">{selectedTech.technician_name}</CardTitle>
                                 <CardDescription className="text-xs">Rank #{selectedTech.rank} · {techPeriod.replace("_"," ")}</CardDescription>
                               </div>
                             </div>
@@ -1074,8 +1074,8 @@ export default function Reports() {
                                 { label: "Avg Response", val: selectedTech.avg_response_time_minutes ? (selectedTech.avg_response_time_minutes < 60 ? `${Math.round(selectedTech.avg_response_time_minutes)}m` : `${Math.round(selectedTech.avg_response_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
                                 { label: "Avg Resolution", val: selectedTech.avg_resolution_time_minutes ? (selectedTech.avg_resolution_time_minutes < 60 ? `${Math.round(selectedTech.avg_resolution_time_minutes)}m` : `${Math.round(selectedTech.avg_resolution_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
                               ].map(({ label, val, color }) => (
-                                <div key={label} className="p-3 rounded bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
-                                  <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide mb-1">{label}</p>
+                                <div key={label} className="p-3 rounded bg-white/[0.03] border border-white/[0.06]">
+                                  <p className="text-[10px] text-bw-white/35 uppercase tracking-wide mb-1">{label}</p>
                                   <p className="text-xl font-bold font-mono" style={{ color }}>{val}</p>
                                 </div>
                               ))}

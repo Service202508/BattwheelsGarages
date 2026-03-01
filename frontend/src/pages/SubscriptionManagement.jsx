@@ -64,21 +64,21 @@ export default function SubscriptionManagement() {
 
   const getPlanBadgeColor = (planCode) => {
     const colors = {
-      free: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-      starter: "bg-blue-100 text-[#3B9EFF]",
-      professional: "bg-purple-100 text-[#8B5CF6]",
+      free: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+      starter: "bg-blue-100 text-bw-blue",
+      professional: "bg-purple-100 text-bw-purple",
       enterprise: "bg-amber-100 text-amber-700"
     };
-    return colors[planCode] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
+    return colors[planCode] || "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]";
   };
 
   const getStatusBadge = (status) => {
     const badges = {
-      trialing: { color: "bg-blue-100 text-[#3B9EFF]", icon: Clock, label: "Trial" },
-      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Check, label: "Active" },
-      past_due: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Past Due" },
-      canceled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: X, label: "Canceled" },
-      suspended: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Suspended" }
+      trialing: { color: "bg-blue-100 text-bw-blue", icon: Clock, label: "Trial" },
+      active: { color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", icon: Check, label: "Active" },
+      past_due: { color: "bg-bw-red/10 text-bw-red border border-bw-red/25", icon: AlertTriangle, label: "Past Due" },
+      canceled: { color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]", icon: X, label: "Canceled" },
+      suspended: { color: "bg-bw-red/10 text-bw-red border border-bw-red/25", icon: AlertTriangle, label: "Suspended" }
     };
     return badges[status] || badges.active;
   };
@@ -190,7 +190,7 @@ export default function SubscriptionManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCw className="h-8 w-8 animate-spin text-[rgba(244,246,240,0.45)]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-bw-white/[0.45]" />
       </div>
     );
   }
@@ -203,8 +203,8 @@ export default function SubscriptionManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#F4F6F0]">Subscription & Billing</h1>
-          <p className="text-[rgba(244,246,240,0.45)] mt-1">Manage your subscription plan and usage</p>
+          <h1 className="text-2xl font-semibold text-bw-white">Subscription & Billing</h1>
+          <p className="text-bw-white/[0.45] mt-1">Manage your subscription plan and usage</p>
         </div>
         <Button onClick={fetchSubscriptionData} variant="outline" size="sm">
           <RefreshCw className="h-4 w-4 mr-2" />
@@ -232,7 +232,7 @@ export default function SubscriptionManagement() {
                     {StatusIcon && <StatusIcon className="h-4 w-4" />}
                     {statusBadge?.label}
                     {subscription.is_in_trial && (
-                      <span className="text-[#3B9EFF]">
+                      <span className="text-bw-blue">
                         • Trial ends {new Date(subscription.trial_end).toLocaleDateString()}
                       </span>
                     )}
@@ -240,9 +240,9 @@ export default function SubscriptionManagement() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-[#F4F6F0]">
+                <div className="text-2xl font-bold text-bw-white">
                   ₹{subscription.plan?.price_monthly?.toLocaleString() || 0}
-                  <span className="text-sm font-normal text-[rgba(244,246,240,0.45)]">/month</span>
+                  <span className="text-sm font-normal text-bw-white/[0.45]">/month</span>
                 </div>
                 {subscription.billing_cycle === "annual" && (
                   <p className="text-sm text-green-600">Save 17% with annual billing</p>
@@ -252,7 +252,7 @@ export default function SubscriptionManagement() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between pt-4 border-t">
-              <div className="text-sm text-[rgba(244,246,240,0.45)]">
+              <div className="text-sm text-bw-white/[0.45]">
                 Current period: {subscription.current_period_start ? new Date(subscription.current_period_start).toLocaleDateString() : "N/A"} - {subscription.current_period_end ? new Date(subscription.current_period_end).toLocaleDateString() : "N/A"}
               </div>
               <div className="flex gap-2">
@@ -274,7 +274,7 @@ export default function SubscriptionManagement() {
                     {plans.map((plan) => (
                       <Card 
                         key={plan.code} 
-                        className={`relative cursor-pointer transition-all hover:border-[rgba(200,255,0,0.2)] ${
+                        className={`relative cursor-pointer transition-all hover:border-bw-volt/20 ${
                           subscription.plan?.code === plan.code 
                             ? "ring-2 ring-indigo-500" 
                             : ""
@@ -290,11 +290,11 @@ export default function SubscriptionManagement() {
                           <CardTitle className="text-lg">{plan.name}</CardTitle>
                           <div className="mt-2">
                             <span className="text-3xl font-bold">₹{plan.price_monthly.toLocaleString()}</span>
-                            <span className="text-[rgba(244,246,240,0.45)]">/mo</span>
+                            <span className="text-bw-white/[0.45]">/mo</span>
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{plan.description}</p>
+                          <p className="text-sm text-bw-white/[0.45]">{plan.description}</p>
                           <ul className="space-y-2 text-sm">
                             <li className="flex items-center gap-2">
                               <Check className="h-4 w-4 text-green-500" />
@@ -327,7 +327,7 @@ export default function SubscriptionManagement() {
                 </DialogContent>
               </Dialog>
               {subscription.plan?.code !== "free" && subscription.status !== "canceled" && (
-                <Button variant="ghost" size="sm" className="text-[rgba(255,59,47,0.7)] hover:text-[#FF3B2F]" onClick={handleCancelSubscription} data-testid="cancel-subscription-btn">
+                <Button variant="ghost" size="sm" className="text-bw-red/70 hover:text-bw-red" onClick={handleCancelSubscription} data-testid="cancel-subscription-btn">
                   <X className="h-4 w-4 mr-1" /> Cancel
                 </Button>
               )}
@@ -355,7 +355,7 @@ export default function SubscriptionManagement() {
                       <FileText className="h-5 w-5 text-blue-500" />
                       <span className="font-medium">Invoices</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       {limits.limits?.invoices?.current || 0} / {formatLimit(limits.limits?.invoices)}
                     </span>
                   </div>
@@ -363,7 +363,7 @@ export default function SubscriptionManagement() {
                     value={limits.limits?.invoices?.percent || 0} 
                     className="h-2"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     {limits.limits?.invoices?.remaining === "unlimited" 
                       ? "Unlimited remaining" 
                       : `${limits.limits?.invoices?.remaining || 0} remaining this month`}
@@ -379,7 +379,7 @@ export default function SubscriptionManagement() {
                       <Ticket className="h-5 w-5 text-purple-500" />
                       <span className="font-medium">Service Tickets</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       {limits.limits?.tickets?.current || 0} / {formatLimit(limits.limits?.tickets)}
                     </span>
                   </div>
@@ -387,7 +387,7 @@ export default function SubscriptionManagement() {
                     value={limits.limits?.tickets?.percent || 0} 
                     className="h-2"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     {limits.limits?.tickets?.remaining === "unlimited" 
                       ? "Unlimited remaining" 
                       : `${limits.limits?.tickets?.remaining || 0} remaining this month`}
@@ -403,7 +403,7 @@ export default function SubscriptionManagement() {
                       <Car className="h-5 w-5 text-green-500" />
                       <span className="font-medium">Vehicles</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       {limits.limits?.vehicles?.current || 0} / {formatLimit(limits.limits?.vehicles)}
                     </span>
                   </div>
@@ -411,7 +411,7 @@ export default function SubscriptionManagement() {
                     value={limits.limits?.vehicles?.percent || 0} 
                     className="h-2"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     {limits.limits?.vehicles?.remaining === "unlimited" 
                       ? "Unlimited" 
                       : `${limits.limits?.vehicles?.remaining || 0} slots available`}
@@ -427,7 +427,7 @@ export default function SubscriptionManagement() {
                       <Bot className="h-5 w-5 text-amber-500" />
                       <span className="font-medium">AI Calls</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       {limits.limits?.ai_calls?.current || 0} / {formatLimit(limits.limits?.ai_calls)}
                     </span>
                   </div>
@@ -435,7 +435,7 @@ export default function SubscriptionManagement() {
                     value={limits.limits?.ai_calls?.percent || 0} 
                     className="h-2"
                   />
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     {limits.limits?.ai_calls?.remaining === "unlimited" 
                       ? "Unlimited remaining" 
                       : `${limits.limits?.ai_calls?.remaining || 0} calls remaining`}
@@ -451,11 +451,11 @@ export default function SubscriptionManagement() {
                       <Users className="h-5 w-5 text-indigo-500" />
                       <span className="font-medium">Team Members</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       Limit: {formatLimit(limits.limits?.users)}
                     </span>
                   </div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     Maximum users allowed on your plan
                   </p>
                 </CardContent>
@@ -469,11 +469,11 @@ export default function SubscriptionManagement() {
                       <Building2 className="h-5 w-5 text-rose-500" />
                       <span className="font-medium">Storage</span>
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <span className="text-sm text-bw-white/[0.45]">
                       {formatLimit(limits.limits?.storage_gb)} GB
                     </span>
                   </div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                  <p className="text-xs text-bw-white/[0.45] mt-2">
                     Document and file storage limit
                   </p>
                 </CardContent>
@@ -488,7 +488,7 @@ export default function SubscriptionManagement() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium">Billing Period</h3>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <p className="text-sm text-bw-white/[0.45]">
                       {limits.period?.start ? new Date(limits.period.start).toLocaleDateString() : "N/A"} - {limits.period?.end ? new Date(limits.period.end).toLocaleDateString() : "N/A"}
                     </p>
                   </div>
@@ -576,14 +576,14 @@ export default function SubscriptionManagement() {
                               key={feature}
                               className={`flex items-center gap-2 p-2 rounded-lg ${
                                 isEnabled 
-                                  ? "bg-[rgba(34,197,94,0.08)] text-green-700" 
-                                  : "bg-[#111820] text-[rgba(244,246,240,0.45)]"
+                                  ? "bg-bw-green/[0.08] text-green-700" 
+                                  : "bg-bw-panel text-bw-white/[0.45]"
                               }`}
                             >
                               {isEnabled ? (
                                 <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                               ) : (
-                                <X className="h-4 w-4 text-[rgba(244,246,240,0.20)] flex-shrink-0" />
+                                <X className="h-4 w-4 text-bw-white/20 flex-shrink-0" />
                               )}
                               <span className="text-sm truncate">{featureName}</span>
                             </div>

@@ -68,18 +68,18 @@ const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emeral
   const isZero = value === 0 || value === "0";
   
   return (
-    <Card className={`group relative overflow-hidden bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.20)] hover:bg-[#141E27] transition-[background,border-color] duration-200 ease-out ${className}`}>
+    <Card className={`group relative overflow-hidden bg-bw-panel border border-white/[0.07] rounded hover:border-bw-volt/20 hover:bg-bw-card transition-[background,border-color] duration-200 ease-out ${className}`}>
       {/* Top reveal line - scales from left on hover */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C8FF00] to-[#1AFFE4] scale-x-0 origin-left transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-x-100" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-bw-volt to-bw-teal scale-x-0 origin-left transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-x-100" />
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[11px] font-medium text-[rgba(244,246,240,0.45)] uppercase tracking-[0.1em] font-mono">{title}</p>
-            <p className={`text-3xl font-bold ${isZero ? 'text-[rgba(244,246,240,0.20)]' : 'text-[#C8FF00]'}`} style={!isZero ? { textShadow: '0 0 24px rgba(200,255,0,0.2)' } : undefined}>{value}</p>
-            <p className="text-[11px] text-[rgba(244,246,240,0.25)] mt-1">{subtitle}</p>
+            <p className="text-[11px] font-medium text-bw-white/[0.45] uppercase tracking-[0.1em] font-mono">{title}</p>
+            <p className={`text-3xl font-bold ${isZero ? 'text-bw-white/20' : 'text-bw-volt'}`} style={!isZero ? { textShadow: '0 0 24px rgba(200,255,0,0.2)' } : undefined}>{value}</p>
+            <p className="text-[11px] text-bw-white/25 mt-1">{subtitle}</p>
           </div>
-          <div className="p-3 rounded bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]">
-            <Icon className="h-5 w-5 text-[#C8FF00]" />
+          <div className="p-3 rounded bg-bw-volt/[0.08] border border-bw-volt/15">
+            <Icon className="h-5 w-5 text-bw-volt" />
           </div>
         </div>
       </CardContent>
@@ -94,17 +94,17 @@ const KPICard = ({ title, description, value, unit = "", target, icon: Icon, col
   const isZero = value === 0 || value === "0" || value === "0%";
   
   return (
-    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.15)] transition-all duration-300">
+    <Card className="bg-bw-panel border border-white/[0.07] rounded hover:border-bw-volt/15 transition-all duration-300">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           {Icon && (
-            <div className="p-1.5 rounded bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]">
-              <Icon className="h-4 w-4 text-[#C8FF00]" />
+            <div className="p-1.5 rounded bg-bw-volt/[0.08] border border-bw-volt/15">
+              <Icon className="h-4 w-4 text-bw-volt" />
             </div>
           )}
           <div>
-            <CardTitle className="text-base font-semibold text-[#F4F6F0]">{title}</CardTitle>
-            <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">{description}</CardDescription>
+            <CardTitle className="text-base font-semibold text-bw-white">{title}</CardTitle>
+            <CardDescription className="text-xs text-bw-white/[0.45]">{description}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -175,10 +175,10 @@ export default function Dashboard({ user }) {
   if (loading) {
     return (
       <div className="space-y-6 p-1">
-        <div className="h-8 bg-[rgba(255,255,255,0.05)] rounded-lg w-48 animate-pulse" />
+        <div className="h-8 bg-white/5 rounded-lg w-48 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-[rgba(255,255,255,0.05)] rounded animate-pulse" />
+            <div key={i} className="h-28 bg-white/5 rounded animate-pulse" />
           ))}
         </div>
       </div>
@@ -218,12 +218,12 @@ export default function Dashboard({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Dashboard</h1>
-          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-0.5">A high-level overview of your garage's operations.</p>
+          <h1 className="text-2xl font-bold text-bw-white">Dashboard</h1>
+          <p className="text-sm text-bw-white/[0.45] mt-0.5">A high-level overview of your garage's operations.</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.20)] rounded-full">
-          <div className="h-2 w-2 rounded-full bg-[#C8FF00] animate-pulse" />
-          <span className="text-xs font-medium text-[#C8FF00]">Live</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-bw-volt/[0.08] border border-bw-volt/20 rounded-full">
+          <div className="h-2 w-2 rounded-full bg-bw-volt animate-pulse" />
+          <span className="text-xs font-medium text-bw-volt">Live</span>
         </div>
       </div>
 
@@ -232,31 +232,31 @@ export default function Dashboard({ user }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1 rounded-lg">
+        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 rounded-lg">
           <TabsTrigger 
             value="workshop" 
-            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
             data-testid="workshop-tab"
           >
             Workshop Overview
           </TabsTrigger>
           <TabsTrigger 
             value="service-tickets" 
-            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
             data-testid="service-tickets-tab"
           >
             Service Tickets
           </TabsTrigger>
           <TabsTrigger 
             value="receivables" 
-            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
             data-testid="receivables-tab"
           >
             Receivables Overview
           </TabsTrigger>
           <TabsTrigger 
             value="technicians" 
-            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
             data-testid="technicians-tab"
           >
             <Trophy className="h-3.5 w-3.5 mr-1.5 inline" />
@@ -301,10 +301,10 @@ export default function Dashboard({ user }) {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Vehicle Status Distribution */}
-            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="vehicle-status-chart">
+            <Card className="bg-bw-panel border border-white/[0.07]" data-testid="vehicle-status-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Vehicle Status Distribution</CardTitle>
-                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Live breakdown of vehicle statuses</CardDescription>
+                <CardTitle className="text-base font-semibold text-bw-white">Vehicle Status Distribution</CardTitle>
+                <CardDescription className="text-xs text-bw-white/[0.45]">Live breakdown of vehicle statuses</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "workshop"} height="240px">
@@ -340,7 +340,7 @@ export default function Dashboard({ user }) {
                   {vehicleStatusData.map((entry, index) => (
                     <div key={index} className="flex items-center gap-1.5">
                       <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
-                      <span className="text-xs text-[rgba(244,246,240,0.45)]">{entry.name}: {entry.value}</span>
+                      <span className="text-xs text-bw-white/[0.45]">{entry.name}: {entry.value}</span>
                     </div>
                   ))}
                 </div>
@@ -348,10 +348,10 @@ export default function Dashboard({ user }) {
             </Card>
 
             {/* Repair Time Trend */}
-            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="repair-trend-chart">
+            <Card className="bg-bw-panel border border-white/[0.07]" data-testid="repair-trend-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Repair Time Trend</CardTitle>
-                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Monthly average time per repair order</CardDescription>
+                <CardTitle className="text-base font-semibold text-bw-white">Repair Time Trend</CardTitle>
+                <CardDescription className="text-xs text-bw-white/[0.45]">Monthly average time per repair order</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "workshop"} height="260px">
@@ -438,18 +438,18 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-4xl font-bold text-[#C8FF00]" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>
+                  <span className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>
                     {serviceTicketStats.onsite_resolution_percentage}%
                   </span>
                   <Badge 
                     className={`${serviceTicketStats.onsite_resolution_percentage >= 40 
-                      ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border-[rgba(200,255,0,0.25)]' 
-                      : 'bg-[rgba(234,179,8,0.10)] text-[#EAB308] border-[rgba(234,179,8,0.25)]'} border text-xs font-medium`}
+                      ? 'bg-bw-volt/10 text-bw-volt border-bw-volt/25' 
+                      : 'bg-bw-amber/10 text-bw-amber border-bw-amber/25'} border text-xs font-medium`}
                   >
                     {serviceTicketStats.onsite_resolution_percentage >= 40 ? 'On Target' : 'Improving'}
                   </Badge>
                 </div>
-                <div className="h-2 bg-[rgba(255,255,255,0.05)] rounded-full overflow-hidden">
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                   <div 
                     className="h-full rounded-full transition-all duration-500"
                     style={{ 
@@ -458,7 +458,7 @@ export default function Dashboard({ user }) {
                     }}
                   />
                 </div>
-                <p className="text-xs text-[rgba(244,246,240,0.45)]">
+                <p className="text-xs text-bw-white/[0.45]">
                   {serviceTicketStats.total_onsite_resolved_30d} of {serviceTicketStats.total_resolved_30d} tickets resolved onsite
                 </p>
               </div>
@@ -471,23 +471,23 @@ export default function Dashboard({ user }) {
               color="amber"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.20)] rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-bw-amber/[0.08] border border-bw-amber/20 rounded-lg">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-[rgba(234,179,8,0.12)] border border-[rgba(234,179,8,0.25)] rounded-lg">
-                      <Truck className="h-4 w-4 text-[#EAB308]" />
+                    <div className="p-1.5 bg-bw-amber/[0.12] border border-bw-amber/25 rounded-lg">
+                      <Truck className="h-4 w-4 text-bw-amber" />
                     </div>
-                    <span className="text-sm font-medium text-[#F4F6F0]">Pickup Service</span>
+                    <span className="text-sm font-medium text-bw-white">Pickup Service</span>
                   </div>
-                  <span className="text-xl font-bold text-[#EAB308]">{serviceTicketStats.pickup}</span>
+                  <span className="text-xl font-bold text-bw-amber">{serviceTicketStats.pickup}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.20)] rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-bw-purple/[0.08] border border-bw-purple/20 rounded-lg">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.25)] rounded-lg">
-                      <Wifi className="h-4 w-4 text-[#8B5CF6]" />
+                    <div className="p-1.5 bg-bw-purple/[0.12] border border-bw-purple/25 rounded-lg">
+                      <Wifi className="h-4 w-4 text-bw-purple" />
                     </div>
-                    <span className="text-sm font-medium text-[#F4F6F0]">Remote Support</span>
+                    <span className="text-sm font-medium text-bw-white">Remote Support</span>
                   </div>
-                  <span className="text-xl font-bold text-[#8B5CF6]">{serviceTicketStats.remote}</span>
+                  <span className="text-xl font-bold text-bw-purple">{serviceTicketStats.remote}</span>
                 </div>
               </div>
             </KPICard>
@@ -501,19 +501,19 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="text-center py-2">
-                  <p className="text-4xl font-bold text-[#C8FF00]" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>{serviceTicketStats.total_resolved_30d}</p>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-0.5">Total Resolved</p>
+                  <p className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>{serviceTicketStats.total_resolved_30d}</p>
+                  <p className="text-xs text-bw-white/[0.45] mt-0.5">Total Resolved</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="text-center p-2.5 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.20)] rounded-lg">
-                    <p className="text-lg font-bold text-[#C8FF00]">{serviceTicketStats.total_onsite_resolved_30d}</p>
-                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Onsite</p>
+                  <div className="text-center p-2.5 bg-bw-volt/[0.08] border border-bw-volt/20 rounded-lg">
+                    <p className="text-lg font-bold text-bw-volt">{serviceTicketStats.total_onsite_resolved_30d}</p>
+                    <p className="text-xs text-bw-white/[0.45]">Onsite</p>
                   </div>
-                  <div className="text-center p-2.5 bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.20)] rounded-lg">
-                    <p className="text-lg font-bold text-[#3B9EFF]">
+                  <div className="text-center p-2.5 bg-bw-blue/[0.08] border border-bw-blue/20 rounded-lg">
+                    <p className="text-lg font-bold text-bw-blue">
                       {serviceTicketStats.total_resolved_30d - serviceTicketStats.total_onsite_resolved_30d}
                     </p>
-                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Workshop/Other</p>
+                    <p className="text-xs text-bw-white/[0.45]">Workshop/Other</p>
                   </div>
                 </div>
               </div>
@@ -523,10 +523,10 @@ export default function Dashboard({ user }) {
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Ticket Distribution Pie Chart */}
-            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="ticket-distribution-chart">
+            <Card className="bg-bw-panel border border-white/[0.07]" data-testid="ticket-distribution-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Open Tickets by Type</CardTitle>
-                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Distribution of active service tickets</CardDescription>
+                <CardTitle className="text-base font-semibold text-bw-white">Open Tickets by Type</CardTitle>
+                <CardDescription className="text-xs text-bw-white/[0.45]">Distribution of active service tickets</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "service-tickets"} height="240px">
@@ -559,8 +559,8 @@ export default function Dashboard({ user }) {
                       </ResponsiveContainer>
                     ) : (
                       <div className="text-center">
-                        <CheckCircle2 className="h-10 w-10 text-[#C8FF00] mx-auto mb-2" />
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">No open tickets</p>
+                        <CheckCircle2 className="h-10 w-10 text-bw-volt mx-auto mb-2" />
+                        <p className="text-sm text-bw-white/[0.45]">No open tickets</p>
                       </div>
                     )}
                   </div>
@@ -569,7 +569,7 @@ export default function Dashboard({ user }) {
                   {ticketDistributionData.map((entry, index) => (
                     <div key={index} className="flex items-center gap-1.5">
                       <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
-                      <span className="text-xs text-[rgba(244,246,240,0.45)]">{entry.name}: {entry.value}</span>
+                      <span className="text-xs text-bw-white/[0.45]">{entry.name}: {entry.value}</span>
                     </div>
                   ))}
                 </div>
@@ -577,22 +577,22 @@ export default function Dashboard({ user }) {
             </Card>
 
             {/* Resolution Efficiency */}
-            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+            <Card className="bg-bw-panel border border-white/[0.07]">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Resolution Efficiency</CardTitle>
-                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Key performance indicators</CardDescription>
+                <CardTitle className="text-base font-semibold text-bw-white">Resolution Efficiency</CardTitle>
+                <CardDescription className="text-xs text-bw-white/[0.45]">Key performance indicators</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {/* Onsite vs Workshop Comparison */}
                   <div>
                     <div className="flex justify-between mb-1.5">
-                      <span className="text-xs text-[rgba(244,246,240,0.45)]">Onsite vs Workshop (Open)</span>
-                      <span className="text-xs font-medium text-[#F4F6F0]">
+                      <span className="text-xs text-bw-white/[0.45]">Onsite vs Workshop (Open)</span>
+                      <span className="text-xs font-medium text-bw-white">
                         {serviceTicketStats.onsite_resolution} : {serviceTicketStats.workshop_visit}
                       </span>
                     </div>
-                    <div className="flex h-3 rounded-full overflow-hidden bg-[rgba(255,255,255,0.05)]">
+                    <div className="flex h-3 rounded-full overflow-hidden bg-white/5">
                       <div 
                         className="transition-all duration-500 rounded-l-full"
                         style={{ 
@@ -613,39 +613,39 @@ export default function Dashboard({ user }) {
                       />
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span className="text-[10px] text-[#C8FF00] font-medium">Onsite</span>
-                      <span className="text-[10px] text-[#3B9EFF] font-medium">Workshop</span>
+                      <span className="text-[10px] text-bw-volt font-medium">Onsite</span>
+                      <span className="text-[10px] text-bw-blue font-medium">Workshop</span>
                     </div>
                   </div>
 
                   {/* Performance Metrics */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
+                    <div className="p-3 bg-white/[0.03] border border-white/[0.07] rounded-lg">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Target className="h-3 w-3 text-[rgba(244,246,240,0.35)]" />
-                        <p className="text-[10px] text-[rgba(244,246,240,0.45)] uppercase tracking-wide font-mono">Target Resolution</p>
+                        <Target className="h-3 w-3 text-bw-white/35" />
+                        <p className="text-[10px] text-bw-white/[0.45] uppercase tracking-wide font-mono">Target Resolution</p>
                       </div>
-                      <p className="text-xl font-bold text-[#F4F6F0]">8 hrs</p>
-                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.avg_resolution_time_hours <= 8 ? 'text-[#C8FF00]' : 'text-[#EAB308]'}`}>
+                      <p className="text-xl font-bold text-bw-white">8 hrs</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.avg_resolution_time_hours <= 8 ? 'text-bw-volt' : 'text-bw-amber'}`}>
                         {serviceTicketStats.avg_resolution_time_hours <= 8 ? '✓ On Target' : '⚠ Above Target'}
                       </p>
                     </div>
-                    <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
+                    <div className="p-3 bg-white/[0.03] border border-white/[0.07] rounded-lg">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Target className="h-3 w-3 text-[rgba(244,246,240,0.35)]" />
-                        <p className="text-[10px] text-[rgba(244,246,240,0.45)] uppercase tracking-wide font-mono">Onsite Target</p>
+                        <Target className="h-3 w-3 text-bw-white/35" />
+                        <p className="text-[10px] text-bw-white/[0.45] uppercase tracking-wide font-mono">Onsite Target</p>
                       </div>
-                      <p className="text-xl font-bold text-[#F4F6F0]">40%</p>
-                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.onsite_resolution_percentage >= 40 ? 'text-[#C8FF00]' : 'text-[#EAB308]'}`}>
+                      <p className="text-xl font-bold text-bw-white">40%</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.onsite_resolution_percentage >= 40 ? 'text-bw-volt' : 'text-bw-amber'}`}>
                         {serviceTicketStats.onsite_resolution_percentage >= 40 ? '✓ On Target' : '⚠ Below Target'}
                       </p>
                     </div>
                   </div>
 
                   {/* Real-time Sync Indicator */}
-                  <div className="flex items-center justify-center gap-2 pt-3 border-t border-[rgba(255,255,255,0.07)]">
-                    <div className="h-1.5 w-1.5 rounded-full bg-[#C8FF00] animate-pulse" />
-                    <span className="text-[10px] text-[rgba(244,246,240,0.35)]">Real-time sync enabled (30s refresh)</span>
+                  <div className="flex items-center justify-center gap-2 pt-3 border-t border-white/[0.07]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-bw-volt animate-pulse" />
+                    <span className="text-[10px] text-bw-white/35">Real-time sync enabled (30s refresh)</span>
                   </div>
                 </div>
               </CardContent>
@@ -689,25 +689,25 @@ export default function Dashboard({ user }) {
 
         {/* ==================== TECHNICIAN LEADERBOARD TAB ==================== */}
         <TabsContent value="technicians" className="mt-6">
-          <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <Card className="bg-bw-panel border border-white/[0.07]">
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-base font-semibold text-[#F4F6F0] flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-[#C8FF00]" />
+                <CardTitle className="text-base font-semibold text-bw-white flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-bw-volt" />
                   Technician Performance
                 </CardTitle>
-                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)] mt-0.5">
+                <CardDescription className="text-xs text-bw-white/[0.45] mt-0.5">
                   {leaderboardPeriod === "this_week" ? "This week" : leaderboardPeriod === "this_month" ? "This month" : "This quarter"} · Updated live
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 {/* Period selector */}
-                <div className="flex rounded border border-[rgba(255,255,255,0.07)] overflow-hidden text-xs">
+                <div className="flex rounded border border-white/[0.07] overflow-hidden text-xs">
                   {[["this_week","Week"],["this_month","Month"],["this_quarter","Quarter"]].map(([val, label]) => (
                     <button
                       key={val}
                       onClick={() => setLeaderboardPeriod(val)}
-                      className={`px-3 py-1.5 transition-colors ${leaderboardPeriod === val ? "bg-[rgba(200,255,0,0.15)] text-[#C8FF00]" : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"}`}
+                      className={`px-3 py-1.5 transition-colors ${leaderboardPeriod === val ? "bg-bw-volt/15 text-bw-volt" : "text-bw-white/[0.45] hover:text-bw-white"}`}
                       data-testid={`leaderboard-period-${val}`}
                     >
                       {label}
@@ -715,7 +715,7 @@ export default function Dashboard({ user }) {
                   ))}
                 </div>
                 <Link to="/reports?tab=technician-performance">
-                  <button className="flex items-center gap-1 text-xs text-[#C8FF00] hover:text-[#d4ff1a] transition-colors">
+                  <button className="flex items-center gap-1 text-xs text-bw-volt hover:text-bw-volt-hover transition-colors">
                     View Full Report <ChevronRight className="h-3 w-3" />
                   </button>
                 </Link>
@@ -724,10 +724,10 @@ export default function Dashboard({ user }) {
             <CardContent className="pt-0">
               {leaderboardLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="h-5 w-5 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
+                  <div className="h-5 w-5 border-2 border-bw-volt border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : leaderboard.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-[rgba(244,246,240,0.35)]">
+                <div className="flex flex-col items-center justify-center py-12 text-bw-white/35">
                   <Trophy className="h-10 w-10 mb-3 opacity-30" />
                   <p className="text-sm">No ticket data available for this period</p>
                 </div>
@@ -752,7 +752,7 @@ export default function Dashboard({ user }) {
                     return (
                       <div
                         key={tech.technician_id}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-[rgba(200,255,0,0.04)] transition-colors cursor-pointer"
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-bw-volt/[0.04] transition-colors cursor-pointer"
                         data-testid={`leaderboard-row-${tech.rank}`}
                       >
                         {/* Rank */}
@@ -762,27 +762,27 @@ export default function Dashboard({ user }) {
                         </div>
 
                         {/* Avatar */}
-                        <div className="w-8 h-8 rounded-full bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.25)] flex items-center justify-center flex-shrink-0">
-                          <span className="text-[10px] font-bold text-[#C8FF00]">{tech.avatar_initials}</span>
+                        <div className="w-8 h-8 rounded-full bg-bw-volt/[0.12] border border-bw-volt/25 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px] font-bold text-bw-volt">{tech.avatar_initials}</span>
                         </div>
 
                         {/* Name + stats */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <div>
-                              <p className="text-sm font-semibold text-[#F4F6F0] leading-none">{tech.technician_name}</p>
-                              <p style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px" }} className="text-[rgba(244,246,240,0.35)] mt-0.5">Technician</p>
+                              <p className="text-sm font-semibold text-bw-white leading-none">{tech.technician_name}</p>
+                              <p style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px" }} className="text-bw-white/35 mt-0.5">Technician</p>
                             </div>
                             <span className="text-xs font-mono" style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</span>
                           </div>
                           {/* Stats */}
-                          <div className="flex items-center gap-3 text-[10px] text-[rgba(244,246,240,0.45)] mb-1.5">
-                            <span>Resolved: <span className="text-[#F4F6F0]">{tech.total_tickets_resolved}</span></span>
-                            <span>Avg: <span className="text-[#F4F6F0]">{avgResDisplay}</span></span>
+                          <div className="flex items-center gap-3 text-[10px] text-bw-white/[0.45] mb-1.5">
+                            <span>Resolved: <span className="text-bw-white">{tech.total_tickets_resolved}</span></span>
+                            <span>Avg: <span className="text-bw-white">{avgResDisplay}</span></span>
                             <span>SLA: <span style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</span></span>
                           </div>
                           {/* SLA bar */}
-                          <div className="h-1 rounded-full bg-[rgba(255,255,255,0.07)] overflow-hidden">
+                          <div className="h-1 rounded-full bg-white/[0.07] overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-500"
                               style={{ width: `${tech.sla_compliance_rate_pct}%`, backgroundColor: slaColor }}

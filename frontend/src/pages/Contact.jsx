@@ -71,20 +71,20 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[#F4F6F0] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-bw-black text-bw-white font-sans overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-60" style={{ backgroundImage: GRAIN }} />
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-bw-black/85 backdrop-blur-xl">
         <button onClick={() => navigate('/')} className="flex items-center gap-3 group">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
+          <div className="w-7 h-7 bg-bw-volt rounded flex items-center justify-center">
+            <Zap className="w-4 h-4 text-bw-black" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight group-hover:text-[#C8FF00] transition">Battwheels OS</span>
+          <span className="text-lg font-extrabold tracking-tight group-hover:text-bw-volt transition">Battwheels OS</span>
         </button>
         <div className="flex items-center gap-3">
           <span className="text-[11px] font-mono text-white/30 uppercase tracking-widest">Contact</span>
-          <button onClick={() => navigate('/register')} className="px-4 py-2 text-[12px] font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] transition rounded-sm">
+          <button onClick={() => navigate('/register')} className="px-4 py-2 text-[12px] font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover transition rounded-sm">
             Free Trial
           </button>
         </div>
@@ -93,12 +93,12 @@ export default function Contact() {
       <main className="pt-[73px] max-w-5xl mx-auto px-6 md:px-12 py-14">
         {/* Header */}
         <div className="mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-[#C8FF00] border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded-sm font-mono">
-            <span className="w-1.5 h-1.5 bg-[#C8FF00] rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
+            <span className="w-1.5 h-1.5 bg-bw-volt rounded-full animate-pulse" />
             Battwheels Services Private Limited · India
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Get in <span className="text-[#C8FF00]">Touch</span>
+            Get in <span className="text-bw-volt">Touch</span>
           </h1>
           <p className="text-white/45 text-base leading-relaxed max-w-xl">
             We're building India's EV reliability infrastructure — and we're early enough that your message will reach the team directly.
@@ -122,7 +122,7 @@ export default function Contact() {
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px] font-semibold mb-0.5">{c.label}</p>
                     <p className="text-white/40 text-[11px] mb-2">{c.desc}</p>
-                    <span className="font-mono text-[11px] text-[#C8FF00] group-hover:underline">{c.email}</span>
+                    <span className="font-mono text-[11px] text-bw-volt group-hover:underline">{c.email}</span>
                   </div>
                   <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-white/60 mt-1 transition shrink-0" />
                 </a>
@@ -151,12 +151,12 @@ export default function Contact() {
             <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-6">Send a message</p>
 
             {submitted ? (
-              <div className="flex flex-col items-center justify-center h-64 border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded p-8 text-center">
-                <div className="w-10 h-10 bg-[#C8FF00] rounded-full flex items-center justify-center mb-4">
-                  <Check className="w-5 h-5 text-[#080C0F]" />
+              <div className="flex flex-col items-center justify-center h-64 border border-bw-volt/20 bg-bw-volt/5 rounded p-8 text-center">
+                <div className="w-10 h-10 bg-bw-volt rounded-full flex items-center justify-center mb-4">
+                  <Check className="w-5 h-5 text-bw-black" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">Message received</h3>
-                <p className="text-white/45 text-sm">We'll get back to you at <span className="text-[#C8FF00]">{form.email}</span> within 48 hours.</p>
+                <p className="text-white/45 text-sm">We'll get back to you at <span className="text-bw-volt">{form.email}</span> within 48 hours.</p>
                 <button onClick={() => { setSubmitted(false); setForm({ name: '', email: '', company: '', type: 'general', message: '' }); }} className="mt-6 text-[11px] font-mono text-white/30 hover:text-white/60 transition underline">
                   Send another message
                 </button>
@@ -165,24 +165,24 @@ export default function Contact() {
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Name <span className="text-[#C8FF00]">*</span></label>
+                    <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Name <span className="text-bw-volt">*</span></label>
                     <input
                       type="text"
                       value={form.name}
                       onChange={e => setForm({ ...form, name: e.target.value })}
                       placeholder="Your name"
-                      className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C8FF00]/50 transition"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition"
                       data-testid="contact-name"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Email <span className="text-[#C8FF00]">*</span></label>
+                    <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Email <span className="text-bw-volt">*</span></label>
                     <input
                       type="email"
                       value={form.email}
                       onChange={e => setForm({ ...form, email: e.target.value })}
                       placeholder="you@workshop.com"
-                      className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C8FF00]/50 transition"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition"
                       data-testid="contact-email"
                     />
                   </div>
@@ -195,7 +195,7 @@ export default function Contact() {
                     value={form.company}
                     onChange={e => setForm({ ...form, company: e.target.value })}
                     placeholder="Your workshop or organisation name"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C8FF00]/50 transition"
+                    className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition"
                     data-testid="contact-company"
                   />
                 </div>
@@ -205,7 +205,7 @@ export default function Contact() {
                   <select
                     value={form.type}
                     onChange={e => setForm({ ...form, type: e.target.value })}
-                    className="w-full bg-[#080C0F] border border-white/10 rounded px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#C8FF00]/50 transition appearance-none"
+                    className="w-full bg-bw-black border border-white/10 rounded px-3 py-2.5 text-sm text-white focus:outline-none focus:border-bw-volt/50 transition appearance-none"
                     data-testid="contact-type"
                   >
                     <option value="general">General enquiry</option>
@@ -218,13 +218,13 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Message <span className="text-[#C8FF00]">*</span></label>
+                  <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Message <span className="text-bw-volt">*</span></label>
                   <textarea
                     value={form.message}
                     onChange={e => setForm({ ...form, message: e.target.value })}
                     rows={5}
                     placeholder="Tell us about your workshop, fleet size, or what you're trying to solve…"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C8FF00]/50 transition resize-none"
+                    className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition resize-none"
                     data-testid="contact-message"
                   />
                 </div>
@@ -233,10 +233,10 @@ export default function Contact() {
                   type="submit"
                   disabled={loading}
                   data-testid="contact-submit"
-                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#C8FF00] text-[#080C0F] text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-bw-volt text-bw-black text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-bw-volt-hover hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition disabled:opacity-50"
                 >
                   {loading ? (
-                    <span className="w-4 h-4 border-2 border-[#080C0F]/40 border-t-[#080C0F] rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-bw-black/40 border-t-bw-black rounded-full animate-spin" />
                   ) : (
                     <>Send Message <ArrowRight className="w-4 h-4" /></>
                   )}
@@ -244,7 +244,7 @@ export default function Contact() {
 
                 <p className="text-[10px] text-white/25 font-mono">
                   By submitting this form you agree to our{' '}
-                  <button type="button" onClick={() => navigate('/privacy')} className="text-white/40 hover:text-[#C8FF00] underline transition">Privacy Policy</button>.
+                  <button type="button" onClick={() => navigate('/privacy')} className="text-white/40 hover:text-bw-volt underline transition">Privacy Policy</button>.
                 </p>
               </form>
             )}
@@ -254,11 +254,11 @@ export default function Contact() {
         {/* CTA strip */}
         <div className="mt-16 p-8 border border-white/[0.07] rounded bg-white/[0.02] flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <p className="text-[10px] font-mono text-[#C8FF00] uppercase tracking-widest mb-1">Not ready to talk yet?</p>
+            <p className="text-[10px] font-mono text-bw-volt uppercase tracking-widest mb-1">Not ready to talk yet?</p>
             <p className="font-bold">Start a free 14-day trial — no credit card required.</p>
             <p className="text-white/40 text-sm mt-0.5">Full Professional access. Your data, your workspace.</p>
           </div>
-          <button onClick={() => navigate('/register')} className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-[#C8FF00] text-[#080C0F] text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-[#d4ff1a] transition">
+          <button onClick={() => navigate('/register')} className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-bw-volt text-bw-black text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-bw-volt-hover transition">
             Start Free Trial <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -270,7 +270,7 @@ export default function Contact() {
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-bw-volt transition font-mono">{label}</button>
             </li>
           ))}
         </ul>

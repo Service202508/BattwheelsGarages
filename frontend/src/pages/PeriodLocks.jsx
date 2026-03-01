@@ -59,24 +59,24 @@ export default function PeriodLocks({ user }) {
   const isLocked = (m, y) => activeLocks.some(l => l.period_month === m && l.period_year === y);
 
   return (
-    <div data-testid="period-locks-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
+    <div data-testid="period-locks-page" className="min-h-screen bg-bw-black text-bw-white p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Shield className="w-6 h-6 text-[#C8FF00]" />
+          <Shield className="w-6 h-6 text-bw-volt" />
           <h1 className="text-2xl font-bold tracking-tight">Period Locks</h1>
         </div>
         {(user?.role === 'owner' || user?.role === 'admin') && (
           <Button
             data-testid="lock-period-btn"
             onClick={() => setShowConfirm(true)}
-            className="bg-[#C8FF00] text-black hover:bg-[#B8EF00] font-semibold"
+            className="bg-bw-volt text-black hover:bg-bw-volt-hover font-semibold"
           >
             <Lock className="w-4 h-4 mr-2" /> Lock a Period
           </Button>
         )}
       </div>
 
-      <p className="text-sm text-[rgba(244,246,240,0.5)]">
+      <p className="text-sm text-bw-white/50">
         Locked periods prevent any financial transactions from being created, modified, or deleted within that timeframe.
       </p>
 
@@ -89,9 +89,9 @@ export default function PeriodLocks({ user }) {
       {/* Lock Dialog */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <Card data-testid="lock-confirm-dialog" className="bg-[#14141B] border-[rgba(244,246,240,0.1)] w-full max-w-md">
-            <CardHeader className="border-b border-[rgba(244,246,240,0.06)]">
-              <CardTitle className="text-[#F4F6F0] flex items-center gap-2 text-lg">
+          <Card data-testid="lock-confirm-dialog" className="bg-bw-panel border-bw-white/10 w-full max-w-md">
+            <CardHeader className="border-b border-bw-white/[0.06]">
+              <CardTitle className="text-bw-white flex items-center gap-2 text-lg">
                 <AlertTriangle className="w-5 h-5 text-amber-400" /> Confirm Period Lock
               </CardTitle>
             </CardHeader>
@@ -101,7 +101,7 @@ export default function PeriodLocks({ user }) {
                   data-testid="lock-month-select"
                   value={selectedMonth}
                   onChange={e => setSelectedMonth(Number(e.target.value))}
-                  className="flex-1 bg-[#0D0D14] border border-[rgba(244,246,240,0.12)] rounded-md px-3 py-2 text-[#F4F6F0] text-sm"
+                  className="flex-1 bg-bw-black border border-bw-white/[0.12] rounded-md px-3 py-2 text-bw-white text-sm"
                 >
                   {MONTHS.map((m, i) => (
                     <option key={i} value={i + 1} disabled={isLocked(i + 1, selectedYear)}>{m}</option>
@@ -111,7 +111,7 @@ export default function PeriodLocks({ user }) {
                   data-testid="lock-year-select"
                   value={selectedYear}
                   onChange={e => setSelectedYear(Number(e.target.value))}
-                  className="w-24 bg-[#0D0D14] border border-[rgba(244,246,240,0.12)] rounded-md px-3 py-2 text-[#F4F6F0] text-sm"
+                  className="w-24 bg-bw-black border border-bw-white/[0.12] rounded-md px-3 py-2 text-bw-white text-sm"
                 >
                   {[2024, 2025, 2026, 2027].map(y => (
                     <option key={y} value={y}>{y}</option>
@@ -124,7 +124,7 @@ export default function PeriodLocks({ user }) {
                 placeholder="Reason (optional)"
                 value={lockReason}
                 onChange={e => setLockReason(e.target.value)}
-                className="w-full bg-[#0D0D14] border border-[rgba(244,246,240,0.12)] rounded-md px-3 py-2 text-[#F4F6F0] text-sm placeholder:text-[rgba(244,246,240,0.3)]"
+                className="w-full bg-bw-black border border-bw-white/[0.12] rounded-md px-3 py-2 text-bw-white text-sm placeholder:text-bw-white/30"
               />
               <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/15 text-amber-300 text-xs leading-relaxed">
                 Locking <strong>{MONTHS[selectedMonth - 1]} {selectedYear}</strong> is irreversible by org users.
@@ -135,7 +135,7 @@ export default function PeriodLocks({ user }) {
                   data-testid="lock-cancel-btn"
                   variant="outline"
                   onClick={() => { setShowConfirm(false); setError(''); }}
-                  className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0] hover:bg-[rgba(244,246,240,0.05)]"
+                  className="border-bw-white/15 text-bw-white hover:bg-bw-white/5"
                 >Cancel</Button>
                 <Button
                   data-testid="lock-confirm-btn"
@@ -152,19 +152,19 @@ export default function PeriodLocks({ user }) {
       )}
 
       {/* Locks Table */}
-      <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+      <Card className="bg-bw-panel border-bw-white/[0.08]">
         <CardContent className="p-0">
           {loading ? (
-            <div className="p-8 text-center text-[rgba(244,246,240,0.4)]">Loading...</div>
+            <div className="p-8 text-center text-bw-white/40">Loading...</div>
           ) : activeLocks.length === 0 ? (
             <div data-testid="no-locks-message" className="p-12 text-center">
-              <Unlock className="w-10 h-10 mx-auto mb-3 text-[rgba(244,246,240,0.2)]" />
-              <p className="text-[rgba(244,246,240,0.4)] text-sm">No periods are locked. All financial periods are open for transactions.</p>
+              <Unlock className="w-10 h-10 mx-auto mb-3 text-bw-white/20" />
+              <p className="text-bw-white/40 text-sm">No periods are locked. All financial periods are open for transactions.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[rgba(244,246,240,0.06)] text-[rgba(244,246,240,0.5)] text-xs uppercase tracking-wider">
+                <tr className="border-b border-bw-white/[0.06] text-bw-white/50 text-xs uppercase tracking-wider">
                   <th className="text-left px-4 py-3">Period</th>
                   <th className="text-left px-4 py-3">Locked By</th>
                   <th className="text-left px-4 py-3">Locked Date</th>
@@ -174,14 +174,14 @@ export default function PeriodLocks({ user }) {
               </thead>
               <tbody>
                 {activeLocks.map(lock => (
-                  <tr key={lock.lock_id} data-testid={`lock-row-${lock.lock_id}`} className="border-b border-[rgba(244,246,240,0.04)] hover:bg-[rgba(244,246,240,0.02)]">
+                  <tr key={lock.lock_id} data-testid={`lock-row-${lock.lock_id}`} className="border-b border-bw-white/[0.04] hover:bg-bw-white/[0.02]">
                     <td className="px-4 py-3 font-medium flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-[#C8FF00]" />
+                      <Calendar className="w-4 h-4 text-bw-volt" />
                       {MONTHS[lock.period_month - 1]} {lock.period_year}
                     </td>
-                    <td className="px-4 py-3 text-[rgba(244,246,240,0.7)]">{lock.locked_by_name || lock.locked_by}</td>
-                    <td className="px-4 py-3 text-[rgba(244,246,240,0.5)]">{new Date(lock.locked_at).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-[rgba(244,246,240,0.5)]">{lock.lock_reason || '—'}</td>
+                    <td className="px-4 py-3 text-bw-white/70">{lock.locked_by_name || lock.locked_by}</td>
+                    <td className="px-4 py-3 text-bw-white/50">{new Date(lock.locked_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-bw-white/50">{lock.lock_reason || '—'}</td>
                     <td className="px-4 py-3">
                       <Badge className="bg-red-500/15 text-red-400 border-0 text-[10px] uppercase tracking-wider">
                         <Lock className="w-3 h-3 mr-1" /> Locked

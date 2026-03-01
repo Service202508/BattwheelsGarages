@@ -11,9 +11,9 @@ import { FileText, AlertTriangle, Loader2, Download, ArrowLeft, Minus } from "lu
 import { API } from "@/App";
 
 const cnStatusColors = {
-  issued: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
-  applied: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  refunded: "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]",
+  issued: "bg-bw-blue/10 text-bw-blue border border-bw-blue/25",
+  applied: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  refunded: "bg-bw-green/10 text-bw-green border border-bw-green/25",
 };
 
 const cnStatusLabels = { issued: "Issued", applied: "Applied", refunded: "Refunded" };
@@ -116,7 +116,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="credit-note-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2" data-testid="cn-modal-title">
-            <FileText className="h-5 w-5 text-[#FF8C00]" />
+            <FileText className="h-5 w-5 text-bw-orange" />
             Issue Credit Note
           </DialogTitle>
           <DialogDescription>
@@ -126,16 +126,16 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
 
         <div className="space-y-4">
           {/* Invoice reference summary */}
-          <div className="p-3 bg-[#111820] rounded-lg text-sm flex justify-between items-center" data-testid="cn-invoice-ref">
+          <div className="p-3 bg-bw-panel rounded-lg text-sm flex justify-between items-center" data-testid="cn-invoice-ref">
             <div>
-              <span className="text-[rgba(244,246,240,0.45)]">Original Invoice:</span>{" "}
+              <span className="text-bw-white/[0.45]">Original Invoice:</span>{" "}
               <span className="font-medium">{invoice?.invoice_number}</span>
-              <span className="mx-2 text-[rgba(244,246,240,0.15)]">|</span>
-              <span className="text-[rgba(244,246,240,0.45)]">Total:</span>{" "}
+              <span className="mx-2 text-bw-white/15">|</span>
+              <span className="text-bw-white/[0.45]">Total:</span>{" "}
               <span className="font-medium">{formatCurrency(invoiceTotal)}</span>
             </div>
             {alreadyCredited > 0 && (
-              <div className="text-[#FF8C00] text-xs">
+              <div className="text-bw-orange text-xs">
                 Already credited: {formatCurrency(alreadyCredited)} — Remaining: {formatCurrency(remaining)}
               </div>
             )}
@@ -159,7 +159,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
             <Label>Line Items (adjust quantities/rates downward only)</Label>
             <div className="border rounded-lg overflow-hidden mt-2">
               <table className="w-full text-sm">
-                <thead className="bg-[#111820]">
+                <thead className="bg-bw-panel">
                   <tr>
                     <th className="px-3 py-2 text-left">Item</th>
                     <th className="px-3 py-2 text-right w-24">Qty</th>
@@ -175,8 +175,8 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
                       <tr key={idx} className="border-t" data-testid={`cn-line-item-${idx}`}>
                         <td className="px-3 py-2">
                           <p className="font-medium">{item.name}</p>
-                          {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
-                          <p className="text-xs text-[rgba(244,246,240,0.25)]">Max: {item.max_quantity} x {formatCurrency(item.max_rate)}</p>
+                          {item.description && <p className="text-xs text-bw-white/[0.45]">{item.description}</p>}
+                          <p className="text-xs text-bw-white/25">Max: {item.max_quantity} x {formatCurrency(item.max_rate)}</p>
                         </td>
                         <td className="px-3 py-2 text-right">
                           <Input
@@ -202,7 +202,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
                             data-testid={`cn-rate-${idx}`}
                           />
                         </td>
-                        <td className="px-3 py-2 text-right text-[rgba(244,246,240,0.45)]">{item.tax_rate}%</td>
+                        <td className="px-3 py-2 text-right text-bw-white/[0.45]">{item.tax_rate}%</td>
                         <td className="px-3 py-2 text-right font-medium">{formatCurrency(lineTotal)}</td>
                       </tr>
                     );
@@ -213,16 +213,16 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
           </div>
 
           {/* Totals */}
-          <div className="bg-[#111820] p-4 rounded-lg w-64 ml-auto space-y-1 text-sm" data-testid="cn-totals">
+          <div className="bg-bw-panel p-4 rounded-lg w-64 ml-auto space-y-1 text-sm" data-testid="cn-totals">
             <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(subtotal)}</span></div>
             <div className="flex justify-between"><span>GST:</span><span>{formatCurrency(tax)}</span></div>
             <Separator />
             <div className="flex justify-between font-bold text-base">
               <span>Credit Note Total:</span>
-              <span className={total > remaining ? "text-[#FF3B2F]" : ""}>{formatCurrency(total)}</span>
+              <span className={total > remaining ? "text-bw-red" : ""}>{formatCurrency(total)}</span>
             </div>
             {total > remaining && (
-              <p className="text-xs text-[#FF3B2F] flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Exceeds remaining creditable amount</p>
+              <p className="text-xs text-bw-red flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Exceeds remaining creditable amount</p>
             )}
           </div>
 
@@ -238,7 +238,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
           <Button
             onClick={handleSubmit}
             disabled={loading || total <= 0 || total > remaining || !reason.trim()}
-            className="bg-[#FF8C00] hover:bg-[#e07b00] text-[#080C0F]"
+            className="bg-bw-orange hover:bg-bw-orange text-bw-black"
             data-testid="cn-submit-btn"
           >
             {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Minus className="h-4 w-4 mr-2" />}
@@ -293,22 +293,22 @@ export function CreditNoteViewModal({ open, onOpenChange, creditNote, headers })
 
         <div className="space-y-4 text-sm">
           <div className="grid grid-cols-3 gap-4">
-            <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span><br />{creditNote.created_at?.slice(0, 10)}</div>
-            <div><span className="text-[rgba(244,246,240,0.45)]">Customer:</span><br />{creditNote.customer_name}</div>
+            <div><span className="text-bw-white/[0.45]">Date:</span><br />{creditNote.created_at?.slice(0, 10)}</div>
+            <div><span className="text-bw-white/[0.45]">Customer:</span><br />{creditNote.customer_name}</div>
             <div>
-              <span className="text-[rgba(244,246,240,0.45)]">Original Invoice:</span><br />
-              <button className="text-[#3B9EFF] underline" data-testid="cn-invoice-link">{creditNote.original_invoice_number}</button>
+              <span className="text-bw-white/[0.45]">Original Invoice:</span><br />
+              <button className="text-bw-blue underline" data-testid="cn-invoice-link">{creditNote.original_invoice_number}</button>
             </div>
           </div>
 
-          <div className="p-3 bg-[rgba(255,140,0,0.06)] border border-[rgba(255,140,0,0.2)] rounded">
-            <strong className="text-[#FF8C00]">Reason:</strong> {creditNote.reason}
+          <div className="p-3 bg-bw-orange/[0.06] border border-bw-orange/20 rounded">
+            <strong className="text-bw-orange">Reason:</strong> {creditNote.reason}
           </div>
 
           {/* Line items */}
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#111820]">
+              <thead className="bg-bw-panel">
                 <tr>
                   <th className="px-3 py-2 text-left">Item</th>
                   <th className="px-3 py-2 text-right">Qty</th>
@@ -331,7 +331,7 @@ export function CreditNoteViewModal({ open, onOpenChange, creditNote, headers })
             </table>
           </div>
 
-          <div className="bg-[#111820] p-4 rounded-lg w-64 ml-auto space-y-1">
+          <div className="bg-bw-panel p-4 rounded-lg w-64 ml-auto space-y-1">
             <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(creditNote.subtotal)}</span></div>
             {creditNote.gst_treatment === "igst" ? (
               <div className="flex justify-between"><span>IGST:</span><span>{formatCurrency(creditNote.igst_amount)}</span></div>
@@ -346,7 +346,7 @@ export function CreditNoteViewModal({ open, onOpenChange, creditNote, headers })
           </div>
 
           {creditNote.notes && (
-            <div className="text-xs text-[rgba(244,246,240,0.45)]"><strong>Notes:</strong> {creditNote.notes}</div>
+            <div className="text-xs text-bw-white/[0.45]"><strong>Notes:</strong> {creditNote.notes}</div>
           )}
         </div>
 

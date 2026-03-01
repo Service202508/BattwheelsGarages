@@ -162,15 +162,15 @@ export default function FeatureGateBanner({ children }) {
             style={{ color: "#EAB308" }}
           />
           <div className="min-w-0">
-            <p className="text-sm font-medium text-[#F4F6F0] leading-tight whitespace-nowrap">
+            <p className="text-sm font-medium text-bw-white leading-tight whitespace-nowrap">
               <span style={{ color: "#EAB308" }}>{featureLabel}</span>
               {" "}is available on{" "}
               <span className="font-semibold">{requiredLabel} plan</span>
               {" "}and above.
             </p>
-            <p className="text-xs text-[rgba(244,246,240,0.45)] mt-0.5">
+            <p className="text-xs text-bw-white/[0.45] mt-0.5">
               Your current plan:{" "}
-              <span className="text-[rgba(244,246,240,0.7)]">{currentLabel}</span>
+              <span className="text-bw-white/70">{currentLabel}</span>
             </p>
           </div>
         </div>

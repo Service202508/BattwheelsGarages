@@ -290,7 +290,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
     return content.split('\n').map((line, i) => {
       // Headers
       if (line.startsWith('## ')) {
-        return <h2 key={i} className="text-lg font-bold text-[#C8FF00] text-400 mt-4 mb-2">{line.substring(3)}</h2>;
+        return <h2 key={i} className="text-lg font-bold text-bw-volt text-400 mt-4 mb-2">{line.substring(3)}</h2>;
       }
       if (line.startsWith('### ')) {
         return <h3 key={i} className="text-base font-semibold text-white mt-3 mb-1">{line.substring(4)}</h3>;
@@ -326,7 +326,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
   const WelcomeMessage = ({ userName }) => (
     <div className="space-y-4">
       <p className="text-lg">
-        Hello <span className="text-[#C8FF00] text-400 font-semibold">{userName}</span>! 
+        Hello <span className="text-bw-volt text-400 font-semibold">{userName}</span>! 
         I'm your AI Diagnostic Assistant powered by Gemini.
       </p>
       
@@ -334,20 +334,20 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
         <p className="text-slate-300">I can help you with:</p>
         <ul className="space-y-2 ml-2">
           <li className="flex items-start gap-2">
-            <Wrench className="h-4 w-4 text-[#C8FF00] text-400 mt-1 flex-shrink-0" />
-            <span><strong className="text-[#C8FF00] text-400">Fault Diagnosis:</strong> Describe symptoms, I'll suggest causes</span>
+            <Wrench className="h-4 w-4 text-bw-volt text-400 mt-1 flex-shrink-0" />
+            <span><strong className="text-bw-volt text-400">Fault Diagnosis:</strong> Describe symptoms, I'll suggest causes</span>
           </li>
           <li className="flex items-start gap-2">
-            <BookOpen className="h-4 w-4 text-[#C8FF00] text-400 mt-1 flex-shrink-0" />
-            <span><strong className="text-[#C8FF00] text-400">Repair Procedures:</strong> Step-by-step repair guides</span>
+            <BookOpen className="h-4 w-4 text-bw-volt text-400 mt-1 flex-shrink-0" />
+            <span><strong className="text-bw-volt text-400">Repair Procedures:</strong> Step-by-step repair guides</span>
           </li>
           <li className="flex items-start gap-2">
-            <AlertCircle className="h-4 w-4 text-[#C8FF00] text-400 mt-1 flex-shrink-0" />
-            <span><strong className="text-[#C8FF00] text-400">Error Code Interpretation:</strong> Decode OBD/CAN error codes</span>
+            <AlertCircle className="h-4 w-4 text-bw-volt text-400 mt-1 flex-shrink-0" />
+            <span><strong className="text-bw-volt text-400">Error Code Interpretation:</strong> Decode OBD/CAN error codes</span>
           </li>
           <li className="flex items-start gap-2">
-            <FileText className="h-4 w-4 text-[#C8FF00] text-400 mt-1 flex-shrink-0" />
-            <span><strong className="text-[#C8FF00] text-400">Technical Documentation:</strong> Quick access to repair knowledge</span>
+            <FileText className="h-4 w-4 text-bw-volt text-400 mt-1 flex-shrink-0" />
+            <span><strong className="text-bw-volt text-400">Technical Documentation:</strong> Quick access to repair knowledge</span>
           </li>
         </ul>
       </div>
@@ -362,9 +362,9 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
 
   // Source citation component
   const SourceCitation = ({ source, index }) => (
-    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700/50 hover:border-[rgba(200,255,0,0.50)]/30 transition-colors">
-      <div className="flex-shrink-0 w-6 h-6 rounded bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
-        <span className="text-xs text-[#C8FF00] text-400 font-medium">{index + 1}</span>
+    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-white/[0.07] border-700/50 hover:border-bw-volt/50/30 transition-colors">
+      <div className="flex-shrink-0 w-6 h-6 rounded bg-bw-volt/[0.08]0/20 flex items-center justify-center">
+        <span className="text-xs text-bw-volt text-400 font-medium">{index + 1}</span>
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-white truncate">{source.title}</p>
@@ -380,13 +380,13 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
   return (
     <div className="h-full flex flex-col bg-slate-900 rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-gradient-to-r from-slate-900 to-slate-800">
+      <div className="px-6 py-4 border-b border-white/[0.07] border-800/50 bg-gradient-to-r from-slate-900 to-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-xl blur-xl" />
-              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-[rgba(200,255,0,0.50)]/20">
-                <Sparkles className="h-6 w-6 text-[#C8FF00] text-400" />
+              <div className="absolute inset-0 bg-bw-volt/[0.08]0/20 rounded-xl blur-xl" />
+              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-bw-volt/50/20">
+                <Sparkles className="h-6 w-6 text-bw-volt text-400" />
               </div>
             </div>
             <div>
@@ -405,7 +405,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               <RotateCcw className="h-4 w-4 mr-1.5" />
               Clear
             </Button>
-            <Badge className="bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-[rgba(200,255,0,0.50)]/30 px-3 py-1">
+            <Badge className="bg-bw-volt/[0.08]0/20 text-bw-volt text-400 border border-bw-volt/50/30 px-3 py-1">
               <Zap className="h-3 w-3 mr-1.5" />
               AI Enabled
             </Badge>
@@ -414,7 +414,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
       </div>
 
       {/* Quick Questions Section */}
-      <div className="px-6 py-3 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50">
+      <div className="px-6 py-3 border-b border-white/[0.07] border-800/50 bg-slate-900/50">
         <div className="flex items-center gap-2 mb-2">
           <Lightbulb className="h-4 w-4 text-amber-400" />
           <span className="text-sm font-medium text-slate-300">Quick Questions:</span>
@@ -425,7 +425,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               key={idx}
               onClick={() => sendMessage(question)}
               disabled={loading}
-              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-[rgba(200,255,0,0.50)]/30 transition-all disabled:opacity-50 flex items-center gap-1"
+              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-white/[0.07] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-bw-volt/50/30 transition-all disabled:opacity-50 flex items-center gap-1"
             >
               {question}
               <ChevronRight className="h-3 w-3 opacity-50" />
@@ -447,11 +447,11 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                 {/* Avatar */}
                 <div className={`flex-shrink-0 ${message.role === "user" ? "order-1" : ""}`}>
                   {message.role === "assistant" ? (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-bw-volt/50/30 flex items-center justify-center">
+                      <Bot className="h-5 w-5 text-bw-volt text-400" />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 border border-[rgba(255,255,255,0.07)] border-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 border border-white/[0.07] border-600 flex items-center justify-center">
                       <User className="h-5 w-5 text-slate-300" />
                     </div>
                   )}
@@ -462,10 +462,10 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                   <div
                     className={`inline-block rounded-2xl px-5 py-4 ${
                       message.role === "user"
-                        ? "bg-[rgba(200,255,0,0.15)] text-[#F4F6F0] border border-[rgba(200,255,0,0.25)] rounded-br-md"
+                        ? "bg-bw-volt/15 text-bw-white border border-bw-volt/25 rounded-br-md"
                         : message.error
-                        ? "bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.30)] text-[#F4F6F0] rounded-bl-md"
-                        : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] text-[#F4F6F0] rounded-bl-md"
+                        ? "bg-bw-red/[0.08] border border-bw-red/30 text-bw-white rounded-bl-md"
+                        : "bg-slate-800/80 border border-white/[0.07] text-bw-white rounded-bl-md"
                     }`}
                   >
                     {message.isWelcome ? (
@@ -519,15 +519,15 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                       <span className="text-xs">
                         {message.confidence && (
                           <Badge variant="outline" className={`text-xs mr-2 ${
-                            message.confidence === 'high' ? 'border-[rgba(200,255,0,0.50)]/50 text-[#C8FF00] text-400' :
+                            message.confidence === 'high' ? 'border-bw-volt/50/50 text-bw-volt text-400' :
                             message.confidence === 'medium' ? 'border-amber-500/50 text-amber-400' :
-                            'border-[rgba(255,255,255,0.07)] border-500/50 text-slate-400'
+                            'border-white/[0.07] border-500/50 text-slate-400'
                           }`}>
                             {message.confidence} confidence
                           </Badge>
                         )}
                         {message.sources?.length > 0 && (
-                          <span className="text-[#C8FF00] text-400">{message.sources.length} sources</span>
+                          <span className="text-bw-volt text-400">{message.sources.length} sources</span>
                         )}
                       </span>
                       <span className="text-slate-700">•</span>
@@ -540,7 +540,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                       </button>
                       <button 
                         onClick={() => submitFeedback("helpful")}
-                        className="text-xs hover:text-[#C8FF00] text-400 flex items-center gap-1 transition-colors"
+                        className="text-xs hover:text-bw-volt text-400 flex items-center gap-1 transition-colors"
                       >
                         <ThumbsUp className="h-3 w-3" />
                         Helpful
@@ -570,17 +570,17 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
             {/* Loading State */}
             {loading && (
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-bw-volt/50/30 flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-bw-volt text-400" />
                 </div>
-                <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] rounded-2xl rounded-bl-md px-5 py-4">
+                <div className="bg-slate-800/80 border border-white/[0.07] rounded-2xl rounded-bl-md px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex gap-1.5">
-                      <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
-                    <span className="text-sm text-[rgba(244,246,240,0.45)]">Searching knowledge base...</span>
+                    <span className="text-sm text-bw-white/[0.45]">Searching knowledge base...</span>
                   </div>
                 </div>
               </div>
@@ -592,14 +592,14 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
 
         {/* Sources Panel */}
         {currentSources.length > 0 && (
-          <div className="w-80 border-l border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50 flex flex-col">
-            <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)] border-800/50">
+          <div className="w-80 border-l border-white/[0.07] border-800/50 bg-slate-900/50 flex flex-col">
+            <div className="px-4 py-3 border-b border-white/[0.07] border-800/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[#C8FF00] text-400" />
+                  <FileText className="h-4 w-4 text-bw-volt text-400" />
                   <span className="text-sm font-medium text-white">Sources Used</span>
                 </div>
-                <Badge variant="outline" className="text-xs border-[rgba(200,255,0,0.50)]/30 text-[#C8FF00] text-400">
+                <Badge variant="outline" className="text-xs border-bw-volt/50/30 text-bw-volt text-400">
                   {currentSources.length}
                 </Badge>
               </div>
@@ -616,13 +616,13 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
       </div>
 
       {/* Input Area */}
-      <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900">
+      <div className="px-6 py-4 border-t border-white/[0.07] border-800/50 bg-slate-900">
         <div className="flex gap-3 items-end max-w-4xl">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-48 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white">
+            <SelectTrigger className="w-48 bg-slate-800/50 border-white/[0.07] border-700/50 text-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-[rgba(255,255,255,0.07)] border-700">
+            <SelectContent className="bg-slate-800 border-white/[0.07] border-700">
               {CATEGORIES.map(cat => {
                 const Icon = cat.icon;
                 return (
@@ -644,7 +644,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white placeholder:text-slate-500 focus:border-[rgba(200,255,0,0.50)]/50 focus:ring-emerald-500/20 h-12"
+              className="bg-slate-800/50 border-white/[0.07] border-700/50 text-white placeholder:text-slate-500 focus:border-bw-volt/50/50 focus:ring-emerald-500/20 h-12"
               disabled={loading}
               data-testid="ai-query-input"
             />
@@ -653,7 +653,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
           <Button
             onClick={() => sendMessage()}
             disabled={loading || !input.trim()}
-            className="h-12 w-12 rounded-xl bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] border-0"
+            className="h-12 w-12 rounded-xl bg-bw-volt hover:bg-bw-volt-hover text-bw-black border-0"
             data-testid="ai-send-btn"
           >
             {loading ? (

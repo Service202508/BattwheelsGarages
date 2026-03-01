@@ -42,18 +42,18 @@ export default function CustomerLayout({ children, user, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#111820]">
+    <div className="min-h-screen bg-bw-panel">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-[rgba(255,255,255,0.07)] px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-50 bg-bw-panel border-b border-white/[0.07] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-          <span className="font-bold text-lg text-[#C8FF00] text-600">Battwheels OS</span>
+          <span className="font-bold text-lg text-bw-volt text-600">Battwheels OS</span>
         </div>
         <Avatar className="h-8 w-8">
           <AvatarImage src={user?.picture} />
-          <AvatarFallback className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700">
+          <AvatarFallback className="bg-bw-volt/10 text-bw-volt text-700">
             {getInitials(user?.name)}
           </AvatarFallback>
         </Avatar>
@@ -62,19 +62,19 @@ export default function CustomerLayout({ children, user, onLogout }) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#111820] border-r border-[rgba(255,255,255,0.07)]
+          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-bw-panel border-r border-white/[0.07]
           transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-[rgba(255,255,255,0.07)]">
-              <div className="h-10 w-10 rounded-lg bg-[rgba(200,255,0,0.08)]0 flex items-center justify-center">
+            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-white/[0.07]">
+              <div className="h-10 w-10 rounded-lg bg-bw-volt/[0.08]0 flex items-center justify-center">
                 <Car className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-[#F4F6F0]">Battwheels OS</h1>
-                <p className="text-xs text-[rgba(244,246,240,0.45)]">Customer Portal</p>
+                <h1 className="font-bold text-lg text-bw-white">Battwheels OS</h1>
+                <p className="text-xs text-bw-white/[0.45]">Customer Portal</p>
               </div>
             </div>
 
@@ -95,12 +95,12 @@ export default function CustomerLayout({ children, user, onLogout }) {
                         flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                         transition-colors duration-150
                         ${isActive 
-                          ? 'bg-[rgba(200,255,0,0.08)] text-[#C8FF00] text-700' 
-                          : 'text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]'
+                          ? 'bg-bw-volt/[0.08] text-bw-volt text-700' 
+                          : 'text-bw-white/35 hover:bg-bw-panel hover:text-bw-white'
                         }
                       `}
                     >
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-[#C8FF00] text-600' : 'text-[rgba(244,246,240,0.45)]'}`} />
+                      <Icon className={`h-5 w-5 ${isActive ? 'text-bw-volt text-600' : 'text-bw-white/[0.45]'}`} />
                       {item.label}
                     </Link>
                   );
@@ -108,46 +108,46 @@ export default function CustomerLayout({ children, user, onLogout }) {
               </nav>
 
               {/* Quick Actions */}
-              <div className="mt-6 pt-6 border-t border-[rgba(255,255,255,0.07)]">
-                <p className="px-3 mb-2 text-xs font-semibold text-[rgba(244,246,240,0.45)] uppercase tracking-wider">
+              <div className="mt-6 pt-6 border-t border-white/[0.07]">
+                <p className="px-3 mb-2 text-xs font-semibold text-bw-white/[0.45] uppercase tracking-wider">
                   Quick Actions
                 </p>
                 <Link
                   to="/customer/request-callback"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-bw-white/35 hover:bg-bw-panel hover:text-bw-white"
                 >
-                  <Phone className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                  <Phone className="h-5 w-5 text-bw-white/[0.45]" />
                   Request Callback
                 </Link>
                 <Link
                   to="/customer/book-appointment"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-bw-white/35 hover:bg-bw-panel hover:text-bw-white"
                 >
-                  <Calendar className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                  <Calendar className="h-5 w-5 text-bw-white/[0.45]" />
                   Book Appointment
                 </Link>
               </div>
             </ScrollArea>
 
             {/* User Info & Logout */}
-            <div className="border-t border-[rgba(255,255,255,0.07)] p-4">
+            <div className="border-t border-white/[0.07] p-4">
               <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.picture} />
-                  <AvatarFallback className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700">
+                  <AvatarFallback className="bg-bw-volt/10 text-bw-volt text-700">
                     {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#F4F6F0] truncate">{user?.name}</p>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] truncate">{user?.email}</p>
+                  <p className="text-sm font-medium text-bw-white truncate">{user?.name}</p>
+                  <p className="text-xs text-bw-white/[0.45] truncate">{user?.email}</p>
                 </div>
               </div>
               <Button 
                 variant="outline" 
-                className="w-full justify-start text-[rgba(244,246,240,0.35)] hover:text-red-600 hover:border-red-200"
+                className="w-full justify-start text-bw-white/35 hover:text-red-600 hover:border-red-200"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

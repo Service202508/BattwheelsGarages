@@ -22,18 +22,18 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  active: "bg-[rgba(34,197,94,0.20)] text-green-400",
-  inactive: "bg-[rgba(17,24,32,0.2)] text-[rgba(244,246,240,0.45)]",
-  terminated: "bg-[rgba(255,59,47,0.20)] text-red-400",
-  resigned: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
-  on_notice: "bg-[rgba(255,140,0,0.20)] text-orange-400"
+  active: "bg-bw-green/20 text-green-400",
+  inactive: "bg-bw-panel/20 text-bw-white/[0.45]",
+  terminated: "bg-bw-red/20 text-red-400",
+  resigned: "bg-bw-amber/20 text-yellow-400",
+  on_notice: "bg-bw-orange/20 text-orange-400"
 };
 
 const roleColors = {
-  admin: "bg-[rgba(139,92,246,0.20)] text-purple-400",
+  admin: "bg-bw-purple/20 text-purple-400",
   manager: "bg-blue-500/20 text-blue-400",
   technician: "bg-cyan-500/20 text-cyan-400",
-  accountant: "bg-[rgba(200,255,0,0.20)] text-[#C8FF00]",
+  accountant: "bg-bw-volt/20 text-bw-volt",
   customer_support: "bg-pink-500/20 text-pink-400"
 };
 
@@ -603,12 +603,12 @@ export default function Employees({ user }) {
                     <TableCell className="capitalize">{emp.department?.replace("_", " ")}</TableCell>
                     <TableCell>{emp.designation}</TableCell>
                     <TableCell>
-                      <Badge className={roleColors[emp.system_role] || "bg-[#111820]0"}>
+                      <Badge className={roleColors[emp.system_role] || "bg-bw-panel0"}>
                         {emp.system_role}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={statusColors[emp.status] || "bg-[#111820]0"}>
+                      <Badge className={statusColors[emp.status] || "bg-bw-panel0"}>
                         {emp.status}
                       </Badge>
                     </TableCell>

@@ -19,8 +19,8 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  approved: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
-  rejected: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
+  approved: "bg-bw-volt/[0.08]0/20 text-bw-volt text-400 border-bw-volt/50/30",
+  rejected: "bg-bw-red/[0.08]0/20 text-red-400 border-red-500/30",
 };
 
 const leaveTypeIcons = {
@@ -131,7 +131,7 @@ export default function TechnicianLeave({ user }) {
         </div>
         <Button 
           onClick={() => setShowRequestDialog(true)}
-          className="bg-[#22C55E] hover:bg-[#16a34a]"
+          className="bg-bw-green hover:bg-bw-green-hover"
           data-testid="request-leave-btn"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -141,7 +141,7 @@ export default function TechnicianLeave({ user }) {
 
       {/* Leave Balance */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-amber-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800 hover:border-amber-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
@@ -160,7 +160,7 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-rose-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800 hover:border-rose-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-rose-500/10">
@@ -179,7 +179,7 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-blue-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800 hover:border-blue-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -198,10 +198,10 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-purple-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-white/[0.07] border-800 hover:border-purple-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
+              <div className="p-2 rounded-lg bg-bw-purple/[0.08]0/10">
                 <Plane className="h-5 w-5 text-purple-400" />
               </div>
               <Badge variant="outline" className="text-xs text-slate-400">Total Used</Badge>
@@ -215,7 +215,7 @@ export default function TechnicianLeave({ user }) {
       </div>
 
       {/* Leave Requests */}
-      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
+      <Card className="bg-slate-900/50 border-white/[0.07] border-800">
         <CardHeader>
           <CardTitle className="text-white">Leave Requests</CardTitle>
           <CardDescription>Your leave request history</CardDescription>
@@ -279,7 +279,7 @@ export default function TechnicianLeave({ user }) {
 
       {/* Request Leave Dialog */}
       <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
-        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
+        <DialogContent className="bg-slate-900 border-white/[0.07] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">Request Leave</DialogTitle>
             <DialogDescription>Submit a new leave request</DialogDescription>
@@ -292,7 +292,7 @@ export default function TechnicianLeave({ user }) {
                 value={formData.leave_type}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, leave_type: value }))}
               >
-                <SelectTrigger className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700">
+                <SelectTrigger className="bg-slate-800/50 border-white/[0.07] border-700">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -309,7 +309,7 @@ export default function TechnicianLeave({ user }) {
                 <Label className="text-slate-300">Start Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50">
+                    <Button variant="outline" className="w-full justify-start border-white/[0.07] border-700 bg-slate-800/50">
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {startDate ? format(startDate, "MMM dd, yyyy") : "Select date"}
                     </Button>
@@ -329,7 +329,7 @@ export default function TechnicianLeave({ user }) {
                 <Label className="text-slate-300">End Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50">
+                    <Button variant="outline" className="w-full justify-start border-white/[0.07] border-700 bg-slate-800/50">
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {endDate ? format(endDate, "MMM dd, yyyy") : "Select date"}
                     </Button>
@@ -351,7 +351,7 @@ export default function TechnicianLeave({ user }) {
               <Label className="text-slate-300">Reason</Label>
               <Textarea
                 placeholder="Reason for leave..."
-                className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700 min-h-[100px]"
+                className="bg-slate-800/50 border-white/[0.07] border-700 min-h-[100px]"
                 value={formData.reason}
                 onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
               />
@@ -359,13 +359,13 @@ export default function TechnicianLeave({ user }) {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRequestDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
+            <Button variant="outline" onClick={() => setShowRequestDialog(false)} className="border-white/[0.07] border-700">
               Cancel
             </Button>
             <Button 
               onClick={handleSubmitLeave}
               disabled={submitting}
-              className="bg-[#22C55E] hover:bg-[#16a34a]"
+              className="bg-bw-green hover:bg-bw-green-hover"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
               Submit Request

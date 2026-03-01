@@ -224,8 +224,8 @@ export default function Payroll({ user }) {
 
   const getProductivityBadge = (pct) => {
     if (pct >= 100) return <Badge className="badge-success">{pct}%</Badge>;
-    if (pct >= 80) return <Badge className="bg-[rgba(234,179,8,0.10)]">{pct}%</Badge>;
-    return <Badge className="bg-[rgba(255,59,47,0.10)]">{pct}%</Badge>;
+    if (pct >= 80) return <Badge className="bg-bw-amber/10">{pct}%</Badge>;
+    return <Badge className="bg-bw-red/10">{pct}%</Badge>;
   };
 
   // Calculate totals for payroll
@@ -248,13 +248,13 @@ export default function Payroll({ user }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Payroll</h1>
-          <p className="text-[rgba(244,246,240,0.65)]">Process payroll based on attendance and productivity.</p>
+          <p className="text-bw-white/[0.65]">Process payroll based on attendance and productivity.</p>
         </div>
         {user?.role === "admin" && (
           <Button 
             onClick={handleGeneratePayroll} 
             disabled={generating}
-            className="bg-[#C8FF00] text-[#080C0F] hover:bg-[#b8ef00]"
+            className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover"
             data-testid="generate-payroll-btn"
           >
             <Calculator className="mr-2 h-4 w-4" />
@@ -264,13 +264,13 @@ export default function Payroll({ user }) {
       </div>
 
       {/* Month Selector */}
-      <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+      <Card className="bg-bw-off-black border-bw-white/10">
         <CardContent className="pt-6">
           <div className="flex gap-4 items-center">
             <div className="flex gap-2 items-center">
               <Label>Month:</Label>
               <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
-                <SelectTrigger className="w-[130px] bg-[#080C0F] border-[rgba(244,246,240,0.1)]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-[130px] bg-bw-black border-bw-white/10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
                     <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
@@ -281,7 +281,7 @@ export default function Payroll({ user }) {
             <div className="flex gap-2 items-center">
               <Label>Year:</Label>
               <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-                <SelectTrigger className="w-[100px] bg-[#080C0F] border-[rgba(244,246,240,0.1)]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-[100px] bg-bw-black border-bw-white/10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {[2024, 2025, 2026, 2027].map((y) => (
                     <SelectItem key={y} value={String(y)}>{y}</SelectItem>
@@ -294,7 +294,7 @@ export default function Payroll({ user }) {
       </Card>
 
       <Tabs defaultValue={user?.role === "admin" ? "all" : "my-payroll"}>
-        <TabsList className="bg-[#0D1117]">
+        <TabsList className="bg-bw-off-black">
           {user?.role === "admin" && <TabsTrigger value="all">All Employees</TabsTrigger>}
           <TabsTrigger value="my-payroll">My Payslips</TabsTrigger>
           {user?.role === "admin" && <TabsTrigger value="tds-summary">TDS Summary</TabsTrigger>}
@@ -305,33 +305,33 @@ export default function Payroll({ user }) {
           <TabsContent value="all" className="space-y-4">
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-4">
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">Total Net Salary</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">Total Net Salary</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#C8FF00]">{formatCurrency(totalNetSalary)}</div>
+                  <div className="text-2xl font-bold text-bw-volt">{formatCurrency(totalNetSalary)}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">Total Overtime Pay</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">Total Overtime Pay</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{formatCurrency(totalOvertime)}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">Employees</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">Employees</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{payrollRecords.length}</div>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">Avg Productivity</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">Avg Productivity</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{avgProductivity}%</div>
@@ -340,20 +340,20 @@ export default function Payroll({ user }) {
             </div>
 
             {/* Payroll Table */}
-            <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+            <Card className="bg-bw-off-black border-bw-white/10">
               <CardHeader>
                 <CardTitle>Payroll Summary - {["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][selectedMonth]} {selectedYear}</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 {payrollRecords.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-48 text-[rgba(244,246,240,0.45)]">
+                  <div className="flex flex-col items-center justify-center h-48 text-bw-white/[0.45]">
                     <Calculator className="h-12 w-12 mb-4 opacity-50" />
                     <p>No payroll data. Click "Generate Payroll" to calculate.</p>
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-[rgba(244,246,240,0.1)]">
+                      <TableRow className="border-bw-white/10">
                         <TableHead>Employee</TableHead>
                         <TableHead>Working Days</TableHead>
                         <TableHead>Present</TableHead>
@@ -368,12 +368,12 @@ export default function Payroll({ user }) {
                     </TableHeader>
                     <TableBody>
                       {payrollRecords.map((record) => (
-                        <TableRow key={record.payroll_id} className="border-[rgba(244,246,240,0.1)]">
+                        <TableRow key={record.payroll_id} className="border-bw-white/10">
                           <TableCell className="font-medium">{record.employee_name || record.user_name}</TableCell>
                           <TableCell>{record.working_days || 26}</TableCell>
                           <TableCell>
                             {record.days_present || 0}
-                            {record.days_half > 0 && <span className="text-[rgba(244,246,240,0.45)]"> (+{record.days_half}½)</span>}
+                            {record.days_half > 0 && <span className="text-bw-white/[0.45]"> (+{record.days_half}½)</span>}
                           </TableCell>
                           <TableCell>
                             {record.total_hours || 0}
@@ -390,8 +390,8 @@ export default function Payroll({ user }) {
                           <TableCell>{getProductivityBadge(record.productivity_score || 100)}</TableCell>
                           <TableCell>{formatCurrency(record.earnings?.gross || record.base_salary)}</TableCell>
                           <TableCell className="text-green-500">+{formatCurrency(record.overtime_pay || 0)}</TableCell>
-                          <TableCell className="text-[#FF3B2F]">-{formatCurrency(record.deductions?.total || record.deductions || 0)}</TableCell>
-                          <TableCell className="font-bold text-[#C8FF00]">{formatCurrency(record.net_salary)}</TableCell>
+                          <TableCell className="text-bw-red">-{formatCurrency(record.deductions?.total || record.deductions || 0)}</TableCell>
+                          <TableCell className="font-bold text-bw-volt">{formatCurrency(record.net_salary)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -407,60 +407,60 @@ export default function Payroll({ user }) {
           <TabsContent value="tds-summary" className="space-y-4">
             {/* TDS Stat Cards */}
             <div className="grid gap-4 md:grid-cols-4">
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">TDS This Month</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">TDS This Month</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#C8FF00]">{formatCurrency(tdsThisMonth)}</div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Total TDS to deduct</p>
+                  <div className="text-2xl font-bold text-bw-volt">{formatCurrency(tdsThisMonth)}</div>
+                  <p className="text-xs text-bw-white/[0.45] mt-1">Total TDS to deduct</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">TDS YTD</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">TDS YTD</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#C8FF00]">{formatCurrency(tdsYtd)}</div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Year to date deducted</p>
+                  <div className="text-2xl font-bold text-bw-volt">{formatCurrency(tdsYtd)}</div>
+                  <p className="text-xs text-bw-white/[0.45] mt-1">Year to date deducted</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">TDS Deposited YTD</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">TDS Deposited YTD</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#22C55E]">{formatCurrency(tdsDepositedYtd)}</div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Deposited to government</p>
+                  <div className="text-2xl font-bold text-bw-green">{formatCurrency(tdsDepositedYtd)}</div>
+                  <p className="text-xs text-bw-white/[0.45] mt-1">Deposited to government</p>
                 </CardContent>
               </Card>
-              <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+              <Card className="bg-bw-off-black border-bw-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-[rgba(244,246,240,0.65)]">TDS Pending Deposit</CardTitle>
+                  <CardTitle className="text-sm text-bw-white/[0.65]">TDS Pending Deposit</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className={`text-2xl font-bold ${tdsPendingDeposit > 0 ? 'text-[#FF3B2F]' : 'text-[rgba(244,246,240,0.35)]'}`}>
+                  <div className={`text-2xl font-bold ${tdsPendingDeposit > 0 ? 'text-bw-red' : 'text-bw-white/35'}`}>
                     {formatCurrency(Math.max(0, tdsPendingDeposit))}
                   </div>
-                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Awaiting deposit</p>
+                  <p className="text-xs text-bw-white/[0.45] mt-1">Awaiting deposit</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* TDS Due Date Alert Banner */}
             {tdsAlert.is_overdue && (
-              <div className="p-4 rounded-lg bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.25)] border-l-[3px] border-l-[#FF3B2F]">
+              <div className="p-4 rounded-lg bg-bw-red/[0.08] border border-bw-red/25 border-l-[3px] border-l-bw-red">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <XCircle className="h-5 w-5 text-[#FF3B2F]" />
+                    <XCircle className="h-5 w-5 text-bw-red" />
                     <div>
-                      <p className="font-semibold text-[#FF3B2F]">TDS OVERDUE</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.65)]">
+                      <p className="font-semibold text-bw-red">TDS OVERDUE</p>
+                      <p className="text-sm text-bw-white/[0.65]">
                         {formatCurrency(tdsThisMonth)} was due on 7th. Interest at 1.5% per month applies under Section 201(1A) of Income Tax Act.
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="border-[#FF3B2F] text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.1)]" onClick={() => setShowChallanModal(true)}>
+                  <Button variant="outline" className="border-bw-red text-bw-red hover:bg-bw-red/10" onClick={() => setShowChallanModal(true)}>
                     <Landmark className="h-4 w-4 mr-2" /> Mark TDS Deposited
                   </Button>
                 </div>
@@ -468,18 +468,18 @@ export default function Payroll({ user }) {
             )}
             
             {tdsAlert.is_due_soon && !tdsAlert.is_overdue && (
-              <div className="p-4 rounded-lg bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.25)] border-l-[3px] border-l-[#FF8C00]">
+              <div className="p-4 rounded-lg bg-bw-orange/[0.08] border border-bw-orange/25 border-l-[3px] border-l-bw-orange">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <AlertTriangle className="h-5 w-5 text-[#FF8C00]" />
+                    <AlertTriangle className="h-5 w-5 text-bw-orange" />
                     <div>
-                      <p className="font-semibold text-[#FF8C00]">TDS Due Soon</p>
-                      <p className="text-sm text-[rgba(244,246,240,0.65)]">
+                      <p className="font-semibold text-bw-orange">TDS Due Soon</p>
+                      <p className="text-sm text-bw-white/[0.65]">
                         TDS for last month due by 7th. Amount due: {formatCurrency(tdsThisMonth)}. Mark as deposited after payment.
                       </p>
                     </div>
                   </div>
-                  <Button variant="outline" className="border-[#FF8C00] text-[#FF8C00] hover:bg-[rgba(255,140,0,0.1)]" onClick={() => setShowChallanModal(true)}>
+                  <Button variant="outline" className="border-bw-orange text-bw-orange hover:bg-bw-orange/10" onClick={() => setShowChallanModal(true)}>
                     <Landmark className="h-4 w-4 mr-2" /> Mark TDS Deposited
                   </Button>
                 </div>
@@ -487,19 +487,19 @@ export default function Payroll({ user }) {
             )}
             
             {!tdsAlert.is_overdue && !tdsAlert.is_due_soon && tdsDepositedYtd > 0 && (
-              <div className="p-4 rounded-lg bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] border-l-[3px] border-l-[#22C55E]">
+              <div className="p-4 rounded-lg bg-bw-green/[0.08] border border-bw-green/25 border-l-[3px] border-l-bw-green">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-[#22C55E]" />
+                  <CheckCircle2 className="h-5 w-5 text-bw-green" />
                   <div>
-                    <p className="font-semibold text-[#22C55E]">TDS deposits are up to date</p>
-                    <p className="text-sm text-[rgba(244,246,240,0.65)]">Next TDS due: 7th of next month</p>
+                    <p className="font-semibold text-bw-green">TDS deposits are up to date</p>
+                    <p className="text-sm text-bw-white/[0.65]">Next TDS due: 7th of next month</p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* TDS Summary Table */}
-            <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+            <Card className="bg-bw-off-black border-bw-white/10">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Employee TDS Summary</CardTitle>
                 <div className="flex gap-2">
@@ -513,13 +513,13 @@ export default function Payroll({ user }) {
               </CardHeader>
               <CardContent className="p-0">
                 {tdsLoading ? (
-                  <div className="flex items-center justify-center h-48 text-[rgba(244,246,240,0.45)]">
+                  <div className="flex items-center justify-center h-48 text-bw-white/[0.45]">
                     <Calculator className="h-8 w-8 animate-spin" />
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-[rgba(244,246,240,0.1)]">
+                      <TableRow className="border-bw-white/10">
                         <TableHead>Employee Name</TableHead>
                         <TableHead>PAN</TableHead>
                         <TableHead>Regime</TableHead>
@@ -532,42 +532,42 @@ export default function Payroll({ user }) {
                     </TableHeader>
                     <TableBody>
                       {(tdsSummary?.employees || []).map((emp, idx) => (
-                        <TableRow key={emp.employee_id || idx} className="border-[rgba(244,246,240,0.1)]">
+                        <TableRow key={emp.employee_id || idx} className="border-bw-white/10">
                           <TableCell className="font-medium">{emp.employee_name}</TableCell>
                           <TableCell>
                             {emp.pan_number ? (
-                              <code className="font-mono text-xs bg-[rgba(244,246,240,0.05)] px-2 py-1 rounded">
+                              <code className="font-mono text-xs bg-bw-white/5 px-2 py-1 rounded">
                                 {emp.pan_number}
                               </code>
                             ) : (
-                              <Badge className="bg-[rgba(255,59,47,0.15)] text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.2)]" title="Higher TDS rate applied under Section 206AA. Add employee PAN to reduce TDS rate.">
+                              <Badge className="bg-bw-red/15 text-bw-red hover:bg-bw-red/20" title="Higher TDS rate applied under Section 206AA. Add employee PAN to reduce TDS rate.">
                                 PAN MISSING
                               </Badge>
                             )}
                           </TableCell>
                           <TableCell>
                             <Badge className={emp.tax_regime === "old" 
-                              ? "bg-[rgba(234,179,8,0.15)] text-[#EAB308]" 
-                              : "bg-[rgba(59,130,246,0.15)] text-[#3B82F6]"}>
+                              ? "bg-bw-amber/15 text-bw-amber" 
+                              : "bg-bw-blue/15 text-bw-blue"}>
                               {(emp.tax_regime || "new").toUpperCase()}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right font-mono">{formatCurrency(emp.gross_monthly * 12)}</TableCell>
                           <TableCell className="text-right font-mono">{formatCurrency(emp.annual_tax_liability)}</TableCell>
-                          <TableCell className="text-right font-mono font-bold text-[#C8FF00]">{formatCurrency(emp.monthly_tds)}</TableCell>
+                          <TableCell className="text-right font-mono font-bold text-bw-volt">{formatCurrency(emp.monthly_tds)}</TableCell>
                           <TableCell className="text-right font-mono">{formatCurrency(emp.ytd_tds)}</TableCell>
                           <TableCell>
-                            <Badge className="bg-[rgba(200,255,0,0.15)] text-[#C8FF00]">COMPUTED</Badge>
+                            <Badge className="bg-bw-volt/15 text-bw-volt">COMPUTED</Badge>
                           </TableCell>
                         </TableRow>
                       ))}
                       {/* Footer Total Row */}
-                      <TableRow className="bg-[rgba(200,255,0,0.06)] border-t-2 border-[rgba(200,255,0,0.20)]">
+                      <TableRow className="bg-bw-volt/[0.06] border-t-2 border-bw-volt/20">
                         <TableCell colSpan={5} className="font-mono font-bold">TOTAL</TableCell>
-                        <TableCell className="text-right font-mono font-bold text-[#C8FF00]">
+                        <TableCell className="text-right font-mono font-bold text-bw-volt">
                           {formatCurrency(tdsSummary?.total_tds_this_month || 0)}
                         </TableCell>
-                        <TableCell className="text-right font-mono font-bold text-[#C8FF00]">
+                        <TableCell className="text-right font-mono font-bold text-bw-volt">
                           {formatCurrency(tdsSummary?.total_tds_ytd || 0)}
                         </TableCell>
                         <TableCell></TableCell>
@@ -579,7 +579,7 @@ export default function Payroll({ user }) {
             </Card>
 
             {/* Form 16 Section */}
-            <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+            <Card className="bg-bw-off-black border-bw-white/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" /> Form 16 Data
@@ -591,7 +591,7 @@ export default function Payroll({ user }) {
                   <div className="space-y-2">
                     <Label>Financial Year</Label>
                     <Select value={selectedFY} onValueChange={setSelectedFY}>
-                      <SelectTrigger className="w-[140px] bg-[#080C0F] border-[rgba(244,246,240,0.1)]">
+                      <SelectTrigger className="w-[140px] bg-bw-black border-bw-white/10">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -604,7 +604,7 @@ export default function Payroll({ user }) {
                   <div className="space-y-2">
                     <Label>Employee</Label>
                     <Select value={selectedEmployeeForForm16} onValueChange={setSelectedEmployeeForForm16}>
-                      <SelectTrigger className="w-[200px] bg-[#080C0F] border-[rgba(244,246,240,0.1)]">
+                      <SelectTrigger className="w-[200px] bg-bw-black border-bw-white/10">
                         <SelectValue placeholder="Select employee" />
                       </SelectTrigger>
                       <SelectContent>
@@ -681,8 +681,8 @@ export default function Payroll({ user }) {
         {/* My Payslips */}
         <TabsContent value="my-payroll" className="space-y-4">
           {myPayroll.length === 0 ? (
-            <Card className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
-              <CardContent className="flex flex-col items-center justify-center h-48 text-[rgba(244,246,240,0.45)]">
+            <Card className="bg-bw-off-black border-bw-white/10">
+              <CardContent className="flex flex-col items-center justify-center h-48 text-bw-white/[0.45]">
                 <DollarSign className="h-12 w-12 mb-4 opacity-50" />
                 <p>No payslips available yet</p>
               </CardContent>
@@ -690,11 +690,11 @@ export default function Payroll({ user }) {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {myPayroll.map((record) => (
-                <Card key={record.payroll_id} className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+                <Card key={record.payroll_id} className="bg-bw-off-black border-bw-white/10">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>{record.month} {record.year}</span>
-                      <Badge className={record.status === "paid" ? "badge-success" : "bg-[rgba(234,179,8,0.10)]"}>
+                      <Badge className={record.status === "paid" ? "badge-success" : "bg-bw-amber/10"}>
                         {record.status || "generated"}
                       </Badge>
                     </CardTitle>
@@ -703,16 +703,16 @@ export default function Payroll({ user }) {
                     {/* Salary Breakdown */}
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-[rgba(244,246,240,0.65)]">Gross Salary</span>
+                        <span className="text-bw-white/[0.65]">Gross Salary</span>
                         <span>{formatCurrency(record.earnings?.gross || 0)}</span>
                       </div>
-                      <div className="flex justify-between text-[#FF3B2F]">
+                      <div className="flex justify-between text-bw-red">
                         <span>Deductions (PF + TDS + PT)</span>
                         <span>-{formatCurrency(record.deductions?.total || 0)}</span>
                       </div>
-                      <div className="flex justify-between font-bold text-lg border-t border-[rgba(244,246,240,0.1)] pt-2">
+                      <div className="flex justify-between font-bold text-lg border-t border-bw-white/10 pt-2">
                         <span>Net Salary</span>
-                        <span className="text-[#C8FF00]">{formatCurrency(record.net_salary)}</span>
+                        <span className="text-bw-volt">{formatCurrency(record.net_salary)}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -725,7 +725,7 @@ export default function Payroll({ user }) {
 
       {/* TDS Challan Modal */}
       <Dialog open={showChallanModal} onOpenChange={setShowChallanModal}>
-        <DialogContent className="bg-[#0D1117] border-[rgba(244,246,240,0.1)]">
+        <DialogContent className="bg-bw-off-black border-bw-white/10">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Landmark className="h-5 w-5" /> Mark TDS Deposited
@@ -738,7 +738,7 @@ export default function Payroll({ user }) {
             <div className="space-y-2">
               <Label>Challan Number *</Label>
               <Input 
-                className="font-mono bg-[#080C0F] border-[rgba(244,246,240,0.1)]"
+                className="font-mono bg-bw-black border-bw-white/10"
                 placeholder="e.g., 1234567890"
                 value={challanForm.challan_number}
                 onChange={(e) => setChallanForm({...challanForm, challan_number: e.target.value})}
@@ -747,7 +747,7 @@ export default function Payroll({ user }) {
             <div className="space-y-2">
               <Label>BSR Code of Bank Branch *</Label>
               <Input 
-                className="font-mono bg-[#080C0F] border-[rgba(244,246,240,0.1)]"
+                className="font-mono bg-bw-black border-bw-white/10"
                 placeholder="e.g., 0510021"
                 value={challanForm.bsr_code}
                 onChange={(e) => setChallanForm({...challanForm, bsr_code: e.target.value})}
@@ -757,7 +757,7 @@ export default function Payroll({ user }) {
               <Label>Date of Deposit</Label>
               <Input 
                 type="date"
-                className="bg-[#080C0F] border-[rgba(244,246,240,0.1)]"
+                className="bg-bw-black border-bw-white/10"
                 value={challanForm.deposit_date}
                 onChange={(e) => setChallanForm({...challanForm, deposit_date: e.target.value})}
               />
@@ -766,7 +766,7 @@ export default function Payroll({ user }) {
               <Label>Amount Deposited</Label>
               <Input 
                 type="number"
-                className="font-mono bg-[#080C0F] border-[rgba(244,246,240,0.1)]"
+                className="font-mono bg-bw-black border-bw-white/10"
                 value={challanForm.amount}
                 onChange={(e) => setChallanForm({...challanForm, amount: parseFloat(e.target.value) || 0})}
               />
@@ -774,7 +774,7 @@ export default function Payroll({ user }) {
             <div className="space-y-2">
               <Label>Payment Mode</Label>
               <Select value={challanForm.payment_mode} onValueChange={(v) => setChallanForm({...challanForm, payment_mode: v})}>
-                <SelectTrigger className="bg-[#080C0F] border-[rgba(244,246,240,0.1)]">
+                <SelectTrigger className="bg-bw-black border-bw-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -788,7 +788,7 @@ export default function Payroll({ user }) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowChallanModal(false)}>Cancel</Button>
-            <Button className="bg-[#C8FF00] text-[#080C0F] hover:bg-[#b8ef00]" onClick={handleRecordChallan}>
+            <Button className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover" onClick={handleRecordChallan}>
               <Save className="h-4 w-4 mr-2" /> Record Challan
             </Button>
           </DialogFooter>

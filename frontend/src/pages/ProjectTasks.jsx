@@ -193,8 +193,8 @@ export default function ProjectTasks() {
     <div className="space-y-6" data-testid="project-tasks-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Project Tasks</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage tasks within projects for time tracking</p>
+          <h1 className="text-2xl font-bold text-bw-white">Project Tasks</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage tasks within projects for time tracking</p>
         </div>
         <div className="flex items-center gap-3">
           <Select 
@@ -218,7 +218,7 @@ export default function ProjectTasks() {
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
               <Button 
-                className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" 
+                className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" 
                 disabled={!selectedProject}
                 data-testid="new-task-btn"
               >
@@ -279,7 +279,7 @@ export default function ProjectTasks() {
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
                 <Button 
                   onClick={editingTask ? handleUpdate : handleCreate} 
-                  className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold"
+                  className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold"
                   data-testid="save-task-btn"
                 >
                   {editingTask ? "Update Task" : "Create Task"}
@@ -297,19 +297,19 @@ export default function ProjectTasks() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-blue-900">{selectedProject.project_name}</h2>
-                <p className="text-sm text-[#3B9EFF]">{selectedProject.customer_name || "No customer"}</p>
+                <p className="text-sm text-bw-blue">{selectedProject.customer_name || "No customer"}</p>
               </div>
               <div className="flex gap-6 text-sm">
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Status:</span>
+                  <span className="text-bw-white/[0.45]">Status:</span>
                   <Badge className="ml-2 bg-blue-100 text-blue-800">{selectedProject.status || "active"}</Badge>
                 </div>
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Budget:</span>
+                  <span className="text-bw-white/[0.45]">Budget:</span>
                   <span className="ml-2 font-medium">{formatCurrency(selectedProject.budget_amount)}</span>
                 </div>
                 <div>
-                  <span className="text-[rgba(244,246,240,0.45)]">Tasks:</span>
+                  <span className="text-bw-white/[0.45]">Tasks:</span>
                   <span className="ml-2 font-medium">{tasks.length}</span>
                 </div>
               </div>
@@ -322,16 +322,16 @@ export default function ProjectTasks() {
         <CardContent className="p-0">
           {loading || tasksLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
             </div>
           ) : !selectedProject ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-12 text-bw-white/[0.45]">
               <FolderKanban className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No project selected</p>
               <p className="text-sm">Select a project to view and manage its tasks</p>
             </div>
           ) : tasks.length === 0 ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-12 text-bw-white/[0.45]">
               <CheckCircle2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No tasks in this project</p>
               <p className="text-sm">Create tasks to track time and billing</p>
@@ -339,7 +339,7 @@ export default function ProjectTasks() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#111820]">
+                <TableRow className="bg-bw-panel">
                   <TableHead>Task Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead className="text-right">Rate</TableHead>
@@ -364,25 +364,25 @@ export default function ProjectTasks() {
                           value={getProgressPercent(task.logged_hours, task.budget_hours)} 
                           className="h-2"
                         />
-                        <span className="text-xs text-[rgba(244,246,240,0.45)]">
+                        <span className="text-xs text-bw-white/[0.45]">
                           {Math.round(getProgressPercent(task.logged_hours, task.budget_hours))}%
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       {task.is_billable ? (
-                        <Badge className="bg-[rgba(34,197,94,0.10)] text-[#22C55E]">Yes</Badge>
+                        <Badge className="bg-bw-green/10 text-bw-green">Yes</Badge>
                       ) : (
-                        <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]">No</Badge>
+                        <Badge className="bg-white/5 text-bw-white/35">No</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(task)} title="Edit">
-                          <Edit className="h-4 w-4 text-[#3B9EFF]" />
+                          <Edit className="h-4 w-4 text-bw-blue" />
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(task.task_id)} title="Delete">
-                          <Trash2 className="h-4 w-4 text-[#FF3B2F]" />
+                          <Trash2 className="h-4 w-4 text-bw-red" />
                         </Button>
                       </div>
                     </TableCell>

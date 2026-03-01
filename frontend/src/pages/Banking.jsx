@@ -296,19 +296,19 @@ export default function Banking() {
   });
 
   return (
-    <div data-testid="banking-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
+    <div data-testid="banking-page" className="min-h-screen bg-bw-black text-bw-white p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Banking</h1>
-          <p className="text-sm text-[rgba(244,246,240,0.65)]">Manage bank accounts and transactions</p>
+          <p className="text-sm text-bw-white/[0.65]">Manage bank accounts and transactions</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setShowTransferDialog(true)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0] hover:bg-[rgba(244,246,240,0.05)]">
+          <Button variant="outline" onClick={() => setShowTransferDialog(true)} className="border-bw-white/15 text-bw-white hover:bg-bw-white/5">
             <ArrowRightLeft className="w-4 h-4 mr-2" />
             Transfer
           </Button>
-          <Button onClick={() => { resetAccountForm(); setShowCreateAccount(true); }} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+          <Button onClick={() => { resetAccountForm(); setShowCreateAccount(true); }} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
             <Plus className="w-4 h-4 mr-2" />
             New Account
           </Button>
@@ -317,47 +317,47 @@ export default function Banking() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+        <Card className="bg-bw-panel border-bw-white/[0.08]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Total Balance</p>
-                <p className="text-xl font-bold text-[#C8FF00]">{formatCurrency(summary.total_balance)}</p>
+                <p className="text-xs text-bw-white/50 uppercase tracking-wide">Total Balance</p>
+                <p className="text-xl font-bold text-bw-volt">{formatCurrency(summary.total_balance)}</p>
               </div>
-              <Wallet className="w-8 h-8 text-[#C8FF00]" />
+              <Wallet className="w-8 h-8 text-bw-volt" />
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+        <Card className="bg-bw-panel border-bw-white/[0.08]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Accounts</p>
-                <p className="text-xl font-bold text-[#F4F6F0]">{summary.total_accounts || summary.accounts?.length || 0}</p>
+                <p className="text-xs text-bw-white/50 uppercase tracking-wide">Accounts</p>
+                <p className="text-xl font-bold text-bw-white">{summary.total_accounts || summary.accounts?.length || 0}</p>
               </div>
-              <Building2 className="w-8 h-8 text-[#3B9EFF]" />
+              <Building2 className="w-8 h-8 text-bw-blue" />
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+        <Card className="bg-bw-panel border-bw-white/[0.08]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">This Month Credits</p>
-                <p className="text-xl font-bold text-[#1AFFE4]">{formatCurrency(summary.this_month?.credits)}</p>
+                <p className="text-xs text-bw-white/50 uppercase tracking-wide">This Month Credits</p>
+                <p className="text-xl font-bold text-bw-teal">{formatCurrency(summary.this_month?.credits)}</p>
               </div>
-              <TrendingUp className="w-8 h-8 text-[#1AFFE4]" />
+              <TrendingUp className="w-8 h-8 text-bw-teal" />
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+        <Card className="bg-bw-panel border-bw-white/[0.08]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">This Month Debits</p>
-                <p className="text-xl font-bold text-[#FF3B2F]">{formatCurrency(summary.this_month?.debits)}</p>
+                <p className="text-xs text-bw-white/50 uppercase tracking-wide">This Month Debits</p>
+                <p className="text-xl font-bold text-bw-red">{formatCurrency(summary.this_month?.debits)}</p>
               </div>
-              <TrendingDown className="w-8 h-8 text-[#FF3B2F]" />
+              <TrendingDown className="w-8 h-8 text-bw-red" />
             </div>
           </CardContent>
         </Card>
@@ -368,30 +368,30 @@ export default function Banking() {
         {summary.accounts?.map(acc => (
           <Card 
             key={acc.account_id}
-            className={`bg-[#14141B] border-[rgba(244,246,240,0.08)] cursor-pointer transition-all ${selectedAccount?.account_id === acc.account_id ? 'ring-2 ring-[#C8FF00]' : 'hover:border-[rgba(244,246,240,0.2)]'}`}
+            className={`bg-bw-panel border-bw-white/[0.08] cursor-pointer transition-all ${selectedAccount?.account_id === acc.account_id ? 'ring-2 ring-bw-volt' : 'hover:border-bw-white/20'}`}
             onClick={() => setSelectedAccount(acc)}
           >
             <CardContent className="pt-6">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  {acc.account_type === "CASH" ? <Banknote className="w-5 h-5 text-[#FFB300]" /> : <CreditCard className="w-5 h-5 text-[#3B9EFF]" />}
-                  <span className="text-xs text-[rgba(244,246,240,0.5)] uppercase">{acc.account_type}</span>
+                  {acc.account_type === "CASH" ? <Banknote className="w-5 h-5 text-bw-amber" /> : <CreditCard className="w-5 h-5 text-bw-blue" />}
+                  <span className="text-xs text-bw-white/50 uppercase">{acc.account_type}</span>
                 </div>
-                {acc.is_default && <Badge className="bg-[rgba(200,255,0,0.15)] text-[#C8FF00] border-0 text-[10px]">Default</Badge>}
+                {acc.is_default && <Badge className="bg-bw-volt/15 text-bw-volt border-0 text-[10px]">Default</Badge>}
               </div>
-              <p className="font-medium text-[#F4F6F0] truncate">{acc.account_name}</p>
-              <p className="text-xs text-[rgba(244,246,240,0.5)]">{acc.bank_name} {acc.account_number_last4 && `****${acc.account_number_last4}`}</p>
+              <p className="font-medium text-bw-white truncate">{acc.account_name}</p>
+              <p className="text-xs text-bw-white/50">{acc.bank_name} {acc.account_number_last4 && `****${acc.account_number_last4}`}</p>
               <p className="text-xl font-bold mt-3 font-mono">{formatCurrency(acc.current_balance)}</p>
             </CardContent>
           </Card>
         ))}
         
         {(summary.accounts?.length || 0) === 0 && !loading && (
-          <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)] border-dashed col-span-full">
+          <Card className="bg-bw-panel border-bw-white/[0.08] border-dashed col-span-full">
             <CardContent className="py-12 text-center">
-              <Building2 className="w-12 h-12 text-[rgba(244,246,240,0.2)] mx-auto mb-3" />
-              <p className="text-[rgba(244,246,240,0.5)]">No bank accounts yet</p>
-              <Button variant="link" onClick={() => setShowCreateAccount(true)} className="text-[#C8FF00]">
+              <Building2 className="w-12 h-12 text-bw-white/20 mx-auto mb-3" />
+              <p className="text-bw-white/50">No bank accounts yet</p>
+              <Button variant="link" onClick={() => setShowCreateAccount(true)} className="text-bw-volt">
                 Add your first account
               </Button>
             </CardContent>
@@ -401,24 +401,24 @@ export default function Banking() {
 
       {/* Transactions Section */}
       {selectedAccount && (
-        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
-          <CardHeader className="border-b border-[rgba(244,246,240,0.08)]">
+        <Card className="bg-bw-panel border-bw-white/[0.08]">
+          <CardHeader className="border-b border-bw-white/[0.08]">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <ArrowUpDown className="w-5 h-5 text-[#3B9EFF]" />
+                <ArrowUpDown className="w-5 h-5 text-bw-blue" />
                 {selectedAccount.account_name} - Transactions
               </CardTitle>
               <div className="flex items-center gap-2">
                 {selectedTxns.length > 0 && (
-                  <Button size="sm" onClick={handleBulkReconcile} className="bg-[#1AFFE4] text-black hover:bg-[#00E5CC]">
+                  <Button size="sm" onClick={handleBulkReconcile} className="bg-bw-teal text-black hover:bg-bw-teal">
                     <Check className="w-4 h-4 mr-1" />
                     Reconcile ({selectedTxns.length})
                   </Button>
                 )}
-                <Button variant="outline" size="sm" onClick={selectAllUnreconciled} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                <Button variant="outline" size="sm" onClick={selectAllUnreconciled} className="border-bw-white/15 text-bw-white">
                   Select Unreconciled
                 </Button>
-                <Button size="sm" onClick={() => { resetTxnForm(); setShowAddTransaction(true); }} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+                <Button size="sm" onClick={() => { resetTxnForm(); setShowAddTransaction(true); }} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
                   <Plus className="w-4 h-4 mr-1" />
                   Add Transaction
                 </Button>
@@ -431,33 +431,33 @@ export default function Banking() {
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36"
+                className="bg-bw-black border-bw-white/[0.08] text-bw-white w-36"
                 placeholder="From"
               />
               <Input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36"
+                className="bg-bw-black border-bw-white/[0.08] text-bw-white w-36"
                 placeholder="To"
               />
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-40">
+                <SelectTrigger className="bg-bw-black border-bw-white/[0.08] text-bw-white w-40">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                  <SelectItem value="all" className="text-[#F4F6F0]">All Categories</SelectItem>
-                  {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
+                <SelectContent className="bg-bw-panel border-bw-white/15">
+                  <SelectItem value="all" className="text-bw-white">All Categories</SelectItem>
+                  {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-bw-white">{c.label}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={reconciledFilter} onValueChange={setReconciledFilter}>
-                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36">
+                <SelectTrigger className="bg-bw-black border-bw-white/[0.08] text-bw-white w-36">
                   <SelectValue placeholder="Reconciled" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                  <SelectItem value="all" className="text-[#F4F6F0]">All</SelectItem>
-                  <SelectItem value="yes" className="text-[#F4F6F0]">Reconciled</SelectItem>
-                  <SelectItem value="no" className="text-[#F4F6F0]">Unreconciled</SelectItem>
+                <SelectContent className="bg-bw-panel border-bw-white/15">
+                  <SelectItem value="all" className="text-bw-white">All</SelectItem>
+                  <SelectItem value="yes" className="text-bw-white">Reconciled</SelectItem>
+                  <SelectItem value="no" className="text-bw-white">Unreconciled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -466,44 +466,44 @@ export default function Banking() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[rgba(244,246,240,0.08)]">
+                  <tr className="border-b border-bw-white/[0.08]">
                     <th className="w-8 p-3"></th>
-                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Date</th>
-                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Description</th>
-                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Category</th>
-                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Reference</th>
-                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Debit</th>
-                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Credit</th>
-                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Balance</th>
-                    <th className="text-center p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Recon</th>
+                    <th className="text-left p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Date</th>
+                    <th className="text-left p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Description</th>
+                    <th className="text-left p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Category</th>
+                    <th className="text-left p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Reference</th>
+                    <th className="text-right p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Debit</th>
+                    <th className="text-right p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Credit</th>
+                    <th className="text-right p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Balance</th>
+                    <th className="text-center p-3 text-xs font-medium text-bw-white/50 uppercase tracking-wide">Recon</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions.length === 0 ? (
-                    <tr><td colSpan={9} className="text-center p-8 text-[rgba(244,246,240,0.5)]">No transactions found</td></tr>
+                    <tr><td colSpan={9} className="text-center p-8 text-bw-white/50">No transactions found</td></tr>
                   ) : (
                     transactions.map(txn => (
-                      <tr key={txn.transaction_id} className="border-b border-[rgba(244,246,240,0.05)] hover:bg-[rgba(244,246,240,0.02)]">
+                      <tr key={txn.transaction_id} className="border-b border-bw-white/5 hover:bg-bw-white/[0.02]">
                         <td className="p-3">
                           <Checkbox
                             checked={selectedTxns.includes(txn.transaction_id)}
                             onCheckedChange={() => toggleTxnSelection(txn.transaction_id)}
-                            className="border-[rgba(244,246,240,0.3)] data-[state=checked]:bg-[#C8FF00] data-[state=checked]:border-[#C8FF00]"
+                            className="border-bw-white/30 data-[state=checked]:bg-bw-volt data-[state=checked]:border-bw-volt"
                           />
                         </td>
                         <td className="p-3 text-sm">{txn.transaction_date}</td>
                         <td className="p-3 text-sm">{txn.description}</td>
-                        <td className="p-3"><Badge variant="outline" className="border-[rgba(244,246,240,0.2)] text-[rgba(244,246,240,0.7)] text-xs">{txn.category}</Badge></td>
-                        <td className="p-3 text-sm text-[rgba(244,246,240,0.5)]">{txn.reference_number || "—"}</td>
-                        <td className="p-3 text-right font-mono text-[#FF3B2F]">{txn.transaction_type === "DEBIT" ? formatCurrency(txn.amount) : "—"}</td>
-                        <td className="p-3 text-right font-mono text-[#1AFFE4]">{txn.transaction_type === "CREDIT" ? formatCurrency(txn.amount) : "—"}</td>
+                        <td className="p-3"><Badge variant="outline" className="border-bw-white/20 text-bw-white/70 text-xs">{txn.category}</Badge></td>
+                        <td className="p-3 text-sm text-bw-white/50">{txn.reference_number || "—"}</td>
+                        <td className="p-3 text-right font-mono text-bw-red">{txn.transaction_type === "DEBIT" ? formatCurrency(txn.amount) : "—"}</td>
+                        <td className="p-3 text-right font-mono text-bw-teal">{txn.transaction_type === "CREDIT" ? formatCurrency(txn.amount) : "—"}</td>
                         <td className="p-3 text-right font-mono">{formatCurrency(txn.balance_after)}</td>
                         <td className="p-3 text-center">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleReconcile(txn.transaction_id, !txn.reconciled)}
-                            className={txn.reconciled ? "text-[#1AFFE4]" : "text-[rgba(244,246,240,0.3)]"}
+                            className={txn.reconciled ? "text-bw-teal" : "text-bw-white/30"}
                           >
                             {txn.reconciled ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                           </Button>
@@ -520,10 +520,10 @@ export default function Banking() {
 
       {/* Create Account Dialog */}
       <Dialog open={showCreateAccount} onOpenChange={setShowCreateAccount}>
-        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0] max-w-lg">
+        <DialogContent className="bg-bw-panel border-bw-white/15 text-bw-white max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-[#C8FF00]" />
+              <Building2 className="w-5 h-5 text-bw-volt" />
               New Bank Account
             </DialogTitle>
           </DialogHeader>
@@ -531,86 +531,86 @@ export default function Banking() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Account Name *</Label>
+                <Label className="text-bw-white/70">Account Name *</Label>
                 <Input
                   value={accountForm.account_name}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, account_name: e.target.value }))}
                   placeholder="e.g., Main Business Account"
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Bank Name *</Label>
+                <Label className="text-bw-white/70">Bank Name *</Label>
                 <Input
                   value={accountForm.bank_name}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, bank_name: e.target.value }))}
                   placeholder="e.g., HDFC Bank"
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Account Number *</Label>
+                <Label className="text-bw-white/70">Account Number *</Label>
                 <Input
                   value={accountForm.account_number}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, account_number: e.target.value }))}
                   placeholder="50100123456789"
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">IFSC Code</Label>
+                <Label className="text-bw-white/70">IFSC Code</Label>
                 <Input
                   value={accountForm.ifsc_code}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, ifsc_code: e.target.value.toUpperCase() }))}
                   placeholder="HDFC0001234"
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Account Type</Label>
+                <Label className="text-bw-white/70">Account Type</Label>
                 <Select value={accountForm.account_type} onValueChange={(v) => setAccountForm(prev => ({ ...prev, account_type: v }))}>
-                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  <SelectTrigger className="bg-bw-black border-bw-white/15 text-bw-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                    {accountTypes.map(t => <SelectItem key={t.value} value={t.value} className="text-[#F4F6F0]">{t.label}</SelectItem>)}
+                  <SelectContent className="bg-bw-panel border-bw-white/15">
+                    {accountTypes.map(t => <SelectItem key={t.value} value={t.value} className="text-bw-white">{t.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">UPI ID</Label>
+                <Label className="text-bw-white/70">UPI ID</Label>
                 <Input
                   value={accountForm.upi_id}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, upi_id: e.target.value }))}
                   placeholder="business@hdfcbank"
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Opening Balance</Label>
+                <Label className="text-bw-white/70">Opening Balance</Label>
                 <Input
                   type="number"
                   value={accountForm.opening_balance}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, opening_balance: parseFloat(e.target.value) || 0 }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Balance Date</Label>
+                <Label className="text-bw-white/70">Balance Date</Label>
                 <Input
                   type="date"
                   value={accountForm.opening_balance_date}
                   onChange={(e) => setAccountForm(prev => ({ ...prev, opening_balance_date: e.target.value }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
             </div>
@@ -620,17 +620,17 @@ export default function Banking() {
                 id="is_default"
                 checked={accountForm.is_default}
                 onCheckedChange={(c) => setAccountForm(prev => ({ ...prev, is_default: !!c }))}
-                className="border-[rgba(244,246,240,0.3)]"
+                className="border-bw-white/30"
               />
-              <Label htmlFor="is_default" className="text-sm text-[rgba(244,246,240,0.7)]">Set as default account</Label>
+              <Label htmlFor="is_default" className="text-sm text-bw-white/70">Set as default account</Label>
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateAccount(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+            <Button variant="outline" onClick={() => setShowCreateAccount(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleCreateAccount} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+            <Button onClick={handleCreateAccount} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
               Create Account
             </Button>
           </DialogFooter>
@@ -639,10 +639,10 @@ export default function Banking() {
 
       {/* Add Transaction Dialog */}
       <Dialog open={showAddTransaction} onOpenChange={setShowAddTransaction}>
-        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+        <DialogContent className="bg-bw-panel border-bw-white/15 text-bw-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ArrowUpDown className="w-5 h-5 text-[#3B9EFF]" />
+              <ArrowUpDown className="w-5 h-5 text-bw-blue" />
               Add Transaction
             </DialogTitle>
           </DialogHeader>
@@ -650,77 +650,77 @@ export default function Banking() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Date</Label>
+                <Label className="text-bw-white/70">Date</Label>
                 <Input
                   type="date"
                   value={txnForm.transaction_date}
                   onChange={(e) => setTxnForm(prev => ({ ...prev, transaction_date: e.target.value }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Type</Label>
+                <Label className="text-bw-white/70">Type</Label>
                 <Select value={txnForm.transaction_type} onValueChange={(v) => setTxnForm(prev => ({ ...prev, transaction_type: v }))}>
-                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  <SelectTrigger className="bg-bw-black border-bw-white/15 text-bw-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                    <SelectItem value="CREDIT" className="text-[#1AFFE4]">Credit (Money In)</SelectItem>
-                    <SelectItem value="DEBIT" className="text-[#FF3B2F]">Debit (Money Out)</SelectItem>
+                  <SelectContent className="bg-bw-panel border-bw-white/15">
+                    <SelectItem value="CREDIT" className="text-bw-teal">Credit (Money In)</SelectItem>
+                    <SelectItem value="DEBIT" className="text-bw-red">Debit (Money Out)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             
             <div>
-              <Label className="text-[rgba(244,246,240,0.7)]">Description *</Label>
+              <Label className="text-bw-white/70">Description *</Label>
               <Input
                 value={txnForm.description}
                 onChange={(e) => setTxnForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Transaction description"
-                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                className="bg-bw-black border-bw-white/15 text-bw-white"
               />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Amount *</Label>
+                <Label className="text-bw-white/70">Amount *</Label>
                 <Input
                   type="number"
                   value={txnForm.amount}
                   onChange={(e) => setTxnForm(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Category</Label>
+                <Label className="text-bw-white/70">Category</Label>
                 <Select value={txnForm.category} onValueChange={(v) => setTxnForm(prev => ({ ...prev, category: v }))}>
-                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  <SelectTrigger className="bg-bw-black border-bw-white/15 text-bw-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                    {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
+                  <SelectContent className="bg-bw-panel border-bw-white/15">
+                    {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-bw-white">{c.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             
             <div>
-              <Label className="text-[rgba(244,246,240,0.7)]">Reference Number</Label>
+              <Label className="text-bw-white/70">Reference Number</Label>
               <Input
                 value={txnForm.reference_number}
                 onChange={(e) => setTxnForm(prev => ({ ...prev, reference_number: e.target.value }))}
                 placeholder="UTR/Cheque/Reference #"
-                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                className="bg-bw-black border-bw-white/15 text-bw-white"
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddTransaction(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+            <Button variant="outline" onClick={() => setShowAddTransaction(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleAddTransaction} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+            <Button onClick={handleAddTransaction} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
               Add Transaction
             </Button>
           </DialogFooter>
@@ -729,24 +729,24 @@ export default function Banking() {
 
       {/* Transfer Dialog */}
       <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
-        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+        <DialogContent className="bg-bw-panel border-bw-white/15 text-bw-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ArrowRightLeft className="w-5 h-5 text-[#FFB300]" />
+              <ArrowRightLeft className="w-5 h-5 text-bw-amber" />
               Transfer Between Accounts
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div>
-              <Label className="text-[rgba(244,246,240,0.7)]">From Account</Label>
+              <Label className="text-bw-white/70">From Account</Label>
               <Select value={transferForm.from_account_id} onValueChange={(v) => setTransferForm(prev => ({ ...prev, from_account_id: v }))}>
-                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                <SelectTrigger className="bg-bw-black border-bw-white/15 text-bw-white">
                   <SelectValue placeholder="Select source account" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                <SelectContent className="bg-bw-panel border-bw-white/15">
                   {summary.accounts?.map(acc => (
-                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-[#F4F6F0]">
+                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-bw-white">
                       {acc.account_name} ({formatCurrency(acc.current_balance)})
                     </SelectItem>
                   ))}
@@ -755,14 +755,14 @@ export default function Banking() {
             </div>
             
             <div>
-              <Label className="text-[rgba(244,246,240,0.7)]">To Account</Label>
+              <Label className="text-bw-white/70">To Account</Label>
               <Select value={transferForm.to_account_id} onValueChange={(v) => setTransferForm(prev => ({ ...prev, to_account_id: v }))}>
-                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                <SelectTrigger className="bg-bw-black border-bw-white/15 text-bw-white">
                   <SelectValue placeholder="Select destination account" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                <SelectContent className="bg-bw-panel border-bw-white/15">
                   {summary.accounts?.filter(a => a.account_id !== transferForm.from_account_id).map(acc => (
-                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-[#F4F6F0]">
+                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-bw-white">
                       {acc.account_name} ({formatCurrency(acc.current_balance)})
                     </SelectItem>
                   ))}
@@ -772,41 +772,41 @@ export default function Banking() {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Amount</Label>
+                <Label className="text-bw-white/70">Amount</Label>
                 <Input
                   type="number"
                   value={transferForm.amount}
                   onChange={(e) => setTransferForm(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
               <div>
-                <Label className="text-[rgba(244,246,240,0.7)]">Date</Label>
+                <Label className="text-bw-white/70">Date</Label>
                 <Input
                   type="date"
                   value={transferForm.transfer_date}
                   onChange={(e) => setTransferForm(prev => ({ ...prev, transfer_date: e.target.value }))}
-                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                  className="bg-bw-black border-bw-white/15 text-bw-white"
                 />
               </div>
             </div>
             
             <div>
-              <Label className="text-[rgba(244,246,240,0.7)]">Reference</Label>
+              <Label className="text-bw-white/70">Reference</Label>
               <Input
                 value={transferForm.reference}
                 onChange={(e) => setTransferForm(prev => ({ ...prev, reference: e.target.value }))}
                 placeholder="Transfer reference"
-                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                className="bg-bw-black border-bw-white/15 text-bw-white"
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowTransferDialog(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+            <Button variant="outline" onClick={() => setShowTransferDialog(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleTransfer} className="bg-[#FFB300] text-black hover:bg-[#E5A000]">
+            <Button onClick={handleTransfer} className="bg-bw-amber text-black hover:bg-bw-amber">
               Transfer Funds
             </Button>
           </DialogFooter>

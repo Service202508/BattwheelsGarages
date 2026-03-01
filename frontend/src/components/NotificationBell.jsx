@@ -23,10 +23,10 @@ const notificationIcons = {
 };
 
 const priorityColors = {
-  low: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  normal: "bg-blue-100 text-[#3B9EFF]",
-  high: "bg-orange-100 text-[#FF8C00]",
-  urgent: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  low: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  normal: "bg-blue-100 text-bw-blue",
+  high: "bg-orange-100 text-bw-orange",
+  urgent: "bg-bw-red/10 text-bw-red border border-bw-red/25",
 };
 
 export default function NotificationBell({ user }) {
@@ -117,7 +117,7 @@ export default function NotificationBell({ user }) {
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[rgba(255,59,47,0.08)]0 text-white text-xs flex items-center justify-center font-medium">
+            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-bw-red/[0.08]0 text-white text-xs flex items-center justify-center font-medium">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
@@ -131,7 +131,7 @@ export default function NotificationBell({ user }) {
               variant="ghost" 
               size="sm" 
               onClick={markAllRead}
-              className="text-xs text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"
+              className="text-xs text-bw-white/[0.45] hover:text-bw-white"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               Mark all read
@@ -141,9 +141,9 @@ export default function NotificationBell({ user }) {
         
         <ScrollArea className="h-96">
           {loading ? (
-            <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">Loading...</div>
+            <div className="p-8 text-center text-bw-white/[0.45]">Loading...</div>
           ) : notifications.length === 0 ? (
-            <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">
+            <div className="p-8 text-center text-bw-white/[0.45]">
               <Bell className="h-8 w-8 mx-auto mb-2 opacity-30" />
               <p>No notifications</p>
             </div>
@@ -154,7 +154,7 @@ export default function NotificationBell({ user }) {
                 return (
                   <div
                     key={notif.notification_id}
-                    className={`p-4 hover:bg-[#111820] cursor-pointer transition-colors ${
+                    className={`p-4 hover:bg-bw-panel cursor-pointer transition-colors ${
                       !notif.is_read ? "bg-blue-50/50" : ""
                     }`}
                     onClick={() => !notif.is_read && markAsRead(notif.notification_id)}
@@ -172,10 +172,10 @@ export default function NotificationBell({ user }) {
                             <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />
                           )}
                         </div>
-                        <p className="text-sm text-[rgba(244,246,240,0.35)] line-clamp-2 mt-0.5">
+                        <p className="text-sm text-bw-white/35 line-clamp-2 mt-0.5">
                           {notif.message}
                         </p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+                        <p className="text-xs text-bw-white/[0.45] mt-1">
                           {formatTime(notif.created_at)}
                         </p>
                       </div>
@@ -189,7 +189,7 @@ export default function NotificationBell({ user }) {
         
         {notifications.length > 0 && (
           <div className="p-3 border-t text-center">
-            <Button variant="ghost" size="sm" className="text-xs text-[rgba(244,246,240,0.45)]">
+            <Button variant="ghost" size="sm" className="text-xs text-bw-white/[0.45]">
               View all notifications
             </Button>
           </div>

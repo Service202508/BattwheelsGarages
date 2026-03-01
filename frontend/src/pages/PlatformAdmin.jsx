@@ -28,25 +28,25 @@ function StatCard({ icon: Icon, label, value, sub, color = "emerald" }) {
     blue: "text-blue-400 bg-blue-400/10",
     amber: "text-amber-400 bg-amber-400/10",
     red: "text-red-400 bg-red-400/10",
-    volt: "text-[#C8FF00] bg-[rgba(200,255,0,0.08)]",
+    volt: "text-bw-volt bg-bw-volt/[0.08]",
   };
   return (
-    <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+    <div className="bg-bw-panel border border-white/[0.07] rounded-xl p-5">
       <div className="flex items-start justify-between mb-3">
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorMap[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
       </div>
       <p className="text-3xl font-bold text-white">{value}</p>
-      <p className="text-sm text-[rgba(244,246,240,0.55)] mt-1">{label}</p>
-      {sub && <p className="text-xs text-[rgba(244,246,240,0.35)] mt-0.5">{sub}</p>}
+      <p className="text-sm text-bw-white/[0.55] mt-1">{label}</p>
+      {sub && <p className="text-xs text-bw-white/35 mt-0.5">{sub}</p>}
     </div>
   );
 }
 
 function SectionCard({ title, icon: Icon, iconColor = "text-blue-400", children }) {
   return (
-    <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+    <div className="bg-bw-panel border border-white/[0.07] rounded-xl p-5">
       <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
         <Icon className={`w-4 h-4 ${iconColor}`} />
         {title}
@@ -59,7 +59,7 @@ function SectionCard({ title, icon: Icon, iconColor = "text-blue-400", children 
 const LEAD_STATUS_STYLES = {
   new:         "bg-amber-500/20 text-amber-300 border-amber-500/30",
   called:      "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  qualified:   "bg-[rgba(200,255,0,0.15)] text-[#C8FF00] border-[rgba(200,255,0,0.30)]",
+  qualified:   "bg-bw-volt/15 text-bw-volt border-bw-volt/30",
   closed_won:  "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
   closed_lost: "bg-slate-500/20 text-slate-400 border-slate-500/30",
 };
@@ -77,13 +77,13 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
 
   return (
     <>
-      <tr className="border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.02] transition" data-testid={`lead-row-${lead.lead_id}`}>
-        <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)] whitespace-nowrap">{fmtDate(lead.submitted_at)}</td>
+      <tr className="border-b border-white/[0.04] hover:bg-white/[0.02] transition" data-testid={`lead-row-${lead.lead_id}`}>
+        <td className="px-4 py-3 text-xs text-bw-white/[0.45] whitespace-nowrap">{fmtDate(lead.submitted_at)}</td>
         <td className="px-4 py-3 text-sm text-white font-medium whitespace-nowrap">{lead.name}</td>
-        <td className="px-4 py-3 text-sm text-[rgba(244,246,240,0.70)]">{lead.workshop_name}</td>
-        <td className="px-4 py-3 text-sm text-[rgba(244,246,240,0.55)] whitespace-nowrap">{lead.city}</td>
-        <td className="px-4 py-3 text-sm font-mono text-[rgba(244,246,240,0.55)] whitespace-nowrap">{lead.phone}</td>
-        <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)] whitespace-nowrap">{lead.vehicles_per_month}</td>
+        <td className="px-4 py-3 text-sm text-bw-white/70">{lead.workshop_name}</td>
+        <td className="px-4 py-3 text-sm text-bw-white/[0.55] whitespace-nowrap">{lead.city}</td>
+        <td className="px-4 py-3 text-sm font-mono text-bw-white/[0.55] whitespace-nowrap">{lead.phone}</td>
+        <td className="px-4 py-3 text-xs text-bw-white/[0.45] whitespace-nowrap">{lead.vehicles_per_month}</td>
         <td className="px-4 py-3">
           <select
             value={lead.status || "new"}
@@ -92,14 +92,14 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
             data-testid={`lead-status-${lead.lead_id}`}
           >
             {Object.entries(LEAD_STATUS_LABELS).map(([val, label]) => (
-              <option key={val} value={val} className="bg-[#1a2433] text-white">{label}</option>
+              <option key={val} value={val} className="bg-bw-card text-white">{label}</option>
             ))}
           </select>
         </td>
         <td className="px-4 py-3">
           <button
             onClick={onToggleNotes}
-            className="text-xs text-[rgba(244,246,240,0.40)] hover:text-[#C8FF00] transition font-mono"
+            className="text-xs text-bw-white/40 hover:text-bw-volt transition font-mono"
             data-testid={`toggle-notes-${lead.lead_id}`}
           >
             {expanded ? "▲ hide" : notes ? "▼ notes" : "▼ add note"}
@@ -107,7 +107,7 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
         </td>
       </tr>
       {expanded && (
-        <tr className="bg-[rgba(255,255,255,0.01)]">
+        <tr className="bg-white/[0.01]">
           <td colSpan={8} className="px-4 pb-3 pt-1">
             <textarea
               rows={3}
@@ -115,7 +115,7 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
               value={notes}
               onChange={e => setNotes(e.target.value)}
               onBlur={() => onNotesSave(notes)}
-              className="w-full px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-white placeholder:text-[rgba(244,246,240,0.30)] focus:outline-none focus:border-[rgba(200,255,0,0.30)] resize-none font-mono"
+              className="w-full px-3 py-2 bg-bw-off-black border border-white/[0.08] rounded-lg text-sm text-white placeholder:text-bw-white/30 focus:outline-none focus:border-bw-volt/30 resize-none font-mono"
               data-testid={`notes-textarea-${lead.lead_id}`}
             />
           </td>
@@ -325,19 +325,19 @@ export default function PlatformAdmin({ user }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080C0F] flex items-center justify-center">
+      <div className="min-h-screen bg-bw-black flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[rgba(244,246,240,0.87)]">
+    <div className="min-h-screen bg-bw-black text-bw-white/[0.87]">
       {/* Header */}
-      <div className="border-b border-[rgba(255,255,255,0.07)] bg-[#0D1117] px-6 py-4">
+      <div className="border-b border-white/[0.07] bg-bw-off-black px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/dashboard")} className="text-[rgba(244,246,240,0.45)] hover:text-white transition">
+            <button onClick={() => navigate("/dashboard")} className="text-bw-white/[0.45] hover:text-white transition">
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
@@ -345,7 +345,7 @@ export default function PlatformAdmin({ user }) {
             </div>
             <div>
               <h1 className="font-semibold text-white text-sm">Platform Admin</h1>
-              <p className="text-xs text-[rgba(244,246,240,0.35)]">Battwheels OS — Operator Dashboard</p>
+              <p className="text-xs text-bw-white/35">Battwheels OS — Operator Dashboard</p>
             </div>
             {(() => {
               const env = backendEnv || process.env.REACT_APP_ENVIRONMENT || "production";
@@ -415,7 +415,7 @@ export default function PlatformAdmin({ user }) {
               )}
             </div>
 
-            <button onClick={load} className="flex items-center gap-2 text-xs text-[rgba(244,246,240,0.45)] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
+            <button onClick={load} className="flex items-center gap-2 text-xs text-bw-white/[0.45] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh
             </button>
@@ -425,7 +425,7 @@ export default function PlatformAdmin({ user }) {
 
       {/* Audit Result Panel */}
       {showAuditPanel && (
-        <div className="border-b border-[rgba(255,255,255,0.07)] bg-[#0D1117] px-6 py-4">
+        <div className="border-b border-white/[0.07] bg-bw-off-black px-6 py-4">
           <div className="max-w-7xl mx-auto">
             {auditRunning ? (
               <div
@@ -530,7 +530,7 @@ export default function PlatformAdmin({ user }) {
         )}
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-1 w-fit">
+        <div className="flex gap-1 bg-bw-panel border border-white/[0.07] rounded-xl p-1 w-fit">
           {[
             { id: "orgs",    label: "Organisations",    icon: Building2 },
             { id: "health",  label: "Revenue & Health", icon: TrendingUp },
@@ -541,8 +541,8 @@ export default function PlatformAdmin({ user }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
                 activeTab === tab.id
-                  ? "bg-[#0D1117] text-white border border-[rgba(255,255,255,0.07)]"
-                  : "text-[rgba(244,246,240,0.45)] hover:text-white"
+                  ? "bg-bw-off-black text-white border border-white/[0.07]"
+                  : "text-bw-white/[0.45] hover:text-white"
               }`}
               data-testid={`tab-${tab.id}`}
             >
@@ -556,14 +556,14 @@ export default function PlatformAdmin({ user }) {
         {activeTab === "orgs" && (
           <>
             {metrics?.organizations_by_plan && (
-              <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+              <div className="bg-bw-panel border border-white/[0.07] rounded-xl p-5">
                 <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-blue-400" />
                   Organisations by Plan
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {Object.entries(metrics.organizations_by_plan).map(([plan, count]) => (
-                    <div key={plan} className="flex items-center gap-2 px-3 py-1.5 bg-[#0D1117] rounded-lg border border-[rgba(255,255,255,0.07)]">
+                    <div key={plan} className="flex items-center gap-2 px-3 py-1.5 bg-bw-off-black rounded-lg border border-white/[0.07]">
                       <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[plan] || "bg-slate-500/20 text-slate-300"}`}>{plan}</span>
                       <span className="text-white font-semibold text-sm">{count}</span>
                     </div>
@@ -572,17 +572,17 @@ export default function PlatformAdmin({ user }) {
               </div>
             )}
 
-            <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden">
-              <div className="p-5 border-b border-[rgba(255,255,255,0.07)] flex flex-col sm:flex-row gap-3">
+            <div className="bg-bw-panel border border-white/[0.07] rounded-xl overflow-hidden">
+              <div className="p-5 border-b border-white/[0.07] flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(244,246,240,0.35)]" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bw-white/35" />
                   <input type="text" placeholder="Search by name or email…" value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white placeholder:text-[rgba(244,246,240,0.35)] focus:outline-none focus:border-emerald-500/40"
+                    className="w-full pl-9 pr-4 py-2 bg-bw-off-black border border-white/[0.07] rounded-lg text-sm text-white placeholder:text-bw-white/35 focus:outline-none focus:border-emerald-500/40"
                   />
                 </div>
                 <select value={planFilter} onChange={e => { setPlanFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none">
+                  className="px-3 py-2 bg-bw-off-black border border-white/[0.07] rounded-lg text-sm text-white focus:outline-none">
                   <option value="">All Plans</option>
                   <option value="free">Free</option>
                   <option value="starter">Starter</option>
@@ -590,7 +590,7 @@ export default function PlatformAdmin({ user }) {
                   <option value="enterprise">Enterprise</option>
                 </select>
                 <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none">
+                  className="px-3 py-2 bg-bw-off-black border border-white/[0.07] rounded-lg text-sm text-white focus:outline-none">
                   <option value="">All Status</option>
                   <option value="active">Active</option>
                   <option value="suspended">Suspended</option>
@@ -600,21 +600,21 @@ export default function PlatformAdmin({ user }) {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-[rgba(255,255,255,0.05)]">
+                    <tr className="border-b border-white/5">
                       {["Organisation", "Plan", "Status", "Members", "Created", "Actions"].map(h => (
-                        <th key={h} className="text-left text-xs font-medium text-[rgba(244,246,240,0.35)] px-5 py-3 uppercase tracking-wider">{h}</th>
+                        <th key={h} className="text-left text-xs font-medium text-bw-white/35 px-5 py-3 uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {orgs.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-12 text-[rgba(244,246,240,0.35)] text-sm">No organisations found</td></tr>
+                      <tr><td colSpan={6} className="text-center py-12 text-bw-white/35 text-sm">No organisations found</td></tr>
                     ) : orgs.map(org => (
-                      <tr key={org.organization_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.02] transition">
+                      <tr key={org.organization_id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition">
                         <td className="px-5 py-4">
                           <div>
                             <p className="text-sm font-medium text-white">{org.name}</p>
-                            <p className="text-xs text-[rgba(244,246,240,0.35)]">{org.email || org.slug}</p>
+                            <p className="text-xs text-bw-white/35">{org.email || org.slug}</p>
                           </div>
                         </td>
                         <td className="px-5 py-4">
@@ -623,7 +623,7 @@ export default function PlatformAdmin({ user }) {
                             disabled={!!actionLoading[org.organization_id]}
                             className={`text-xs px-2 py-1 rounded-full border font-medium capitalize cursor-pointer bg-transparent focus:outline-none ${PLAN_COLORS[org.plan_type] || "bg-slate-500/20 text-slate-300"}`}>
                             {["free", "starter", "professional", "enterprise"].map(p => (
-                              <option key={p} value={p} className="bg-[#1a2433] capitalize">{p}</option>
+                              <option key={p} value={p} className="bg-bw-card capitalize">{p}</option>
                             ))}
                           </select>
                         </td>
@@ -632,12 +632,12 @@ export default function PlatformAdmin({ user }) {
                             {org.status}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-sm text-[rgba(244,246,240,0.55)]">{org.member_count}</td>
-                        <td className="px-5 py-4 text-xs text-[rgba(244,246,240,0.35)]">{fmtDate(org.created_at)}</td>
+                        <td className="px-5 py-4 text-sm text-bw-white/[0.55]">{org.member_count}</td>
+                        <td className="px-5 py-4 text-xs text-bw-white/35">{fmtDate(org.created_at)}</td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
                             {actionLoading[org.organization_id] ? (
-                              <Loader2 className="w-4 h-4 text-[rgba(244,246,240,0.35)] animate-spin" />
+                              <Loader2 className="w-4 h-4 text-bw-white/35 animate-spin" />
                             ) : org.status === "active" ? (
                               <button onClick={() => suspend(org.organization_id, org.name)}
                                 className="text-xs px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">
@@ -658,7 +658,7 @@ export default function PlatformAdmin({ user }) {
               </div>
 
               {total > 25 && (
-                <div className="px-5 py-4 border-t border-[rgba(255,255,255,0.07)] flex items-center justify-between text-sm text-[rgba(244,246,240,0.45)]">
+                <div className="px-5 py-4 border-t border-white/[0.07] flex items-center justify-between text-sm text-bw-white/[0.45]">
                   <span>{total} total organisations</span>
                   <div className="flex items-center gap-2">
                     <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">Prev</button>
@@ -682,9 +682,9 @@ export default function PlatformAdmin({ user }) {
             </div>
 
             {/* MRR by plan */}
-            <SectionCard title="MRR by Plan Tier" icon={BarChart3} iconColor="text-[#C8FF00]">
+            <SectionCard title="MRR by Plan Tier" icon={BarChart3} iconColor="text-bw-volt">
               {health.mrr_by_plan.length === 0 ? (
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">No paid plans yet</p>
+                <p className="text-sm text-bw-white/35">No paid plans yet</p>
               ) : (
                 <div className="space-y-3">
                   {health.mrr_by_plan.map(item => {
@@ -696,12 +696,12 @@ export default function PlatformAdmin({ user }) {
                             <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[item.plan] || "bg-slate-500/20 text-slate-300"}`}>
                               {item.plan}
                             </span>
-                            <span className="text-xs text-[rgba(244,246,240,0.45)]">{item.count} org{item.count !== 1 ? "s" : ""}</span>
+                            <span className="text-xs text-bw-white/[0.45]">{item.count} org{item.count !== 1 ? "s" : ""}</span>
                           </div>
-                          <span className="text-sm font-semibold text-white">{fmtINR(item.mrr)}<span className="text-[rgba(244,246,240,0.35)] text-xs">/mo</span></span>
+                          <span className="text-sm font-semibold text-white">{fmtINR(item.mrr)}<span className="text-bw-white/35 text-xs">/mo</span></span>
                         </div>
                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#C8FF00] rounded-full" style={{ width: `${pct}%` }} />
+                          <div className="h-full bg-bw-volt rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     );
@@ -714,14 +714,14 @@ export default function PlatformAdmin({ user }) {
               {/* Trial pipeline */}
               <SectionCard title={`Trial Pipeline (${health.trial_pipeline.count})`} icon={TrendingUp} iconColor="text-amber-400">
                 {health.trial_pipeline.count === 0 ? (
-                  <p className="text-sm text-[rgba(244,246,240,0.35)]">No free/trial orgs — all customers are on paid plans.</p>
+                  <p className="text-sm text-bw-white/35">No free/trial orgs — all customers are on paid plans.</p>
                 ) : (
                   <div className="space-y-2">
                     {health.trial_pipeline.orgs.map((org, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
                         <div>
                           <p className="text-sm text-white">{org.name}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.35)]">{fmtDate(org.created_at)}</p>
+                          <p className="text-xs text-bw-white/35">{fmtDate(org.created_at)}</p>
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[org.plan_type] || ""}`}>{org.plan_type}</span>
                       </div>
@@ -733,11 +733,11 @@ export default function PlatformAdmin({ user }) {
               {/* Churn risk */}
               <SectionCard title={`Churn Risk (${health.churn_risk.count})`} icon={AlertTriangle} iconColor="text-red-400">
                 {health.churn_risk.count === 0 ? (
-                  <p className="text-sm text-[rgba(244,246,240,0.35)]">No orgs at risk — all have recent activity.</p>
+                  <p className="text-sm text-bw-white/35">No orgs at risk — all have recent activity.</p>
                 ) : (
                   <div className="space-y-2">
                     {health.churn_risk.orgs.map((org, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
                         <div>
                           <p className="text-sm text-white">{org.name}</p>
                           <p className="text-xs text-red-400">{org.last_activity}</p>
@@ -753,9 +753,9 @@ export default function PlatformAdmin({ user }) {
             {/* Recent signups */}
             <SectionCard title="Recent Signups" icon={UserPlus} iconColor="text-emerald-400">
               {health.recent_signups.length === 0 ? (
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">No signups yet</p>
+                <p className="text-sm text-bw-white/35">No signups yet</p>
               ) : (
-                <div className="divide-y divide-[rgba(255,255,255,0.04)]">
+                <div className="divide-y divide-white/[0.04]">
                   {health.recent_signups.map((org, i) => (
                     <div key={i} className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-3">
@@ -764,14 +764,14 @@ export default function PlatformAdmin({ user }) {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-white">{org.name}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.35)]">{org.email || "—"}</p>
+                          <p className="text-xs text-bw-white/35">{org.email || "—"}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[org.plan_type] || "bg-slate-500/20 text-slate-300"}`}>
                           {org.plan_type || "free"}
                         </span>
-                        <p className="text-xs text-[rgba(244,246,240,0.35)] mt-1">{fmtDate(org.created_at)}</p>
+                        <p className="text-xs text-bw-white/35 mt-1">{fmtDate(org.created_at)}</p>
                       </div>
                     </div>
                   ))}
@@ -794,32 +794,32 @@ export default function PlatformAdmin({ user }) {
             )}
 
             {/* Leads table */}
-            <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden">
-              <div className="p-5 border-b border-[rgba(255,255,255,0.07)] flex items-center justify-between">
+            <div className="bg-bw-panel border border-white/[0.07] rounded-xl overflow-hidden">
+              <div className="p-5 border-b border-white/[0.07] flex items-center justify-between">
                 <h3 className="text-sm font-medium text-white flex items-center gap-2">
-                  <PhoneCall className="w-4 h-4 text-[#C8FF00]" />
+                  <PhoneCall className="w-4 h-4 text-bw-volt" />
                   Demo Requests
                 </h3>
-                <button onClick={fetchLeads} className="text-xs text-[rgba(244,246,240,0.45)] hover:text-white flex items-center gap-1 transition" data-testid="refresh-leads-btn">
+                <button onClick={fetchLeads} className="text-xs text-bw-white/[0.45] hover:text-white flex items-center gap-1 transition" data-testid="refresh-leads-btn">
                   <RefreshCw className="w-3 h-3" /> Refresh
                 </button>
               </div>
 
               {leadsLoading ? (
                 <div className="flex justify-center items-center h-40">
-                  <Loader2 className="w-6 h-6 animate-spin text-[rgba(244,246,240,0.35)]" />
+                  <Loader2 className="w-6 h-6 animate-spin text-bw-white/35" />
                 </div>
               ) : leads.length === 0 ? (
-                <div className="text-center py-16 text-[rgba(244,246,240,0.35)] text-sm">
+                <div className="text-center py-16 text-bw-white/35 text-sm">
                   No demo requests yet. They'll appear here when prospects click "Book Demo".
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-[rgba(255,255,255,0.05)]">
+                      <tr className="border-b border-white/5">
                         {["Date", "Name", "Workshop", "City", "Phone", "Fleet Size", "Status", "Notes"].map(h => (
-                          <th key={h} className="text-left text-xs font-medium text-[rgba(244,246,240,0.35)] px-4 py-3 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                          <th key={h} className="text-left text-xs font-medium text-bw-white/35 px-4 py-3 uppercase tracking-wider whitespace-nowrap">{h}</th>
                         ))}
                       </tr>
                     </thead>

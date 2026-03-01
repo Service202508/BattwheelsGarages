@@ -35,22 +35,22 @@ export default function BalanceSheet() {
   useEffect(() => { fetchReport(asOfDate); }, []);
 
   const Section = ({ title, items, icon: Icon, color }) => (
-    <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
-      <CardHeader className="pb-2 border-b border-[rgba(244,246,240,0.06)]">
-        <CardTitle className="text-sm font-semibold flex items-center gap-2 text-[rgba(244,246,240,0.7)]">
+    <Card className="bg-bw-panel border-bw-white/[0.08]">
+      <CardHeader className="pb-2 border-b border-bw-white/[0.06]">
+        <CardTitle className="text-sm font-semibold flex items-center gap-2 text-bw-white/70">
           <Icon className={`w-4 h-4 ${color}`} /> {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-3">
         {items && items.length > 0 ? items.map((item, i) => (
-          <div key={i} className="flex justify-between py-1.5 text-sm border-b border-[rgba(244,246,240,0.03)] last:border-0">
-            <span className="text-[rgba(244,246,240,0.7)]">{item.account_name || item.name || 'Unknown'}</span>
-            <span className="font-mono text-[#F4F6F0]">
+          <div key={i} className="flex justify-between py-1.5 text-sm border-b border-bw-white/[0.03] last:border-0">
+            <span className="text-bw-white/70">{item.account_name || item.name || 'Unknown'}</span>
+            <span className="font-mono text-bw-white">
               {(item.balance || item.amount || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
             </span>
           </div>
         )) : (
-          <p className="text-sm text-[rgba(244,246,240,0.3)] py-2">No data for this section</p>
+          <p className="text-sm text-bw-white/30 py-2">No data for this section</p>
         )}
       </CardContent>
     </Card>
@@ -70,25 +70,25 @@ export default function BalanceSheet() {
   const isBalanced = data?.is_balanced ?? Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
 
   return (
-    <div data-testid="balance-sheet-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
+    <div data-testid="balance-sheet-page" className="min-h-screen bg-bw-black text-bw-white p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="w-6 h-6 text-[#C8FF00]" />
+          <FileText className="w-6 h-6 text-bw-volt" />
           <h1 className="text-2xl font-bold tracking-tight">Balance Sheet</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-[rgba(244,246,240,0.5)]" />
+          <Calendar className="w-4 h-4 text-bw-white/50" />
           <Input
             data-testid="as-of-date-input"
             type="date"
             value={asOfDate}
             onChange={e => setAsOfDate(e.target.value)}
-            className="w-40 bg-[#0D0D14] border-[rgba(244,246,240,0.12)] text-[#F4F6F0] text-sm"
+            className="w-40 bg-bw-black border-bw-white/[0.12] text-bw-white text-sm"
           />
           <Button
             data-testid="refresh-btn"
             onClick={() => fetchReport(asOfDate)}
-            className="bg-[#C8FF00] text-black hover:bg-[#B8EF00] text-sm font-semibold"
+            className="bg-bw-volt text-black hover:bg-bw-volt-hover text-sm font-semibold"
           >Refresh</Button>
         </div>
       </div>
@@ -96,28 +96,28 @@ export default function BalanceSheet() {
       {error && <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
 
       {loading ? (
-        <div className="text-center py-12 text-[rgba(244,246,240,0.4)]">Loading balance sheet...</div>
+        <div className="text-center py-12 text-bw-white/40">Loading balance sheet...</div>
       ) : (
         <>
           {/* Accounting Equation */}
           <Card className={`${isBalanced ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
             <CardContent className="py-4">
               <div data-testid="accounting-equation" className="flex items-center justify-center gap-4 text-lg font-mono">
-                <span className="text-[#C8FF00]">{totalAssets.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                <Equal className="w-5 h-5 text-[rgba(244,246,240,0.5)]" />
+                <span className="text-bw-volt">{totalAssets.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
+                <Equal className="w-5 h-5 text-bw-white/50" />
                 <span className="text-orange-400">{totalLiabilities.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                <span className="text-[rgba(244,246,240,0.3)]">+</span>
+                <span className="text-bw-white/30">+</span>
                 <span className="text-blue-400">{totalEquity.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
                 <span className={`text-xs ml-2 px-2 py-0.5 rounded ${isBalanced ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                   {isBalanced ? 'BALANCED' : 'UNBALANCED'}
                 </span>
               </div>
-              <p className="text-center text-xs text-[rgba(244,246,240,0.3)] mt-1">Assets = Liabilities + Equity</p>
+              <p className="text-center text-xs text-bw-white/30 mt-1">Assets = Liabilities + Equity</p>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Section title="Assets" items={assetsAccounts} icon={TrendingUp} color="text-[#C8FF00]" />
+            <Section title="Assets" items={assetsAccounts} icon={TrendingUp} color="text-bw-volt" />
             <Section title="Liabilities" items={liabilitiesAccounts} icon={TrendingDown} color="text-orange-400" />
             <Section title="Equity" items={equityAccounts} icon={FileText} color="text-blue-400" />
           </div>

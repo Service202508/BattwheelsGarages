@@ -155,17 +155,17 @@ const SaaSLanding = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080C0F] text-[#F4F6F0] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-bw-black text-bw-white font-sans overflow-x-hidden">
       {/* Grain Overlay */}
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-60" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`
       }} />
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-bw-black/85 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
+          <div className="w-7 h-7 bg-bw-volt rounded flex items-center justify-center">
+            <Zap className="w-4 h-4 text-bw-black" />
           </div>
           <span className="text-lg font-extrabold tracking-tight">Battwheels OS</span>
         </div>
@@ -181,10 +181,10 @@ const SaaSLanding = () => {
           <button onClick={() => navigate('/login')} className="px-3 py-2 text-[12px] text-white/45 hover:text-white/80 transition tracking-wide" data-testid="nav-login-link">
             Login
           </button>
-          <button onClick={() => setShowBookDemo(true)} className="px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="nav-book-demo-btn">
+          <button onClick={() => setShowBookDemo(true)} className="px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide border border-white/10 hover:border-bw-volt hover:text-bw-volt transition rounded-sm" data-testid="nav-book-demo-btn">
             Book Demo
           </button>
-          <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm" data-testid="nav-free-trial-btn">
+          <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm" data-testid="nav-free-trial-btn">
             Free Trial
           </button>
         </div>
@@ -205,20 +205,20 @@ const SaaSLanding = () => {
 
         <div className="relative z-10 max-w-6xl">
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-16 text-[10px] tracking-widest text-[#C8FF00] border border-[#C8FF00]/20 bg-[#C8FF00]/5 rounded-sm font-mono">
-            <span className="w-1.5 h-1.5 bg-[#C8FF00] rounded-full animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-16 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
+            <span className="w-1.5 h-1.5 bg-bw-volt rounded-full animate-pulse" />
             EFI Engine · Active · India
           </div>
 
           {/* Eyebrow */}
-          <p className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#C8FF00] mb-7 font-mono animate-fade-up">
-            <span className="w-8 h-px bg-[#C8FF00]" />
+          <p className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-bw-volt mb-7 font-mono animate-fade-up">
+            <span className="w-8 h-px bg-bw-volt" />
             Battwheels OS
           </p>
 
           {/* Main Headline */}
           <h1 className="text-[clamp(52px,6vw,96px)] leading-none font-serif tracking-tight mb-8 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            The Operating System<br />for <em className="italic text-[#C8FF00]">EV Reliability</em>
+            The Operating System<br />for <em className="italic text-bw-volt">EV Reliability</em>
           </h1>
 
           {/* Subheadline */}
@@ -227,17 +227,17 @@ const SaaSLanding = () => {
           </p>
 
           {/* EFI Tag */}
-          <p className="text-xs text-[#1AFFE4] tracking-wider font-mono opacity-80 mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          <p className="text-xs text-bw-teal tracking-wider font-mono opacity-80 mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
             Powered by Battwheels EFI™ — Proprietary EV Failure Intelligence Engine
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 mb-20 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-            <button onClick={() => setShowSignup(true)} className="px-8 py-4 text-sm font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm flex items-center gap-2 animate-pulse-volt">
+            <button onClick={() => setShowSignup(true)} className="px-8 py-4 text-sm font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm flex items-center gap-2 animate-pulse-volt">
               Start 14-Day Free Trial
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button onClick={() => setShowBookDemo(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="hero-book-demo-btn">
+            <button onClick={() => setShowBookDemo(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-bw-volt hover:text-bw-volt transition rounded-sm" data-testid="hero-book-demo-btn">
               Book Enterprise Demo
             </button>
           </div>
@@ -245,15 +245,15 @@ const SaaSLanding = () => {
           {/* Metrics */}
           <div className="flex border border-white/[0.07] max-w-xl animate-fade-up" style={{ animationDelay: '0.5s' }}>
             <div className="flex-1 p-6 border-r border-white/[0.07]">
-              <div className="text-4xl font-serif text-[#C8FF00] mb-1">100%</div>
+              <div className="text-4xl font-serif text-bw-volt mb-1">100%</div>
               <div className="text-[11px] text-white/45 uppercase tracking-widest">Onsite resolution goal</div>
             </div>
             <div className="flex-1 p-6 border-r border-white/[0.07]">
-              <div className="text-4xl font-serif text-[#C8FF00] mb-1">EV-only</div>
+              <div className="text-4xl font-serif text-bw-volt mb-1">EV-only</div>
               <div className="text-[11px] text-white/45 uppercase tracking-widest">Trained intelligence</div>
             </div>
             <div className="flex-1 p-6">
-              <div className="text-4xl font-serif text-[#C8FF00] mb-1">∞</div>
+              <div className="text-4xl font-serif text-bw-volt mb-1">∞</div>
               <div className="text-[11px] text-white/45 uppercase tracking-widest">Compounding knowledge</div>
             </div>
           </div>
@@ -261,10 +261,10 @@ const SaaSLanding = () => {
       </section>
 
       {/* Problem Section */}
-      <section className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
+      <section className="py-24 px-6 md:px-12 bg-bw-off-black border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           01 · The Real Problem
-          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+          <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
         </p>
 
         <div className="grid lg:grid-cols-2 gap-0 max-w-6xl">
@@ -285,11 +285,11 @@ const SaaSLanding = () => {
 
           <div className="lg:pl-20 pt-12 lg:pt-0 flex flex-col gap-5">
             {problemCards.map((card, idx) => (
-              <div key={idx} className="relative bg-[#111820] border border-white/[0.07] p-5 pl-7 overflow-hidden">
+              <div key={idx} className="relative bg-bw-panel border border-white/[0.07] p-5 pl-7 overflow-hidden">
                 <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${
-                  card.color === 'red' ? 'bg-[#FF3B2F]' : 
-                  card.color === 'blue' ? 'bg-[#1AFFE4]' : 
-                  card.color === 'orange' ? 'bg-[#FF8C00]' : 'bg-[#C8FF00]'
+                  card.color === 'red' ? 'bg-bw-red' : 
+                  card.color === 'blue' ? 'bg-bw-teal' : 
+                  card.color === 'orange' ? 'bg-bw-orange' : 'bg-bw-volt'
                 }`} />
                 <div className="text-xs font-semibold uppercase tracking-widest text-white/45 mb-2">{card.title}</div>
                 <p className="text-[15px] leading-relaxed">{card.desc}</p>
@@ -306,7 +306,7 @@ const SaaSLanding = () => {
         <div className="relative z-10 max-w-6xl">
           <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
             02 · EV Failure Intelligence
-            <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+            <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
           </p>
 
           <h2 className="text-[clamp(36px,4vw,64px)] font-serif leading-tight mb-6 tracking-tight max-w-3xl">
@@ -317,7 +317,7 @@ const SaaSLanding = () => {
             Battwheels EFI is our proprietary AI-powered EV Failure Intelligence Engine. It does not generalize from automotive data.
           </p>
 
-          <p className="text-[13px] text-[#C8FF00] tracking-wider font-mono opacity-90 mb-16">
+          <p className="text-[13px] text-bw-volt tracking-wider font-mono opacity-90 mb-16">
             EV-only. EV-specific. EV-trained.
           </p>
 
@@ -326,14 +326,14 @@ const SaaSLanding = () => {
             {efiSteps.map((step, idx) => {
               const Icon = step.icon;
               return (
-                <div key={idx} className={`relative p-8 border-r border-white/[0.07] last:border-r-0 hover:bg-[#C8FF00]/10 transition group ${idx >= 3 ? 'border-t lg:border-t-0' : ''}`}>
+                <div key={idx} className={`relative p-8 border-r border-white/[0.07] last:border-r-0 hover:bg-bw-volt/10 transition group ${idx >= 3 ? 'border-t lg:border-t-0' : ''}`}>
                   {idx < 5 && (
-                    <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-[#080C0F] border border-white/10 rounded-full flex items-center justify-center text-[10px] text-[#C8FF00] z-10 font-mono hidden lg:flex">
+                    <div className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 bg-bw-black border border-white/10 rounded-full flex items-center justify-center text-[10px] text-bw-volt z-10 font-mono hidden lg:flex">
                       →
                     </div>
                   )}
                   <div className="text-[10px] text-white/20 tracking-widest font-mono mb-4">{step.num}</div>
-                  <Icon className="w-6 h-6 text-[#C8FF00] mb-3" />
+                  <Icon className="w-6 h-6 text-bw-volt mb-3" />
                   <div className="text-[13px] font-bold uppercase tracking-wide mb-2">{step.title}</div>
                   <p className="text-xs text-white/45 leading-relaxed">{step.desc}</p>
                 </div>
@@ -349,23 +349,23 @@ const SaaSLanding = () => {
       </section>
 
       {/* Segments Section */}
-      <section id="segments" className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
+      <section id="segments" className="py-24 px-6 md:px-12 bg-bw-off-black border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           03 · Built For Every Stakeholder
-          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+          <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
         </p>
 
         <div className="grid lg:grid-cols-3 border border-white/[0.07] max-w-6xl">
           {segments.map((seg, idx) => (
-            <div key={idx} className={`relative p-10 ${idx < 2 ? 'lg:border-r border-white/[0.07]' : ''} group hover:bg-[#111820]/[0.02] transition overflow-hidden`}>
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8FF00] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-              <div className="text-[10px] tracking-[0.2em] uppercase text-[#C8FF00] mb-6 font-mono">{seg.label}</div>
+            <div key={idx} className={`relative p-10 ${idx < 2 ? 'lg:border-r border-white/[0.07]' : ''} group hover:bg-bw-panel/[0.02] transition overflow-hidden`}>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-bw-volt scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+              <div className="text-[10px] tracking-[0.2em] uppercase text-bw-volt mb-6 font-mono">{seg.label}</div>
               <h3 className="text-[28px] font-serif mb-5 leading-tight">{seg.title}</h3>
               <p className="text-sm text-white/45 leading-relaxed mb-8">{seg.desc}</p>
               <ul className="space-y-2.5">
                 {seg.features.map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-[13px] text-white/45 leading-relaxed">
-                    <span className="text-[#C8FF00] font-mono text-xs mt-0.5">→</span>
+                    <span className="text-bw-volt font-mono text-xs mt-0.5">→</span>
                     {f}
                   </li>
                 ))}
@@ -379,7 +379,7 @@ const SaaSLanding = () => {
       <section id="platform" className="py-24 px-6 md:px-12">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           04 · Complete EV-Specific ERP
-          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+          <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
         </p>
 
         <div className="grid lg:grid-cols-3 gap-20 max-w-6xl items-start">
@@ -393,21 +393,21 @@ const SaaSLanding = () => {
             <p className="text-[15px] text-white/45 leading-relaxed mb-8">
               One platform. One intelligence layer. One EV ecosystem.
             </p>
-            <button onClick={() => setShowSignup(true)} className="px-6 py-3 text-sm font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] transition rounded-sm flex items-center gap-2">
+            <button onClick={() => setShowSignup(true)} className="px-6 py-3 text-sm font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover transition rounded-sm flex items-center gap-2">
               Explore the Platform
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="lg:col-span-2 grid grid-cols-2 gap-px bg-[#111820]/[0.07] border border-white/[0.07]">
+          <div className="lg:col-span-2 grid grid-cols-2 gap-px bg-bw-panel/[0.07] border border-white/[0.07]">
             {erpModules.map((mod, idx) => (
-              <div key={idx} className={`bg-[#0D1317] p-7 hover:bg-[#111820] transition ${mod.highlighted ? 'border-t-2 border-t-[#C8FF00]' : ''}`}>
-                <div className="text-[9px] tracking-[0.2em] uppercase text-[#C8FF00] mb-3.5 font-mono">{mod.label}</div>
+              <div key={idx} className={`bg-bw-off-black p-7 hover:bg-bw-panel transition ${mod.highlighted ? 'border-t-2 border-t-bw-volt' : ''}`}>
+                <div className="text-[9px] tracking-[0.2em] uppercase text-bw-volt mb-3.5 font-mono">{mod.label}</div>
                 <div className="text-base font-bold mb-3.5 tracking-tight">{mod.title}</div>
                 <ul className="space-y-1.5">
                   {mod.features.map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-xs text-white/45">
-                      <span className="text-[#C8FF00] text-lg leading-none">·</span>
+                      <span className="text-bw-volt text-lg leading-none">·</span>
                       {f}
                     </li>
                   ))}
@@ -419,10 +419,10 @@ const SaaSLanding = () => {
       </section>
 
       {/* Flywheel Section */}
-      <section className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
+      <section className="py-24 px-6 md:px-12 bg-bw-off-black border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           05 · Compounding Intelligence
-          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+          <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
         </p>
 
         <div className="grid lg:grid-cols-2 gap-20 max-w-6xl items-center">
@@ -433,22 +433,22 @@ const SaaSLanding = () => {
             <p className="text-base text-white/45 leading-relaxed mb-8">
               Every ticket makes the platform smarter. Every repair makes the next one faster. This compounding loop is not a feature — it is a structural advantage that widens over time.
             </p>
-            <p className="text-[22px] font-serif italic text-[#C8FF00]">
+            <p className="text-[22px] font-serif italic text-bw-volt">
               "This is our moat."
             </p>
           </div>
 
           <div className="border border-white/[0.07]">
             {flywheelSteps.map((step, idx) => (
-              <div key={idx} className="flex items-center gap-5 p-5 border-b border-white/[0.07] last:border-b-0 hover:bg-[#C8FF00]/10 transition">
-                <span className="text-[10px] text-[#C8FF00] font-mono w-5">0{idx + 1}</span>
+              <div key={idx} className="flex items-center gap-5 p-5 border-b border-white/[0.07] last:border-b-0 hover:bg-bw-volt/10 transition">
+                <span className="text-[10px] text-bw-volt font-mono w-5">0{idx + 1}</span>
                 <span className="text-sm font-semibold flex-1">{step}</span>
-                <span className="text-xs text-[#C8FF00] font-mono opacity-60">↓</span>
+                <span className="text-xs text-bw-volt font-mono opacity-60">↓</span>
               </div>
             ))}
-            <div className="flex items-center gap-5 p-5 bg-[#C8FF00]/10 border-t border-[#C8FF00]/20">
-              <span className="text-[10px] text-[#C8FF00] font-mono w-5">∞</span>
-              <span className="text-sm font-semibold text-[#C8FF00]">Stronger intelligence. Deeper moat.</span>
+            <div className="flex items-center gap-5 p-5 bg-bw-volt/10 border-t border-bw-volt/20">
+              <span className="text-[10px] text-bw-volt font-mono w-5">∞</span>
+              <span className="text-sm font-semibold text-bw-volt">Stronger intelligence. Deeper moat.</span>
             </div>
           </div>
         </div>
@@ -458,7 +458,7 @@ const SaaSLanding = () => {
       <section className="py-24 px-6 md:px-12">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           06 · Enterprise-Grade Architecture
-          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
+          <span className="flex-1 max-w-20 h-px bg-bw-panel/10" />
         </p>
 
         <div className="max-w-6xl">
@@ -470,8 +470,8 @@ const SaaSLanding = () => {
             {infraItems.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className={`p-8 ${idx < 3 ? 'border-r border-white/[0.07]' : ''} hover:bg-[#C8FF00]/10 transition`}>
-                  <Icon className="w-7 h-7 text-[#C8FF00] mb-4" />
+                <div key={idx} className={`p-8 ${idx < 3 ? 'border-r border-white/[0.07]' : ''} hover:bg-bw-volt/10 transition`}>
+                  <Icon className="w-7 h-7 text-bw-volt mb-4" />
                   <div className="text-[13px] font-bold uppercase tracking-wide mb-2">{item.title}</div>
                   <p className="text-xs text-white/45 leading-relaxed">{item.desc}</p>
                 </div>
@@ -486,10 +486,10 @@ const SaaSLanding = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_100%,rgba(200,255,0,0.06)_0%,transparent_60%)]" />
         
         <div className="relative z-10 max-w-4xl mx-auto">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-[#C8FF00] mb-8 font-mono">07 · Our Vision</p>
+          <p className="text-[10px] tracking-[0.25em] uppercase text-bw-volt mb-8 font-mono">07 · Our Vision</p>
           
           <h2 className="text-[clamp(48px,6vw,96px)] font-serif leading-none mb-8 tracking-tight">
-            Power the Future of<br /><em className="italic text-[#C8FF00]">EV Reliability</em>
+            Power the Future of<br /><em className="italic text-bw-volt">EV Reliability</em>
           </h2>
           
           <p className="text-lg text-white/45 max-w-2xl mx-auto mb-16 leading-relaxed">
@@ -499,18 +499,18 @@ const SaaSLanding = () => {
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-3 mb-20">
             {['No-towing-first philosophy', 'Technician-guided field diagnostics', 'Model-aware AI assistance', 'EV-only structured intelligence'].map((pillar, idx) => (
               <span key={idx} className="flex items-center gap-2 text-xs text-white/45 font-mono tracking-wider">
-                <Check className="w-4 h-4 text-[#C8FF00]" />
+                <Check className="w-4 h-4 text-bw-volt" />
                 {pillar}
               </span>
             ))}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2">
+            <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-bold uppercase tracking-wide bg-bw-volt text-bw-black hover:bg-bw-volt-hover hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2">
               Start Your Free Trial
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button onClick={() => setShowBookDemo(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="cta-book-demo-btn">
+            <button onClick={() => setShowBookDemo(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-bw-volt hover:text-bw-volt transition rounded-sm" data-testid="cta-book-demo-btn">
               Request Enterprise Consultation
             </button>
           </div>
@@ -525,7 +525,7 @@ const SaaSLanding = () => {
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-bw-volt transition font-mono">{label}</button>
             </li>
           ))}
         </ul>
@@ -534,7 +534,7 @@ const SaaSLanding = () => {
       {/* Book Demo Modal */}
       {showBookDemo && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" data-testid="book-demo-modal">
-          <div className="bg-[#111820] rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
+          <div className="bg-bw-panel rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-xl font-bold">Book a Demo</h2>
@@ -547,8 +547,8 @@ const SaaSLanding = () => {
 
             {bookDemoSubmitted ? (
               <div className="text-center py-8" data-testid="book-demo-success">
-                <div className="w-12 h-12 bg-[#C8FF00]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check className="w-6 h-6 text-[#C8FF00]" />
+                <div className="w-12 h-12 bg-bw-volt/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-6 h-6 text-bw-volt" />
                 </div>
                 <h3 className="text-lg font-bold mb-2">Request Received</h3>
                 <p className="text-white/50 text-sm leading-relaxed">
@@ -556,7 +556,7 @@ const SaaSLanding = () => {
                 </p>
                 <button
                   onClick={() => { setShowBookDemo(false); setBookDemoSubmitted(false); }}
-                  className="mt-6 px-6 py-2.5 text-sm font-semibold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] rounded-sm hover:bg-[#d4ff1a] transition"
+                  className="mt-6 px-6 py-2.5 text-sm font-semibold uppercase tracking-wide bg-bw-volt text-bw-black rounded-sm hover:bg-bw-volt-hover transition"
                 >
                   Done
                 </button>
@@ -569,7 +569,7 @@ const SaaSLanding = () => {
                     type="text" required placeholder="Rahul Sharma"
                     value={bookDemoData.name}
                     onChange={(e) => setBookDemoData({ ...bookDemoData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition"
                     data-testid="demo-name-input"
                   />
                 </div>
@@ -579,7 +579,7 @@ const SaaSLanding = () => {
                     type="text" required placeholder="Mumbai EV Service Center"
                     value={bookDemoData.workshop_name}
                     onChange={(e) => setBookDemoData({ ...bookDemoData, workshop_name: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition"
                     data-testid="demo-workshop-input"
                   />
                 </div>
@@ -590,7 +590,7 @@ const SaaSLanding = () => {
                       type="text" required placeholder="Mumbai"
                       value={bookDemoData.city}
                       onChange={(e) => setBookDemoData({ ...bookDemoData, city: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                      className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition"
                       data-testid="demo-city-input"
                     />
                   </div>
@@ -600,7 +600,7 @@ const SaaSLanding = () => {
                       type="tel" required placeholder="+91 98765 43210"
                       value={bookDemoData.phone}
                       onChange={(e) => setBookDemoData({ ...bookDemoData, phone: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                      className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition"
                       data-testid="demo-phone-input"
                     />
                   </div>
@@ -610,7 +610,7 @@ const SaaSLanding = () => {
                   <select
                     value={bookDemoData.vehicles_per_month}
                     onChange={(e) => setBookDemoData({ ...bookDemoData, vehicles_per_month: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition"
                     data-testid="demo-vehicles-select"
                   >
                     <option value="<10">&lt;10 vehicles</option>
@@ -621,11 +621,11 @@ const SaaSLanding = () => {
                 </div>
                 <button
                   type="submit" disabled={bookDemoLoading}
-                  className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                  className="w-full bg-bw-volt hover:bg-bw-volt-hover text-bw-black py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
                   data-testid="demo-submit-btn"
                 >
                   {bookDemoLoading ? (
-                    <><div className="w-4 h-4 border-2 border-[#080C0F]/30 border-t-[#080C0F] rounded-full animate-spin" /> Submitting...</>
+                    <><div className="w-4 h-4 border-2 border-bw-black/30 border-t-bw-black rounded-full animate-spin" /> Submitting...</>
                   ) : (
                     <><ChevronRight className="w-4 h-4" /> Request Demo Call</>
                   )}
@@ -642,7 +642,7 @@ const SaaSLanding = () => {
       {/* Signup Modal */}
       {showSignup && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-[#111820] rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
+          <div className="bg-bw-panel rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">Create Your Organization</h2>
               <button onClick={() => setShowSignup(false)} className="text-white/40 hover:text-white transition">
@@ -654,45 +654,45 @@ const SaaSLanding = () => {
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Organization Name</label>
                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g., Mumbai EV Service Center"
-                  className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                  className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
               </div>
               
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Your Name</label>
                 <input type="text" name="admin_name" value={formData.admin_name} onChange={handleInputChange} required placeholder="John Doe"
-                  className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                  className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
               </div>
               
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Email Address</label>
                 <input type="email" name="admin_email" value={formData.admin_email} onChange={handleInputChange} required placeholder="you@company.com"
-                  className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                  className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
               </div>
               
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Password</label>
                 <input type="password" name="admin_password" value={formData.admin_password} onChange={handleInputChange} required minLength={6} placeholder="Min 6 characters"
-                  className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                  className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-white/60 mb-1.5">City</label>
                   <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="Mumbai"
-                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                    className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
                 </div>
                 <div>
                   <label className="block text-sm text-white/60 mb-1.5">State</label>
                   <input type="text" name="state" value={formData.state} onChange={handleInputChange} placeholder="Maharashtra"
-                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition" />
+                    className="w-full px-4 py-3 bg-bw-black border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-bw-volt/50 focus:border-transparent transition" />
                 </div>
               </div>
               
               <button type="submit" disabled={isLoading}
-                className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-6">
+                className="w-full bg-bw-volt hover:bg-bw-volt-hover text-bw-black py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-6">
                 {isLoading ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-[#080C0F]/30 border-t-[#080C0F] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-bw-black/30 border-t-bw-black rounded-full animate-spin" />
                     Creating...
                   </>
                 ) : (
@@ -705,7 +705,7 @@ const SaaSLanding = () => {
               
               <p className="text-center text-white/40 text-sm pt-2">
                 Already have an account?{' '}
-                <button type="button" onClick={() => { setShowSignup(false); navigate('/login'); }} className="text-[#C8FF00] hover:underline">
+                <button type="button" onClick={() => { setShowSignup(false); navigate('/login'); }} className="text-bw-volt hover:underline">
                   Sign in
                 </button>
               </p>

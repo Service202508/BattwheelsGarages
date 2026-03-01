@@ -18,9 +18,9 @@ import { API } from "@/App";
 // Confidence badge styling
 const confidenceBadge = (level, score) => {
   const styles = {
-    high: "bg-[rgba(34,197,94,0.08)]0/15 text-green-600 border-green-500/30",
-    medium: "bg-[rgba(234,179,8,0.08)]0/15 text-[#EAB308] border-yellow-500/30",
-    low: "bg-[rgba(255,140,0,0.08)]0/15 text-[#FF8C00] border-orange-500/30"
+    high: "bg-bw-green/[0.08]0/15 text-green-600 border-green-500/30",
+    medium: "bg-bw-amber/[0.08]0/15 text-bw-amber border-yellow-500/30",
+    low: "bg-bw-orange/[0.08]0/15 text-bw-orange border-orange-500/30"
   };
   return (
     <Badge variant="outline" className={styles[level] || styles.low}>
@@ -247,7 +247,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
             <Brain className="h-5 w-5" />
             <h2 className="font-semibold">EV Failure Intelligence</h2>
           </div>
-          <Button variant="ghost" size="icon" onClick={onToggle} className="text-white hover:bg-[#111820]/20">
+          <Button variant="ghost" size="icon" onClick={onToggle} className="text-white hover:bg-bw-panel/20">
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
@@ -291,10 +291,10 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Play className="h-4 w-4 text-[#3B9EFF]" />
+                    <Play className="h-4 w-4 text-bw-blue" />
                     Active Diagnosis
                   </CardTitle>
-                  <Badge variant="outline" className="bg-blue-100 text-[#3B9EFF]">
+                  <Badge variant="outline" className="bg-blue-100 text-bw-blue">
                     Step {completedSteps.length + 1}
                   </Badge>
                 </div>
@@ -315,9 +315,9 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 </div>
 
                 {/* Current Step */}
-                <div className="p-3 bg-[#111820] dark:bg-[#080C0F] rounded-lg border">
+                <div className="p-3 bg-bw-panel dark:bg-bw-black rounded-lg border">
                   <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                    <Target className="h-4 w-4 text-[#3B9EFF]" />
+                    <Target className="h-4 w-4 text-bw-blue" />
                     {currentStep.instruction}
                   </h4>
                   
@@ -335,7 +335,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                   )}
 
                   {currentStep.safety_notes && (
-                    <div className="flex items-start gap-2 p-2 bg-[rgba(234,179,8,0.08)] dark:bg-yellow-900/20 rounded text-xs text-[#EAB308] dark:text-yellow-400 mb-2">
+                    <div className="flex items-start gap-2 p-2 bg-bw-amber/[0.08] dark:bg-yellow-900/20 rounded text-xs text-bw-amber dark:text-yellow-400 mb-2">
                       <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                       <span>{currentStep.safety_notes}</span>
                     </div>
@@ -343,11 +343,11 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
 
                   {currentStep.reference_image && (
                     <div className="mb-3">
-                      <div className="flex items-center gap-2 text-xs text-[#3B9EFF] mb-2">
+                      <div className="flex items-center gap-2 text-xs text-bw-blue mb-2">
                         <Image className="h-3 w-3" />
                         <span className="font-medium">Reference Image</span>
                       </div>
-                      <div className="relative rounded-lg overflow-hidden border bg-[#111820]">
+                      <div className="relative rounded-lg overflow-hidden border bg-bw-panel">
                         <img 
                           src={currentStep.reference_image.startsWith('/api') 
                             ? `${window.location.origin}${currentStep.reference_image}` 
@@ -362,10 +362,10 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                           }}
                         />
                         <div 
-                          className="hidden items-center justify-center p-4 text-xs text-[rgba(244,246,240,0.45)]"
+                          className="hidden items-center justify-center p-4 text-xs text-bw-white/[0.45]"
                           onClick={() => window.open(currentStep.reference_image, '_blank')}
                         >
-                          <Image className="h-8 w-8 text-[rgba(244,246,240,0.20)] mr-2" />
+                          <Image className="h-8 w-8 text-bw-white/20 mr-2" />
                           Click to view reference image
                         </div>
                       </div>
@@ -430,7 +430,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
 
           {/* Session Completed - Show Estimate */}
           {activeSession?.status === "completed" && estimate && (
-            <Card className="border-green-500/50 bg-[rgba(34,197,94,0.08)]/50 dark:bg-green-950/20">
+            <Card className="border-green-500/50 bg-bw-green/[0.08]/50 dark:bg-green-950/20">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2 text-green-700 dark:text-green-400">
                   <CheckCircle2 className="h-5 w-5" />
@@ -451,7 +451,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                     <h5 className="text-xs font-medium mb-1">Suggested Parts:</h5>
                     <div className="space-y-1">
                       {estimate.parts.map((part, idx) => (
-                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-[#111820] dark:bg-[#080C0F] rounded">
+                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-bw-panel dark:bg-bw-black rounded">
                           <span>{part.name} × {part.quantity}</span>
                           <span className="font-mono">₹{(part.price || 0).toLocaleString()}</span>
                         </div>
@@ -461,7 +461,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 )}
 
                 {/* Estimate Summary */}
-                <div className="p-3 bg-[#111820] dark:bg-[#080C0F] rounded-lg border space-y-1 text-sm">
+                <div className="p-3 bg-bw-panel dark:bg-bw-black rounded-lg border space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Parts Total</span>
                     <span className="font-mono">₹{(estimate.parts_total || 0).toLocaleString()}</span>

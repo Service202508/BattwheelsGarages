@@ -230,10 +230,10 @@ export default function AMCManagement({ user }) {
 
   const getStatusBadge = (status) => {
     const configs = {
-      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", label: "Active" },
-      expiring: { color: "bg-orange-100 text-[#FF8C00]", label: "Expiring" },
-      expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", label: "Expired" },
-      cancelled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", label: "Cancelled" }
+      active: { color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25", label: "Active" },
+      expiring: { color: "bg-orange-100 text-bw-orange", label: "Expiring" },
+      expired: { color: "bg-bw-red/10 text-bw-red border border-bw-red/25", label: "Expired" },
+      cancelled: { color: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]", label: "Cancelled" }
     };
     const config = configs[status] || configs.active;
     return <Badge className={config.color}>{config.label}</Badge>;
@@ -295,15 +295,15 @@ export default function AMCManagement({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Annual Maintenance Contracts (AMC)</h1>
-          <p className="text-[rgba(244,246,240,0.35)]">Manage subscription plans from battwheelsgarages.in</p>
+          <h1 className="text-2xl font-bold text-bw-white">Annual Maintenance Contracts (AMC)</h1>
+          <p className="text-bw-white/35">Manage subscription plans from battwheelsgarages.in</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setShowSeedDialog(true)}>
             <Download className="h-4 w-4 mr-2" />
             Import Official Plans
           </Button>
-          <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" onClick={() => setShowAddSubscription(true)}>
+          <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" onClick={() => setShowAddSubscription(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add AMC
           </Button>
@@ -316,42 +316,42 @@ export default function AMCManagement({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Bike className="h-5 w-5 text-blue-500" />
-              <span className="text-[rgba(244,246,240,0.35)]">2-Wheeler AMCs</span>
+              <span className="text-bw-white/35">2-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{twoWheelerCount}</p>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">Ather, Ola, TVS, Hero</p>
+            <p className="text-xs text-bw-white/[0.45]">Ather, Ola, TVS, Hero</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Truck className="h-5 w-5 text-orange-500" />
-              <span className="text-[rgba(244,246,240,0.35)]">3-Wheeler AMCs</span>
+              <span className="text-bw-white/35">3-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{threeWheelerCount}</p>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">E-Rickshaws, Cargo</p>
+            <p className="text-xs text-bw-white/[0.45]">E-Rickshaws, Cargo</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Car className="h-5 w-5 text-purple-500" />
-              <span className="text-[rgba(244,246,240,0.35)]">4-Wheeler AMCs</span>
+              <span className="text-bw-white/35">4-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{fourWheelerCount}</p>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">Tata, MG, Hyundai</p>
+            <p className="text-xs text-bw-white/[0.45]">Tata, MG, Hyundai</p>
           </CardContent>
         </Card>
-        <Card className="bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]">
+        <Card className="bg-bw-volt/[0.08] border-bw-volt/20">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
-              <span className="text-[rgba(244,246,240,0.35)]">Total Revenue</span>
+              <IndianRupee className="h-5 w-5 text-bw-volt text-600" />
+              <span className="text-bw-white/35">Total Revenue</span>
             </div>
-            <p className="text-3xl font-bold mt-2 text-[#C8FF00] text-700">
+            <p className="text-3xl font-bold mt-2 text-bw-volt text-700">
               ₹{(analytics?.total_revenue || 0).toLocaleString()}
             </p>
-            <p className="text-xs text-[rgba(244,246,240,0.45)]">{analytics?.total_active || 0} active subscriptions</p>
+            <p className="text-xs text-bw-white/[0.45]">{analytics?.total_active || 0} active subscriptions</p>
           </CardContent>
         </Card>
       </div>
@@ -369,7 +369,7 @@ export default function AMCManagement({ user }) {
           {/* Filters */}
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-bw-white/[0.45]" />
               <Input
                 placeholder="Search by customer, vehicle, or plan..."
                 value={searchTerm}
@@ -400,8 +400,8 @@ export default function AMCManagement({ user }) {
             </CardHeader>
             <CardContent>
               {filteredSubscriptions.length === 0 ? (
-                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
-                  <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+                <div className="text-center py-8 text-bw-white/[0.45]">
+                  <Shield className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                   <p>No AMCs found.</p>
                 </div>
               ) : (
@@ -474,15 +474,15 @@ export default function AMCManagement({ user }) {
           {/* Category and Billing Selectors */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex bg-[rgba(255,255,255,0.05)] rounded-lg p-1">
+              <div className="flex bg-white/5 rounded-lg p-1">
                 {["2W", "3W", "4W"].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setVehicleCategory(cat)}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       vehicleCategory === cat 
-                        ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
-                        : "text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0]"
+                        ? "bg-bw-panel text-bw-white shadow-sm" 
+                        : "text-bw-white/35 hover:text-bw-white"
                     }`}
                   >
                     {cat === "2W" && <Bike className="h-4 w-4 inline mr-1" />}
@@ -493,13 +493,13 @@ export default function AMCManagement({ user }) {
                 ))}
               </div>
               
-              <div className="flex bg-[rgba(255,255,255,0.05)] rounded-lg p-1">
+              <div className="flex bg-white/5 rounded-lg p-1">
                 <button
                   onClick={() => setBillingFrequency("monthly")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "monthly" 
-                      ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
-                      : "text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0]"
+                      ? "bg-bw-panel text-bw-white shadow-sm" 
+                      : "text-bw-white/35 hover:text-bw-white"
                   }`}
                 >
                   Monthly
@@ -508,8 +508,8 @@ export default function AMCManagement({ user }) {
                   onClick={() => setBillingFrequency("annual")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "annual" 
-                      ? "bg-[#C8FF00] text-[#080C0F] font-bold" 
-                      : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"
+                      ? "bg-bw-volt text-bw-black font-bold" 
+                      : "text-bw-white/[0.45] hover:text-bw-white"
                   }`}
                 >
                   <Sparkles className="h-3 w-3 inline mr-1" />
@@ -528,9 +528,9 @@ export default function AMCManagement({ user }) {
           {currentPlans.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <Shield className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
-                <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Plans Found</h3>
-                <p className="text-[rgba(244,246,240,0.35)] mb-4">
+                <Shield className="h-16 w-16 mx-auto mb-4 text-bw-white/20" />
+                <h3 className="text-lg font-semibold text-bw-white mb-2">No Plans Found</h3>
+                <p className="text-bw-white/35 mb-4">
                   Import official Battwheels plans to get started.
                 </p>
                 <Button onClick={() => setShowSeedDialog(true)}>
@@ -563,14 +563,14 @@ export default function AMCManagement({ user }) {
                     {/* Pricing */}
                     <div className="text-center">
                       <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-sm text-[rgba(244,246,240,0.45)]">₹</span>
+                        <span className="text-sm text-bw-white/[0.45]">₹</span>
                         <span className="text-4xl font-bold">{plan.price.toLocaleString()}</span>
                       </div>
-                      <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                      <p className="text-sm text-bw-white/[0.45]">
                         /{billingFrequency === "monthly" ? "month" : "year"}/vehicle
                       </p>
                       {billingFrequency === "monthly" && plan.annual_price && (
-                        <p className="text-xs text-[#C8FF00] text-600 mt-1">
+                        <p className="text-xs text-bw-volt text-600 mt-1">
                           or ₹{plan.annual_price.toLocaleString()} annually
                         </p>
                       )}
@@ -579,11 +579,11 @@ export default function AMCManagement({ user }) {
                     {/* Features */}
                     <ul className="space-y-2.5 text-sm">
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                         <span>{plan.periodic_services_per_month} periodic service{plan.periodic_services_per_month > 1 ? 's' : ''}/month</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                         <span>
                           {plan.breakdown_visits_per_month >= 999 
                             ? "Unlimited breakdown visits" 
@@ -593,37 +593,37 @@ export default function AMCManagement({ user }) {
                       </li>
                       {plan.digital_service_history && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Digital service history</span>
                         </li>
                       )}
                       {plan.priority_support && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Priority support ({plan.priority_response_minutes}-min response)</span>
                         </li>
                       )}
                       {plan.fleet_dashboard && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Fleet dashboard access</span>
                         </li>
                       )}
                       {plan.dedicated_manager && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Dedicated service manager</span>
                         </li>
                       )}
                       {plan.custom_sla && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Custom SLAs & uptime guarantees</span>
                         </li>
                       )}
                       {plan.telematics_integration && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-bw-volt text-500 mt-0.5 flex-shrink-0" />
                           <span>Telematics integration</span>
                         </li>
                       )}
@@ -631,7 +631,7 @@ export default function AMCManagement({ user }) {
                     
                     {/* Stats */}
                     <div className="pt-3 border-t">
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">
+                      <p className="text-xs text-bw-white/[0.45]">
                         {plan.active_subscriptions || 0} active subscriptions
                       </p>
                     </div>
@@ -643,7 +643,7 @@ export default function AMCManagement({ user }) {
                           ? "bg-purple-600 hover:bg-purple-700" 
                           : plan.tier === "fleet_essential"
                           ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-[#0D1317] hover:bg-[#080C0F]"
+                          : "bg-bw-off-black hover:bg-bw-black"
                       }`}
                       onClick={() => {
                         setSubscriptionForm({ ...subscriptionForm, plan_id: plan.plan_id });
@@ -664,11 +664,11 @@ export default function AMCManagement({ user }) {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold">Need a Custom Enterprise Plan?</h3>
-                  <p className="text-[rgba(244,246,240,0.20)] mt-1">
+                  <p className="text-bw-white/20 mt-1">
                     For large fleets (50+ vehicles), custom SLAs, dedicated onsite teams, or OEM partnerships.
                   </p>
                 </div>
-                <Button variant="outline" className="border-white text-white hover:bg-[#111820] hover:text-[#F4F6F0]">
+                <Button variant="outline" className="border-white text-white hover:bg-bw-panel hover:text-bw-white">
                   <Phone className="h-4 w-4 mr-2" />
                   Contact Sales Team
                 </Button>
@@ -717,13 +717,13 @@ export default function AMCManagement({ user }) {
                 <li>• <strong>Fleet Essential</strong> - ₹699/mo or ₹5,599/year (2W pricing)</li>
                 <li>• <strong>Fleet Essential Pro</strong> - ₹799/mo or ₹6,499/year (2W pricing)</li>
               </ul>
-              <p className="text-xs text-[#3B9EFF] mt-2">
+              <p className="text-xs text-bw-blue mt-2">
                 * 3W plans are 1.5x, 4W plans are 2x the 2W pricing
               </p>
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-[rgba(244,246,240,0.35)]">
-              <Zap className="h-4 w-4 text-[#C8FF00] text-500" />
+            <div className="flex items-center gap-2 text-sm text-bw-white/35">
+              <Zap className="h-4 w-4 text-bw-volt text-500" />
               <span>Source: battwheelsgarages.in/plans</span>
             </div>
           </div>
@@ -732,7 +732,7 @@ export default function AMCManagement({ user }) {
             <Button variant="outline" onClick={() => setShowSeedDialog(false)}>
               Cancel
             </Button>
-            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" onClick={handleSeedOfficialPlans}>
+            <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" onClick={handleSeedOfficialPlans}>
               <Download className="h-4 w-4 mr-2" />
               Import Plans
             </Button>
@@ -857,7 +857,7 @@ export default function AMCManagement({ user }) {
               Cancel
             </Button>
             <Button 
-              className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
+              className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
               onClick={handleCreateSubscription}
             >
               Create Subscription

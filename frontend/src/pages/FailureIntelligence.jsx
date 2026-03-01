@@ -31,17 +31,17 @@ const subsystemIcons = {
 };
 
 const statusColors = {
-  draft: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
+  draft: "bg-bw-amber/20 text-yellow-400 border-yellow-500/30",
   pending_review: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  approved: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
-  deprecated: "bg-[rgba(17,24,32,0.2)] text-[rgba(244,246,240,0.45)] border-[rgba(255,255,255,0.07)]"
+  approved: "bg-bw-green/20 text-green-400 border-green-500/30",
+  deprecated: "bg-bw-panel/20 text-bw-white/[0.45] border-white/[0.07]"
 };
 
 const confidenceColors = {
-  low: "bg-[rgba(255,59,47,0.20)] text-red-400",
-  medium: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
+  low: "bg-bw-red/20 text-red-400",
+  medium: "bg-bw-amber/20 text-yellow-400",
   high: "bg-blue-500/20 text-blue-400",
-  verified: "bg-[rgba(34,197,94,0.20)] text-green-400"
+  verified: "bg-bw-green/20 text-green-400"
 };
 
 const subsystems = [
@@ -632,7 +632,7 @@ Example: Battery not charging beyond 80%, intermittent error E401"
               <div className="space-y-3">
                 <h4 className="font-semibold">Matches Found:</h4>
                 {matchResults.map((match, i) => (
-                  <Card key={match.failure_id} className={i === 0 ? "border-green-500/50 bg-[rgba(34,197,94,0.05)]" : ""}>
+                  <Card key={match.failure_id} className={i === 0 ? "border-green-500/50 bg-bw-green/5" : ""}>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start">
                         <div>

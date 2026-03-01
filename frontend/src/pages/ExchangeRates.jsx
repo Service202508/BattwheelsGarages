@@ -127,8 +127,8 @@ export default function ExchangeRates() {
     <div className="space-y-6" data-testid="exchange-rates-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Exchange Rates</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage currency exchange rates for multi-currency transactions</p>
+          <h1 className="text-2xl font-bold text-bw-white">Exchange Rates</h1>
+          <p className="text-bw-white/[0.45] text-sm mt-1">Manage currency exchange rates for multi-currency transactions</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={fromCurrencyFilter || "all"} onValueChange={(v) => setFromCurrencyFilter(v === "all" ? "" : v)}>
@@ -149,7 +149,7 @@ export default function ExchangeRates() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="new-rate-btn">
+              <Button className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="new-rate-btn">
                 <Plus className="h-4 w-4 mr-2" /> Add Rate
               </Button>
             </DialogTrigger>
@@ -178,7 +178,7 @@ export default function ExchangeRates() {
                     </Select>
                   </div>
                   <div className="flex justify-center pb-2">
-                    <ArrowRightLeft className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                    <ArrowRightLeft className="h-5 w-5 text-bw-white/[0.45]" />
                   </div>
                   <div className="col-span-2 space-y-2">
                     <Label>To Currency *</Label>
@@ -200,8 +200,8 @@ export default function ExchangeRates() {
                   </div>
                 </div>
 
-                <div className="bg-[#111820] p-4 rounded-lg text-center">
-                  <p className="text-sm text-[rgba(244,246,240,0.45)] mb-2">Exchange Rate Preview</p>
+                <div className="bg-bw-panel p-4 rounded-lg text-center">
+                  <p className="text-sm text-bw-white/[0.45] mb-2">Exchange Rate Preview</p>
                   <p className="text-lg font-semibold">
                     1 {getCurrencySymbol(formData.from_currency)} = {formData.rate} {getCurrencySymbol(formData.to_currency)}
                   </p>
@@ -231,7 +231,7 @@ export default function ExchangeRates() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="save-rate-btn">
+                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="save-rate-btn">
                   Save Rate
                 </Button>
               </DialogFooter>
@@ -252,7 +252,7 @@ export default function ExchangeRates() {
               <p className="text-2xl font-bold text-blue-900">
                 {getCurrencySymbol(rate.to_currency)}{rate.rate.toFixed(4)}
               </p>
-              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+              <p className="text-xs text-bw-white/[0.45] mt-1">
                 1 {rate.from_currency} • Effective: {rate.effective_date}
               </p>
             </CardContent>
@@ -268,10 +268,10 @@ export default function ExchangeRates() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-bw-volt" />
             </div>
           ) : rates.length === 0 ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
+            <div className="text-center py-12 text-bw-white/[0.45]">
               <ArrowRightLeft className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No exchange rates configured</p>
               <p className="text-sm">Add exchange rates for multi-currency support</p>
@@ -279,7 +279,7 @@ export default function ExchangeRates() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#111820]">
+                <TableRow className="bg-bw-panel">
                   <TableHead>From</TableHead>
                   <TableHead></TableHead>
                   <TableHead>To</TableHead>
@@ -294,16 +294,16 @@ export default function ExchangeRates() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold">{rate.from_currency}</span>
-                        <span className="text-[rgba(244,246,240,0.45)] text-sm">{getCurrencyName(rate.from_currency)}</span>
+                        <span className="text-bw-white/[0.45] text-sm">{getCurrencyName(rate.from_currency)}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <ArrowRightLeft className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                      <ArrowRightLeft className="h-4 w-4 text-bw-white/[0.45]" />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold">{rate.to_currency}</span>
-                        <span className="text-[rgba(244,246,240,0.45)] text-sm">{getCurrencyName(rate.to_currency)}</span>
+                        <span className="text-bw-white/[0.45] text-sm">{getCurrencyName(rate.to_currency)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -311,11 +311,11 @@ export default function ExchangeRates() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                        <Calendar className="h-4 w-4 text-bw-white/[0.45]" />
                         {rate.effective_date}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
+                    <TableCell className="text-sm text-bw-white/[0.45]">
                       {rate.created_time ? new Date(rate.created_time).toLocaleDateString() : "-"}
                     </TableCell>
                   </TableRow>

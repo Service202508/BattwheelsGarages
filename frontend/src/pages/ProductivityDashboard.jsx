@@ -84,22 +84,22 @@ export default function TechnicianProductivity({ user }) {
   const getPerformanceColor = (value, metric) => {
     if (metric === "resolution_time") {
       if (value <= 4) return "text-green-600";
-      if (value <= 8) return "text-[#EAB308]";
+      if (value <= 8) return "text-bw-amber";
       return "text-red-600";
     }
     if (metric === "tickets") {
       if (value >= 10) return "text-green-600";
-      if (value >= 5) return "text-[#EAB308]";
+      if (value >= 5) return "text-bw-amber";
       return "text-red-600";
     }
-    return "text-[rgba(244,246,240,0.35)]";
+    return "text-bw-white/35";
   };
 
   const getPerformanceBadge = (tickets, avgTime) => {
-    if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" };
-    if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-[#3B9EFF]" };
-    if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-[#EAB308]" };
-    return { label: "Needs Improvement", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]" };
+    if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25" };
+    if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-bw-blue" };
+    if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-bw-amber" };
+    return { label: "Needs Improvement", color: "bg-bw-red/10 text-bw-red border border-bw-red/25" };
   };
 
   // Simple bar chart using divs
@@ -110,10 +110,10 @@ export default function TechnicianProductivity({ user }) {
         {data.map((item, index) => (
           <div key={index} className="flex-1 flex flex-col items-center">
             <div 
-              className="w-full bg-[#C8FF00] rounded-t transition-all duration-300 hover:bg-[#d4ff1a]"
+              className="w-full bg-bw-volt rounded-t transition-all duration-300 hover:bg-bw-volt-hover"
               style={{ height: `${(item.value / max) * 100}%`, minHeight: item.value > 0 ? '4px' : '0' }}
             />
-            <span className="text-xs text-[rgba(244,246,240,0.45)] mt-1 truncate w-full text-center">{item.label}</span>
+            <span className="text-xs text-bw-white/[0.45] mt-1 truncate w-full text-center">{item.label}</span>
           </div>
         ))}
       </div>
@@ -133,8 +133,8 @@ export default function TechnicianProductivity({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Technician Productivity</h1>
-          <p className="text-[rgba(244,246,240,0.35)]">Monitor and analyze technician performance metrics.</p>
+          <h1 className="text-2xl font-bold text-bw-white">Technician Productivity</h1>
+          <p className="text-bw-white/35">Monitor and analyze technician performance metrics.</p>
         </div>
         <div className="flex gap-2">
           <Select value={period} onValueChange={setPeriod}>
@@ -161,10 +161,10 @@ export default function TechnicianProductivity({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-100">
-                <Users className="h-5 w-5 text-[#3B9EFF]" />
+                <Users className="h-5 w-5 text-bw-blue" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">Active Technicians</p>
+                <p className="text-sm text-bw-white/35">Active Technicians</p>
                 <p className="text-2xl font-bold">{summary?.active_technicians || 0}</p>
               </div>
             </div>
@@ -174,11 +174,11 @@ export default function TechnicianProductivity({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.10)]">
+              <div className="p-2 rounded-lg bg-bw-green/10">
                 <Ticket className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">Total Tickets Resolved</p>
+                <p className="text-sm text-bw-white/35">Total Tickets Resolved</p>
                 <p className="text-2xl font-bold">{summary?.total_tickets_resolved || 0}</p>
               </div>
             </div>
@@ -189,10 +189,10 @@ export default function TechnicianProductivity({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-orange-100">
-                <Clock className="h-5 w-5 text-[#FF8C00]" />
+                <Clock className="h-5 w-5 text-bw-orange" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">Overall Avg. Resolution Time</p>
+                <p className="text-sm text-bw-white/35">Overall Avg. Resolution Time</p>
                 <p className="text-2xl font-bold">{summary?.avg_resolution_time_hours || 0} hrs</p>
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function TechnicianProductivity({ user }) {
                 <CheckCircle className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.35)]">SLA Compliance</p>
+                <p className="text-sm text-bw-white/35">SLA Compliance</p>
                 <p className="text-2xl font-bold">{kpis?.sla_compliance_percent || 0}%</p>
               </div>
             </div>
@@ -216,13 +216,13 @@ export default function TechnicianProductivity({ user }) {
 
       {/* KPI Alerts */}
       {kpis && (kpis.overdue_tickets > 0 || kpis.pending_tickets > 5) && (
-        <Card className="border-orange-200 bg-[rgba(255,140,0,0.08)]">
+        <Card className="border-orange-200 bg-bw-orange/[0.08]">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-[#FF8C00]" />
+              <AlertTriangle className="h-5 w-5 text-bw-orange" />
               <div className="flex-1">
                 <p className="font-medium text-orange-900">Attention Required</p>
-                <p className="text-sm text-[#FF8C00]">
+                <p className="text-sm text-bw-orange">
                   {kpis.overdue_tickets > 0 && `${kpis.overdue_tickets} overdue tickets. `}
                   {kpis.pending_tickets > 5 && `${kpis.pending_tickets} tickets pending assignment.`}
                 </p>
@@ -243,8 +243,8 @@ export default function TechnicianProductivity({ user }) {
             </CardHeader>
             <CardContent>
               {technicians.length === 0 ? (
-                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
-                  <Users className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+                <div className="text-center py-8 text-bw-white/[0.45]">
+                  <Users className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                   <p>No technician data available</p>
                 </div>
               ) : (
@@ -267,7 +267,7 @@ export default function TechnicianProductivity({ user }) {
                           <TableCell>
                             <div>
                               <p className="font-medium">{tech.technician_name}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{tech.email}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{tech.email}</p>
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -318,16 +318,16 @@ export default function TechnicianProductivity({ user }) {
                 {leaderboard.slice(0, 5).map((tech, index) => (
                   <div key={tech.technician_id} className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                      index === 0 ? 'bg-[rgba(234,179,8,0.10)]' :
-                      index === 1 ? 'bg-[rgba(244,246,240,0.35)]' :
+                      index === 0 ? 'bg-bw-amber/10' :
+                      index === 1 ? 'bg-bw-white/35' :
                       index === 2 ? 'bg-amber-600' :
-                      'bg-[#141E27]'
+                      'bg-bw-card'
                     }`}>
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{tech.technician_name}</p>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{tech.tickets_resolved} tickets</p>
+                      <p className="text-xs text-bw-white/[0.45]">{tech.tickets_resolved} tickets</p>
                     </div>
                     <div className="flex items-center gap-1 text-yellow-500">
                       <Star className="h-4 w-4 fill-current" />
@@ -343,7 +343,7 @@ export default function TechnicianProductivity({ user }) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-[#C8FF00] text-500" />
+                <BarChart3 className="h-5 w-5 text-bw-volt text-500" />
                 Tickets Resolved (Weekly)
               </CardTitle>
             </CardHeader>
@@ -353,7 +353,7 @@ export default function TechnicianProductivity({ user }) {
                   data={trends.map(t => ({ label: t.week, value: t.tickets_resolved }))}
                 />
               ) : (
-                <div className="h-32 flex items-center justify-center text-[rgba(244,246,240,0.45)]">
+                <div className="h-32 flex items-center justify-center text-bw-white/[0.45]">
                   No trend data
                 </div>
               )}
@@ -367,16 +367,16 @@ export default function TechnicianProductivity({ user }) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-[rgba(244,246,240,0.35)]">Resolved Today</span>
+                <span className="text-bw-white/35">Resolved Today</span>
                 <span className="font-bold text-green-600">{kpis?.tickets_resolved_today || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[rgba(244,246,240,0.35)]">Pending Assignment</span>
-                <span className="font-bold text-[#EAB308]">{kpis?.pending_tickets || 0}</span>
+                <span className="text-bw-white/35">Pending Assignment</span>
+                <span className="font-bold text-bw-amber">{kpis?.pending_tickets || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[rgba(244,246,240,0.45)]">Overdue (&gt;48hrs)</span>
-                <span className="font-bold text-[#FF3B2F]">{kpis?.overdue_tickets || 0}</span>
+                <span className="text-bw-white/[0.45]">Overdue (&gt;48hrs)</span>
+                <span className="font-bold text-bw-red">{kpis?.overdue_tickets || 0}</span>
               </div>
             </CardContent>
           </Card>
@@ -394,15 +394,15 @@ export default function TechnicianProductivity({ user }) {
               
               <div className="space-y-6 py-4">
                 {/* Technician Info */}
-                <div className="flex items-center gap-4 p-4 bg-[#111820] rounded-lg">
-                  <div className="h-12 w-12 rounded-full bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
-                    <span className="text-[#C8FF00] text-700 font-bold text-lg">
+                <div className="flex items-center gap-4 p-4 bg-bw-panel rounded-lg">
+                  <div className="h-12 w-12 rounded-full bg-bw-volt/10 flex items-center justify-center">
+                    <span className="text-bw-volt text-700 font-bold text-lg">
                       {technicianDetail.technician?.name?.charAt(0)}
                     </span>
                   </div>
                   <div>
                     <p className="font-semibold">{technicianDetail.technician?.name}</p>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{technicianDetail.technician?.email}</p>
+                    <p className="text-sm text-bw-white/[0.45]">{technicianDetail.technician?.email}</p>
                   </div>
                 </div>
 
@@ -411,9 +411,9 @@ export default function TechnicianProductivity({ user }) {
                   <h4 className="font-semibold mb-3">Ticket Status Breakdown</h4>
                   <div className="grid grid-cols-5 gap-2">
                     {Object.entries(technicianDetail.status_breakdown || {}).map(([status, count]) => (
-                      <div key={status} className="text-center p-2 rounded-lg bg-[#111820]">
+                      <div key={status} className="text-center p-2 rounded-lg bg-bw-panel">
                         <p className="text-xl font-bold">{count}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.45)] capitalize">{status.replace('_', ' ')}</p>
+                        <p className="text-xs text-bw-white/[0.45] capitalize">{status.replace('_', ' ')}</p>
                       </div>
                     ))}
                   </div>
@@ -425,7 +425,7 @@ export default function TechnicianProductivity({ user }) {
                   <div className="space-y-2">
                     {Object.entries(technicianDetail.priority_breakdown || {}).map(([priority, count]) => (
                       <div key={priority} className="flex items-center gap-3">
-                        <span className="w-20 text-sm capitalize text-[rgba(244,246,240,0.35)]">{priority}</span>
+                        <span className="w-20 text-sm capitalize text-bw-white/35">{priority}</span>
                         <Progress value={(count / (Object.values(technicianDetail.priority_breakdown).reduce((a, b) => a + b, 0) || 1)) * 100} className="flex-1 h-2" />
                         <span className="w-8 text-right font-medium">{count}</span>
                       </div>
@@ -452,12 +452,12 @@ export default function TechnicianProductivity({ user }) {
                       <div key={ticket.ticket_id} className="flex items-center justify-between p-2 rounded border">
                         <div>
                           <p className="text-sm font-medium">{ticket.title}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{ticket.vehicle_number}</p>
+                          <p className="text-xs text-bw-white/[0.45]">{ticket.vehicle_number}</p>
                         </div>
                         <Badge className={
                           ticket.status === 'resolved' || ticket.status === 'closed' 
-                            ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' 
-                            : 'bg-blue-100 text-[#3B9EFF]'
+                            ? 'bg-bw-volt/10 text-bw-volt border border-bw-volt/25' 
+                            : 'bg-blue-100 text-bw-blue'
                         }>
                           {ticket.status}
                         </Badge>

@@ -32,10 +32,10 @@ const categoryIcons = {
 };
 
 const roleColors = {
-  admin: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200",
-  manager: "bg-purple-100 text-[#8B5CF6] border-purple-200",
-  technician: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
-  customer: "bg-blue-100 text-[#3B9EFF] border-blue-200",
+  admin: "bg-bw-red/10 text-bw-red border border-bw-red/25 border-red-200",
+  manager: "bg-purple-100 text-bw-purple border-purple-200",
+  technician: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25 border-green-200",
+  customer: "bg-blue-100 text-bw-blue border-blue-200",
   business_customer: "bg-indigo-100 text-indigo-700 border-indigo-200",
 };
 
@@ -279,7 +279,7 @@ export default function PermissionsManager() {
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${roleColors[role.role] || 'bg-[rgba(255,255,255,0.05)]'}`}>
+                      <div className={`p-2 rounded-lg ${roleColors[role.role] || 'bg-white/5'}`}>
                         {role.is_system ? <Lock className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
                       </div>
                       <div>

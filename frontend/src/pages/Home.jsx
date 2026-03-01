@@ -68,7 +68,7 @@ const formatCurrency = (amount, compact = false) => {
 // Metric Card Component
 const MetricCard = ({ title, value, subtitle, icon: Icon, trend, trendValue, onClick, badge, badgeVariant = "default" }) => (
   <Card 
-    className={`relative overflow-hidden transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-[rgba(200,255,0,0.2)]' : ''}`}
+    className={`relative overflow-hidden transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-bw-volt/20' : ''}`}
     onClick={onClick}
     data-testid={`metric-${title?.toLowerCase().replace(/\s+/g, '-')}`}
   >
@@ -152,7 +152,7 @@ const ReceivablesPayablesWidget = ({ type, data, loading }) => {
         </div>
         
         {/* Progress bar */}
-        <div className="h-2 w-full bg-[#141E27] rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-bw-card rounded-full overflow-hidden">
           <div 
             className="h-full transition-all duration-500"
             style={{ 
@@ -168,7 +168,7 @@ const ReceivablesPayablesWidget = ({ type, data, loading }) => {
             <span>Current: {formatCurrency(current)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[#FF8C00]" />
+            <div className="h-3 w-3 rounded-full bg-bw-orange" />
             <span>Overdue: {formatCurrency(overdue)}</span>
           </div>
         </div>
@@ -264,14 +264,14 @@ const CashFlowWidget = ({ data, loading, period, onPeriodChange }) => {
               <p className="text-xs text-muted-foreground">Opening Balance</p>
               <p className="text-lg font-semibold">{formatCurrency(data?.opening_balance || 0)}</p>
             </div>
-            <div className="flex items-center gap-2 text-[#22C55E]">
+            <div className="flex items-center gap-2 text-bw-green">
               <TrendingUp className="h-4 w-4" />
               <div>
                 <p className="text-xs text-muted-foreground">Incoming</p>
                 <p className="text-lg font-semibold">{formatCurrency(totalIncoming)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-[#FF3B2F]">
+            <div className="flex items-center gap-2 text-bw-red">
               <TrendingDown className="h-4 w-4" />
               <div>
                 <p className="text-xs text-muted-foreground">Outgoing</p>
@@ -335,12 +335,12 @@ const IncomeExpenseWidget = ({ data, loading, method, onMethodChange }) => {
       <CardContent>
         <div className="flex items-center gap-6 mb-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#22C55E]" />
+            <div className="h-3 w-3 rounded-sm bg-bw-green" />
             <span>Total Income</span>
             <span className="font-semibold">{formatCurrency(totalIncome, true)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#FF3B2F]" />
+            <div className="h-3 w-3 rounded-sm bg-bw-red" />
             <span>Total Expenses</span>
             <span className="font-semibold">{formatCurrency(totalExpense, true)}</span>
           </div>
@@ -516,7 +516,7 @@ const ProjectsWidget = ({ projects, loading }) => {
                   </Badge>
                 </div>
                 {project.unbilled_amount > 0 && (
-                  <p className="text-xs text-[#FF8C00] mt-1">
+                  <p className="text-xs text-bw-orange mt-1">
                     Unbilled: {formatCurrency(project.unbilled_amount)}
                   </p>
                 )}
@@ -559,13 +559,13 @@ const BankAccountsWidget = ({ data, loading }) => {
       </CardHeader>
       <CardContent className="space-y-3">
         {totalUncategorized > 0 && (
-          <div className="flex items-center justify-between p-3 bg-[rgba(255,140,0,0.08)] dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
+          <div className="flex items-center justify-between p-3 bg-bw-orange/[0.08] dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-orange-500" />
               <span className="text-sm">{totalUncategorized} Uncategorized Transactions</span>
             </div>
             <Link to="/banking">
-              <Button variant="link" size="sm" className="text-[#FF8C00]">
+              <Button variant="link" size="sm" className="text-bw-orange">
                 Categorize now <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </Link>
@@ -859,14 +859,14 @@ export default function Home({ user }) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-lg border">
-                <div className="h-10 w-10 rounded-full bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
-                  <span className="text-[#22C55E] font-bold">✓</span>
+                <div className="h-10 w-10 rounded-full bg-bw-green/10 flex items-center justify-center">
+                  <span className="text-bw-green font-bold">✓</span>
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Connect Zoho Books</p>
                   <p className="text-sm text-muted-foreground">Sync your accounting data</p>
                 </div>
-                <Badge variant="outline" className="text-[#22C55E]">Complete</Badge>
+                <Badge variant="outline" className="text-bw-green">Complete</Badge>
               </div>
               
               <div className="flex items-center gap-4 p-4 rounded-lg border">

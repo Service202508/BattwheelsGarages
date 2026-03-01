@@ -199,14 +199,14 @@ Please provide:
     return content.split('\n').map((line, i) => {
       if (line.startsWith('### ')) {
         return (
-          <h3 key={i} className="text-sm font-semibold text-[#C8FF00] mt-4 mb-2">
+          <h3 key={i} className="text-sm font-semibold text-bw-volt mt-4 mb-2">
             {line.substring(4)}
           </h3>
         );
       }
       if (line.startsWith('## ')) {
         return (
-          <h2 key={i} className="text-base font-bold text-[#F4F6F0] mt-5 mb-2 pb-2 border-b border-[rgba(255,255,255,0.07)]">
+          <h2 key={i} className="text-base font-bold text-bw-white mt-5 mb-2 pb-2 border-b border-white/[0.07]">
             {line.substring(3)}
           </h2>
         );
@@ -214,23 +214,23 @@ Please provide:
       if (line.includes('**')) {
         const parts = line.split(/\*\*(.*?)\*\*/g);
         return (
-          <p key={i} className="mb-1.5 text-[rgba(244,246,240,0.7)] text-sm leading-relaxed">
+          <p key={i} className="mb-1.5 text-bw-white/70 text-sm leading-relaxed">
             {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-[#C8FF00] font-medium">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-bw-volt font-medium">{part}</strong> : part
             )}
           </p>
         );
       }
       if (line.startsWith('- ') || line.startsWith('• ')) {
         return (
-          <li key={i} className="ml-4 mb-1.5 list-disc text-[rgba(244,246,240,0.7)] text-sm">
+          <li key={i} className="ml-4 mb-1.5 list-disc text-bw-white/70 text-sm">
             {line.substring(2)}
           </li>
         );
       }
       if (/^\d+\.\s/.test(line)) {
         return (
-          <li key={i} className="ml-4 mb-2 list-decimal text-[rgba(244,246,240,0.7)] text-sm">
+          <li key={i} className="ml-4 mb-2 list-decimal text-bw-white/70 text-sm">
             {line.substring(line.indexOf('.') + 2)}
           </li>
         );
@@ -238,52 +238,52 @@ Please provide:
       if (line.trim() === '') {
         return <div key={i} className="h-2" />;
       }
-      return <p key={i} className="mb-1.5 text-[rgba(244,246,240,0.7)] text-sm leading-relaxed">{line}</p>;
+      return <p key={i} className="mb-1.5 text-bw-white/70 text-sm leading-relaxed">{line}</p>;
     });
   };
 
   return (
     <div className="space-y-6">
       {/* Clean Header with Volt Theme */}
-      <div className="bg-[#111820] border border-[rgba(200,255,0,0.20)] border-l-[3px] border-l-[#C8FF00] rounded-xl p-6">
+      <div className="bg-bw-panel border border-bw-volt/20 border-l-[3px] border-l-bw-volt rounded-xl p-6">
         <div className="flex items-center gap-4">
           <div className="relative">
             {/* Icon container */}
-            <div className="p-3 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.2)] rounded-xl">
-              <Brain className="h-8 w-8 text-[#C8FF00]" />
+            <div className="p-3 bg-bw-volt/[0.08] border border-bw-volt/20 rounded-xl">
+              <Brain className="h-8 w-8 text-bw-volt" />
             </div>
             {/* Live indicator dot */}
             <div className="absolute -top-1 -right-1 w-3 h-3">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-[#C8FF00] opacity-75 animate-ping" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C8FF00]" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-bw-volt opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-bw-volt" />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-[#F4F6F0]">AI Diagnostic Assistant</h1>
-              <span className="px-3 py-1 text-[10px] font-semibold bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] rounded-full font-mono uppercase tracking-[0.1em]">
+              <h1 className="text-2xl font-bold text-bw-white">AI Diagnostic Assistant</h1>
+              <span className="px-3 py-1 text-[10px] font-semibold bg-bw-volt/10 text-bw-volt border border-bw-volt/25 rounded-full font-mono uppercase tracking-[0.1em]">
                 Powered by EFI
               </span>
             </div>
-            <p className="text-[rgba(244,246,240,0.45)] mt-1">Get instant AI-powered diagnosis for your EV issues</p>
+            <p className="text-bw-white/[0.45] mt-1">Get instant AI-powered diagnosis for your EV issues</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Panel - Input Form */}
-        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-          <CardHeader className="pb-4 border-b border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border border-white/[0.07]">
+          <CardHeader className="pb-4 border-b border-white/[0.07]">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-[#C8FF00]" />
-              <CardTitle className="text-lg text-[#F4F6F0]">Describe Your Issue</CardTitle>
+              <Sparkles className="h-5 w-5 text-bw-volt" />
+              <CardTitle className="text-lg text-bw-white">Describe Your Issue</CardTitle>
             </div>
-            <p className="text-sm text-[rgba(244,246,240,0.45)]">Select category and provide details about your EV problem</p>
+            <p className="text-sm text-bw-white/[0.45]">Select category and provide details about your EV problem</p>
           </CardHeader>
           <CardContent className="p-5 space-y-5">
             {/* Issue Category */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-[#F4F6F0]">Issue Category</label>
+              <label className="text-sm font-medium text-bw-white">Issue Category</label>
               <div className="grid grid-cols-4 gap-2">
                 {ISSUE_CATEGORIES.map((category) => {
                   const Icon = category.icon;
@@ -294,16 +294,16 @@ Please provide:
                       onClick={() => setSelectedCategory(category.id)}
                       className={`relative flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-150 ${
                         isSelected
-                          ? "bg-[rgba(200,255,0,0.12)] border-[rgba(200,255,0,0.35)] border-t-2 border-t-[#C8FF00]"
-                          : "bg-[#111820] border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.6)] hover:border-[rgba(200,255,0,0.2)] hover:bg-[rgba(200,255,0,0.05)]"
+                          ? "bg-bw-volt/[0.12] border-bw-volt/35 border-t-2 border-t-bw-volt"
+                          : "bg-bw-panel border-white/[0.07] text-bw-white/60 hover:border-bw-volt/20 hover:bg-bw-volt/5"
                       }`}
                       data-testid={`category-${category.id}`}
                     >
-                      <Icon className={`h-5 w-5 ${isSelected ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.5)]"}`} />
-                      <span className={`text-xs font-medium text-center leading-tight ${isSelected ? "text-[#C8FF00]" : ""}`}>{category.label}</span>
+                      <Icon className={`h-5 w-5 ${isSelected ? "text-bw-volt" : "text-bw-white/50"}`} />
+                      <span className={`text-xs font-medium text-center leading-tight ${isSelected ? "text-bw-volt" : ""}`}>{category.label}</span>
                       {isSelected && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C8FF00] rounded-full flex items-center justify-center shadow">
-                          <CheckCircle className="h-3 w-3 text-[#080C0F]" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-bw-volt rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-bw-black" />
                         </div>
                       )}
                     </button>
@@ -314,7 +314,7 @@ Please provide:
 
             {/* Vehicle Category */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-[#F4F6F0]">Vehicle Category</label>
+              <label className="text-sm font-medium text-bw-white">Vehicle Category</label>
               <div className="grid grid-cols-4 gap-3">
                 {VEHICLE_CATEGORIES.map((vehicle) => {
                   const Icon = vehicle.icon;
@@ -328,16 +328,16 @@ Please provide:
                       }}
                       className={`relative flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ${
                         isSelected
-                          ? "bg-[rgba(200,255,0,0.12)] border-[rgba(200,255,0,0.35)] border-t-2 border-t-[#C8FF00]"
-                          : "bg-[#111820] border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.6)] hover:border-[rgba(200,255,0,0.2)] hover:bg-[rgba(200,255,0,0.05)]"
+                          ? "bg-bw-volt/[0.12] border-bw-volt/35 border-t-2 border-t-bw-volt"
+                          : "bg-bw-panel border-white/[0.07] text-bw-white/60 hover:border-bw-volt/20 hover:bg-bw-volt/5"
                       }`}
                       data-testid={`vehicle-${vehicle.id}`}
                     >
-                      <Icon className={`h-6 w-6 ${isSelected ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.5)]"}`} />
-                      <span className={`text-xs font-medium text-center ${isSelected ? "text-[#C8FF00]" : ""}`}>{vehicle.label}</span>
+                      <Icon className={`h-6 w-6 ${isSelected ? "text-bw-volt" : "text-bw-white/50"}`} />
+                      <span className={`text-xs font-medium text-center ${isSelected ? "text-bw-volt" : ""}`}>{vehicle.label}</span>
                       {isSelected && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C8FF00] rounded-full flex items-center justify-center shadow">
-                          <CheckCircle className="h-3 w-3 text-[#080C0F]" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-bw-volt rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-bw-black" />
                         </div>
                       )}
                     </button>
@@ -348,18 +348,18 @@ Please provide:
 
             {/* Vehicle Model */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#F4F6F0]">Vehicle Model</label>
+              <label className="text-sm font-medium text-bw-white">Vehicle Model</label>
               <Select
                 value={selectedModel}
                 onValueChange={setSelectedModel}
                 disabled={!selectedVehicleType}
               >
-                <SelectTrigger className="w-full bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]" data-testid="vehicle-model-select">
+                <SelectTrigger className="w-full bg-bw-panel border-white/[0.07] text-bw-white" data-testid="vehicle-model-select">
                   <SelectValue placeholder={selectedVehicleType ? "Select vehicle model" : "Select vehicle category first"} />
                 </SelectTrigger>
-                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                <SelectContent className="bg-bw-panel border-white/10">
                   {selectedVehicleType && VEHICLE_MODELS[selectedVehicleType]?.map((model) => (
-                    <SelectItem key={model} value={model} className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">
+                    <SelectItem key={model} value={model} className="text-bw-white focus:bg-bw-volt/10 focus:text-bw-volt">
                       {model}
                     </SelectItem>
                   ))}
@@ -369,29 +369,29 @@ Please provide:
 
             {/* DTC Codes */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#F4F6F0]">
-                DTC/Error Codes <span className="text-[rgba(244,246,240,0.35)] font-normal">(Optional)</span>
+              <label className="text-sm font-medium text-bw-white">
+                DTC/Error Codes <span className="text-bw-white/35 font-normal">(Optional)</span>
               </label>
               <input
                 type="text"
                 value={dtcCodes}
                 onChange={(e) => setDtcCodes(e.target.value)}
                 placeholder="e.g., P0A80, U0100, B1234"
-                className="w-full px-4 py-2.5 rounded border border-[rgba(255,255,255,0.07)] bg-[#111820] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00] focus:ring-2 focus:ring-[rgba(200,255,0,0.2)] transition-all"
+                className="w-full px-4 py-2.5 rounded border border-white/[0.07] bg-bw-panel text-bw-white placeholder:text-bw-white/25 focus:border-bw-volt focus:ring-2 focus:ring-bw-volt/20 transition-all"
                 data-testid="dtc-codes-input"
               />
             </div>
 
             {/* Issue Description */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#F4F6F0]">
-                Describe the Issue <span className="text-[#FF3B2F]">*</span>
+              <label className="text-sm font-medium text-bw-white">
+                Describe the Issue <span className="text-bw-red">*</span>
               </label>
               <Textarea
                 value={issueDescription}
                 onChange={(e) => setIssueDescription(e.target.value)}
                 placeholder="Example: My scooter won't charge past 80%. The charging port light blinks red after reaching 80% and charging stops automatically..."
-                className="min-h-[120px] resize-none bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00]"
+                className="min-h-[120px] resize-none bg-bw-panel border-white/[0.07] text-bw-white placeholder:text-bw-white/25 focus:border-bw-volt"
                 data-testid="issue-description"
               />
             </div>
@@ -400,7 +400,7 @@ Please provide:
             <Button
               onClick={handleGetDiagnosis}
               disabled={loading || !issueDescription.trim()}
-              className="w-full h-12 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded"
+              className="w-full h-12 bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold rounded"
               data-testid="get-diagnosis-btn"
             >
               {loading ? (
@@ -419,12 +419,12 @@ Please provide:
         </Card>
 
         {/* Right Panel - Diagnosis Results */}
-        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
-          <CardHeader className="pb-4 border-b border-[rgba(255,255,255,0.07)]">
+        <Card className="bg-bw-panel border border-white/[0.07]">
+          <CardHeader className="pb-4 border-b border-white/[0.07]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#C8FF00]" />
-                <CardTitle className="text-lg text-[#F4F6F0]">AI Diagnosis</CardTitle>
+                <Sparkles className="h-5 w-5 text-bw-volt" />
+                <CardTitle className="text-lg text-bw-white">AI Diagnosis</CardTitle>
               </div>
               {diagnosis && (
                 <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ Please provide:
                     variant="ghost"
                     size="sm"
                     onClick={copyDiagnosis}
-                    className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
+                    className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
                   >
                     <Copy className="h-4 w-4 mr-1" />
                     Copy
@@ -441,7 +441,7 @@ Please provide:
                     variant="ghost"
                     size="sm"
                     onClick={handleReset}
-                    className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
+                    className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
                   >
                     <RotateCcw className="h-4 w-4 mr-1" />
                     Reset
@@ -449,7 +449,7 @@ Please provide:
                 </div>
               )}
             </div>
-            <p className="text-sm text-[rgba(244,246,240,0.45)]">
+            <p className="text-sm text-bw-white/[0.45]">
               {diagnosis ? "AI-powered analysis of your issue" : "Submit your query for diagnosis"}
             </p>
           </CardHeader>
@@ -458,30 +458,30 @@ Please provide:
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="relative mb-6">
                   {/* Glowing ring animation */}
-                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.2)] rounded-2xl blur-xl animate-pulse" />
-                  <div className="absolute -inset-2 bg-gradient-to-r from-[rgba(200,255,0,0.15)] to-[rgba(26,255,228,0.15)] rounded-2xl blur-lg animate-pulse" style={{ animationDelay: '150ms' }} />
-                  <div className="relative p-5 bg-[rgba(200,255,0,0.08)] rounded-xl border border-[rgba(200,255,0,0.20)]">
-                    <Bot className="h-12 w-12 text-[#C8FF00] animate-bounce" style={{ animationDuration: '1.5s' }} />
+                  <div className="absolute inset-0 bg-bw-volt/20 rounded-2xl blur-xl animate-pulse" />
+                  <div className="absolute -inset-2 bg-gradient-to-r from-bw-volt/15 to-bw-teal/15 rounded-2xl blur-lg animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <div className="relative p-5 bg-bw-volt/[0.08] rounded-xl border border-bw-volt/20">
+                    <Bot className="h-12 w-12 text-bw-volt animate-bounce" style={{ animationDuration: '1.5s' }} />
                   </div>
                   {/* Scanning line effect */}
-                  <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-[#C8FF00] to-transparent animate-pulse" />
+                  <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-bw-volt to-transparent animate-pulse" />
                 </div>
-                <p className="text-[#F4F6F0] font-semibold text-lg">Analyzing your issue...</p>
-                <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1.5">EFI Intelligence is processing</p>
+                <p className="text-bw-white font-semibold text-lg">Analyzing your issue...</p>
+                <p className="text-sm text-bw-white/[0.45] mt-1.5">EFI Intelligence is processing</p>
                 {/* Loading dots */}
                 <div className="flex gap-1.5 mt-4">
-                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
-                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
-                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
                 </div>
               </div>
             ) : diagnosis ? (
               <ScrollArea className="h-[500px] pr-4">
                 {/* Confidence Indicator */}
                 {diagnosis.confidence && (
-                  <div className="flex items-center gap-2 mb-4 p-3 bg-[rgba(200,255,0,0.08)] rounded-lg border border-[rgba(200,255,0,0.20)]">
-                    <CheckCircle className="h-5 w-5 text-[#C8FF00]" />
-                    <span className="text-sm text-[#C8FF00] font-medium">
+                  <div className="flex items-center gap-2 mb-4 p-3 bg-bw-volt/[0.08] rounded-lg border border-bw-volt/20">
+                    <CheckCircle className="h-5 w-5 text-bw-volt" />
+                    <span className="text-sm text-bw-volt font-medium">
                       AI Confidence: {Math.round(diagnosis.confidence * 100)}%
                     </span>
                   </div>
@@ -493,41 +493,41 @@ Please provide:
                 </div>
 
                 {/* Disclaimer */}
-                <div className="mt-6 p-3 bg-[rgba(234,179,8,0.08)] rounded-lg border border-[rgba(234,179,8,0.20)]">
+                <div className="mt-6 p-3 bg-bw-amber/[0.08] rounded-lg border border-bw-amber/20">
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-[#EAB308] mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-[#EAB308]">
+                    <AlertTriangle className="h-4 w-4 text-bw-amber mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-bw-amber">
                       This AI diagnosis is for reference only. Always verify with proper diagnostic tools and follow manufacturer guidelines.
                     </p>
                   </div>
                 </div>
 
                 {/* Timestamp */}
-                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[rgba(244,246,240,0.35)]">
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-bw-white/35">
                   <Clock className="h-3 w-3" />
                   Generated at {new Date(diagnosis.timestamp).toLocaleTimeString()}
                 </div>
               </ScrollArea>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="p-4 bg-[rgba(255,255,255,0.05)] rounded-full mb-4">
-                  <Bot className="h-12 w-12 text-[rgba(244,246,240,0.35)]" />
+                <div className="p-4 bg-white/5 rounded-full mb-4">
+                  <Bot className="h-12 w-12 text-bw-white/35" />
                 </div>
-                <p className="text-[#F4F6F0] font-medium">Describe your issue to get started</p>
-                <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1 max-w-xs">
+                <p className="text-bw-white font-medium">Describe your issue to get started</p>
+                <p className="text-sm text-bw-white/[0.45] mt-1 max-w-xs">
                   Fill in the details on the left panel and click "Get AI Diagnosis"
                 </p>
-                <div className="mt-6 flex items-center gap-4 text-xs text-[rgba(244,246,240,0.35)]">
+                <div className="mt-6 flex items-center gap-4 text-xs text-bw-white/35">
                   <div className="flex items-center gap-1">
-                    <Zap className="h-3.5 w-3.5 text-[#C8FF00]" />
+                    <Zap className="h-3.5 w-3.5 text-bw-volt" />
                     Instant Analysis
                   </div>
                   <div className="flex items-center gap-1">
-                    <Shield className="h-3.5 w-3.5 text-[#C8FF00]" />
+                    <Shield className="h-3.5 w-3.5 text-bw-volt" />
                     Expert Knowledge
                   </div>
                   <div className="flex items-center gap-1">
-                    <Target className="h-3.5 w-3.5 text-[#C8FF00]" />
+                    <Target className="h-3.5 w-3.5 text-bw-volt" />
                     Accurate Results
                   </div>
                 </div>
@@ -538,13 +538,13 @@ Please provide:
       </div>
 
       {/* Tips Section */}
-      <Card className="bg-[rgba(200,255,0,0.05)] border border-[rgba(200,255,0,0.15)]">
+      <Card className="bg-bw-volt/5 border border-bw-volt/15">
         <CardContent className="py-4">
           <div className="flex items-start gap-3">
-            <Lightbulb className="h-5 w-5 text-[#C8FF00] mt-0.5 flex-shrink-0" />
+            <Lightbulb className="h-5 w-5 text-bw-volt mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-[#C8FF00] mb-1">Tips for better diagnosis</h4>
-              <ul className="text-sm text-[rgba(244,246,240,0.6)] space-y-1">
+              <h4 className="font-medium text-bw-volt mb-1">Tips for better diagnosis</h4>
+              <ul className="text-sm text-bw-white/60 space-y-1">
                 <li>• Be specific about symptoms (sounds, warning lights, behavior)</li>
                 <li>• Include any DTC/error codes if available</li>
                 <li>• Mention when the issue started and under what conditions</li>

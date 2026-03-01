@@ -19,24 +19,24 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  sent: "bg-blue-100 text-[#3B9EFF]",
-  viewed: "bg-purple-100 text-[#8B5CF6]",
-  partially_paid: "bg-yellow-100 text-[#EAB308]",
-  paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  declined: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  sent: "bg-blue-100 text-bw-blue",
+  viewed: "bg-purple-100 text-bw-purple",
+  partially_paid: "bg-yellow-100 text-bw-amber",
+  paid: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  overdue: "bg-bw-red/10 text-bw-red border border-bw-red/25",
+  accepted: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  declined: "bg-bw-red/10 text-bw-red border border-bw-red/25",
   // Ticket statuses
-  open: "bg-blue-100 text-[#3B9EFF]",
-  in_progress: "bg-yellow-100 text-[#EAB308]",
-  resolved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  closed: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
+  open: "bg-blue-100 text-bw-blue",
+  in_progress: "bg-yellow-100 text-bw-amber",
+  resolved: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  closed: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
 };
 
 const priorityColors = {
-  low: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  medium: "bg-yellow-100 text-[#EAB308]",
-  high: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  low: "bg-bw-white/5 text-bw-white/35 border border-white/[0.08]",
+  medium: "bg-yellow-100 text-bw-amber",
+  high: "bg-bw-red/10 text-bw-red border border-bw-red/25",
 };
 
 export default function CustomerPortal() {
@@ -372,31 +372,31 @@ export default function CustomerPortal() {
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4" data-testid="portal-login-page">
-        <Card className="w-full max-w-md bg-[#111820]/10 backdrop-blur-lg border-white/20">
+        <Card className="w-full max-w-md bg-bw-panel/10 backdrop-blur-lg border-white/20">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-[#C8FF00] rounded-full flex items-center justify-center mb-4">
-              <Building2 className="h-8 w-8 text-[#080C0F] font-bold" />
+            <div className="mx-auto w-16 h-16 bg-bw-volt rounded-full flex items-center justify-center mb-4">
+              <Building2 className="h-8 w-8 text-bw-black font-bold" />
             </div>
             <CardTitle className="text-2xl text-white">Customer Portal</CardTitle>
-            <p className="text-[rgba(244,246,240,0.45)] text-sm mt-2">Access your invoices, estimates, and statements</p>
+            <p className="text-bw-white/[0.45] text-sm mt-2">Access your invoices, estimates, and statements</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm text-[rgba(244,246,240,0.20)] mb-2 block">Portal Access Token</label>
+              <label className="text-sm text-bw-white/20 mb-2 block">Portal Access Token</label>
               <Input
                 value={portalToken}
                 onChange={(e) => setPortalToken(e.target.value)}
                 onKeyUp={(e) => e.key === "Enter" && handleLogin()}
                 placeholder="Enter your portal token"
-                className="bg-[#111820]/10 border-white/20 text-white placeholder:text-[rgba(244,246,240,0.45)]"
+                className="bg-bw-panel/10 border-white/20 text-white placeholder:text-bw-white/[0.45]"
                 data-testid="portal-token-input"
               />
-              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">Your portal token was sent to your email</p>
+              <p className="text-xs text-bw-white/[0.45] mt-2">Your portal token was sent to your email</p>
             </div>
             <Button 
               onClick={handleLogin} 
               disabled={loading}
-              className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
+              className="w-full bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
               data-testid="portal-login-btn"
             >
               {loading ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <LogIn className="h-4 w-4 mr-2" />}
@@ -410,17 +410,17 @@ export default function CustomerPortal() {
 
   // Portal Dashboard
   return (
-    <div className="min-h-screen bg-[#111820]" data-testid="customer-portal-dashboard">
+    <div className="min-h-screen bg-bw-panel" data-testid="customer-portal-dashboard">
       {/* Header */}
-      <header className="bg-[#111820] border-b px-6 py-4">
+      <header className="bg-bw-panel border-b px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C8FF00] rounded-full flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-[#080C0F] font-bold" />
+            <div className="w-10 h-10 bg-bw-volt rounded-full flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-bw-black font-bold" />
             </div>
             <div>
               <h1 className="font-bold text-lg">{contact?.contact_name || dashboard?.contact?.name}</h1>
-              <p className="text-xs text-[rgba(244,246,240,0.45)]">{contact?.company_name || dashboard?.contact?.company}</p>
+              <p className="text-xs text-bw-white/[0.45]">{contact?.company_name || dashboard?.contact?.company}</p>
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -431,7 +431,7 @@ export default function CustomerPortal() {
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-[#111820] border">
+          <TabsList className="bg-bw-panel border">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
             <TabsTrigger value="estimates">Estimates</TabsTrigger>
@@ -454,41 +454,41 @@ export default function CustomerPortal() {
                       <div className="flex items-center gap-3">
                         <Receipt className="h-8 w-8 text-blue-500" />
                         <div>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Invoiced</p>
-                          <p className="text-xl font-bold text-[#3B9EFF]">{formatCurrency(dashboard.summary.total_invoiced)}</p>
+                          <p className="text-xs text-bw-white/[0.45]">Total Invoiced</p>
+                          <p className="text-xl font-bold text-bw-blue">{formatCurrency(dashboard.summary.total_invoiced)}</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+                  <Card className="bg-bw-green/[0.08] border-green-200">
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <CheckCircle className="h-8 w-8 text-green-500" />
                         <div>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Paid</p>
+                          <p className="text-xs text-bw-white/[0.45]">Total Paid</p>
                           <p className="text-xl font-bold text-green-700">{formatCurrency(dashboard.summary.total_paid)}</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
+                  <Card className="bg-bw-orange/[0.08] border-orange-200">
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <DollarSign className="h-8 w-8 text-orange-500" />
                         <div>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Outstanding</p>
-                          <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency(dashboard.summary.total_outstanding)}</p>
+                          <p className="text-xs text-bw-white/[0.45]">Outstanding</p>
+                          <p className="text-xl font-bold text-bw-orange">{formatCurrency(dashboard.summary.total_outstanding)}</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-[rgba(255,59,47,0.08)] border-red-200" : "bg-[#111820]"}>
+                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-bw-red/[0.08] border-red-200" : "bg-bw-panel"}>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
-                        <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-[rgba(244,246,240,0.45)]"}`} />
+                        <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-bw-white/[0.45]"}`} />
                         <div>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Overdue</p>
-                          <p className={`text-xl font-bold ${dashboard.summary.overdue_invoices > 0 ? "text-red-700" : "text-[rgba(244,246,240,0.45)]"}`}>{dashboard.summary.overdue_invoices}</p>
+                          <p className="text-xs text-bw-white/[0.45]">Overdue</p>
+                          <p className={`text-xl font-bold ${dashboard.summary.overdue_invoices > 0 ? "text-red-700" : "text-bw-white/[0.45]"}`}>{dashboard.summary.overdue_invoices}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -508,19 +508,19 @@ export default function CustomerPortal() {
                         {dashboard.recent_invoices.map(inv => (
                           <div 
                             key={inv.invoice_id} 
-                            className="flex justify-between items-center p-3 bg-[#111820] rounded-lg hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+                            className="flex justify-between items-center p-3 bg-bw-panel rounded-lg hover:bg-white/5 cursor-pointer"
                             onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                           >
                             <div>
                               <p className="font-medium">{inv.invoice_number}</p>
-                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(inv.invoice_date)}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{formatDate(inv.invoice_date)}</p>
                             </div>
                             <div className="text-right flex items-center gap-3">
                               <div>
                                 <p className="font-medium">{formatCurrency(inv.grand_total)}</p>
-                                <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{inv.status}</Badge>
+                                <Badge className={statusColors[inv.status] || "bg-white/5"}>{inv.status}</Badge>
                               </div>
-                              <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                              <ChevronRight className="h-5 w-5 text-bw-white/[0.45]" />
                             </div>
                           </div>
                         ))}
@@ -531,14 +531,14 @@ export default function CustomerPortal() {
 
                 {/* Pending Estimates */}
                 {dashboard.summary.pending_estimates > 0 && (
-                  <Card className="border-yellow-200 bg-[rgba(234,179,8,0.08)]">
+                  <Card className="border-yellow-200 bg-bw-amber/[0.08]">
                     <CardContent className="pt-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <FileText className="h-8 w-8 text-[#EAB308]" />
+                          <FileText className="h-8 w-8 text-bw-amber" />
                           <div>
                             <p className="font-medium">Pending Estimates</p>
-                            <p className="text-sm text-[rgba(244,246,240,0.35)]">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>
+                            <p className="text-sm text-bw-white/35">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>
                           </div>
                         </div>
                         <Button size="sm" onClick={() => setActiveTab("estimates")}>View <ChevronRight className="h-4 w-4 ml-1" /></Button>
@@ -558,18 +558,18 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {invoices.length === 0 ? (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No invoices found</p>
+                  <p className="text-center text-bw-white/[0.45] py-8">No invoices found</p>
                 ) : (
                   <div className="space-y-2">
                     {invoices.map(inv => (
                       <div 
                         key={inv.invoice_id}
-                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-[#111820] cursor-pointer"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-bw-panel cursor-pointer"
                         onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                       >
                         <div>
-                          <p className="font-medium text-[#3B9EFF]">{inv.invoice_number}</p>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
+                          <p className="font-medium text-bw-blue">{inv.invoice_number}</p>
+                          <p className="text-sm text-bw-white/[0.45]">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <div>
@@ -594,18 +594,18 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {estimates.length === 0 ? (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No estimates found</p>
+                  <p className="text-center text-bw-white/[0.45] py-8">No estimates found</p>
                 ) : (
                   <div className="space-y-2">
                     {estimates.map(est => (
                       <div 
                         key={est.estimate_id}
-                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-[#111820] cursor-pointer"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-bw-panel cursor-pointer"
                         onClick={() => fetchEstimateDetail(est.estimate_id)}
                       >
                         <div>
-                          <p className="font-medium text-[#3B9EFF]">{est.estimate_number}</p>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
+                          <p className="font-medium text-bw-blue">{est.estimate_number}</p>
+                          <p className="text-sm text-bw-white/[0.45]">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <p className="font-bold">{formatCurrency(est.grand_total)}</p>
@@ -627,17 +627,17 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {payments.length === 0 ? (
-                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No payments found</p>
+                  <p className="text-center text-bw-white/[0.45] py-8">No payments found</p>
                 ) : (
                   <div className="space-y-2">
                     {payments.map(p => (
                       <div key={p.payment_id} className="flex justify-between items-center p-4 border rounded-lg">
                         <div>
                           <p className="font-medium">{formatCurrency(p.amount)}</p>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{formatDate(p.payment_date)} • {p.payment_mode}</p>
-                          {p.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {p.reference_number}</p>}
+                          <p className="text-sm text-bw-white/[0.45]">{formatDate(p.payment_date)} • {p.payment_mode}</p>
+                          {p.reference_number && <p className="text-xs text-bw-white/[0.45]">Ref: {p.reference_number}</p>}
                         </div>
-                        <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Received</Badge>
+                        <Badge className="bg-bw-volt/10 text-bw-volt border border-bw-volt/25">Received</Badge>
                       </div>
                     ))}
                   </div>
@@ -656,17 +656,17 @@ export default function CustomerPortal() {
                 {statement && (
                   <div className="space-y-6">
                     {/* Summary */}
-                    <div className="grid grid-cols-3 gap-4 bg-[#111820] p-4 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 bg-bw-panel p-4 rounded-lg">
                       <div className="text-center">
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Invoiced</p>
+                        <p className="text-sm text-bw-white/[0.45]">Total Invoiced</p>
                         <p className="text-xl font-bold">{formatCurrency(statement.summary.total_invoiced)}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Paid</p>
+                        <p className="text-sm text-bw-white/[0.45]">Total Paid</p>
                         <p className="text-xl font-bold text-green-600">{formatCurrency(statement.summary.total_paid)}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Balance Due</p>
+                        <p className="text-sm text-bw-white/[0.45]">Balance Due</p>
                         <p className="text-xl font-bold text-red-600">{formatCurrency(statement.summary.balance_due)}</p>
                       </div>
                     </div>
@@ -676,7 +676,7 @@ export default function CustomerPortal() {
                       <h4 className="font-medium mb-3">Transactions</h4>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full text-sm">
-                          <thead className="bg-[#111820]">
+                          <thead className="bg-bw-panel">
                             <tr>
                               <th className="px-4 py-2 text-left">Date</th>
                               <th className="px-4 py-2 text-left">Description</th>
@@ -708,7 +708,7 @@ export default function CustomerPortal() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-lg font-semibold">Support Requests</h2>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">View your service tickets and submit new requests</p>
+                <p className="text-sm text-bw-white/[0.45]">View your service tickets and submit new requests</p>
               </div>
               <Button onClick={() => setShowCreateTicket(true)} data-testid="create-ticket-btn">
                 <Plus className="h-4 w-4 mr-2" />
@@ -719,8 +719,8 @@ export default function CustomerPortal() {
             <Card>
               <CardContent className="p-0">
                 {tickets.length === 0 ? (
-                  <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">
-                    <Ticket className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
+                  <div className="p-8 text-center text-bw-white/[0.45]">
+                    <Ticket className="h-12 w-12 mx-auto mb-3 text-bw-white/20" />
                     <p>No support requests found</p>
                     <Button variant="outline" className="mt-4" onClick={() => setShowCreateTicket(true)}>
                       Submit Your First Request
@@ -731,20 +731,20 @@ export default function CustomerPortal() {
                     {tickets.map((ticket) => (
                       <div
                         key={ticket.ticket_id}
-                        className="p-4 hover:bg-[#111820] cursor-pointer flex justify-between items-center"
+                        className="p-4 hover:bg-bw-panel cursor-pointer flex justify-between items-center"
                         onClick={() => viewTicketDetails(ticket.ticket_id)}
                         data-testid={`ticket-${ticket.ticket_id}`}
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs text-[rgba(244,246,240,0.45)]">{ticket.ticket_id}</span>
+                            <span className="font-mono text-xs text-bw-white/[0.45]">{ticket.ticket_id}</span>
                             <Badge className={statusColors[ticket.status]}>{ticket.status?.replace("_", " ")}</Badge>
                             <Badge variant="outline" className={priorityColors[ticket.priority]}>{ticket.priority}</Badge>
                           </div>
                           <p className="font-medium mt-1">{ticket.subject}</p>
-                          <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Created: {formatDate(ticket.created_at)}</p>
+                          <p className="text-xs text-bw-white/[0.45] mt-1">Created: {formatDate(ticket.created_at)}</p>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                        <ChevronRight className="h-5 w-5 text-bw-white/[0.45]" />
                       </div>
                     ))}
                   </div>
@@ -864,7 +864,7 @@ export default function CustomerPortal() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <span className="font-mono text-sm text-[rgba(244,246,240,0.45)]">{selectedTicket.ticket_id}</span>
+                  <span className="font-mono text-sm text-bw-white/[0.45]">{selectedTicket.ticket_id}</span>
                   <Badge className={statusColors[selectedTicket.status]}>{selectedTicket.status?.replace("_", " ")}</Badge>
                 </DialogTitle>
                 <DialogDescription>{selectedTicket.subject}</DialogDescription>
@@ -872,17 +872,17 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Category:</span> {selectedTicket.category}</div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Priority:</span> <Badge variant="outline" className={priorityColors[selectedTicket.priority]}>{selectedTicket.priority}</Badge></div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Created:</span> {formatDate(selectedTicket.created_at)}</div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Updated:</span> {formatDate(selectedTicket.updated_at)}</div>
+                  <div><span className="text-bw-white/[0.45]">Category:</span> {selectedTicket.category}</div>
+                  <div><span className="text-bw-white/[0.45]">Priority:</span> <Badge variant="outline" className={priorityColors[selectedTicket.priority]}>{selectedTicket.priority}</Badge></div>
+                  <div><span className="text-bw-white/[0.45]">Created:</span> {formatDate(selectedTicket.created_at)}</div>
+                  <div><span className="text-bw-white/[0.45]">Updated:</span> {formatDate(selectedTicket.updated_at)}</div>
                 </div>
                 
                 <Separator />
                 
                 <div>
                   <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-sm text-[rgba(244,246,240,0.35)] whitespace-pre-wrap">{selectedTicket.description}</p>
+                  <p className="text-sm text-bw-white/35 whitespace-pre-wrap">{selectedTicket.description}</p>
                 </div>
                 
                 {selectedTicket.updates?.length > 0 && (
@@ -892,12 +892,12 @@ export default function CustomerPortal() {
                       <h4 className="font-medium mb-3">Updates</h4>
                       <div className="space-y-3">
                         {selectedTicket.updates.map((update, idx) => (
-                          <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-[#111820] mr-8"}`}>
+                          <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-bw-panel mr-8"}`}>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">{update.author}</span>
-                              <span className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(update.created_at)}</span>
+                              <span className="text-xs text-bw-white/[0.45]">{formatDate(update.created_at)}</span>
                             </div>
-                            <p className="text-[rgba(244,246,240,0.35)]">{update.comment}</p>
+                            <p className="text-bw-white/35">{update.comment}</p>
                           </div>
                         ))}
                       </div>
@@ -944,14 +944,14 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span> {formatDate(selectedInvoice.invoice_date)}</div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Due:</span> {formatDate(selectedInvoice.due_date)}</div>
+                  <div><span className="text-bw-white/[0.45]">Date:</span> {formatDate(selectedInvoice.invoice_date)}</div>
+                  <div><span className="text-bw-white/[0.45]">Due:</span> {formatDate(selectedInvoice.due_date)}</div>
                 </div>
                 
                 {selectedInvoice.line_items?.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#111820]">
+                      <thead className="bg-bw-panel">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -973,7 +973,7 @@ export default function CustomerPortal() {
                   </div>
                 )}
                 
-                <div className="bg-[#111820] p-4 rounded-lg space-y-1 text-sm w-48 ml-auto">
+                <div className="bg-bw-panel p-4 rounded-lg space-y-1 text-sm w-48 ml-auto">
                   <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
                   <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
                   <Separator />
@@ -1002,14 +1002,14 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span> {formatDate(selectedEstimate.estimate_date)}</div>
-                  <div><span className="text-[rgba(244,246,240,0.45)]">Expires:</span> {formatDate(selectedEstimate.expiry_date)}</div>
+                  <div><span className="text-bw-white/[0.45]">Date:</span> {formatDate(selectedEstimate.estimate_date)}</div>
+                  <div><span className="text-bw-white/[0.45]">Expires:</span> {formatDate(selectedEstimate.expiry_date)}</div>
                 </div>
                 
                 {selectedEstimate.line_items?.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#111820]">
+                      <thead className="bg-bw-panel">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -1031,13 +1031,13 @@ export default function CustomerPortal() {
                   </div>
                 )}
                 
-                <div className="bg-[#111820] p-4 rounded-lg text-center">
+                <div className="bg-bw-panel p-4 rounded-lg text-center">
                   <p className="text-2xl font-bold">{formatCurrency(selectedEstimate.grand_total)}</p>
                 </div>
                 
                 {selectedEstimate.status === "sent" && (
                   <div className="flex gap-3 justify-center">
-                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]">
+                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-bw-green hover:bg-bw-green-hover text-bw-black">
                       <CheckCircle className="h-4 w-4 mr-2" /> Accept Estimate
                     </Button>
                     <Button variant="outline" onClick={() => handleDeclineEstimate(selectedEstimate.estimate_id)}>

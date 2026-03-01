@@ -122,7 +122,7 @@ export default function Accounting({ user }) {
                 <p className="text-3xl font-bold mt-2 mono text-primary">
                   ₹{(summary?.total_revenue || 0).toLocaleString()}
                 </p>
-                <div className="flex items-center gap-1 mt-1 text-[#C8FF00] text-400 text-sm">
+                <div className="flex items-center gap-1 mt-1 text-bw-volt text-400 text-sm">
                   <ArrowUpRight className="h-4 w-4" />
                   <span>Income</span>
                 </div>
@@ -176,13 +176,13 @@ export default function Accounting({ user }) {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Net Profit</p>
-                <p className={`text-3xl font-bold mt-2 mono ${(summary?.net_profit || 0) >= 0 ? 'text-[#C8FF00] text-400' : 'text-red-400'}`}>
+                <p className={`text-3xl font-bold mt-2 mono ${(summary?.net_profit || 0) >= 0 ? 'text-bw-volt text-400' : 'text-red-400'}`}>
                   ₹{(summary?.net_profit || 0).toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Revenue - Expenses</p>
               </div>
-              <div className="h-12 w-12 rounded-xl bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
-                <Calculator className="h-6 w-6 text-[#C8FF00] text-400" />
+              <div className="h-12 w-12 rounded-xl bg-bw-volt/10 flex items-center justify-center">
+                <Calculator className="h-6 w-6 text-bw-volt text-400" />
               </div>
             </div>
           </CardContent>

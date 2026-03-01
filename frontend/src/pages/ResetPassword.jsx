@@ -59,7 +59,7 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080C0F] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-bw-black p-4">
         <Card className="w-full max-w-md border-white/10 bg-card/80">
           <CardContent className="pt-6 text-center space-y-4">
             <p className="text-destructive">Invalid reset link — no token provided.</p>
@@ -74,7 +74,7 @@ export default function ResetPassword() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#080C0F] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-bw-black p-4">
         <Card className="w-full max-w-md border-white/10 bg-card/80">
           <CardContent className="pt-6 text-center space-y-4">
             <div className="h-16 w-16 mx-auto bg-green-500/20 rounded-full flex items-center justify-center">
@@ -92,7 +92,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#080C0F] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-bw-black p-4">
       <Card className="w-full max-w-md border-white/10 bg-card/80">
         <CardHeader className="text-center">
           <div className="h-12 w-12 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-2">

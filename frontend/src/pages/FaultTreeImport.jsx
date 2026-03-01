@@ -198,8 +198,8 @@ const FaultTreeImport = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">EFI Master Fault Tree Import</h1>
-          <p className="text-[rgba(244,246,240,0.45)]">Import EV failure intelligence from Excel files</p>
+          <h1 className="text-2xl font-bold text-bw-white">EFI Master Fault Tree Import</h1>
+          <p className="text-bw-white/[0.45]">Import EV failure intelligence from Excel files</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchJobs}>
@@ -226,7 +226,7 @@ const FaultTreeImport = () => {
             <Button 
               onClick={handleQuickImport} 
               disabled={uploading}
-              className="bg-[#22C55E] hover:bg-[#16a34a]"
+              className="bg-bw-green hover:bg-bw-green-hover"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -236,7 +236,7 @@ const FaultTreeImport = () => {
               Quick Import (Default File)
             </Button>
 
-            <span className="text-[rgba(244,246,240,0.45)]">or</span>
+            <span className="text-bw-white/[0.45]">or</span>
 
             {/* File Upload */}
             <div className="relative">
@@ -263,7 +263,7 @@ const FaultTreeImport = () => {
         </CardHeader>
         <CardContent>
           {jobs.length === 0 ? (
-            <p className="text-[rgba(244,246,240,0.45)] text-center py-8">No import jobs yet</p>
+            <p className="text-bw-white/[0.45] text-center py-8">No import jobs yet</p>
           ) : (
             <Table>
               <TableHeader>
@@ -288,7 +288,7 @@ const FaultTreeImport = () => {
                     <TableCell>
                       <div className="w-24">
                         <Progress value={job.progress_percent} className="h-2" />
-                        <span className="text-xs text-[rgba(244,246,240,0.45)]">{job.progress_percent?.toFixed(0)}%</span>
+                        <span className="text-xs text-bw-white/[0.45]">{job.progress_percent?.toFixed(0)}%</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -296,10 +296,10 @@ const FaultTreeImport = () => {
                         <div className="text-sm">
                           <span className="text-green-600">{job.imported_count} created</span>
                           {job.updated_count > 0 && (
-                            <span className="text-[#3B9EFF] ml-2">{job.updated_count} updated</span>
+                            <span className="text-bw-blue ml-2">{job.updated_count} updated</span>
                           )}
                           {job.skipped_count > 0 && (
-                            <span className="text-[rgba(244,246,240,0.45)] ml-2">{job.skipped_count} skipped</span>
+                            <span className="text-bw-white/[0.45] ml-2">{job.skipped_count} skipped</span>
                           )}
                         </div>
                       ) : job.status === 'validated' ? (
@@ -310,7 +310,7 @@ const FaultTreeImport = () => {
                           )}
                         </div>
                       ) : (
-                        <span className="text-[rgba(244,246,240,0.45)]">-</span>
+                        <span className="text-bw-white/[0.45]">-</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -360,21 +360,21 @@ const FaultTreeImport = () => {
           <CardContent className="space-y-4">
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4">
-              <div className="bg-[#111820] p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-[#F4F6F0]">{preview.total_rows}</div>
-                <div className="text-sm text-[rgba(244,246,240,0.45)]">Total Rows</div>
+              <div className="bg-bw-panel p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-bw-white">{preview.total_rows}</div>
+                <div className="text-sm text-bw-white/[0.45]">Total Rows</div>
               </div>
-              <div className="bg-[rgba(34,197,94,0.08)] p-4 rounded-lg text-center">
+              <div className="bg-bw-green/[0.08] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-green-600">{preview.valid_rows}</div>
-                <div className="text-sm text-[rgba(244,246,240,0.45)]">Valid</div>
+                <div className="text-sm text-bw-white/[0.45]">Valid</div>
               </div>
-              <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-[#EAB308]">{preview.warning_rows}</div>
-                <div className="text-sm text-[rgba(244,246,240,0.45)]">Warnings</div>
+              <div className="bg-bw-amber/[0.08] p-4 rounded-lg text-center">
+                <div className="text-2xl font-bold text-bw-amber">{preview.warning_rows}</div>
+                <div className="text-sm text-bw-white/[0.45]">Warnings</div>
               </div>
-              <div className="bg-[rgba(255,59,47,0.08)] p-4 rounded-lg text-center">
+              <div className="bg-bw-red/[0.08] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-red-600">{preview.error_rows}</div>
-                <div className="text-sm text-[rgba(244,246,240,0.45)]">Errors</div>
+                <div className="text-sm text-bw-white/[0.45]">Errors</div>
               </div>
             </div>
 
@@ -396,12 +396,12 @@ const FaultTreeImport = () => {
                 <h4 className="font-medium mb-2">Sample Data</h4>
                 <div className="space-y-2">
                   {preview.sample_valid.slice(0, 3).map((row, idx) => (
-                    <div key={idx} className="bg-[#111820] p-3 rounded text-sm">
+                    <div key={idx} className="bg-bw-panel p-3 rounded text-sm">
                       <div className="font-medium">{row.complaint_description}</div>
-                      <div className="text-[rgba(244,246,240,0.45)] mt-1">
+                      <div className="text-bw-white/[0.45] mt-1">
                         Root causes: {row.root_causes?.slice(0, 2).join(', ')}
                       </div>
-                      <div className="text-[rgba(244,246,240,0.45)] text-xs mt-1">
+                      <div className="text-bw-white/[0.45] text-xs mt-1">
                         {row.vehicle_category} / {row.subsystem_type} | {row.diagnostic_steps?.length || 0} diagnostic steps
                       </div>
                     </div>

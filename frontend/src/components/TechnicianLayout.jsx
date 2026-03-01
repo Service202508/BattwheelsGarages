@@ -55,7 +55,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
   return (
     <div className="min-h-screen bg-slate-950" data-testid="technician-layout">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-slate-900 border-b border-[rgba(255,255,255,0.07)] border-800 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-50 bg-slate-900 border-b border-white/[0.07] border-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -71,11 +71,11 @@ export default function TechnicianLayout({ children, user, onLogout }) {
         <div className="flex items-center gap-3">
           <button className="relative text-slate-400 hover:text-white">
             <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-[rgba(255,59,47,0.08)]0 rounded-full"></span>
+            <span className="absolute -top-1 -right-1 h-2 w-2 bg-bw-red/[0.08]0 rounded-full"></span>
           </button>
           <Avatar className="h-8 w-8">
             <AvatarImage src={user?.picture} />
-            <AvatarFallback className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400">
+            <AvatarFallback className="bg-bw-green/[0.08]0/20 text-green-400">
               {getInitials(user?.name)}
             </AvatarFallback>
           </Avatar>
@@ -85,13 +85,13 @@ export default function TechnicianLayout({ children, user, onLogout }) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-slate-900 border-r border-[rgba(255,255,255,0.07)] border-800
+          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-slate-900 border-r border-white/[0.07] border-800
           transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-[rgba(255,255,255,0.07)] border-800">
+            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-white/[0.07] border-800">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                 <Zap className="h-6 w-6 text-white" />
               </div>
@@ -117,7 +117,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
                         group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                         transition-all duration-200
                         ${active 
-                          ? 'bg-[rgba(34,197,94,0.08)]0/10 text-green-400 border border-green-500/20' 
+                          ? 'bg-bw-green/[0.08]0/10 text-green-400 border border-green-500/20' 
                           : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                         }
                       `}
@@ -131,11 +131,11 @@ export default function TechnicianLayout({ children, user, onLogout }) {
               </nav>
 
               {/* Quick Status */}
-              <div className="mt-6 pt-6 border-t border-[rgba(255,255,255,0.07)] border-800">
+              <div className="mt-6 pt-6 border-t border-white/[0.07] border-800">
                 <div className="px-3 py-3 rounded-lg bg-slate-800/50">
                   <p className="text-xs font-medium text-slate-400 mb-2">Today's Status</p>
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-[rgba(34,197,94,0.08)]0 animate-pulse"></div>
+                    <div className="h-2 w-2 rounded-full bg-bw-green/[0.08]0 animate-pulse"></div>
                     <span className="text-sm text-white">On Duty</span>
                   </div>
                 </div>
@@ -143,11 +143,11 @@ export default function TechnicianLayout({ children, user, onLogout }) {
             </ScrollArea>
 
             {/* User Info & Logout */}
-            <div className="border-t border-[rgba(255,255,255,0.07)] border-800 p-4">
+            <div className="border-t border-white/[0.07] border-800 p-4">
               <div className="flex items-center gap-3 mb-3 px-2">
                 <Avatar className="h-10 w-10 ring-2 ring-green-500/20">
                   <AvatarImage src={user?.picture} />
-                  <AvatarFallback className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400">
+                  <AvatarFallback className="bg-bw-green/[0.08]0/20 text-green-400">
                     {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -158,7 +158,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
               </div>
               <Button 
                 variant="outline" 
-                className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 text-slate-400 hover:text-red-400 hover:border-red-500/30 hover:bg-[rgba(255,59,47,0.08)]0/10"
+                className="w-full justify-start border-white/[0.07] border-700 text-slate-400 hover:text-red-400 hover:border-red-500/30 hover:bg-bw-red/[0.08]0/10"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

@@ -197,10 +197,10 @@ export default function Attendance({ user }) {
   const getStatusBadge = (status) => {
     const styles = {
       present: "badge-success",
-      half_day: "bg-[rgba(234,179,8,0.10)]",
-      absent: "bg-[rgba(255,59,47,0.10)]",
+      half_day: "bg-bw-amber/10",
+      absent: "bg-bw-red/10",
       on_leave: "bg-blue-500",
-      short_day: "bg-[rgba(255,140,0,0.10)]",
+      short_day: "bg-bw-orange/10",
     };
     return <Badge className={styles[status] || "badge-muted"}>{status?.replace("_", " ")}</Badge>;
   };
@@ -262,13 +262,13 @@ export default function Attendance({ user }) {
 
               {/* Warnings */}
               {todayAttendance?.attendance?.late_arrival && (
-                <div className="flex items-center gap-2 p-3 bg-[rgba(234,179,8,0.10)] text-yellow-500 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-bw-amber/10 text-yellow-500 rounded-lg">
                   <AlertTriangle className="h-4 w-4" />
                   <span className="text-sm">Late arrival recorded</span>
                 </div>
               )}
               {todayAttendance?.attendance?.early_departure && (
-                <div className="flex items-center gap-2 p-3 bg-[rgba(255,140,0,0.10)] text-orange-500 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-bw-orange/10 text-orange-500 rounded-lg">
                   <AlertTriangle className="h-4 w-4" />
                   <span className="text-sm">Early departure recorded</span>
                 </div>
@@ -302,7 +302,7 @@ export default function Attendance({ user }) {
                 </Button>
               )}
               {isClockedOut && (
-                <div className="text-center p-4 bg-[rgba(34,197,94,0.10)] rounded-lg">
+                <div className="text-center p-4 bg-bw-green/10 rounded-lg">
                   <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500" />
                   <p className="text-green-500 font-medium">Day Complete</p>
                 </div>
@@ -545,7 +545,7 @@ export default function Attendance({ user }) {
                               <div className="flex items-center gap-2">
                                 <Progress 
                                   value={stat.productivity_percentage} 
-                                  className={`w-16 h-2 ${stat.productivity_percentage >= 100 ? 'bg-[#22C55E]' : ''}`} 
+                                  className={`w-16 h-2 ${stat.productivity_percentage >= 100 ? 'bg-bw-green' : ''}`} 
                                 />
                                 <span className="text-sm font-medium">{stat.productivity_percentage}%</span>
                               </div>

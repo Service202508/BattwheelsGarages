@@ -15,9 +15,9 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  stopped: "bg-yellow-100 text-[#EAB308]",
-  expired: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]"
+  active: "bg-bw-volt/10 text-bw-volt border border-bw-volt/25",
+  stopped: "bg-yellow-100 text-bw-amber",
+  expired: "bg-white/5 text-bw-white/35"
 };
 
 const frequencyLabels = {
@@ -193,8 +193,8 @@ export default function RecurringBills() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Bills</h1>
-          <p className="text-[rgba(244,246,240,0.45)]">Automate your vendor payments</p>
+          <h1 className="text-2xl font-bold text-bw-white">Recurring Bills</h1>
+          <p className="text-bw-white/[0.45]">Automate your vendor payments</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleGenerateDue} data-testid="generate-due-btn">
@@ -337,7 +337,7 @@ export default function RecurringBills() {
                   {newBill.line_items.length > 0 && (
                     <div className="space-y-2 mt-3">
                       {newBill.line_items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center bg-[#111820] p-2 rounded">
+                        <div key={idx} className="flex justify-between items-center bg-bw-panel p-2 rounded">
                           <span>{item.name} × {item.quantity}</span>
                           <span>₹{(item.quantity * item.rate * (1 + item.tax_percentage/100)).toLocaleString()}</span>
                           <Button size="sm" variant="ghost" onClick={() => removeLineItem(idx)}>
@@ -374,10 +374,10 @@ export default function RecurringBills() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <RefreshCw className="h-5 w-5 text-[#3B9EFF]" />
+                <RefreshCw className="h-5 w-5 text-bw-blue" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Profiles</p>
+                <p className="text-sm text-bw-white/[0.45]">Total Profiles</p>
                 <p className="text-2xl font-bold">{bills.length}</p>
               </div>
             </div>
@@ -386,11 +386,11 @@ export default function RecurringBills() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
+              <div className="p-2 bg-bw-green/10 rounded-lg">
                 <Play className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Active</p>
+                <p className="text-sm text-bw-white/[0.45]">Active</p>
                 <p className="text-2xl font-bold">{activeBills.length}</p>
               </div>
             </div>
@@ -400,10 +400,10 @@ export default function RecurringBills() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-yellow-100 rounded-lg">
-                <Pause className="h-5 w-5 text-[#EAB308]" />
+                <Pause className="h-5 w-5 text-bw-amber" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Stopped</p>
+                <p className="text-sm text-bw-white/[0.45]">Stopped</p>
                 <p className="text-2xl font-bold">{stoppedBills.length}</p>
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function RecurringBills() {
                 <IndianRupee className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-[rgba(244,246,240,0.45)]">Monthly Estimate</p>
+                <p className="text-sm text-bw-white/[0.45]">Monthly Estimate</p>
                 <p className="text-2xl font-bold">₹{totalMonthly.toLocaleString()}</p>
               </div>
             </div>
@@ -437,7 +437,7 @@ export default function RecurringBills() {
             <Card>
               <CardContent className="p-0">
                 <table className="w-full">
-                  <thead className="bg-[#111820] border-b">
+                  <thead className="bg-bw-panel border-b">
                     <tr>
                       <th className="text-left p-4 font-medium">Name</th>
                       <th className="text-left p-4 font-medium">Vendor</th>
@@ -450,10 +450,10 @@ export default function RecurringBills() {
                   </thead>
                   <tbody>
                     {(tab === "all" ? bills : bills.filter(b => b.status === tab)).map(bill => (
-                      <tr key={bill.recurring_bill_id} className="border-b hover:bg-[#111820]">
+                      <tr key={bill.recurring_bill_id} className="border-b hover:bg-bw-panel">
                         <td className="p-4">
                           <div className="font-medium">{bill.recurrence_name}</div>
-                          <div className="text-sm text-[rgba(244,246,240,0.45)]">{bill.bills_generated} bills generated</div>
+                          <div className="text-sm text-bw-white/[0.45]">{bill.bills_generated} bills generated</div>
                         </td>
                         <td className="p-4">{bill.vendor_name}</td>
                         <td className="p-4">
@@ -484,7 +484,7 @@ export default function RecurringBills() {
                     ))}
                     {(tab === "all" ? bills : bills.filter(b => b.status === tab)).length === 0 && (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-[rgba(244,246,240,0.45)]">
+                        <td colSpan={7} className="p-8 text-center text-bw-white/[0.45]">
                           No recurring bills found
                         </td>
                       </tr>

@@ -40,20 +40,20 @@ function getPublicHeaders(extra = {}) {
 const statusConfig = {
   pending_payment: { label: "Pending Payment", color: "bg-amber-500", icon: CreditCard },
   open: { label: "Open", color: "bg-blue-500", icon: Ticket },
-  assigned: { label: "Technician Assigned", color: "bg-[rgba(139,92,246,0.08)]0", icon: User },
-  technician_assigned: { label: "Technician Assigned", color: "bg-[rgba(139,92,246,0.08)]0", icon: User },
+  assigned: { label: "Technician Assigned", color: "bg-bw-purple/[0.08]0", icon: User },
+  technician_assigned: { label: "Technician Assigned", color: "bg-bw-purple/[0.08]0", icon: User },
   estimate_sent: { label: "Estimate Shared", color: "bg-cyan-500", icon: FileText },
-  estimate_approved: { label: "Estimate Approved", color: "bg-[rgba(34,197,94,0.08)]0", icon: CheckCircle },
-  work_in_progress: { label: "Work In Progress", color: "bg-[rgba(255,140,0,0.08)]0", icon: Loader2 },
-  work_completed: { label: "Work Completed", color: "bg-[rgba(200,255,0,0.08)]0", icon: CheckCircle },
+  estimate_approved: { label: "Estimate Approved", color: "bg-bw-green/[0.08]0", icon: CheckCircle },
+  work_in_progress: { label: "Work In Progress", color: "bg-bw-orange/[0.08]0", icon: Loader2 },
+  work_completed: { label: "Work Completed", color: "bg-bw-volt/[0.08]0", icon: CheckCircle },
   closed: { label: "Closed", color: "bg-slate-500", icon: CheckCircle },
 };
 
 const priorityColors = {
-  low: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400",
-  medium: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
-  high: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400",
-  critical: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400",
+  low: "bg-bw-green/[0.08]0/20 text-green-400",
+  medium: "bg-bw-amber/[0.08]0/20 text-yellow-400",
+  high: "bg-bw-orange/[0.08]0/20 text-orange-400",
+  critical: "bg-bw-red/[0.08]0/20 text-red-400",
 };
 
 export default function TrackTicket() {
@@ -227,10 +227,10 @@ export default function TrackTicket() {
 
   // Lookup Form
   const LookupForm = () => (
-    <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+    <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="p-3 bg-[rgba(34,197,94,0.08)]0/20 rounded-full">
+          <div className="p-3 bg-bw-green/[0.08]0/20 rounded-full">
             <Search className="h-8 w-8 text-green-500" />
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function TrackTicket() {
           </Label>
           <Input
             placeholder={lookupMethod === "ticket_id" ? "e.g., tkt_abc123def456" : "e.g., 9876543210 or email@example.com"}
-            className="bg-slate-700/50 border-[rgba(255,255,255,0.07)] border-600"
+            className="bg-slate-700/50 border-white/[0.07] border-600"
             value={lookupValue}
             onChange={(e) => setLookupValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLookup()}
@@ -284,7 +284,7 @@ export default function TrackTicket() {
 
   // Ticket List
   const TicketList = () => (
-    <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+    <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-white">Your Tickets</CardTitle>
@@ -353,7 +353,7 @@ export default function TrackTicket() {
     return (
       <div className="space-y-6">
         {/* Header Card */}
-        <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+        <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <Button variant="ghost" onClick={() => { setSelectedTicket(null); setTicketDetails(null); }}>
@@ -379,7 +379,7 @@ export default function TrackTicket() {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-[rgba(255,255,255,0.07)] border-700">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/[0.07] border-700">
               <div>
                 <p className="text-slate-400 text-xs">Vehicle</p>
                 <p className="text-white font-medium">{ticket.vehicle_number}</p>
@@ -413,7 +413,7 @@ export default function TrackTicket() {
 
         {/* Estimate Card */}
         {estimate && (
-          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white flex items-center gap-2">
@@ -421,7 +421,7 @@ export default function TrackTicket() {
                   Service Estimate
                 </CardTitle>
                 <Badge className={
-                  estimate.status === "approved" ? "bg-[rgba(34,197,94,0.08)]0" :
+                  estimate.status === "approved" ? "bg-bw-green/[0.08]0" :
                   estimate.status === "sent" ? "bg-blue-500" :
                   estimate.status === "locked" ? "bg-slate-500" :
                   "bg-amber-500"
@@ -449,7 +449,7 @@ export default function TrackTicket() {
               )}
               
               {/* Totals */}
-              <div className="pt-3 border-t border-[rgba(255,255,255,0.07)] border-700 space-y-2">
+              <div className="pt-3 border-t border-white/[0.07] border-700 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Subtotal</span>
                   <span className="text-white">{formatCurrency(estimate.subtotal)}</span>
@@ -481,7 +481,7 @@ export default function TrackTicket() {
 
         {/* Invoice Card */}
         {invoice && (
-          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white flex items-center gap-2">
@@ -489,7 +489,7 @@ export default function TrackTicket() {
                   Invoice
                 </CardTitle>
                 <Badge className={
-                  invoice.status === "paid" ? "bg-[rgba(34,197,94,0.08)]0" :
+                  invoice.status === "paid" ? "bg-bw-green/[0.08]0" :
                   invoice.status === "partial" ? "bg-amber-500" :
                   "bg-blue-500"
                 }>
@@ -524,7 +524,7 @@ export default function TrackTicket() {
 
         {/* Activity Timeline */}
         {activities.length > 0 && (
-          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <History className="h-5 w-5 text-green-500" />
@@ -536,7 +536,7 @@ export default function TrackTicket() {
                 {activities.map((activity, idx) => (
                   <div key={idx} className="flex gap-3">
                     <div className="flex flex-col items-center">
-                      <div className="w-2 h-2 rounded-full bg-[rgba(34,197,94,0.08)]0" />
+                      <div className="w-2 h-2 rounded-full bg-bw-green/[0.08]0" />
                       {idx < activities.length - 1 && <div className="w-0.5 h-full bg-slate-700 mt-1" />}
                     </div>
                     <div className="flex-1 pb-4">
@@ -554,7 +554,7 @@ export default function TrackTicket() {
 
         {/* Payments */}
         {payments.length > 0 && (
-          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-white/[0.07] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <IndianRupee className="h-5 w-5 text-green-500" />
@@ -571,7 +571,7 @@ export default function TrackTicket() {
                     </div>
                     <div className="text-right">
                       <p className="text-green-400 font-medium">{formatCurrency(payment.amount)}</p>
-                      <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 text-xs">{payment.status}</Badge>
+                      <Badge className="bg-bw-green/[0.08]0/20 text-green-400 text-xs">{payment.status}</Badge>
                     </div>
                   </div>
                 ))}
@@ -605,7 +605,7 @@ export default function TrackTicket() {
 
         {/* Approve Dialog */}
         <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-          <DialogContent className="bg-slate-800 border-[rgba(255,255,255,0.07)] border-700">
+          <DialogContent className="bg-slate-800 border-white/[0.07] border-700">
             <DialogHeader>
               <DialogTitle className="text-white">Approve Service Estimate</DialogTitle>
               <DialogDescription>
