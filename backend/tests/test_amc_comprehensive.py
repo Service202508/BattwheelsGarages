@@ -13,10 +13,16 @@ import uuid
 
 
 @pytest.fixture(scope="module")
-def _headers(base_url, dev_token):
-    """Auth headers with org context for AMC."""
+def _headers(base_url):
+    """Auth headers with org context for AMC (requires role=admin)."""
+    resp = requests.post(f"{base_url}/api/v1/auth/login", json={
+        "email": "admin@battwheels.in",
+        "password": "DevTest@123",
+    })
+    assert resp.status_code == 200, f"AMC admin login failed: {resp.text}"
+    token = resp.json()["token"]
     return {
-        "Authorization": f"Bearer {dev_token}",
+        "Authorization": f"Bearer {token}",
         "X-Organization-ID": "dev-internal-testing-001",
         "Content-Type": "application/json",
     }
