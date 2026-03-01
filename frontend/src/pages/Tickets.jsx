@@ -226,7 +226,7 @@ export default function Tickets({ user }) {
     setTickets([]);
   };
 
-  const paginatedTickets = tickets.slice((page - 1) * 10, page * 10);
+  const paginatedTickets = tickets;
 
   // SLA cell — defined inside component to avoid babel-metadata-plugin issues
   const SLACell = ({ ticket }) => {
