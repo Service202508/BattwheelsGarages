@@ -257,7 +257,7 @@ export default function RecurringExpenses() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="new-recurring-expense-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="new-recurring-expense-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Recurring
               </Button>
             </DialogTrigger>
@@ -389,7 +389,7 @@ export default function RecurringExpenses() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="save-recurring-btn">
+                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="save-recurring-btn">
                   Create Recurring
                 </Button>
               </DialogFooter>

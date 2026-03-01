@@ -226,7 +226,7 @@ export default function ZohoSync() {
           <Button 
             onClick={startFullSync} 
             disabled={fullSyncInProgress || connectionStatus?.status !== "connected"}
-            className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold"
+            className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
             data-testid="full-sync-btn"
           >
             {fullSyncInProgress ? (

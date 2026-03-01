@@ -186,7 +186,7 @@ export default function OpeningBalances() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="new-opening-balance-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="new-opening-balance-btn">
                 <Plus className="h-4 w-4 mr-2" /> Set Opening Balance
               </Button>
             </DialogTrigger>
@@ -262,7 +262,7 @@ export default function OpeningBalances() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="save-opening-balance-btn">
+                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="save-opening-balance-btn">
                   Set Balance
                 </Button>
               </DialogFooter>

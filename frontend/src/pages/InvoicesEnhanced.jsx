@@ -2734,7 +2734,7 @@ export default function InvoicesEnhanced() {
               variant="destructive" 
               onClick={handleCancelIRN}
               disabled={!irnCancelReason || irnLoading}
-              className="bg-bw-red hover:bg-red-600"
+              className="bg-bw-red hover:bg-bw-red/85"
               data-testid="confirm-cancel-irn-btn"
             >
               {irnLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}

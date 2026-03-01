@@ -218,7 +218,7 @@ export default function ProjectTasks() {
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
               <Button 
-                className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" 
+                className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" 
                 disabled={!selectedProject}
                 data-testid="new-task-btn"
               >
@@ -279,7 +279,7 @@ export default function ProjectTasks() {
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
                 <Button 
                   onClick={editingTask ? handleUpdate : handleCreate} 
-                  className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold"
+                  className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold"
                   data-testid="save-task-btn"
                 >
                   {editingTask ? "Update Task" : "Create Task"}

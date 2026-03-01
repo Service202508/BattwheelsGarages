@@ -149,7 +149,7 @@ export default function ExchangeRates() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="new-rate-btn">
+              <Button className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="new-rate-btn">
                 <Plus className="h-4 w-4 mr-2" /> Add Rate
               </Button>
             </DialogTrigger>
@@ -231,7 +231,7 @@ export default function ExchangeRates() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-teal text-bw-black font-bold" data-testid="save-rate-btn">
+                <Button onClick={handleCreate} className="bg-bw-volt hover:bg-bw-volt-hover text-bw-black font-bold" data-testid="save-rate-btn">
                   Save Rate
                 </Button>
               </DialogFooter>

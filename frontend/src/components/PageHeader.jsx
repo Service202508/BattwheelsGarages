@@ -174,7 +174,7 @@ export function EmptyState({
         {description || "Get started by creating your first item."}
       </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="bg-bw-volt text-bw-white hover:bg-bw-volt-hover font-semibold">
+        <Button onClick={onAction} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover font-semibold">
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}
         </Button>
