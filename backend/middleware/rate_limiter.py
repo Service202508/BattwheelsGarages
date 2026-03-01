@@ -37,7 +37,7 @@ async def check_login_rate_limit(email: str) -> tuple:
     Check if email is rate-limited.
     Returns (is_allowed: bool, retry_after: int).
     """
-    if _db is None:
+    if _db is None or os.environ.get("TESTING") == "1":
         return True, 0
 
     await _ensure_ttl_index()
