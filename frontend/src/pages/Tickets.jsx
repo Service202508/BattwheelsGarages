@@ -222,7 +222,8 @@ export default function Tickets({ user }) {
     } else {
       setStatusFilter(filter);
     }
-    setPage(1);
+    setNextCursor(null);
+    setTickets([]);
   };
 
   const paginatedTickets = tickets.slice((page - 1) * 10, page * 10);
