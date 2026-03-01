@@ -1,51 +1,63 @@
-# BattWheels Platform - Product Requirements Document
+# BATTWHEELS OS — Product Requirements Document
 
 ## Original Problem Statement
-Multi-phase project to improve application stability, maintainability, feature set, and security. Current critical task: scrub all secrets from Git history to prepare the repository for public GitHub push.
+Multi-phase project to improve application stability, maintainability, feature set, and security. Phase 2 Cluster 3 Part 1 covers operational module investigation (HR, Projects, Contacts) plus critical security investigations.
 
 ## Architecture
 - **Frontend:** React/CRACO
 - **Backend:** FastAPI (Python)
-- **Database:** MongoDB
-- **3rd Party:** Razorpay, Resend, Sentry, Zoho Books, Emergent LLM (GPT-4o-mini, Gemini-2.5-flash)
+- **Database:** MongoDB (battwheels_dev)
+- **3rd Party:** Razorpay (test keys), Resend, Sentry, Zoho (config-only), Emergent LLM (GPT-4o-mini, Gemini-2.5-flash)
 
 ## Completed Work
-- [2026-03-01] Gitleaks-driven deep scan: Found 314 findings across 105 files. Ran 5 filter-repo passes to scrub ALL provider-specific secrets (JWTs, Razorpay keys, survey tokens, Stripe placeholders, test API keys, MongoDB creds, Sentry DSN fragments). Removed test_reports/ and audit artifacts from history. Residual 112 gitleaks findings are hashicorp-tf-password false positives (NOT GitHub partner patterns).
-- [2026-03-01] Git history secret scrubbing - Pass 3: Scrubbed rzp_live key, partial Sentry DSNs, Zoho Org ID, TEST_PASSWORD
-- [Previous] Git history secret scrubbing - Pass 1 & 2: Removed `.env` files from history, scrubbed hardcoded secrets from source files
-- [Previous] Security: CORS hardening, brute-force protection
-- [Previous] Frontend: Cursor pagination modernization
-- [Previous] Testing: 693 passing tests
+
+### Cluster 3 Part 1 (2026-03-01)
+- **Task 1 (Zoho):** Investigated — CONFIG-READY, NOT ACTIVE. Zero HTTP calls to Zoho APIs. Documented in FEATURE_GAPS.md
+- **Task 2 (WhatsApp):** Fixed deceptive behavior — `/send-whatsapp` now returns `{"status": "mocked", "delivered": false}` instead of `{"status": "queued"}` when Twilio not configured
+- **Task 3 (Projects):** Investigated — FULLY ACTIVE with 17+ backend endpoints and 3 frontend components
+- **Task 4 (Orphans):** Investigated — SalesOrders and TimeTracking are BOTH actively routed, not orphaned
+- **Task 5 (Skipped Test):** Fixed `test_upgraded_org_can_access_payroll` — root cause was password scrubbing breaking test user login. Removed skip, now passes
+- **Task 6 (HR/Payroll):** Created `test_hr_payroll_comprehensive.py` (27 tests), all passing. Fixed `organization_id` bug in `hr_service.py:create_employee`
+- **Bug fixes:** Credit notes collection mismatch (invoices vs invoices_enhanced), 17 test files with empty BASE_URL, test user password restoration
+
+### Previous Clusters
+- Git history secret scrubbing (3 passes + gitleaks deep scan)
+- Security: CORS hardening, brute-force protection
+- Frontend: Cursor pagination modernization
+- Testing: 693+ passing tests
 
 ## Current Status
-- All provider-specific secrets scrubbed from git history (verified by gitleaks v8.18.2)
-- 112 residual gitleaks findings are false positives (hashicorp-tf-password rule on test placeholder values)
-- Application healthy: backend, frontend, MongoDB all running
-- Awaiting user verification via GitHub push
+- **671 passed, 41 skipped, 0 failed** (core tests)
+- All services healthy: backend, frontend, MongoDB
+- Awaiting Cluster 3 Part 2 (Inventory, Contacts, remaining tasks)
 
 ## Prioritized Backlog
 
 ### P0
-- Push to GitHub (pending user verification)
+- Cluster 3 Part 2: Inventory/COGS + Contacts tests
 
 ### P1
 - Decompose "God-Files" (Tickets, Estimates, EFI modules)
 - Remediate Test Debt (26 test files per TEST_DEBT_REGISTER.md)
-- Unskip 19 remaining core tests
+- Unskip remaining 41 tests where possible
 
 ### P2
 - Backend Task Runner (Celery)
 - Zendesk Integration (replace stub)
 - Banking Cursor Pagination (backend + frontend)
 - Frontend Test Suite (Jest/RTL or Cypress)
+- Zoho API Integration (Phase 4)
+- Twilio WhatsApp configuration
 
 ## Known Issues
-- 19 core tests skipped
-- 26 test files in test debt register need refactoring
-- Banking frontend not migrated to cursor pagination (backend lacks support)
+- 41 tests skipped (mix of missing features and password scrubbing side effects)
+- test_hr_module.py has 4 failures + 12 errors (pre-existing, older fixture pattern)
+- Banking frontend not migrated to cursor pagination
 - Razorpay uses test/disabled keys
 - expert_queue_service.py uses stub ZendeskBridge
 
 ## Credentials
-- Dev Admin: platform-admin@battwheels.in / DevTest@123
+- Dev Admin: dev@battwheels.internal / DevTest@123
+- Platform Admin: platform-admin@battwheels.in / DevTest@123
 - Demo User: demo@voltmotors.in / Demo@12345
+- Technician: tech.a@battwheels.internal / TechA@123
