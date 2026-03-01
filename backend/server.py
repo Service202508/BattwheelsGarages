@@ -247,7 +247,12 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' https://*.emergentagent.com https://*.battwheels.com; frame-ancestors 'none';"
     return response
 
-_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "https://battwheels.com,https://app.battwheels.com,https://stability-hardened.preview.emergentagent.com").split(",") if o.strip()]
-if os.environ.get("NODE_ENV") != "production":
+_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "https://battwheels.com,https://app.battwheels.com").split(",") if o.strip()]
+_environment = os.environ.get("ENVIRONMENT", "development")
+if _environment != "production":
     _cors_origins += ["http://localhost:3000", "http://localhost:3001"]
+    # Emergent preview URL only in non-production environments
+    _preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
+    if _preview_url and _preview_url not in _cors_origins:
+        _cors_origins.append(_preview_url)
 app.add_middleware(CORSMiddleware, allow_credentials=True, allow_origins=_cors_origins, allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS","HEAD"], allow_headers=["Authorization","Content-Type","X-Organization-ID","X-Requested-With","Accept","X-CSRF-Token"])
