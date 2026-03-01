@@ -1,69 +1,73 @@
 # Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-Full-stack workshop management platform (FastAPI + React + MongoDB) for Indian automotive workshops. Multi-tenant SaaS with GST compliance, HR/payroll, ticket management, inventory, invoicing, and more.
+Full-stack ERP/SaaS platform for Battwheels (electric vehicle service business). Multi-tenant architecture with FastAPI backend, React frontend, MongoDB database.
 
-## Current Sprint: PHASE 0 — SURGICAL CLEANUP SPRINT (Completed 2026-02-28)
+## Platform Architecture
+- **Backend:** FastAPI (Python 3.11) on port 8001
+- **Frontend:** React on port 3000
+- **Database:** MongoDB (battwheels_dev for development)
+- **Auth:** JWT-based, multi-tenant with org_id scoping
+- **Integrations:** Razorpay (test mode), Resend, Zoho, Sentry, Emergent LLM
 
-### Items Completed
+## Completed Phases
 
-**ITEM 1: Fix Broken Employee Endpoint (P0)** ✅
-- **Problem**: `test_admin_can_reset_employee_password` skipped due to 404.
-- **Root cause**: (a) Test URLs used wrong paths (`/api/employees/...` instead of `/api/v1/employees/...` and `/api/v1/hr/employees`). (b) Endpoint looked up `users.user_id` directly with `employee_id` instead of first resolving employee → user mapping.
-- **Fix**: Updated `auth_main.py` endpoint to look up employee record first, then find linked user via `user_id`, `work_email`, or `email`. Fixed test URLs.
-- **Files changed**: `routes/auth_main.py`, `tests/test_password_management.py`
-- **Test result**: 14/14 passed (3 previously skipped now passing)
+### Phase 0 — Surgical Cleanup Sprint (2026-02-28)
+All 6 items completed:
+1. Fixed broken employee password reset endpoint
+2. Verified CSRF middleware (pre-existing, added 6 tests)
+3. Verified GSTR-3B RCM handling (pre-existing, added 4 tests)
+4. Fixed input sanitization middleware (password exemption bug)
+5. Resolved duplicate TechnicianProductivity.jsx naming
+6. Removed vestigial STRIPE_API_KEY and dead code
 
-**ITEM 2: CSRF Protection Middleware (P1)** ✅
-- **Status**: Already implemented at `middleware/csrf.py` using double-submit cookie pattern.
-- **Verification**: Mounted in `server.py` line 230. Bypasses Bearer token auth, auth endpoints, webhooks.
-- **Tests added**: `tests/test_csrf_middleware.py` — 6/6 passed
+### Phase 0.5 — Test Infrastructure Triage (2026-02-28)
+Complete 5-step triage of 132 test files:
+- **Core suite expanded:** 25 → 33 files, 429 → 542 passing tests (+26.3%)
+- **8 files promoted to core:** csrf_middleware, gstr3b_rcm, calculations_regression, sanitization_middleware, efi_guidance, knowledge_brain, sprint_6c_cursor_pagination, sprint_6b_knowledge_pipeline
+- **6 files archived as duplicates** (Bucket B → backend/tests/archive/duplicate/)
+- **18 files archived as sprint artifacts** (Bucket C → backend/tests/archive/sprint_history/)
+- **76 files documented in TEST_DEBT_REGISTER.md** (Bucket A, MODERATE effort)
+- **Production verified:** verify_prod_org.py 6/6 PASS, ALL GREEN
 
-**ITEM 3: GSTR-3B RCM Handling (P1)** ✅
-- **Status**: Already implemented in `routes/gst.py`.
-- **Coverage**: Section 3.1(d) inward RCM supplies, Table 4A(3) ITC from RCM, RCM added to net tax liability.
-- **Tests added**: `tests/test_gstr3b_rcm.py` — 4/4 passed
+## Current Health
+- Core test suite: **542 passed, 14 skipped, 0 failed**
+- Production: **ALL GREEN** (verify_prod_org.py)
+- Razorpay: Test mode only
 
-**ITEM 4: Bleach Input Sanitization Middleware (P1)** ✅
-- **Problem**: Password fields were NOT exempted from bleach sanitization, risking credential corruption.
-- **Fix**: Added `PASSWORD_FIELDS` frozenset and `key` parameter to `_sanitize_value()` to skip password/token/secret fields.
-- **Files changed**: `middleware/sanitization.py`
-- **Tests added**: `tests/test_sanitization_middleware.py` — 8/8 passed (including E2E password preservation test)
+## Prioritized Backlog
 
-**ITEM 5: Remove Duplicate TechnicianProductivity.jsx (P2)** ✅
-- **Finding**: Two components with same name but different purposes (admin dashboard vs technician self-view).
-- **Fix**: Renamed root `pages/TechnicianProductivity.jsx` → `pages/ProductivityDashboard.jsx`. Updated App.js import.
-- **Files changed**: `pages/TechnicianProductivity.jsx` (renamed), `App.js` (import updated)
+### P0 (Critical)
+- None currently
 
-**ITEM 6: Remove Vestigial Stripe Configuration (P2)** ✅
-- **Removed**: `STRIPE_API_KEY=REDACTED_STRIPE_KEY` from `.env`
-- **Removed**: `routes.invoice_payments` from V1_ROUTES in `server.py`
-- **Removed**: Stripe RBAC pattern from `middleware/rbac.py`
-- **Removed**: Stripe webhook bypass from `core/tenant/guard.py`
+### P1 (High)
+- Frontend migration to server-side cursor pagination (5 endpoints)
+- Address remaining platform audit findings (UI/UX inconsistencies, pattern violations)
+- Provide LIVE Razorpay keys (User Action)
 
-### Final Verification
-- **New tests**: 32/32 passed
-- **Production health check**: ALL GREEN (6/6 checks)
-- **Backend**: healthy, MongoDB connected
+### P2 (Medium)
+- Fix near-passing Bucket A test files (5 files with 1-3 failures each)
+- Create shared conftest.py with login fixture for "no auth" test files (24 files)
+- Unskip remaining 14 tests in core suite (webhooks, Form16, Razorpay)
+- Fix Pattern A violations (queries without org_id filters)
 
-## Architecture
-- **Backend**: FastAPI on port 8001, supervisor-managed
-- **Frontend**: React on port 3000, supervisor-managed
-- **Database**: MongoDB (`battwheels_dev` for dev, `battwheels` for prod)
-- **Auth**: JWT-based with session cookie support
-- **Middleware stack**: CORS → Security Headers → TenantGuard → RBAC → CSRF → Sanitization → RateLimit
+### P3 (Low)
+- Implement proper background task runner (Celery)
+- Migrate hybrid EFI embeddings to true embedding model
+- Add frontend automated tests
+- Clean up hardcoded off-theme colors/inline styles
+- Remediate remaining 76 Bucket A test files per TEST_DEBT_REGISTER.md
 
-## Known Pre-existing Issues
-- `test_gstr3b_credit_notes.py`: Missing `REACT_APP_BACKEND_URL` env var causes URL failures
-- `test_gst_accounting_flow.py`: Uses wrong credentials
-- Pattern A Violations: Queries without `org_id` in `knowledge_brain.py`, `double_entry_service.py`
-- UI/UX: Hardcoded off-theme colors, inline styles
-- Module stubs: `BalanceSheet.jsx`, `einvoice_service.py`, `expert_queue_service.py`
-- 12 tests skipped (webhooks, Form16, Razorpay infrastructure)
+## Key Documents
+- `/app/ENVIRONMENT_SOP.md` — Environment safety rules
+- `/app/docs/TEST_DEBT_REGISTER.md` — 76 remaining test files with fix guidance
+- `/app/docs/TEST_TRIAGE_STEP2.md` — Full classification of all 107 excluded files
+- `/app/docs/TEST_TRIAGE_STEP3.md` — Detailed Bucket A analysis with test function lists
+- `/app/docs/TEST_TRIAGE_SECTION_F.md` — Triage reflections and uncertainties
+- `/app/scripts/run_core_tests.sh` — Core test suite (33 files)
+- `/app/scripts/verify_prod_org.py` — Production health check
 
-## 3rd Party Integrations
-- Razorpay (test keys)
-- Resend (API key present)
-- Sentry (DSN present)
-- Zoho (credentials present)
-- Emergent LLM Key (gpt-4o-mini, gemini-2.5-flash)
+## Key Credentials (Dev Environment)
+- Dev user: `dev@battwheels.internal` / `DevTest@123` (role: owner)
+- Platform admin: `platform-admin@battwheels.in` / `DevTest@123`
+- Demo user: `demo@voltmotors.in` / `Demo@12345`
