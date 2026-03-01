@@ -116,11 +116,16 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     cn_date = body.credit_note_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
     await enforce_period_lock(db, org_id, cn_date)
 
-    # 1. Fetch original invoice
+    # 1. Fetch original invoice (check both invoices and legacy invoices_enhanced)
     invoice = await db.invoices.find_one(
         {"invoice_id": body.original_invoice_id, "organization_id": org_id},
         {"_id": 0}
     )
+    if not invoice:
+        invoice = await db.invoices_enhanced.find_one(
+            {"invoice_id": body.original_invoice_id, "organization_id": org_id},
+            {"_id": 0}
+        )
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
