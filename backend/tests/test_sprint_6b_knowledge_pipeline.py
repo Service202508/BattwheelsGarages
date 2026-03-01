@@ -59,6 +59,39 @@ def dev_user_token():
     return TestAuthHelper.get_dev_user_token()
 
 
+@pytest.fixture(scope="module")
+def ensure_test_ticket():
+    """Ensure test ticket tkt_8b36dc571ae4 exists for 6B-04 suggestion tests.
+    Creates it directly in MongoDB if missing, cleans up after module."""
+    client = MongoClient(MONGO_URL)
+    db = client[DB_NAME]
+    ticket_id = "tkt_8b36dc571ae4"
+    org_id = "dev-internal-testing-001"
+    created = False
+
+    if not db.tickets.find_one({"ticket_id": ticket_id}):
+        db.tickets.insert_one({
+            "ticket_id": ticket_id,
+            "organization_id": org_id,
+            "title": "Battery not charging — BMS fault suspected",
+            "description": "Customer reports the 48V battery pack is not accepting charge. BMS indicator shows error code E-14.",
+            "status": "open",
+            "priority": "high",
+            "ticket_type": "workshop",
+            "vehicle_type": "electric_scooter",
+            "created_by": "test-fixture",
+        })
+        created = True
+        print(f"[fixture] Created test ticket {ticket_id}")
+
+    yield ticket_id
+
+    if created:
+        db.tickets.delete_one({"ticket_id": ticket_id})
+        print(f"[fixture] Cleaned up test ticket {ticket_id}")
+    client.close()
+
+
 # ====================
 # 6B-01: Process Learning Queue Creates Knowledge Articles
 # ====================
