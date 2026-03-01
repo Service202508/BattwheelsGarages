@@ -69,3 +69,19 @@ chainlit.md
 .chainlit
 .ipynb_checkpoints/
 .vercel
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
