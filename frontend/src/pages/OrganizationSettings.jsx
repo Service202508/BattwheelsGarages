@@ -1644,7 +1644,7 @@ export default function OrganizationSettings({ user }) {
                 {slaConfig.auto_reassign_on_breach && (
                   <>
                     {/* Warning banner */}
-                    <div style={{ background: "rgb(var(--bw-amber) / 0.08)", borderLeft: "3px solid #EAB308" }} className="p-3 rounded-r-lg">
+                    <div style={{ background: "rgb(var(--bw-amber) / 0.08)", borderLeft: "3px solid rgb(var(--bw-amber))" }} className="p-3 rounded-r-lg">
                       <p className="text-xs text-yellow-300">
                         <strong>Warning:</strong> Auto-reassignment will move tickets without manual approval. Ensure all technicians are properly onboarded before enabling this feature.
                       </p>

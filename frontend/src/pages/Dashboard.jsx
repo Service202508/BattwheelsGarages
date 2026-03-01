@@ -326,7 +326,7 @@ export default function Dashboard({ user }) {
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: '#111820', 
+                            backgroundColor: 'rgb(var(--bw-panel))', 
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '4px',
                             color: 'rgb(var(--bw-white))'
@@ -372,7 +372,7 @@ export default function Dashboard({ user }) {
                         />
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: '#111820', 
+                            backgroundColor: 'rgb(var(--bw-panel))', 
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '4px',
                             color: 'rgb(var(--bw-white))'
@@ -549,7 +549,7 @@ export default function Dashboard({ user }) {
                           </Pie>
                           <Tooltip 
                             contentStyle={{ 
-                              backgroundColor: '#111820', 
+                              backgroundColor: 'rgb(var(--bw-panel))', 
                               border: '1px solid rgba(255,255,255,0.1)',
                               borderRadius: '4px',
                               color: 'rgb(var(--bw-white))'
