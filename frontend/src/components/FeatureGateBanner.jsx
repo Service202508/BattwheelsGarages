@@ -149,7 +149,7 @@ export default function FeatureGateBanner({ children }) {
       <div
         className="sticky top-0 z-30 w-full flex items-center justify-between gap-4 px-6 py-3 border-b-2"
         style={{
-          background: "rgba(234,179,8,0.08)",
+          background: "rgb(var(--bw-amber) / 0.08)",
           borderBottomColor: "#EAB308",
         }}
         data-testid="feature-gate-banner"

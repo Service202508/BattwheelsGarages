@@ -261,7 +261,7 @@ const EntryLines = ({ lines }) => {
         </tbody>
         <tfoot>
           <tr style={{ 
-            background: 'rgba(200,255,0,0.06)',
+            background: 'rgb(var(--bw-volt) / 0.06)',
             borderTop: `1px solid rgba(200,255,0,0.20)`
           }}>
             <td colSpan="2" style={{ 
@@ -982,7 +982,7 @@ const AccountLedgerTab = ({ accounts }) => {
             </thead>
             <tbody>
               {/* Opening balance */}
-              <tr style={{ background: 'rgba(200,255,0,0.06)' }}>
+              <tr style={{ background: 'rgb(var(--bw-volt) / 0.06)' }}>
                 <td colSpan="5" style={{ 
                   padding: '12px 16px',
                   fontFamily: 'JetBrains Mono, monospace',
@@ -1068,7 +1068,7 @@ const AccountLedgerTab = ({ accounts }) => {
               ))}
               
               {/* Closing balance */}
-              <tr style={{ background: 'rgba(200,255,0,0.06)' }}>
+              <tr style={{ background: 'rgb(var(--bw-volt) / 0.06)' }}>
                 <td colSpan="3" style={{ 
                   padding: '12px 16px',
                   fontFamily: 'JetBrains Mono, monospace',
@@ -1495,7 +1495,7 @@ const JournalEntries = () => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '8px 16px',
-                background: 'rgba(200,255,0,0.06)',
+                background: 'rgb(var(--bw-volt) / 0.06)',
                 border: '1px solid rgba(200,255,0,0.25)',
                 borderRadius: '4px',
                 color: colors.volt,

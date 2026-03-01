@@ -228,7 +228,7 @@ export default function Tickets({ user }) {
 
   // SLA cell — defined inside component to avoid babel-metadata-plugin issues
   const SLACell = ({ ticket }) => {
-    if (!ticket.sla_resolution_due_at) return <span style={{ color: "rgba(244,246,240,0.25)" }}>—</span>;
+    if (!ticket.sla_resolution_due_at) return <span style={{ color: "rgb(var(--bw-white) / 0.25)" }}>—</span>;
     const now = new Date();
     const resDue = new Date(ticket.sla_resolution_due_at);
     const minsRemaining = (resDue - now) / 60000;
@@ -238,7 +238,7 @@ export default function Tickets({ user }) {
         <span style={{
           background: "rgba(255,59,47,0.10)",
           color: "rgb(var(--bw-red))",
-          border: "1px solid rgba(255,59,47,0.25)",
+          border: "1px solid rgb(var(--bw-red) / 0.25)",
           fontFamily: "monospace",
           fontSize: "10px",
           padding: "3px 8px",
@@ -478,7 +478,7 @@ export default function Tickets({ user }) {
                     key={ticket.ticket_id}
                     data-testid={`ticket-row-${ticket.ticket_id}`}
                     className="p-4 w-full min-w-0"
-                    style={{ background: "rgba(17,24,32,0.5)" }}
+                    style={{ background: "rgb(var(--bw-panel) / 0.5)" }}
                   >
                     {/* Top row: ID + Priority + Status */}
                     <div className="flex items-center justify-between mb-2">
@@ -544,7 +544,7 @@ export default function Tickets({ user }) {
                             minHeight: "44px", padding: "0 16px",
                             background: "rgb(255 255 255 / 0.05)",
                             border: "1px solid rgba(255,255,255,0.10)",
-                            borderRadius: "4px", color: "rgba(244,246,240,0.70)",
+                            borderRadius: "4px", color: "rgb(var(--bw-white) / 0.70)",
                             fontSize: "12px", fontFamily: "Syne, sans-serif",
                             cursor: "pointer"
                           }}

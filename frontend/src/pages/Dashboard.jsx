@@ -75,7 +75,7 @@ const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emeral
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-[11px] font-medium text-bw-white/[0.45] uppercase tracking-[0.1em] font-mono">{title}</p>
-            <p className={`text-3xl font-bold ${isZero ? 'text-bw-white/20' : 'text-bw-volt'}`} style={!isZero ? { textShadow: '0 0 24px rgba(200,255,0,0.2)' } : undefined}>{value}</p>
+            <p className={`text-3xl font-bold ${isZero ? 'text-bw-white/20' : 'text-bw-volt'}`} style={!isZero ? { textShadow: '0 0 24px var(--bw-volt-glow)' } : undefined}>{value}</p>
             <p className="text-[11px] text-bw-white/25 mt-1">{subtitle}</p>
           </div>
           <div className="p-3 rounded bg-bw-volt/[0.08] border border-bw-volt/15">
@@ -438,7 +438,7 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>
+                  <span className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px var(--bw-volt-glow)' }}>
                     {serviceTicketStats.onsite_resolution_percentage}%
                   </span>
                   <Badge 
@@ -501,7 +501,7 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="text-center py-2">
-                  <p className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>{serviceTicketStats.total_resolved_30d}</p>
+                  <p className="text-4xl font-bold text-bw-volt" style={{ textShadow: '0 0 24px var(--bw-volt-glow)' }}>{serviceTicketStats.total_resolved_30d}</p>
                   <p className="text-xs text-bw-white/[0.45] mt-0.5">Total Resolved</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

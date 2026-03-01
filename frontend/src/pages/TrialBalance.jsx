@@ -322,7 +322,7 @@ const TrialBalance = () => {
                 return (
                   <React.Fragment key={accountType}>
                     {/* Group Header */}
-                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <tr style={{ background: 'rgb(255 255 255 / 0.02)' }}>
                       <td colSpan="4" style={{ 
                         padding: '12px 20px',
                         fontFamily: 'Syne, sans-serif',
@@ -378,7 +378,7 @@ const TrialBalance = () => {
                     ))}
                     
                     {/* Group Subtotal */}
-                    <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
+                    <tr style={{ background: 'rgb(255 255 255 / 0.04)' }}>
                       <td colSpan="2" style={{ 
                         padding: '10px 20px',
                         fontFamily: 'JetBrains Mono, monospace',

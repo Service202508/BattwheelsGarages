@@ -191,7 +191,7 @@ export default function Register({ onLogin }) {
   const inputStyle = (hasErr) => ({
     width: "100%",
     padding: "12px 14px",
-    background: "rgba(255,255,255,0.04)",
+    background: "rgb(255 255 255 / 0.04)",
     border: `1px solid ${hasErr ? "#FF3B2F" : "rgba(255,255,255,0.12)"}`,
     borderRadius: "4px",
     color: "rgb(var(--bw-white))",
@@ -316,7 +316,7 @@ export default function Register({ onLogin }) {
                 >
                   <Check style={{ width: "11px", height: "11px", color: "rgb(var(--bw-volt))" }} />
                 </div>
-                <span style={{ fontSize: "14px", color: "rgba(244,246,240,0.70)" }}>{f}</span>
+                <span style={{ fontSize: "14px", color: "rgb(var(--bw-white) / 0.70)" }}>{f}</span>
               </div>
             ))}
           </div>
@@ -570,7 +570,7 @@ export default function Register({ onLogin }) {
                   ["Name", form.ownerName],
                   ["Email", form.email],
                 ].map(([label, value]) => (
-                  <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgb(255 255 255 / 0.05)" }}>
                     <span style={{ fontSize: "12px", color: "rgb(var(--bw-white) / 0.40)" }}>{label}</span>
                     <span style={{ fontSize: "12px", color: "rgb(var(--bw-white))", fontWeight: 500 }}>{value}</span>
                   </div>
@@ -618,12 +618,12 @@ export default function Register({ onLogin }) {
 
               {/* Error messages */}
               {errors.submit && errors.submit !== "account_exists" && (
-                <div style={{ padding: "12px", background: "rgba(255,59,47,0.08)", border: "1px solid rgba(255,59,47,0.25)", borderRadius: "4px", marginBottom: "12px" }}>
+                <div style={{ padding: "12px", background: "rgb(var(--bw-red) / 0.08)", border: "1px solid rgb(var(--bw-red) / 0.25)", borderRadius: "4px", marginBottom: "12px" }}>
                   <p style={{ fontSize: "12px", color: "rgb(var(--bw-red))", margin: 0 }}>{errors.submit}</p>
                 </div>
               )}
               {errors.submit === "account_exists" && (
-                <div style={{ padding: "12px", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: "4px", marginBottom: "12px" }}>
+                <div style={{ padding: "12px", background: "rgb(var(--bw-amber) / 0.08)", border: "1px solid rgb(var(--bw-amber) / 0.25)", borderRadius: "4px", marginBottom: "12px" }}>
                   <p style={{ fontSize: "12px", color: "rgb(var(--bw-amber))", margin: 0 }}>
                     An account with this email exists.{" "}
                     <Link to="/login" style={{ color: "rgb(var(--bw-volt))" }}>Sign in →</Link>

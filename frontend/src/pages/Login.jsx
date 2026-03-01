@@ -196,7 +196,7 @@ const FormInput = ({
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "rgba(244,246,240,0.25)",
+              color: "rgb(var(--bw-white) / 0.25)",
               display: "flex",
               alignItems: "center",
               padding: 0,
@@ -259,8 +259,8 @@ const InlineError = ({ msg }) =>
     <div
       style={{
         marginTop: 10,
-        background: "rgba(255,59,47,0.08)",
-        border: "1px solid rgba(255,59,47,0.25)",
+        background: "rgb(var(--bw-red) / 0.08)",
+        border: "1px solid rgb(var(--bw-red) / 0.25)",
         borderLeft: "3px solid #FF3B2F",
         borderRadius: 4,
         padding: "10px 14px",
@@ -795,7 +795,7 @@ export default function Login({ onLogin }) {
             <div
               style={{
                 display: "flex",
-                background: "rgba(255,255,255,0.04)",
+                background: "rgb(255 255 255 / 0.04)",
                 border: "1px solid var(--bw-border)",
                 borderRadius: 4,
                 padding: 3,
@@ -909,12 +909,12 @@ export default function Login({ onLogin }) {
                     style={{
                       width: "100%",
                       height: 44,
-                      background: "rgba(255,255,255,0.04)",
+                      background: "rgb(255 255 255 / 0.04)",
                       border: "1px solid rgba(255,255,255,0.10)",
                       borderRadius: 4,
                       fontFamily: "'Syne', sans-serif",
                       fontSize: 14,
-                      color: "rgba(244,246,240,0.70)",
+                      color: "rgb(var(--bw-white) / 0.70)",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -1017,7 +1017,7 @@ export default function Login({ onLogin }) {
             style={{
               fontFamily: "'Syne', sans-serif",
               fontSize: 11,
-              color: "rgba(244,246,240,0.25)",
+              color: "rgb(var(--bw-white) / 0.25)",
               margin: "0 0 6px",
             }}
           >

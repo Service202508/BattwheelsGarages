@@ -110,7 +110,7 @@ function KpiCard({ icon: Icon, label, value, delta, sub, color = VOLT, warn = fa
       data-testid={testId}
       className="border relative overflow-hidden"
       style={{
-        background: "rgba(255,255,255,0.02)",
+        background: "rgb(255 255 255 / 0.02)",
         borderColor: warn ? "rgba(234,179,8,0.3)" : "rgba(255,255,255,0.07)",
       }}
     >
@@ -162,7 +162,7 @@ function EmptyState({ icon: Icon, message, action }) {
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--bw-border)" }}
+        style={{ background: "rgb(255 255 255 / 0.04)", border: "1px solid var(--bw-border)" }}
       >
         <Icon size={20} style={{ color: DIM_TEXT }} />
       </div>
@@ -235,7 +235,7 @@ function RevenueSection({ data, loading }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Revenue Trend */}
-          <Card className="lg:col-span-2 border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="lg:col-span-2 border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Revenue Trend</CardTitle>
             </CardHeader>
@@ -259,7 +259,7 @@ function RevenueSection({ data, loading }) {
           </Card>
 
           {/* By Service Type */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>By Service Type</CardTitle>
             </CardHeader>
@@ -276,7 +276,7 @@ function RevenueSection({ data, loading }) {
                         <span className="text-xs" style={{ color: "rgb(var(--bw-white))" }}>{item.type}</span>
                         <span className="text-xs font-semibold" style={{ color: VOLT }}>{fmtCurrency(item.revenue)}</span>
                       </div>
-                      <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div className="h-1.5 rounded-full" style={{ background: "rgb(255 255 255 / 0.06)" }}>
                         <div
                           className="h-1.5 rounded-full transition-all"
                           style={{ width: `${pct}%`, background: CHART_COLORS[i % CHART_COLORS.length] }}
@@ -326,7 +326,7 @@ function OperationsSection({ data, loading }) {
         <EmptyState icon={Activity} action="Start tracking tickets to see operations data" />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="lg:col-span-2 border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Daily Ticket Volume</CardTitle>
             </CardHeader>
@@ -345,7 +345,7 @@ function OperationsSection({ data, loading }) {
             </CardContent>
           </Card>
 
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Vehicle Type Mix</CardTitle>
             </CardHeader>
@@ -401,7 +401,7 @@ function TechnicianSection({ data, loading }) {
   return (
     <div className="space-y-5" data-testid="technician-section">
       {/* Leaderboard */}
-      <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+      <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
         <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Technician Leaderboard</CardTitle>
           <div className="flex gap-1 flex-wrap">
@@ -425,7 +425,7 @@ function TechnicianSection({ data, loading }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <tr style={{ borderBottom: "1px solid rgb(255 255 255 / 0.06)" }}>
                   {["#", "Technician", "Resolved", "Avg Time", "Rating", "SLA %"].map((h) => (
                     <th key={h} className="pb-2 pr-3 text-left font-medium" style={{ color: DIM_TEXT }}>{h}</th>
                   ))}
@@ -441,14 +441,14 @@ function TechnicianSection({ data, loading }) {
                       data-testid={`tech-row-${tech.id}`}
                       style={{
                         borderLeft: isTop ? `3px solid ${VOLT}` : isLow ? `3px solid ${RED}` : "3px solid transparent",
-                        borderBottom: "1px solid rgba(255,255,255,0.04)",
+                        borderBottom: "1px solid rgb(255 255 255 / 0.04)",
                       }}
                     >
                       <td className="py-2 pr-3 pl-2" style={{ color: DIM_TEXT }}>{i + 1}</td>
                       <td className="py-2 pr-3 font-medium" style={{ color: "rgb(var(--bw-white))" }}>{tech.name}</td>
                       <td className="py-2 pr-3">
                         <div className="flex items-center gap-1.5">
-                          <div className="h-1 rounded-full" style={{ width: 40, background: "rgba(255,255,255,0.06)" }}>
+                          <div className="h-1 rounded-full" style={{ width: 40, background: "rgb(255 255 255 / 0.06)" }}>
                             <div className="h-1 rounded-full" style={{ width: `${maxTickets > 0 ? (tech.tickets_closed / maxTickets) * 40 : 0}px`, background: VOLT }} />
                           </div>
                           <span style={{ color: VOLT }}>{tech.tickets_closed}</span>
@@ -476,7 +476,7 @@ function TechnicianSection({ data, loading }) {
 
       {/* Specialisation Heatmap */}
       {heatmap.length > 0 && vehicle_types.length > 0 && (
-        <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+        <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Specialisation Map</CardTitle>
           </CardHeader>
@@ -494,7 +494,7 @@ function TechnicianSection({ data, loading }) {
                 {heatmap.map((row) => {
                   const max = Math.max(...vehicle_types.map((v) => row[v] || 0));
                   return (
-                    <tr key={row.tech_id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <tr key={row.tech_id} style={{ borderBottom: "1px solid rgb(255 255 255 / 0.04)" }}>
                       <td className="py-2 pr-4 font-medium" style={{ color: "rgb(var(--bw-white))" }}>{row.tech_name}</td>
                       {vehicle_types.map((v) => {
                         const cnt = row[v] || 0;
@@ -543,7 +543,7 @@ function EfiSection({ data, loading }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Failure Patterns */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Top Failure Patterns</CardTitle>
             </CardHeader>
@@ -551,7 +551,7 @@ function EfiSection({ data, loading }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <tr style={{ borderBottom: "1px solid rgb(255 255 255 / 0.06)" }}>
                       {["Fault Type", "Count", "Avg Fix Time", "Avg Cost"].map((h) => (
                         <th key={h} className="pb-2 pr-3 text-left font-medium" style={{ color: DIM_TEXT }}>{h}</th>
                       ))}
@@ -559,7 +559,7 @@ function EfiSection({ data, loading }) {
                   </thead>
                   <tbody>
                     {failure_patterns.map((p, i) => (
-                      <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                      <tr key={i} style={{ borderBottom: "1px solid rgb(255 255 255 / 0.04)" }}>
                         <td className="py-2 pr-3 font-medium capitalize" style={{ color: "rgb(var(--bw-white))" }}>{p.fault_type}</td>
                         <td className="py-2 pr-3" style={{ color: VOLT }}>{p.count}</td>
                         <td className="py-2 pr-3" style={{ color: "rgb(var(--bw-white))" }}>
@@ -575,7 +575,7 @@ function EfiSection({ data, loading }) {
           </Card>
 
           {/* Failure by Vehicle */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Faults by Vehicle Type</CardTitle>
             </CardHeader>
@@ -628,7 +628,7 @@ function CustomerSection({ data, loading }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Top Customers */}
-          <Card className="lg:col-span-2 border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="lg:col-span-2 border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Top Customers by Revenue</CardTitle>
             </CardHeader>
@@ -639,7 +639,7 @@ function CustomerSection({ data, loading }) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <tr style={{ borderBottom: "1px solid rgb(255 255 255 / 0.06)" }}>
                         {["Customer", "Invoices", "Total Spent", "Last Visit"].map((h) => (
                           <th key={h} className="pb-2 pr-3 text-left font-medium" style={{ color: DIM_TEXT }}>{h}</th>
                         ))}
@@ -647,7 +647,7 @@ function CustomerSection({ data, loading }) {
                     </thead>
                     <tbody>
                       {top_customers.map((c, i) => (
-                        <tr key={i} data-testid={`cust-row-${c.id}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <tr key={i} data-testid={`cust-row-${c.id}`} style={{ borderBottom: "1px solid rgb(255 255 255 / 0.04)" }}>
                           <td className="py-2 pr-3">
                             <div className="flex items-center gap-1.5">
                               <span className="font-medium" style={{ color: "rgb(var(--bw-white))" }}>{c.name}</span>
@@ -671,7 +671,7 @@ function CustomerSection({ data, loading }) {
           </Card>
 
           {/* Vehicle Make Dist */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Fleet by Make</CardTitle>
             </CardHeader>
@@ -710,7 +710,7 @@ function CustomerSection({ data, loading }) {
 
       {/* Satisfaction Trend */}
       {rating_trend.length > 0 && (
-        <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+        <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Satisfaction Trend</CardTitle>
           </CardHeader>
@@ -753,12 +753,12 @@ function InventorySection({ data, loading }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Stock Health Bar */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>Stock Health</CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="h-3 rounded-full overflow-hidden flex mb-4" style={{ background: "rgba(255,255,255,0.06)" }}>
+              <div className="h-3 rounded-full overflow-hidden flex mb-4" style={{ background: "rgb(255 255 255 / 0.06)" }}>
                 {stock_health.filter((s) => s.value > 0).map((s, i) => (
                   <div
                     key={i}
@@ -782,7 +782,7 @@ function InventorySection({ data, loading }) {
           </Card>
 
           {/* Fast Movers */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>
                 <span style={{ color: VOLT }}>▲</span> Fast Movers
@@ -794,7 +794,7 @@ function InventorySection({ data, loading }) {
               ) : (
                 <div className="space-y-2">
                   {fast_movers.map((f, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgb(255 255 255 / 0.04)" }}>
                       <span className="font-medium truncate pr-2" style={{ color: "rgb(var(--bw-white))", maxWidth: 120 }}>{f.name}</span>
                       <div className="flex gap-3 flex-shrink-0">
                         <span style={{ color: VOLT }}>{f.qty} used</span>
@@ -808,7 +808,7 @@ function InventorySection({ data, loading }) {
           </Card>
 
           {/* Dead Stock */}
-          <Card className="border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "var(--bw-border)" }}>
+          <Card className="border" style={{ background: "rgb(255 255 255 / 0.02)", borderColor: "var(--bw-border)" }}>
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-sm font-medium" style={{ color: DIM_TEXT }}>
                 <span style={{ color: AMBER }}>▲</span> Dead Stock
@@ -821,7 +821,7 @@ function InventorySection({ data, loading }) {
               ) : (
                 <div className="space-y-2">
                   {dead_stock.map((d, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgb(255 255 255 / 0.04)" }}>
                       <span className="font-medium truncate pr-2" style={{ color: "rgb(var(--bw-white))", maxWidth: 120 }}>{d.name}</span>
                       <div className="flex gap-3 flex-shrink-0">
                         <span style={{ color: AMBER }}>{d.stock} in stock</span>
@@ -971,7 +971,7 @@ export default function DataInsights({ user }) {
             data-testid="refresh-btn"
             onClick={fetchAll}
             className="h-8 w-8 p-0 rounded-lg"
-            style={{ color: DIM_TEXT, background: "rgba(255,255,255,0.04)" }}
+            style={{ color: DIM_TEXT, background: "rgb(255 255 255 / 0.04)" }}
           >
             <RefreshCw size={13} />
           </Button>
