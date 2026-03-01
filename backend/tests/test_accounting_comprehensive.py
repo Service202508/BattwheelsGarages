@@ -316,10 +316,10 @@ class TestBankTransactions:
 
         today = datetime.now().strftime("%Y-%m-%d")
         txn_resp = requests.post(f"{base_url}/api/v1/banking/accounts/{aid}/transactions", headers=_headers, json={
-            "date": today,
+            "transaction_date": today,
             "description": "Test deposit",
             "amount": 5000.0,
-            "type": "credit",
+            "transaction_type": "credit",
             "reference": "TXN-TEST-001"
         })
         txn = None
