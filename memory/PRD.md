@@ -57,7 +57,7 @@ Multi-phase project to improve application stability, maintainability, feature s
 ## Prioritized Backlog
 
 ### P0
-- Cluster 4 Part 2: Customer Portal, Tech Portal, remaining items, final audit
+- Founder manual QA testing (using docs/QA_TESTING_GUIDE.md)
 
 ### P1
 - Decompose "God-Files" (Tickets, Estimates, EFI modules)
