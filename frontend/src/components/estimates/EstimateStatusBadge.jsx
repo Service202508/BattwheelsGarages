@@ -13,37 +13,37 @@ const statusConfig = {
   },
   sent: {
     bg: "rgba(59,158,255,0.10)",
-    text: "#3B9EFF",
+    text: "rgb(var(--bw-blue))",
     border: "rgba(59,158,255,0.25)",
     label: "Sent"
   },
   customer_viewed: {
     bg: "rgba(26,255,228,0.10)",
-    text: "#1AFFE4",
+    text: "rgb(var(--bw-teal))",
     border: "rgba(26,255,228,0.25)",
     label: "Viewed"
   },
   accepted: {
     bg: "rgba(34,197,94,0.10)",
-    text: "#22C55E",
+    text: "rgb(var(--bw-green))",
     border: "rgba(34,197,94,0.25)",
     label: "Accepted"
   },
   declined: {
     bg: "rgba(255,59,47,0.10)",
-    text: "#FF3B2F",
+    text: "rgb(var(--bw-red))",
     border: "rgba(255,59,47,0.25)",
     label: "Declined"
   },
   expired: {
     bg: "rgba(255,140,0,0.10)",
-    text: "#FF8C00",
+    text: "rgb(var(--bw-orange))",
     border: "rgba(255,140,0,0.25)",
     label: "Expired"
   },
   converted: {
     bg: "rgba(200,255,0,0.10)",
-    text: "#C8FF00",
+    text: "rgb(var(--bw-volt))",
     border: "rgba(200,255,0,0.25)",
     label: "Converted"
   },

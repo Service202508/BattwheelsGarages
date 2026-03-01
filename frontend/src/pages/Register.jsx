@@ -21,7 +21,7 @@ function PasswordStrength({ password }) {
     /[^A-Za-z0-9]/.test(password),
   ].filter(Boolean).length;
 
-  const colors = ["#FF3B2F", "#FF8C00", "#EAB308", "#22C55E"];
+  const colors = ["rgb(var(--bw-red))", "rgb(var(--bw-orange))", "rgb(var(--bw-amber))", "rgb(var(--bw-green))"];
   const labels = ["Weak", "Fair", "Good", "Strong"];
   if (!password) return null;
 
@@ -64,9 +64,9 @@ function StepIndicator({ current, total }) {
               fontSize: "12px",
               fontFamily: "JetBrains Mono, monospace",
               fontWeight: 700,
-              background: i < current ? "#22C55E" : i === current ? "#C8FF00" : "transparent",
+              background: i < current ? "rgb(var(--bw-green))" : i === current ? "rgb(var(--bw-volt))" : "transparent",
               border: i < current ? "none" : i === current ? "none" : "1.5px solid rgba(255,255,255,0.20)",
-              color: i <= current ? "#080C0F" : "rgb(var(--bw-white) / 0.35)",
+              color: i <= current ? "rgb(var(--bw-black))" : "rgb(var(--bw-white) / 0.35)",
               transition: "all 0.2s",
               flexShrink: 0,
             }}
@@ -78,7 +78,7 @@ function StepIndicator({ current, total }) {
               style={{
                 width: "48px",
                 height: "2px",
-                background: i < current ? "#22C55E" : "rgba(255,255,255,0.10)",
+                background: i < current ? "rgb(var(--bw-green))" : "rgba(255,255,255,0.10)",
                 transition: "background 0.3s",
               }}
             />
@@ -192,7 +192,7 @@ export default function Register({ onLogin }) {
     width: "100%",
     padding: "12px 14px",
     background: "rgb(255 255 255 / 0.04)",
-    border: `1px solid ${hasErr ? "#FF3B2F" : "rgba(255,255,255,0.12)"}`,
+    border: `1px solid ${hasErr ? "rgb(var(--bw-red))" : "rgba(255,255,255,0.12)"}`,
     borderRadius: "4px",
     color: "rgb(var(--bw-white))",
     fontSize: "14px",
@@ -401,7 +401,7 @@ export default function Register({ onLogin }) {
                           background: sel ? "rgba(200,255,0,0.12)" : "rgba(255,255,255,0.04)",
                           border: `1px solid ${sel ? "rgba(200,255,0,0.40)" : "rgba(255,255,255,0.12)"}`,
                           borderRadius: "4px",
-                          color: sel ? "#C8FF00" : "rgba(244,246,240,0.55)",
+                          color: sel ? "rgb(var(--bw-volt))" : "rgba(244,246,240,0.55)",
                           fontSize: "13px",
                           fontWeight: sel ? 700 : 400,
                           cursor: "pointer",
@@ -658,7 +658,7 @@ export default function Register({ onLogin }) {
                   style={{
                     flex: 2,
                     padding: "14px",
-                    background: submitting ? "rgba(200,255,0,0.50)" : "#C8FF00",
+                    background: submitting ? "rgba(200,255,0,0.50)" : "rgb(var(--bw-volt))",
                     border: "none",
                     borderRadius: "4px",
                     color: "rgb(var(--bw-black))",

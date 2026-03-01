@@ -323,7 +323,7 @@ const UploadDialog = ({ open, onClose, onUpload, folders }) => {
 // New Folder Dialog
 const NewFolderDialog = ({ open, onClose, onCreate }) => {
   const [name, setName] = useState("");
-  const [color, setColor] = useState("#3B82F6");
+  const [color, setColor] = useState("rgb(var(--bw-blue))");
   
   const handleCreate = () => {
     if (!name.trim()) {
@@ -332,7 +332,7 @@ const NewFolderDialog = ({ open, onClose, onCreate }) => {
     }
     onCreate({ name, color });
     setName("");
-    setColor("#3B82F6");
+    setColor("rgb(var(--bw-blue))");
   };
   
   return (
@@ -355,7 +355,7 @@ const NewFolderDialog = ({ open, onClose, onCreate }) => {
           <div>
             <Label>Color</Label>
             <div className="flex gap-2 mt-2">
-              {["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#6B7280"].map((c) => (
+              {["rgb(var(--bw-blue))", "rgb(var(--bw-green))", "rgb(var(--bw-amber))", "rgb(var(--bw-red))", "rgb(var(--bw-purple))", "rgb(var(--bw-white) / 0.45)"].map((c) => (
                 <button
                   key={c}
                   className={`h-8 w-8 rounded-full ${color === c ? 'ring-2 ring-offset-2 ring-primary' : ''}`}

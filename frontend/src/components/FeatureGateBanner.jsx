@@ -150,7 +150,7 @@ export default function FeatureGateBanner({ children }) {
         className="sticky top-0 z-30 w-full flex items-center justify-between gap-4 px-6 py-3 border-b-2"
         style={{
           background: "rgb(var(--bw-amber) / 0.08)",
-          borderBottomColor: "#EAB308",
+          borderBottomColor: "rgb(var(--bw-amber))",
         }}
         data-testid="feature-gate-banner"
       >
@@ -199,7 +199,7 @@ export default function FeatureGateBanner({ children }) {
           onClick={() => navigate("/subscription")}
           className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90 active:opacity-80"
           style={{
-            background: "#EAB308",
+            background: "rgb(var(--bw-amber))",
             color: "rgb(var(--bw-black))",
             fontFamily: "'JetBrains Mono', monospace",
           }}

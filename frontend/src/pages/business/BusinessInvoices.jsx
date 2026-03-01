@@ -126,7 +126,7 @@ export default function BusinessInvoices({ user }) {
               contact: user?.phone
             },
             theme: {
-              color: "#4F46E5"
+              color: "rgb(var(--bw-purple))"
             }
           };
           

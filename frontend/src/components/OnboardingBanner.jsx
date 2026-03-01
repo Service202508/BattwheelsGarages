@@ -284,7 +284,7 @@ export function OnboardingBanner() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: isComplete ? "#22C55E" : "transparent",
+                  background: isComplete ? "rgb(var(--bw-green))" : "transparent",
                   border: isComplete ? "none" : "1.5px solid rgba(255,255,255,0.20)",
                 }}
               >
@@ -307,7 +307,7 @@ export function OnboardingBanner() {
                   style={{
                     fontFamily: "Syne, sans-serif",
                     fontSize: "14px",
-                    color: isComplete ? "rgba(244,246,240,0.40)" : "#F4F6F0",
+                    color: isComplete ? "rgba(244,246,240,0.40)" : "rgb(var(--bw-white))",
                     textDecoration: isComplete ? "line-through" : "none",
                     margin: 0,
                     fontWeight: 500,

@@ -596,7 +596,7 @@ export default function Layout({ children, user, onLogout }) {
                 flex: 1,
                 height: "60px",
                 textDecoration: "none",
-                color: isActive ? "#C8FF00" : "rgba(244,246,240,0.40)",
+                color: isActive ? "rgb(var(--bw-volt))" : "rgba(244,246,240,0.40)",
                 transition: "color 0.15s",
               }}
             >

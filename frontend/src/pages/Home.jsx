@@ -37,17 +37,17 @@ import { toast } from "sonner";
 
 // Chart colors
 const COLORS = {
-  primary: "#10B981",
-  secondary: "#3B82F6", 
-  danger: "#EF4444",
-  warning: "#F59E0B",
-  purple: "#8B5CF6",
-  gray: "#6B7280",
-  incoming: "#10B981",
-  outgoing: "#EF4444"
+  primary: "rgb(var(--bw-green))",
+  secondary: "rgb(var(--bw-blue))", 
+  danger: "rgb(var(--bw-red))",
+  warning: "rgb(var(--bw-amber))",
+  purple: "rgb(var(--bw-purple))",
+  gray: "rgb(var(--bw-white) / 0.45)",
+  incoming: "rgb(var(--bw-green))",
+  outgoing: "rgb(var(--bw-red))"
 };
 
-const EXPENSE_COLORS = ["#10B981", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6", "#6B7280"];
+const EXPENSE_COLORS = ["rgb(var(--bw-green))", "rgb(var(--bw-blue))", "rgb(var(--bw-amber))", "rgb(var(--bw-red))", "rgb(var(--bw-purple))", "rgb(var(--bw-white) / 0.45)"];
 
 // Format currency (Indian Rupees)
 const formatCurrency = (amount, compact = false) => {

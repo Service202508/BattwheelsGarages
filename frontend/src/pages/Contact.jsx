@@ -13,28 +13,28 @@ const channels = [
     label: 'General Enquiries',
     desc: 'Questions about the platform, features, or pricing.',
     email: 'hello@battwheels.com',
-    accent: '#C8FF00',
+    accent: 'rgb(var(--bw-volt))',
   },
   {
     icon: Briefcase,
     label: 'Enterprise & OEM',
     desc: 'Custom deployments, white-label, or fleet operator partnerships.',
     email: 'enterprise@battwheels.com',
-    accent: '#1AFFE4',
+    accent: 'rgb(var(--bw-teal))',
   },
   {
     icon: Shield,
     label: 'Security',
     desc: 'Responsible disclosure of vulnerabilities or security concerns.',
     email: 'security@battwheels.com',
-    accent: '#FF6B35',
+    accent: 'rgb(var(--bw-orange))',
   },
   {
     icon: Building2,
     label: 'Legal & Privacy',
     desc: 'Data requests, privacy queries, and legal correspondence.',
     email: 'legal@battwheels.com',
-    accent: '#C8FF00',
+    accent: 'rgb(var(--bw-volt))',
   },
 ];
 

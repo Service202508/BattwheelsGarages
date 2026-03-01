@@ -325,7 +325,7 @@ export default function CustomerSurvey() {
   // ── Effective star display ─────────────────────────────────────────────
   const effectiveRating = hovered || rating;
 
-  const VOLT = "#C8FF00";
+  const VOLT = "rgb(var(--bw-volt))";
   const VOLT_DIM = "rgba(200,255,0,0.20)";
   const VOLT_MID = "rgba(200,255,0,0.55)";
 
@@ -368,7 +368,7 @@ export default function CustomerSurvey() {
         {state === "thanks" && surveyData && (
           <div className="sv-thanks" data-testid="survey-thanks">
             <div className="sv-thanks-circle">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5}
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgb(var(--bw-green))" strokeWidth={2.5}
                 strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}>
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -415,7 +415,7 @@ export default function CustomerSurvey() {
                   background: "rgba(200,255,0,0.12)", border: "1px solid rgba(200,255,0,0.25)",
                   display: "flex", alignItems: "center", justifyContent: "center"
                 }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#C8FF00" strokeWidth={1.5}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="rgb(var(--bw-volt))" strokeWidth={1.5}
                     style={{ width: 22, height: 22 }}>
                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                     <polyline points="9 22 9 12 15 12 15 22" />

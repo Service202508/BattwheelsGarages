@@ -126,8 +126,8 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
 }
 
 const ENV_CONFIG = {
-  production:  { label: "PRODUCTION",  color: "#EF4444", bg: "rgba(239,68,68,0.12)" },
-  staging:     { label: "STAGING",     color: "#F59E0B", bg: "rgba(245,158,11,0.12)" },
+  production:  { label: "PRODUCTION",  color: "rgb(var(--bw-red))", bg: "rgba(239,68,68,0.12)" },
+  staging:     { label: "STAGING",     color: "rgb(var(--bw-amber))", bg: "rgba(245,158,11,0.12)" },
   development: { label: "DEVELOPMENT", color: "rgb(var(--bw-green))", bg: "rgba(34,197,94,0.12)" },
 };
 
@@ -464,7 +464,7 @@ export default function PlatformAdmin({ user }) {
                     <p style={{
                       fontFamily: "'JetBrains Mono', monospace",
                       fontSize: "14px",
-                      color: auditResult.failed === 0 ? "#22C55E" : "#FF3B2F",
+                      color: auditResult.failed === 0 ? "rgb(var(--bw-green))" : "rgb(var(--bw-red))",
                       margin: 0,
                       fontWeight: 600,
                     }}>

@@ -2189,15 +2189,15 @@ export default function InvoicesEnhanced() {
                         const getActivityStyle = (action) => {
                           const styles = {
                             'created': { color: 'rgba(244,246,240,0.35)', label: 'Created' },
-                            'finalized': { color: '#3B82F6', label: 'Finalized' },
+                            'finalized': { color: 'rgb(var(--bw-blue))', label: 'Finalized' },
                             'irn_generated': { color: 'rgb(var(--bw-green))', label: 'IRN Generated' },
                             'irn_cancelled': { color: 'rgb(var(--bw-red))', label: 'IRN Cancelled' },
-                            'sent': { color: '#06B6D4', label: 'Sent' },
+                            'sent': { color: 'rgb(var(--bw-teal))', label: 'Sent' },
                             'payment_recorded': { color: 'rgb(var(--bw-green))', label: 'Payment' },
                             'payment': { color: 'rgb(var(--bw-green))', label: 'Payment' },
                             'pdf_downloaded': { color: 'rgba(244,246,240,0.35)', label: 'PDF Downloaded' },
                             'viewed': { color: 'rgba(244,246,240,0.35)', label: 'Viewed' },
-                            'updated': { color: '#F59E0B', label: 'Updated' },
+                            'updated': { color: 'rgb(var(--bw-amber))', label: 'Updated' },
                             'voided': { color: 'rgb(var(--bw-red))', label: 'Voided' },
                             'cancelled': { color: 'rgb(var(--bw-red))', label: 'Cancelled' }
                           };

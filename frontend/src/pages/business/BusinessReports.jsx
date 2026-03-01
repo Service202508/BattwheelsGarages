@@ -81,18 +81,18 @@ export default function BusinessReports({ user }) {
   };
 
   const statusColorMap = {
-    open: "#3B82F6",
-    assigned: "#8B5CF6",
-    work_in_progress: "#F59E0B",
-    work_completed: "#10B981",
-    closed: "#6B7280"
+    open: "rgb(var(--bw-blue))",
+    assigned: "rgb(var(--bw-purple))",
+    work_in_progress: "rgb(var(--bw-amber))",
+    work_completed: "rgb(var(--bw-green))",
+    closed: "rgb(var(--bw-white) / 0.45)"
   };
 
   const priorityColorMap = {
-    low: "#10B981",
-    medium: "#F59E0B",
-    high: "#F97316",
-    critical: "#EF4444"
+    low: "rgb(var(--bw-green))",
+    medium: "rgb(var(--bw-amber))",
+    high: "rgb(var(--bw-orange))",
+    critical: "rgb(var(--bw-red))"
   };
 
   return (
@@ -205,7 +205,7 @@ export default function BusinessReports({ user }) {
                       <div className="flex items-center gap-3">
                         <div 
                           className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: statusColorMap[status] || "#6B7280" }}
+                          style={{ backgroundColor: statusColorMap[status] || "rgb(var(--bw-white) / 0.45)" }}
                         />
                         <span className="text-sm text-slate-600 capitalize">{status.replace(/_/g, ' ')}</span>
                       </div>
@@ -218,7 +218,7 @@ export default function BusinessReports({ user }) {
                             className="h-2 rounded-full"
                             style={{ 
                               width: `${(count / (reportData?.tickets?.total || 1)) * 100}%`,
-                              backgroundColor: statusColorMap[status] || "#6B7280"
+                              backgroundColor: statusColorMap[status] || "rgb(var(--bw-white) / 0.45)"
                             }}
                           />
                         </div>
@@ -245,7 +245,7 @@ export default function BusinessReports({ user }) {
                       <div className="flex items-center gap-3">
                         <div 
                           className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: priorityColorMap[priority] || "#6B7280" }}
+                          style={{ backgroundColor: priorityColorMap[priority] || "rgb(var(--bw-white) / 0.45)" }}
                         />
                         <span className="text-sm text-slate-600 capitalize">{priority}</span>
                       </div>
@@ -258,7 +258,7 @@ export default function BusinessReports({ user }) {
                             className="h-2 rounded-full"
                             style={{ 
                               width: `${(count / (reportData?.tickets?.total || 1)) * 100}%`,
-                              backgroundColor: priorityColorMap[priority] || "#6B7280"
+                              backgroundColor: priorityColorMap[priority] || "rgb(var(--bw-white) / 0.45)"
                             }}
                           />
                         </div>

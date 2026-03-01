@@ -67,7 +67,7 @@ export default function ContactsEnhanced() {
     gst_treatment: "registered", opening_balance: 0, opening_balance_type: "credit",
     tags: [], notes: "", custom_fields: {}
   });
-  const [newTag, setNewTag] = useState({ name: "", description: "", color: "#3B82F6" });
+  const [newTag, setNewTag] = useState({ name: "", description: "", color: "rgb(var(--bw-blue))" });
   const [newPerson, setNewPerson] = useState({ first_name: "", last_name: "", email: "", phone: "", designation: "", department: "", is_primary: false });
   const [newAddress, setNewAddress] = useState({ address_type: "billing", attention: "", street: "", street2: "", city: "", state: "", state_code: "", zip_code: "", country: "India", phone: "", is_default: false });
   const [editMode, setEditMode] = useState(false);
@@ -281,7 +281,7 @@ export default function ContactsEnhanced() {
       if (res.ok) {
         toast.success("Tag created");
         setShowTagDialog(false);
-        setNewTag({ name: "", description: "", color: "#3B82F6" });
+        setNewTag({ name: "", description: "", color: "rgb(var(--bw-blue))" });
         fetchTags();
       }
     } catch (e) { toast.error("Error creating tag"); }
@@ -771,7 +771,7 @@ export default function ContactsEnhanced() {
                     <Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-bw-white/[0.45]">Color</Label>
                     <div className="flex items-center gap-2">
                       <Input type="color" value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} className="w-16 h-10 p-1 bg-bw-panel border-white/[0.13]" />
-                      <Input value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} placeholder="#3B82F6" className="flex-1 bg-bw-panel border-white/[0.13] text-bw-white font-mono" />
+                      <Input value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} placeholder="rgb(var(--bw-blue))" className="flex-1 bg-bw-panel border-white/[0.13] text-bw-white font-mono" />
                     </div>
                   </div>
                 </div>
