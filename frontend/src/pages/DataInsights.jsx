@@ -27,7 +27,7 @@ const RED = themeColors.red;
 const BLUE = themeColors.blue;
 const GRID = "rgba(255,255,255,0.05)";
 const DIM_TEXT = "rgba(244,246,240,0.45)";
-const CHART_COLORS = [VOLT, CYAN, AMBER, BLUE, themeColors.purple, "#F472B6"];
+const CHART_COLORS = [VOLT, CYAN, AMBER, BLUE, themeColors.purple, themeColors.purple];
 
 const PERIODS = [
   { label: "This Week", value: "week" },
@@ -74,7 +74,7 @@ function fmtNum(val) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const ChartTooltipStyle = {
-  backgroundColor: "#1a1f24",
+  backgroundColor: "rgb(var(--bw-panel))",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: "8px",
   color: "rgb(var(--bw-white))",
@@ -504,7 +504,7 @@ function TechnicianSection({ data, loading }) {
                         return (
                           <td key={v} className="py-2 px-2 text-center" style={{
                             background: `rgba(200,255,0,${intensity * 0.4})`,
-                            color: intensity > 0.5 ? "#0a0f0d" : "#f4f6f0",
+                            color: intensity > 0.5 ? "rgb(var(--bw-black))" : "rgb(var(--bw-white))",
                             borderRadius: 4,
                           }}>
                             {cnt || "·"}
