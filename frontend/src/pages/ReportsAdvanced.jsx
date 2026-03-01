@@ -428,7 +428,7 @@ export default function ReportsAdvanced() {
                     data={paymentTrend.values || []}
                     labels={paymentTrend.labels || []}
                     height={150}
-                    color=themeColors.teal
+                    color={themeColors.teal}
                   />
                   <p className="text-center mt-4 text-sm text-bw-white/[0.45]">
                     Total Collected: <span className="font-bold text-green-600">{formatCurrency(paymentTrend.total_collected)}</span>
