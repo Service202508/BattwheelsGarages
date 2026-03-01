@@ -410,7 +410,7 @@ export default function Banking() {
               </CardTitle>
               <div className="flex items-center gap-2">
                 {selectedTxns.length > 0 && (
-                  <Button size="sm" onClick={handleBulkReconcile} className="bg-bw-teal text-black hover:bg-bw-teal">
+                  <Button size="sm" onClick={handleBulkReconcile} className="bg-bw-teal text-bw-black hover:bg-bw-teal">
                     <Check className="w-4 h-4 mr-1" />
                     Reconcile ({selectedTxns.length})
                   </Button>
@@ -806,7 +806,7 @@ export default function Banking() {
             <Button variant="outline" onClick={() => setShowTransferDialog(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleTransfer} className="bg-bw-amber text-black hover:bg-bw-amber">
+            <Button onClick={handleTransfer} className="bg-bw-amber text-bw-black hover:bg-bw-amber">
               Transfer Funds
             </Button>
           </DialogFooter>

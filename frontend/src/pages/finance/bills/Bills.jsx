@@ -920,7 +920,7 @@ export default function Bills() {
             <Button variant="outline" onClick={() => setShowPayDialog(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleRecordPayment} className="bg-bw-teal text-black hover:bg-bw-teal">
+            <Button onClick={handleRecordPayment} className="bg-bw-teal text-bw-black hover:bg-bw-teal">
               Record Payment
             </Button>
           </DialogFooter>
