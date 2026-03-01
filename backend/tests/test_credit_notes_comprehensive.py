@@ -46,40 +46,44 @@ def _demo_headers(base_url):
 
 @pytest.fixture(scope="module")
 def sent_invoice(base_url, _headers):
-    """Find an existing non-draft invoice eligible for credit notes."""
-    # Try sent invoices first
-    for status in ["sent", "partially_paid", "paid", "overdue"]:
-        resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/?limit=1&status={status}", headers=_headers)
+    """Find an existing non-draft invoice in invoices_enhanced collection."""
+    import pymongo, os
+    client = pymongo.MongoClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
+    db_name = os.environ.get("DB_NAME", "battwheels_dev")
+    db = client[db_name]
+
+    # Look directly in invoices_enhanced for a non-draft invoice in the dev org
+    inv = db.invoices_enhanced.find_one(
+        {"organization_id": "dev-internal-testing-001", "status": {"$ne": "draft"}},
+        {"_id": 0}
+    )
+    client.close()
+
+    if not inv:
+        # Try creating one via API
+        resp = requests.get(f"{base_url}/api/v1/contacts-enhanced/?per_page=1", headers=_headers)
+        if resp.status_code != 200:
+            pytest.skip("No customers and no existing non-draft invoices")
+        contacts = resp.json().get("contacts") or resp.json().get("data") or []
+        if not contacts:
+            pytest.skip("No customers")
+        today = datetime.now().strftime("%Y-%m-%d")
+        resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
+            "customer_id": contacts[0]["contact_id"],
+            "invoice_date": today,
+            "due_date": "2026-12-31",
+            "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%"}]
+        })
+        if resp.status_code != 200:
+            pytest.skip(f"Cannot create invoice: {resp.status_code}")
+        inv_data = resp.json().get("invoice") or resp.json()
+        requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_data['invoice_id']}/send", headers=_headers)
+        resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{inv_data['invoice_id']}", headers=_headers)
         if resp.status_code == 200:
-            items = resp.json().get("data", [])
-            if items:
-                return items[0]
-
-    # Fallback: create and send one
-    resp = requests.get(f"{base_url}/api/v1/contacts-enhanced/?per_page=1", headers=_headers)
-    if resp.status_code != 200:
-        pytest.skip("Cannot fetch customers")
-    contacts = resp.json().get("contacts") or resp.json().get("data") or []
-    if not contacts:
-        pytest.skip("No customers available")
-    customer_id = contacts[0]["contact_id"]
-
-    today = datetime.now().strftime("%Y-%m-%d")
-    resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
-        "customer_id": customer_id,
-        "invoice_date": today,
-        "due_date": "2026-12-31",
-        "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%", "hsn_sac": "998719"}]
-    })
-    if resp.status_code != 200:
-        pytest.skip(f"Cannot create invoice: {resp.status_code}")
-    invoice = resp.json().get("invoice") or resp.json()
-    iid = invoice["invoice_id"]
-    requests.post(f"{base_url}/api/v1/invoices-enhanced/{iid}/send", headers=_headers)
-    resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{iid}", headers=_headers)
-    if resp.status_code == 200:
-        invoice = resp.json().get("invoice") or resp.json()
-    return invoice
+            inv = resp.json().get("invoice") or resp.json()
+        else:
+            inv = inv_data
+    return inv
 
 
 @pytest.fixture(scope="module")
