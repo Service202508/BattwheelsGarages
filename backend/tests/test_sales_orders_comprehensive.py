@@ -49,7 +49,9 @@ def created_order(base_url, _headers):
 
 
 def _get_order_id(order_data):
-    return order_data.get("salesorder_id") or order_data.get("id") or order_data.get("data", {}).get("salesorder_id")
+    if order_data.get("salesorder"):
+        return order_data["salesorder"].get("salesorder_id")
+    return order_data.get("salesorder_id") or order_data.get("id")
 
 
 # ==================== 1. SETTINGS ====================
