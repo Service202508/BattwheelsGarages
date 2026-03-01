@@ -208,14 +208,24 @@ export default function EstimatesEnhanced() {
     setLoading(false);
   }, []);
 
-  const fetchEstimates = async () => {
+  const fetchEstimates = async (cursorParam = null) => {
     try {
-      let url = `${API}/estimates-enhanced/?per_page=100`;
+      let url = `${API}/estimates-enhanced/?limit=50`;
+      if (cursorParam) url += `&cursor=${cursorParam}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
-      setEstimates(data.data || data.estimates || []);
+      const items = data.data || data.estimates || [];
+      const pagination = data.pagination || {};
+      if (cursorParam) {
+        setEstimates(prev => [...prev, ...items]);
+      } else {
+        setEstimates(items);
+      }
+      setNextCursor(pagination.next_cursor || null);
+      setHasMore(pagination.has_next || false);
+      setTotalCount(pagination.total_count || items.length);
     } catch (e) { console.error("Failed to fetch estimates:", e); }
   };
 
