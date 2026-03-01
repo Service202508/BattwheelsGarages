@@ -82,8 +82,8 @@ class TestPreprocessComplaint:
             headers=_headers,
             params={"ticket_id": test_ticket_id, "complaint_text": "Battery not charging, error E-14"}
         )
-        # 200 = success, 500 = tenant validation issue, 503 = embedding service not init
-        assert resp.status_code in [200, 500, 503], f"Unexpected: {resp.status_code} {resp.text}"
+        # 200 = success, 503 = embedding service not init
+        assert resp.status_code in [200, 503], f"Unexpected: {resp.status_code} {resp.text}"
         if resp.status_code == 200:
             data = resp.json()
             assert "classified_subsystem" in data
@@ -180,8 +180,11 @@ class TestLearningCapture:
             "actual_time_minutes": 45,
             "outcome": "success"
         })
-        # 200 = success, 500 = tenant validation issue, 503 = learning engine not init
-        assert resp.status_code in [200, 500, 503], f"Unexpected: {resp.status_code} {resp.text}"
+        assert resp.status_code in [200, 503], f"Unexpected: {resp.status_code} {resp.text}"
+        if resp.status_code == 200:
+            data = resp.json()
+            assert "entry_id" in data
+            assert data["status"] == "pending_review"
 
     def test_capture_requires_auth(self, base_url, test_ticket_id):
         resp = requests.post(f"{base_url}/api/v1/efi-guided/learning/capture", json={
@@ -292,11 +295,10 @@ class TestGetFailureCard:
         if not failure_card_id:
             pytest.skip("No failure card available")
         resp = requests.get(f"{base_url}/api/v1/efi-guided/failure-cards/{failure_card_id}", headers=_headers)
-        # 200 = found, 404 = card uses card_id field (not failure_id), also acceptable
-        assert resp.status_code in [200, 404]
-        if resp.status_code == 200:
-            data = resp.json()
-            assert data.get("failure_id") or data.get("card_id")
+        assert resp.status_code == 200, f"GET failure card returned {resp.status_code}: {resp.text}"
+        data = resp.json()
+        assert data.get("failure_id") or data.get("card_id")
+        assert "decision_tree" in data
 
     def test_get_failure_card_nonexistent(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/efi-guided/failure-cards/fc_nonexistent_999", headers=_headers)
