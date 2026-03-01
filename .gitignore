@@ -105,3 +105,9 @@ chainlit.md
 # Environment files
 *.env
 *.env.*
+
+# Test artifacts
+test_reports/
+audit_results_v2.json
+CTO_REAUDIT_REPORT.md
+.emergent/
