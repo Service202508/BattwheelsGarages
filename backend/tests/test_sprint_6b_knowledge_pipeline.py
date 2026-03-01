@@ -14,8 +14,11 @@ Run: pytest backend/tests/test_sprint_6b_knowledge_pipeline.py -v
 import pytest
 import requests
 import os
+from pymongo import MongoClient
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
 
 
 class TestAuthHelper:
