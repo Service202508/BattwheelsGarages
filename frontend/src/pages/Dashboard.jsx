@@ -18,47 +18,49 @@ const ChartContainer = ({ children, isVisible, height = "240px" }) => {
   return children;
 };
 
-// Clean, consistent color palette with volt as primary brand color
+import { colors as themeColors, withAlpha } from "../theme/colors";
+
+// Clean, consistent color palette using theme tokens
 const BRAND_COLORS = {
   volt: {
-    primary: "#C8FF00",
-    secondary: "#1AFFE4",
-    bg: "rgba(200,255,0,0.08)",
-    border: "rgba(200,255,0,0.2)"
+    primary: themeColors.volt,
+    secondary: themeColors.teal,
+    bg: withAlpha(themeColors.volt, 0.08),
+    border: withAlpha(themeColors.volt, 0.2)
   },
   emerald: {
-    primary: "#C8FF00",
-    light: "#d4ff1a",
-    dark: "#a6d400",
-    bg: "rgba(200,255,0,0.08)",
-    border: "rgba(200,255,0,0.2)"
+    primary: themeColors.volt,
+    light: themeColors.voltHover,
+    dark: themeColors.volt,
+    bg: withAlpha(themeColors.volt, 0.08),
+    border: withAlpha(themeColors.volt, 0.2)
   },
   blue: {
-    primary: "#3B9EFF",
-    light: "#60A5FA",
-    dark: "#2563EB",
-    bg: "rgba(59,158,255,0.1)",
-    border: "rgba(59,158,255,0.25)"
+    primary: themeColors.blue,
+    light: themeColors.blue,
+    dark: themeColors.blueHover,
+    bg: withAlpha(themeColors.blue, 0.1),
+    border: withAlpha(themeColors.blue, 0.25)
   },
   amber: {
-    primary: "#EAB308",
-    light: "#FBBF24",
-    dark: "#D97706",
-    bg: "rgba(234,179,8,0.1)",
-    border: "rgba(234,179,8,0.25)"
+    primary: themeColors.amber,
+    light: themeColors.amber,
+    dark: themeColors.amber,
+    bg: withAlpha(themeColors.amber, 0.1),
+    border: withAlpha(themeColors.amber, 0.25)
   },
   violet: {
-    primary: "#8B5CF6",
-    light: "#A78BFA",
-    dark: "#7C3AED",
-    bg: "rgba(139,92,246,0.1)",
-    border: "rgba(139,92,246,0.25)"
+    primary: themeColors.purple,
+    light: themeColors.purple,
+    dark: themeColors.purple,
+    bg: withAlpha(themeColors.purple, 0.1),
+    border: withAlpha(themeColors.purple, 0.25)
   },
   slate: {
-    bg: "#111820",
-    card: "#111820",
+    bg: themeColors.panel,
+    card: themeColors.panel,
     border: "rgba(255,255,255,0.07)",
-    text: "#F4F6F0",
+    text: themeColors.white,
     muted: "rgba(244,246,240,0.45)"
   }
 };
