@@ -163,13 +163,16 @@ class TestWarehouses:
         return resp.json()
 
     def test_create_warehouse(self, created_warehouse):
-        """POST /api/v1/inventory-enhanced/warehouses creates warehouse"""
+        """POST /api/v1/inventory-enhanced/warehouses creates warehouse (enterprise only)"""
         assert created_warehouse is not None
 
     def test_list_warehouses(self, base_url, admin_headers):
-        """GET /api/v1/inventory-enhanced/warehouses returns list"""
+        """GET /api/v1/inventory-enhanced/warehouses returns list or plan restriction"""
         resp = requests.get(f"{base_url}/api/v1/inventory-enhanced/warehouses", headers=admin_headers)
-        assert resp.status_code == 200
+        # 200 = enterprise plan, 400 = feature_not_available for lower plans
+        assert resp.status_code in (200, 400), f"Warehouses: {resp.status_code}"
+        if resp.status_code == 400:
+            assert "feature_not_available" in resp.text
 
 
 # ==================== INVENTORY / STOCK ====================
@@ -212,14 +215,19 @@ class TestStockTransfers:
     """Test stock transfer operations"""
 
     def test_list_stock_transfers(self, base_url, admin_headers):
-        """GET /api/v1/stock-transfers/ returns list"""
+        """GET /api/v1/stock-transfers/ returns list or plan restriction"""
         resp = requests.get(f"{base_url}/api/v1/stock-transfers/", headers=admin_headers)
-        assert resp.status_code == 200
+        # 200 = enterprise plan, 400 = feature_not_available for lower plans
+        assert resp.status_code in (200, 400), f"Stock transfers: {resp.status_code}"
+        if resp.status_code == 400:
+            assert "feature_not_available" in resp.text
 
     def test_stock_transfer_stats(self, base_url, admin_headers):
-        """GET /api/v1/stock-transfers/stats/summary returns stats"""
+        """GET /api/v1/stock-transfers/stats/summary returns stats or plan restriction"""
         resp = requests.get(f"{base_url}/api/v1/stock-transfers/stats/summary", headers=admin_headers)
-        assert resp.status_code == 200
+        assert resp.status_code in (200, 400)
+        if resp.status_code == 400:
+            assert "feature_not_available" in resp.text
 
 
 # ==================== NEGATIVE TESTS ====================
