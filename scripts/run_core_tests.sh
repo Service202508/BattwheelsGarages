@@ -63,6 +63,8 @@ CORE_TESTS=(
   backend/tests/test_reports_comprehensive.py
   backend/tests/test_sales_orders_comprehensive.py
   backend/tests/test_time_tracking_comprehensive.py
+  backend/tests/test_customer_portal_comprehensive.py
+  backend/tests/test_tech_portal_comprehensive.py
 )
 
 echo "========================================="
