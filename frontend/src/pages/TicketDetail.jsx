@@ -339,6 +339,184 @@ export default function TicketDetail({ user }) {
             </CardContent>
           </Card>
 
+          {/* EFI Intelligence Panel */}
+          <Card className="bg-zinc-900/60 border-zinc-800 border-l-2 border-l-emerald-500" data-testid="efi-intelligence-panel">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-emerald-400" />
+                  <span>Battwheels EFI</span>
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] font-mono ml-1">AI DIAGNOSTICS</Badge>
+                </CardTitle>
+                {efiData && !efiLoading && (
+                  <Button variant="ghost" size="sm" onClick={fetchEfiSuggestions} className="h-7 text-xs text-zinc-500 hover:text-zinc-300" data-testid="efi-refresh-btn">
+                    Refresh
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {efiLoading ? (
+                <div className="flex items-center justify-center py-6 gap-3" data-testid="efi-loading">
+                  <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                  <span className="text-sm text-zinc-400">Analyzing complaint with EFI engine...</span>
+                </div>
+              ) : efiError ? (
+                <div className="flex items-center gap-2 text-sm text-zinc-500 py-4" data-testid="efi-error">
+                  <AlertTriangle className="w-4 h-4 text-amber-500" />
+                  <span>{efiError}</span>
+                  <Button variant="ghost" size="sm" onClick={fetchEfiSuggestions} className="text-xs ml-auto text-zinc-400">Retry</Button>
+                </div>
+              ) : efiData ? (
+                <div className="space-y-4">
+                  {/* Classified Subsystem */}
+                  {efiData.classified_subsystem && efiData.classified_subsystem !== "unknown" && (
+                    <div className="flex items-center gap-2 text-xs" data-testid="efi-subsystem">
+                      <Target className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-zinc-500">Classified Subsystem:</span>
+                      <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 font-mono text-[10px]">
+                        {efiData.classified_subsystem}
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Active Session Banner */}
+                  {efiData.has_active_session && efiData.active_session && (
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex items-center justify-between" data-testid="efi-active-session">
+                      <div className="flex items-center gap-2">
+                        <GitBranch className="w-4 h-4 text-blue-400" />
+                        <div>
+                          <p className="text-xs font-medium text-blue-300">Diagnostic Session Active</p>
+                          <p className="text-[10px] text-blue-400/60 font-mono">{efiData.active_session.session_id}</p>
+                        </div>
+                      </div>
+                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                        Step {efiData.active_session.current_step_index + 1 || 1}
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Suggested Failure Paths */}
+                  {efiData.suggested_paths?.length > 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Matched Failure Patterns ({efiData.suggested_paths.length})</p>
+                      {efiData.suggested_paths.map((card, idx) => {
+                        const isExpanded = expandedCard === idx;
+                        const confidence = card.similarity_score || card.confidence_score || 0;
+                        const confidencePercent = Math.round(confidence * 100);
+                        const confidenceColor = confidencePercent >= 80 ? "text-emerald-400" : confidencePercent >= 60 ? "text-amber-400" : "text-zinc-400";
+                        const confidenceBg = confidencePercent >= 80 ? "bg-emerald-500/20" : confidencePercent >= 60 ? "bg-amber-500/20" : "bg-zinc-500/20";
+                        return (
+                          <div key={card.failure_id || idx} className="border border-zinc-700/50 rounded-lg overflow-hidden" data-testid={`efi-suggestion-${idx}`}>
+                            <button
+                              className="w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-zinc-800/50 transition"
+                              onClick={() => setExpandedCard(isExpanded ? null : idx)}
+                              data-testid={`efi-suggestion-toggle-${idx}`}
+                            >
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${confidenceBg} ${confidenceColor}`}>
+                                {confidencePercent}%
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-zinc-200 truncate">{card.title || card.fault_category || "Unknown Fault"}</p>
+                                <p className="text-[11px] text-zinc-500 truncate">{card.subsystem_category || card.fault_category} · {card.failure_mode || "—"}</p>
+                              </div>
+                              {card.has_decision_tree && (
+                                <Badge className="bg-purple-500/15 text-purple-400 border-purple-500/30 text-[10px] shrink-0">
+                                  {card.decision_tree_steps} steps
+                                </Badge>
+                              )}
+                              {isExpanded ? <ChevronUp className="w-4 h-4 text-zinc-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0" />}
+                            </button>
+
+                            {isExpanded && (
+                              <div className="px-3 pb-3 border-t border-zinc-700/30 pt-3 space-y-3 bg-zinc-800/20">
+                                {/* Root Cause */}
+                                {card.root_cause && (
+                                  <div>
+                                    <p className="text-[10px] uppercase text-zinc-500 tracking-wider mb-1">Root Cause</p>
+                                    <p className="text-xs text-zinc-300">{card.root_cause}</p>
+                                  </div>
+                                )}
+                                {card.root_cause_details && (
+                                  <p className="text-xs text-zinc-400">{card.root_cause_details}</p>
+                                )}
+
+                                {/* Symptoms */}
+                                {card.symptom_text && (
+                                  <div>
+                                    <p className="text-[10px] uppercase text-zinc-500 tracking-wider mb-1">Symptoms</p>
+                                    <p className="text-xs text-zinc-400">{card.symptom_text}</p>
+                                  </div>
+                                )}
+
+                                {/* Error Codes */}
+                                {card.error_codes?.length > 0 && (
+                                  <div className="flex gap-1 flex-wrap items-center">
+                                    <span className="text-[10px] text-zinc-500 mr-1">Error Codes:</span>
+                                    {card.error_codes.map((code) => (
+                                      <Badge key={code} variant="outline" className="text-[10px] font-mono text-red-400 border-red-500/30">{code}</Badge>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Effectiveness */}
+                                {card.effectiveness_score != null && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <Shield className="w-3 h-3 text-emerald-400" />
+                                    <span className="text-zinc-500">Effectiveness:</span>
+                                    <span className="text-emerald-400 font-mono">{Math.round(card.effectiveness_score * 100)}%</span>
+                                    <span className="text-zinc-600">({card.success_count || 0}/{card.usage_count || 0} resolved)</span>
+                                  </div>
+                                )}
+
+                                {/* Knowledge Article */}
+                                {card.knowledge_article && (
+                                  <div className="bg-zinc-700/20 rounded p-2 border border-zinc-700/30">
+                                    <div className="flex items-center gap-1.5 mb-1">
+                                      <BookOpen className="w-3 h-3 text-blue-400" />
+                                      <span className="text-[10px] text-blue-400 font-medium">Knowledge Article</span>
+                                    </div>
+                                    <p className="text-xs text-zinc-300 font-medium">{card.knowledge_article.title}</p>
+                                    {card.knowledge_article.summary && (
+                                      <p className="text-[11px] text-zinc-400 mt-1">{card.knowledge_article.summary}</p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Start Diagnostic Session */}
+                                {card.has_decision_tree && !efiData.has_active_session && (
+                                  <Button
+                                    size="sm"
+                                    className="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 text-xs"
+                                    onClick={() => handleStartDiagnosticSession(card.failure_id)}
+                                    disabled={startingSession}
+                                    data-testid={`efi-start-session-${idx}`}
+                                  >
+                                    {startingSession ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <GitBranch className="w-3 h-3 mr-1" />}
+                                    Start Guided Diagnosis ({card.decision_tree_steps} steps)
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4" data-testid="efi-no-suggestions">
+                      <p className="text-zinc-500 text-sm">No matching failure patterns found</p>
+                      <p className="text-zinc-600 text-xs mt-1">EFI will learn from this ticket's resolution</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-zinc-500 text-sm" data-testid="efi-empty">
+                  <p>EFI intelligence not available for this ticket</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Section 3: Costs */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-costs-section">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Financials</CardTitle></CardHeader>
