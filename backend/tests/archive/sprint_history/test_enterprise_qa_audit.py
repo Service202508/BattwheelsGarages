@@ -22,7 +22,7 @@ import os
 from datetime import datetime
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://phase2-final-verify.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://battwheels-phase3.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
