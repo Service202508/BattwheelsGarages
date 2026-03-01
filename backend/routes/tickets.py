@@ -274,10 +274,17 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
 
     # Build next_cursor from last item for cursor transition
     from utils.pagination import encode_cursor
+    from datetime import datetime as _dt
     next_cursor = None
     if tickets and page < total_pages:
         last = tickets[-1]
         next_cursor = encode_cursor(last.get(sort_field), last.get("ticket_id"))
+
+    # Sanitise datetime objects for JSON serialization
+    for t in tickets:
+        for k, v in t.items():
+            if isinstance(v, _dt):
+                t[k] = v.isoformat()
 
     return {
         "data": tickets,
