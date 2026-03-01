@@ -744,7 +744,7 @@ export default function Dashboard({ user }) {
                       ? { background: "rgba(255,140,0,0.10)", color: "rgb(var(--bw-orange))", border: "1px solid rgba(255,140,0,0.20)" }
                       : { background: "transparent", color: "rgb(var(--bw-white) / 0.35)", border: "1px solid transparent" };
 
-                    const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
+                    const slaColor = tech.sla_compliance_rate_pct >= 90 ? themeColors.green : tech.sla_compliance_rate_pct >= 70 ? themeColors.amber : themeColors.red;
                     const avgResDisplay = tech.avg_resolution_time_minutes
                       ? tech.avg_resolution_time_minutes < 60
                         ? `${Math.round(tech.avg_resolution_time_minutes)}m`
