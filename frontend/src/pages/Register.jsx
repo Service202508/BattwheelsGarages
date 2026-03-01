@@ -605,7 +605,7 @@ export default function Register({ onLogin }) {
                   checked={form.agreed}
                   onChange={(e) => { set("agreed", e.target.checked); clearErr("agreed"); }}
                   data-testid="register-terms-checkbox"
-                  style={{ marginTop: "2px", accentColor: "#C8FF00", width: "16px", height: "16px", flexShrink: 0 }}
+                  style={{ marginTop: "2px", accentColor: "rgb(var(--bw-volt))", width: "16px", height: "16px", flexShrink: 0 }}
                 />
                 <label htmlFor="terms" style={{ fontSize: "12px", color: "rgba(244,246,240,0.55)", cursor: "pointer" }}>
                   I agree to the{" "}

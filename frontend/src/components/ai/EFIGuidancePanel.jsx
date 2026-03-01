@@ -52,7 +52,7 @@ const GaugeChart = ({ value, max = 100, title, unit = "%", color, zones }) => {
           }}
         />
         <div className="absolute inset-0 flex items-end justify-center pb-1">
-          <span className="text-lg font-bold" style={{ color: color || '#10b981' }}>
+          <span className="text-lg font-bold" style={{ color: color || 'rgb(var(--bw-green))' }}>
             {Math.round(value)}{unit}
           </span>
         </div>

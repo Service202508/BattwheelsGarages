@@ -75,7 +75,7 @@ const ChartTooltipStyle = {
   backgroundColor: "#1a1f24",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: "8px",
-  color: "#f4f6f0",
+  color: "rgb(var(--bw-white))",
   fontSize: 12,
 };
 
@@ -148,7 +148,7 @@ function SectionHeader({ icon: Icon, title, sub }) {
         <Icon size={16} style={{ color: VOLT }} />
       </div>
       <div>
-        <h2 className="text-base font-semibold" style={{ fontFamily: "Syne, sans-serif", color: "#f4f6f0" }}>
+        <h2 className="text-base font-semibold" style={{ fontFamily: "Syne, sans-serif", color: "rgb(var(--bw-white))" }}>
           {title}
         </h2>
         {sub && <p className="text-xs" style={{ color: DIM_TEXT }}>{sub}</p>}
@@ -273,7 +273,7 @@ function RevenueSection({ data, loading }) {
                   return (
                     <div key={i}>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs" style={{ color: "#f4f6f0" }}>{item.type}</span>
+                        <span className="text-xs" style={{ color: "rgb(var(--bw-white))" }}>{item.type}</span>
                         <span className="text-xs font-semibold" style={{ color: VOLT }}>{fmtCurrency(item.revenue)}</span>
                       </div>
                       <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
@@ -369,7 +369,7 @@ function OperationsSection({ data, loading }) {
                       <div key={i} className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                          <span style={{ color: "#f4f6f0" }}>{v.type}</span>
+                          <span style={{ color: "rgb(var(--bw-white))" }}>{v.type}</span>
                         </span>
                         <span style={{ color: DIM_TEXT }}>{v.count}</span>
                       </div>
@@ -445,7 +445,7 @@ function TechnicianSection({ data, loading }) {
                       }}
                     >
                       <td className="py-2 pr-3 pl-2" style={{ color: DIM_TEXT }}>{i + 1}</td>
-                      <td className="py-2 pr-3 font-medium" style={{ color: "#f4f6f0" }}>{tech.name}</td>
+                      <td className="py-2 pr-3 font-medium" style={{ color: "rgb(var(--bw-white))" }}>{tech.name}</td>
                       <td className="py-2 pr-3">
                         <div className="flex items-center gap-1.5">
                           <div className="h-1 rounded-full" style={{ width: 40, background: "rgba(255,255,255,0.06)" }}>
@@ -454,7 +454,7 @@ function TechnicianSection({ data, loading }) {
                           <span style={{ color: VOLT }}>{tech.tickets_closed}</span>
                         </div>
                       </td>
-                      <td className="py-2 pr-3" style={{ color: "#f4f6f0" }}>
+                      <td className="py-2 pr-3" style={{ color: "rgb(var(--bw-white))" }}>
                         {tech.avg_hours != null ? `${tech.avg_hours}h` : "—"}
                       </td>
                       <td className="py-2 pr-3" style={{ color: AMBER }}>
@@ -495,7 +495,7 @@ function TechnicianSection({ data, loading }) {
                   const max = Math.max(...vehicle_types.map((v) => row[v] || 0));
                   return (
                     <tr key={row.tech_id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <td className="py-2 pr-4 font-medium" style={{ color: "#f4f6f0" }}>{row.tech_name}</td>
+                      <td className="py-2 pr-4 font-medium" style={{ color: "rgb(var(--bw-white))" }}>{row.tech_name}</td>
                       {vehicle_types.map((v) => {
                         const cnt = row[v] || 0;
                         const intensity = max > 0 ? cnt / max : 0;
@@ -560,9 +560,9 @@ function EfiSection({ data, loading }) {
                   <tbody>
                     {failure_patterns.map((p, i) => (
                       <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                        <td className="py-2 pr-3 font-medium capitalize" style={{ color: "#f4f6f0" }}>{p.fault_type}</td>
+                        <td className="py-2 pr-3 font-medium capitalize" style={{ color: "rgb(var(--bw-white))" }}>{p.fault_type}</td>
                         <td className="py-2 pr-3" style={{ color: VOLT }}>{p.count}</td>
-                        <td className="py-2 pr-3" style={{ color: "#f4f6f0" }}>
+                        <td className="py-2 pr-3" style={{ color: "rgb(var(--bw-white))" }}>
                           {p.avg_fix_hours != null ? `${p.avg_fix_hours}h` : "—"}
                         </td>
                         <td className="py-2" style={{ color: AMBER }}>{fmtCurrency(p.avg_cost)}</td>
@@ -650,7 +650,7 @@ function CustomerSection({ data, loading }) {
                         <tr key={i} data-testid={`cust-row-${c.id}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                           <td className="py-2 pr-3">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-medium" style={{ color: "#f4f6f0" }}>{c.name}</span>
+                              <span className="font-medium" style={{ color: "rgb(var(--bw-white))" }}>{c.name}</span>
                               {c.at_risk && (
                                 <Badge className="text-xs px-1 py-0" style={{ background: "rgba(234,179,8,0.15)", color: AMBER, border: `1px solid ${AMBER}30` }}>
                                   At Risk
@@ -695,7 +695,7 @@ function CustomerSection({ data, loading }) {
                       <div key={i} className="flex items-center justify-between text-xs">
                         <span className="flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                          <span style={{ color: "#f4f6f0" }}>{m.make}</span>
+                          <span style={{ color: "rgb(var(--bw-white))" }}>{m.make}</span>
                         </span>
                         <span style={{ color: DIM_TEXT }}>{m.count}</span>
                       </div>
@@ -772,7 +772,7 @@ function InventorySection({ data, loading }) {
                   <div key={i} className="flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full" style={{ background: s.color }} />
-                      <span style={{ color: "#f4f6f0" }}>{s.label}</span>
+                      <span style={{ color: "rgb(var(--bw-white))" }}>{s.label}</span>
                     </span>
                     <span style={{ color: DIM_TEXT }}>{s.count} items ({s.value}%)</span>
                   </div>
@@ -795,7 +795,7 @@ function InventorySection({ data, loading }) {
                 <div className="space-y-2">
                   {fast_movers.map((f, i) => (
                     <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <span className="font-medium truncate pr-2" style={{ color: "#f4f6f0", maxWidth: 120 }}>{f.name}</span>
+                      <span className="font-medium truncate pr-2" style={{ color: "rgb(var(--bw-white))", maxWidth: 120 }}>{f.name}</span>
                       <div className="flex gap-3 flex-shrink-0">
                         <span style={{ color: VOLT }}>{f.qty} used</span>
                         <span style={{ color: DIM_TEXT }}>{fmtCurrency(f.value)}</span>
@@ -822,7 +822,7 @@ function InventorySection({ data, loading }) {
                 <div className="space-y-2">
                   {dead_stock.map((d, i) => (
                     <div key={i} className="flex items-center justify-between text-xs py-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <span className="font-medium truncate pr-2" style={{ color: "#f4f6f0", maxWidth: 120 }}>{d.name}</span>
+                      <span className="font-medium truncate pr-2" style={{ color: "rgb(var(--bw-white))", maxWidth: 120 }}>{d.name}</span>
                       <div className="flex gap-3 flex-shrink-0">
                         <span style={{ color: AMBER }}>{d.stock} in stock</span>
                         <span style={{ color: DIM_TEXT }}>{fmtCurrency(d.value)}</span>
@@ -936,7 +936,7 @@ export default function DataInsights({ user }) {
         <div>
           <h1
             className="text-2xl sm:text-3xl font-bold"
-            style={{ fontFamily: "Syne, sans-serif", color: "#f4f6f0" }}
+            style={{ fontFamily: "Syne, sans-serif", color: "rgb(var(--bw-white))" }}
           >
             Data Insights
           </h1>
@@ -990,7 +990,7 @@ export default function DataInsights({ user }) {
             style={{
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.1)",
-              color: "#f4f6f0",
+              color: "rgb(var(--bw-white))",
             }}
           />
           <span style={{ color: DIM_TEXT }} className="text-xs">to</span>
@@ -1003,14 +1003,14 @@ export default function DataInsights({ user }) {
             style={{
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.1)",
-              color: "#f4f6f0",
+              color: "rgb(var(--bw-white))",
             }}
           />
           <Button
             size="sm"
             data-testid="apply-custom-btn"
             onClick={handleCustomApply}
-            style={{ background: VOLT, color: "#0a0f0d", height: 32, fontSize: 12 }}
+            style={{ background: VOLT, color: "rgb(var(--bw-black))", height: 32, fontSize: 12 }}
           >
             Apply
           </Button>
