@@ -13,6 +13,24 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			/* Battwheels Dark Volt Design System */
+  			'bw-black': 'rgb(var(--bw-black) / <alpha-value>)',
+  			'bw-off-black': 'rgb(var(--bw-off-black) / <alpha-value>)',
+  			'bw-panel': 'rgb(var(--bw-panel) / <alpha-value>)',
+  			'bw-card': 'rgb(var(--bw-card) / <alpha-value>)',
+  			'bw-volt': 'rgb(var(--bw-volt) / <alpha-value>)',
+  			'bw-volt-hover': 'rgb(var(--bw-volt-hover) / <alpha-value>)',
+  			'bw-white': 'rgb(var(--bw-white) / <alpha-value>)',
+  			'bw-green': 'rgb(var(--bw-green) / <alpha-value>)',
+  			'bw-green-hover': 'rgb(var(--bw-green-hover) / <alpha-value>)',
+  			'bw-red': 'rgb(var(--bw-red) / <alpha-value>)',
+  			'bw-orange': 'rgb(var(--bw-orange) / <alpha-value>)',
+  			'bw-amber': 'rgb(var(--bw-amber) / <alpha-value>)',
+  			'bw-blue': 'rgb(var(--bw-blue) / <alpha-value>)',
+  			'bw-blue-hover': 'rgb(var(--bw-blue-hover) / <alpha-value>)',
+  			'bw-teal': 'rgb(var(--bw-teal) / <alpha-value>)',
+  			'bw-purple': 'rgb(var(--bw-purple) / <alpha-value>)',
+  			/* Shadcn UI tokens */
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
