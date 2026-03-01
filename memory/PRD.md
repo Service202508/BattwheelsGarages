@@ -27,9 +27,17 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Testing: 693+ passing tests
 
 ## Current Status
-- **865 passed, 19 skipped, 0 failed** (core tests — target 730+ maintained)
+- **906 passed, 13 skipped, 0 failed** (core tests — target 900+ achieved)
 - All services healthy: backend, frontend, MongoDB
-- Phase 2 Cluster 4 Part 1 — COMPLETE
+- Phase 2 Cluster 4 Part 2 — COMPLETE. Platform ready for founder QA.
+
+## Completed Work — Cluster 4 Part 2 (2026-03-01)
+- **Task 0 (AMC RBAC Fix):** Added "owner" role to AMC require_admin — org owners can now access AMC endpoints.
+- **Task 1 (Customer Portal):** `test_customer_portal_comprehensive.py` — 18 passed. Fixed CSRF middleware + Tenant Guard exemptions for portal routes.
+- **Task 2 (Tech Portal):** `test_tech_portal_comprehensive.py` — 17 passed. Tested dashboard, tickets, attendance, leave, payroll, productivity, AI assist, RBAC.
+- **Task 3 (Skipped Tests):** Reduced skips from 19→13. Fixed 6 P0 tests (wrong credentials, wrong login path, wrong BASE_URL in test_p0_security_fixes.py).
+- **Task 4 (Coverage Report):** 1,181 total endpoints, 906 tests passing, 18 modules with comprehensive tests.
+- **Task 5 (Pre-QA Verification):** Full verification suite passed. Created docs/QA_TESTING_GUIDE.md.
 
 ## Completed Work — Cluster 4 Part 1 (2026-03-01)
 - **Task 1 (Platform Admin):** `test_platform_admin_comprehensive.py` — 33 passed. Mapped 26 endpoints.
@@ -37,7 +45,6 @@ Multi-phase project to improve application stability, maintainability, feature s
 - **Task 3 (Reports):** `test_reports_comprehensive.py` — 24 passed. Financial reports (8 endpoints) + Advanced reports (13 endpoints).
 - **Task 4 (Sales Orders):** `test_sales_orders_comprehensive.py` — 18 passed. Full CRUD + status + clone + reports. Fixed `extract_org_id` bug in `sales_orders_enhanced.py`.
 - **Task 5 (Time Tracking):** `test_time_tracking_comprehensive.py` — 16 passed. Entries CRUD + timer start/stop + unbilled hours + summary.
-- **Infra fixes:** Added admin@battwheels.in password for AMC tests, fixed plan change test regression, added 5 new test files to `run_core_tests.sh`.
 
 ## Completed Work — Cluster 3 Part 2 (2026-03-01)
 - **Task 1 (Inventory Tests):** `test_inventory_comprehensive.py` verified — 22 passed, 1 skipped
