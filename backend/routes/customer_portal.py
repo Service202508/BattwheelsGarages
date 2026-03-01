@@ -569,7 +569,7 @@ async def create_support_request(
     org_id = contact.get("organization_id")
     
     # Generate ticket ID
-    ticket_count = await db["tickets"].count_documents(org_query(org_id))
+    ticket_count = await db["tickets"].count_documents({"organization_id": org_id})
     ticket_id = f"TKT-{str(ticket_count + 1).zfill(6)}"
     
     now = datetime.now(timezone.utc)
