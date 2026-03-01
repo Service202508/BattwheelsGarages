@@ -325,7 +325,7 @@ class Test6B04SuggestionsWithKnowledgeArticles:
 class TestKnowledgePipelineIntegration:
     """End-to-end test of the knowledge pipeline"""
     
-    def test_full_pipeline_flow(self, platform_admin_token, dev_user_token):
+    def test_full_pipeline_flow(self, platform_admin_token, dev_user_token, ensure_test_ticket):
         """
         Test the full pipeline:
         1. Seed knowledge articles (6B-02)
