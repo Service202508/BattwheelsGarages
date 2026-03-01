@@ -62,12 +62,16 @@ export default function Tickets({ user }) {
     resolved_this_week: 0,
   });
 
-  const fetchTickets = useCallback(async () => {
+  const fetchTickets = useCallback(async (cursorParam = null) => {
     setLoading(true);
     try {
       let url = `${API}/tickets`;
       const params = new URLSearchParams();
       
+      params.append("limit", PAGE_SIZE);
+      if (cursorParam) {
+        params.append("cursor", cursorParam);
+      }
       if (statusFilter && statusFilter !== "resolved_this_week") {
         params.append("status", statusFilter);
       }
@@ -78,9 +82,7 @@ export default function Tickets({ user }) {
         params.append("search", searchTerm);
       }
       
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
+      url += `?${params.toString()}`;
       
       const response = await fetch(url, {
         credentials: "include",
@@ -89,10 +91,10 @@ export default function Tickets({ user }) {
       
       if (response.ok) {
         const responseData = await response.json();
-        // Handle paginated {data:[...]} format, legacy {tickets:[...]} format, and plain array
-        let data = Array.isArray(responseData) ? responseData : (responseData.data || responseData.tickets || []);
+        let data = responseData.data || responseData.tickets || (Array.isArray(responseData) ? responseData : []);
+        const pagination = responseData.pagination || {};
         
-        // Filter for resolved this week if needed
+        // Filter for resolved this week if needed (client-side filter)
         if (statusFilter === "resolved_this_week") {
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -102,19 +104,16 @@ export default function Tickets({ user }) {
           );
         }
         
-        // Client-side search
-        if (searchTerm) {
-          const search = searchTerm.toLowerCase();
-          data = data.filter(t => 
-            t.title?.toLowerCase().includes(search) ||
-            t.ticket_id?.toLowerCase().includes(search) ||
-            t.customer_name?.toLowerCase().includes(search) ||
-            t.vehicle_number?.toLowerCase().includes(search)
-          );
+        if (cursorParam) {
+          // Append to existing list for "Load More"
+          setTickets(prev => [...prev, ...data]);
+        } else {
+          setTickets(data);
         }
         
-        setTickets(data);
-        setTotalPages(Math.ceil(data.length / 10) || 1);
+        setNextCursor(pagination.next_cursor || null);
+        setHasMore(pagination.has_next || false);
+        setTotalCount(pagination.total_count || data.length);
       }
     } catch (error) {
       console.error("Failed to fetch tickets:", error);
