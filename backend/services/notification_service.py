@@ -293,6 +293,18 @@ async def send_whatsapp(request: WhatsAppRequest, background_tasks: BackgroundTa
     if not template:
         raise HTTPException(status_code=400, detail=f"Unknown template: {request.template}")
     
+    # Fail-fast: check Twilio config before queuing to avoid deceptive "queued" responses
+    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
+        logger.warning("WhatsApp send requested but Twilio not configured — returning mocked status")
+        return {
+            "status": "mocked",
+            "channel": "whatsapp",
+            "delivered": False,
+            "reason": "Twilio WhatsApp not configured. Add TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN in Settings.",
+            "recipient": request.phone_number,
+            "template": request.template,
+        }
+    
     # P1-03 FIX: extract org_id from request context — Sprint 1B
     org_id = getattr(getattr(req, "state", None), "tenant_org_id", None) if req else None
     
