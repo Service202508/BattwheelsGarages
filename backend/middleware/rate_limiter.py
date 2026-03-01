@@ -26,7 +26,7 @@ def init_rate_limiter_sync(db: AsyncIOMotorDatabase):
 async def _ensure_ttl_index():
     """Create TTL index on first use (async)."""
     global _ttl_index_created
-    if not _ttl_index_created and _db:
+    if not _ttl_index_created and _db is not None:
         await _db.login_attempts.create_index("created_at", expireAfterSeconds=900)
         _ttl_index_created = True
 
@@ -36,7 +36,7 @@ async def check_login_rate_limit(email: str) -> tuple:
     Check if email is rate-limited.
     Returns (is_allowed: bool, retry_after: int).
     """
-    if not _db:
+    if _db is None:
         return True, 0
 
     await _ensure_ttl_index()
@@ -48,7 +48,7 @@ async def check_login_rate_limit(email: str) -> tuple:
 
 async def record_failed_attempt(email: str):
     """Record a failed login attempt."""
-    if not _db:
+    if _db is None:
         return
     await _ensure_ttl_index()
     await _db.login_attempts.insert_one({
@@ -59,6 +59,6 @@ async def record_failed_attempt(email: str):
 
 async def clear_attempts(email: str):
     """Clear all recorded attempts for an email (on successful login)."""
-    if not _db:
+    if _db is None:
         return
     await _db.login_attempts.delete_many({"email": email})
