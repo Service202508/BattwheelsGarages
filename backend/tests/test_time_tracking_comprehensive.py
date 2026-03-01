@@ -47,7 +47,8 @@ class TestCreateTimeEntry:
         return resp.json()
 
     def test_create_entry_returns_id(self, created_entry):
-        assert "entry_id" in created_entry or "id" in created_entry
+        entry = created_entry.get("entry", created_entry)
+        assert "entry_id" in entry or "id" in entry
 
     def test_create_entry_requires_auth(self, base_url):
         resp = requests.post(f"{base_url}{PREFIX}/entries", json={
@@ -88,7 +89,8 @@ class TestGetTimeEntry:
         })
         assert resp.status_code in [200, 201]
         data = resp.json()
-        return data.get("entry_id") or data.get("id")
+        entry = data.get("entry", data)
+        return entry.get("entry_id") or entry.get("id")
 
     def test_get_entry(self, base_url, _headers, _entry_id):
         resp = requests.get(f"{base_url}{PREFIX}/entries/{_entry_id}", headers=_headers)
@@ -114,7 +116,8 @@ class TestUpdateTimeEntry:
         })
         assert resp.status_code in [200, 201]
         data = resp.json()
-        return data.get("entry_id") or data.get("id")
+        entry = data.get("entry", data)
+        return entry.get("entry_id") or entry.get("id")
 
     def test_update_entry(self, base_url, _headers, _entry_id):
         resp = requests.put(f"{base_url}{PREFIX}/entries/{_entry_id}", headers=_headers, json={
@@ -138,7 +141,8 @@ class TestDeleteTimeEntry:
             "description": "Delete test",
         })
         assert resp.status_code in [200, 201]
-        eid = resp.json().get("entry_id") or resp.json().get("id")
+        entry = resp.json().get("entry", resp.json())
+        eid = entry.get("entry_id") or entry.get("id")
         resp2 = requests.delete(f"{base_url}{PREFIX}/entries/{eid}", headers=_headers)
         assert resp2.status_code == 200
 
@@ -164,14 +168,16 @@ class TestTimer:
         return resp.json()
 
     def test_start_timer(self, started_timer):
-        assert "timer_id" in started_timer or "id" in started_timer
+        timer = started_timer.get("timer", started_timer)
+        assert "timer_id" in timer or "id" in timer
 
     def test_active_timers(self, base_url, _headers, started_timer):
         resp = requests.get(f"{base_url}{PREFIX}/timer/active", headers=_headers)
         assert resp.status_code == 200
 
     def test_stop_timer(self, base_url, _headers, started_timer):
-        tid = started_timer.get("timer_id") or started_timer.get("id")
+        timer = started_timer.get("timer", started_timer)
+        tid = timer.get("timer_id") or timer.get("id")
         resp = requests.post(f"{base_url}{PREFIX}/timer/stop/{tid}", headers=_headers)
         assert resp.status_code == 200
 
