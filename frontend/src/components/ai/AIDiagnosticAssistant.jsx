@@ -417,7 +417,7 @@ Please provide:
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-bw-volt" />
-                <CardTitle className="text-lg text-bw-white">AI Diagnosis</CardTitle>
+                <CardTitle className="text-lg text-bw-white">Battwheels EFI™ Diagnosis</CardTitle>
               </div>
               {diagnosis && (
                 <div className="flex items-center gap-2">
