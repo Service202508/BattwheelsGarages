@@ -52,6 +52,13 @@ export default function TicketDetail({ user }) {
   });
   const [failureCardSubmitting, setFailureCardSubmitting] = useState(false);
 
+  // EFI Intelligence Panel state
+  const [efiData, setEfiData] = useState(null);
+  const [efiLoading, setEfiLoading] = useState(false);
+  const [efiError, setEfiError] = useState(null);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [startingSession, setStartingSession] = useState(false);
+
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
     "Content-Type": "application/json",
