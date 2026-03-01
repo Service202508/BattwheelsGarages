@@ -73,9 +73,9 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Twilio WhatsApp configuration
 
 ## Known Issues
-- 19 tests skipped (mix of missing features, entitlement gating, and test limitations)
+- 13 tests skipped (4 Razorpay webhooks, 5 Form16 unimplemented, 2 test data, 1 entitlement-gated, 1 test data)
 - test_hr_module.py has 4 failures + 12 errors (pre-existing, older fixture pattern)
-- AMC module RBAC: `require_admin` only accepts role="admin", not "owner" — org owners cannot access AMC
+- AMC RBAC now accepts "owner" role (fixed in Cluster 4 Part 2)
 - Reports Advanced: gated by entitlements, 200 path data structure not verified
 - Banking frontend not migrated to cursor pagination
 - Razorpay uses test/disabled keys
