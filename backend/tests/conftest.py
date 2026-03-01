@@ -51,3 +51,21 @@ def auth_headers(demo_token):
 def admin_headers(admin_token):
     """Headers dict with platform admin Bearer token."""
     return {"Authorization": f"Bearer {admin_token}"}
+
+@pytest.fixture(scope="session")
+def dev_token(base_url):
+    """Login as dev user (owner role, dev org) and return JWT token."""
+    resp = requests.post(f"{base_url}/api/v1/auth/login", json={
+        "email": "dev@battwheels.internal",
+        "password": "DevTest@123"
+    })
+    assert resp.status_code == 200, f"Dev user login failed: {resp.text}"
+    return resp.json()["token"]
+
+@pytest.fixture(scope="session")
+def dev_headers(dev_token):
+    """Headers dict with dev user Bearer token + org header."""
+    return {
+        "Authorization": f"Bearer {dev_token}",
+        "X-Organization-ID": "dev-internal-testing-001"
+    }
