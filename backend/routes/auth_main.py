@@ -58,12 +58,25 @@ async def login(credentials: UserLogin):
     Returns user's organizations for org switcher functionality.
     If user belongs to multiple orgs, they can switch after login.
     """
+    from middleware.rate_limiter import check_login_rate_limit, record_failed_attempt, clear_attempts
+
+    # Rate limit check
+    is_allowed, retry_after = await check_login_rate_limit(credentials.email)
+    if not is_allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts. Try again in 15 minutes.",
+            headers={"Retry-After": str(retry_after)}
+        )
+
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
+        await record_failed_attempt(credentials.email)
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     stored_hash = user.get("password_hash", "")
     if not verify_password(credentials.password, stored_hash):
+        await record_failed_attempt(credentials.email)
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.get("is_active", True):
         raise HTTPException(status_code=401, detail="Account is deactivated")
