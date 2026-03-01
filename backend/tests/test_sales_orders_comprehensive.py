@@ -134,7 +134,7 @@ class TestStatusUpdates:
     def _order_id(self, base_url, _headers):
         """Create a fresh order for status tests."""
         resp = requests.post(f"{base_url}{PREFIX}/", headers=_headers, json={
-            "customer_id": f"cust-status-{uuid.uuid4().hex[:6]}",
+            "customer_id": "test-customer-001",
             "date": "2026-03-01",
             "line_items": [{"name": "Status Item", "quantity": 1, "rate": 100.0}],
         })
@@ -149,7 +149,7 @@ class TestStatusUpdates:
     def test_void_order(self, base_url, _headers):
         """Create and void a separate order."""
         resp = requests.post(f"{base_url}{PREFIX}/", headers=_headers, json={
-            "customer_id": f"cust-void-{uuid.uuid4().hex[:6]}",
+            "customer_id": "test-customer-001",
             "date": "2026-03-01",
             "line_items": [{"name": "Void Item", "quantity": 1, "rate": 50.0}],
         })
@@ -203,7 +203,7 @@ class TestDeleteOrder:
     def test_delete_order(self, base_url, _headers):
         """Create and delete a separate order."""
         resp = requests.post(f"{base_url}{PREFIX}/", headers=_headers, json={
-            "customer_id": f"cust-del-{uuid.uuid4().hex[:6]}",
+            "customer_id": "test-customer-001",
             "date": "2026-03-01",
             "line_items": [{"name": "Del Item", "quantity": 1, "rate": 25.0}],
         })
