@@ -46,8 +46,16 @@ def _demo_headers(base_url):
 
 @pytest.fixture(scope="module")
 def sent_invoice(base_url, _headers):
-    """Create and send an invoice to make it eligible for credit notes."""
-    # Find a customer
+    """Find an existing non-draft invoice eligible for credit notes."""
+    # Try sent invoices first
+    for status in ["sent", "partially_paid", "paid", "overdue"]:
+        resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/?limit=1&status={status}", headers=_headers)
+        if resp.status_code == 200:
+            items = resp.json().get("data", [])
+            if items:
+                return items[0]
+
+    # Fallback: create and send one
     resp = requests.get(f"{base_url}/api/v1/contacts-enhanced/?per_page=1", headers=_headers)
     if resp.status_code != 200:
         pytest.skip("Cannot fetch customers")
@@ -57,31 +65,17 @@ def sent_invoice(base_url, _headers):
     customer_id = contacts[0]["contact_id"]
 
     today = datetime.now().strftime("%Y-%m-%d")
-
-    # Create invoice
     resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
         "customer_id": customer_id,
         "invoice_date": today,
         "due_date": "2026-12-31",
-        "line_items": [{
-            "name": "Battery Service",
-            "quantity": 2,
-            "rate": 1000.0,
-            "tax_percentage": 18.0,
-            "tax_name": "GST @18%",
-            "hsn_sac": "998719"
-        }]
+        "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%", "hsn_sac": "998719"}]
     })
     if resp.status_code != 200:
-        pytest.skip(f"Cannot create invoice: {resp.status_code} {resp.text}")
-
+        pytest.skip(f"Cannot create invoice: {resp.status_code}")
     invoice = resp.json().get("invoice") or resp.json()
     iid = invoice["invoice_id"]
-
-    # Send it to change status from draft
     requests.post(f"{base_url}/api/v1/invoices-enhanced/{iid}/send", headers=_headers)
-
-    # Re-fetch to get updated status
     resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{iid}", headers=_headers)
     if resp.status_code == 200:
         invoice = resp.json().get("invoice") or resp.json()
