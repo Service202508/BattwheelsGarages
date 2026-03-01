@@ -566,6 +566,8 @@ async def create_support_request(
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     
+    org_id = contact.get("organization_id")
+    
     # Generate ticket ID
     ticket_count = await db["tickets"].count_documents(org_query(org_id))
     ticket_id = f"TKT-{str(ticket_count + 1).zfill(6)}"
