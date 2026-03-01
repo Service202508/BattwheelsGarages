@@ -117,7 +117,7 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     await enforce_period_lock(db, org_id, cn_date)
 
     # 1. Fetch original invoice
-    invoice = await db.invoices_enhanced.find_one(
+    invoice = await db.invoices.find_one(
         {"invoice_id": body.original_invoice_id, "organization_id": org_id},
         {"_id": 0}
     )
@@ -224,7 +224,7 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     journal_result = await post_credit_note_journal(db, org_id, credit_note, is_paid, user_id or "")
     
     # 12. Update invoice with credit note reference
-    await db.invoices_enhanced.update_one(
+    await db.invoices.update_one(
         {"invoice_id": body.original_invoice_id, "organization_id": org_id},
         {
             "$push": {"credit_notes": {"credit_note_id": cn_id, "credit_note_number": cn_number, "amount": total, "date": now}},
