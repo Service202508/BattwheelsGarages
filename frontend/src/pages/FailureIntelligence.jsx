@@ -498,6 +498,19 @@ export default function FailureIntelligence({ user }) {
                   </TableBody>
                 </Table>
               )}
+              {hasMore && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={loading}
+                    onClick={() => fetchFailureCards(nextCursor)}
+                    data-testid="load-more-failure-cards-btn"
+                  >
+                    {loading ? "Loading..." : `Load More (${failureCards.length} of ${totalCount})`}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
