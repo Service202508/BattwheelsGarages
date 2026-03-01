@@ -114,7 +114,7 @@ async def require_admin(request: Request):
     user = await get_current_user_from_request(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if user.get("role") != "admin":
+    if user.get("role") not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
 
@@ -124,7 +124,7 @@ async def require_admin_or_technician(request: Request):
     user = await get_current_user_from_request(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if user.get("role") not in ["admin", "technician"]:
+    if user.get("role") not in ["admin", "owner", "technician"]:
         raise HTTPException(status_code=403, detail="Admin or technician access required")
     return user
 
