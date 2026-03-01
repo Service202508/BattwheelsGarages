@@ -499,6 +499,10 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/v1/platform/.*",
         r"^/api/v1/subscriptions/plans$",
         r"^/api/v1/subscriptions/plans/.*$",
+        r"^/api/v1/customer-portal/.*",
+        r"^/api/v1/business/.*",
+        r"^/api/customer-portal/.*",
+        r"^/api/business/.*",
         r"^/static/.*",
     ]
     
