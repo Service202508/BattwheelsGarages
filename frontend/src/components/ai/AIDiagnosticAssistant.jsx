@@ -431,15 +431,6 @@ Please provide:
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={copyDiagnosis}
-                    className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
-                  >
-                    <Copy className="h-4 w-4 mr-1" />
-                    Copy
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={handleReset}
                     className="text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
                   >
