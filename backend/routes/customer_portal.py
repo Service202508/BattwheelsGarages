@@ -588,7 +588,7 @@ async def create_support_request(
         "source": "customer_portal",
         "created_at": now,
         "updated_at": now,
-        "organization_id": contact.get("organization_id"),
+        "organization_id": org_id,
     }
     
     await db["tickets"].insert_one(ticket)
