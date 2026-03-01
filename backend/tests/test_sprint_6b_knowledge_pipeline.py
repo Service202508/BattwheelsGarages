@@ -362,7 +362,7 @@ class TestKnowledgePipelineIntegration:
         
         # Step 4: Check suggestions have knowledge articles
         resp4 = requests.get(
-            f"{BASE_URL}/api/v1/efi-guided/suggestions/tkt_8b36dc571ae4",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{ensure_test_ticket}",
             headers={
                 "Authorization": f"Bearer {dev_user_token}",
                 "X-Organization-ID": "dev-internal-testing-001"
