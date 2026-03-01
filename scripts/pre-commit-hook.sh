@@ -5,13 +5,13 @@
 
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM || true)
 
-# a) Syntax check staged frontend JS/JSX/TSX files using acorn parser
+# a) Syntax check staged frontend JS/JSX/TSX files using Node parser
 FRONTEND_FILES=$(echo "$STAGED_FILES" | grep "^frontend/src/.*\.\(jsx\|js\|tsx\)$" || true)
 if [ -n "$FRONTEND_FILES" ]; then
   echo "Checking frontend file syntax..."
   SYNTAX_FAIL=0
   for f in $FRONTEND_FILES; do
-    node -e "
+    NODE_PATH=/app/frontend/node_modules node -e "
       const fs = require('fs');
       const acorn = require('acorn');
       const jsx = require('acorn-jsx');
@@ -37,7 +37,7 @@ fi
 # b) Check for duplicate imports in staged frontend files
 if [ -n "$FRONTEND_FILES" ]; then
   for f in $FRONTEND_FILES; do
-    DUPES=$(sort "/app/$f" | uniq -d | grep "^import " || true)
+    DUPES=$(grep "^import " "/app/$f" | sort | uniq -d || true)
     if [ -n "$DUPES" ]; then
       echo "Duplicate import in $f:"
       echo "$DUPES"
