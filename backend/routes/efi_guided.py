@@ -606,7 +606,7 @@ async def get_failure_card(request: Request, failure_id: str):
     
     # Also get decision tree if exists
     tree = await _db.efi_decision_trees.find_one(
-        {"failure_card_id": failure_id},
+        {"$or": [{"failure_card_id": failure_id}, {"failure_card_id": card.get("failure_id") or card.get("card_id")}]},
         {"_id": 0}
     )
     
