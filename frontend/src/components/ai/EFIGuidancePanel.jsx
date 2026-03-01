@@ -46,8 +46,8 @@ const GaugeChart = ({ value, max = 100, title, unit = "%", color, zones }) => {
         <div 
           className="absolute w-20 h-20 rounded-full border-4 border-transparent transition-transform duration-500"
           style={{ 
-            borderTopColor: color || '#10b981', 
-            borderLeftColor: color || '#10b981',
+            borderTopColor: color || 'rgb(var(--bw-green))', 
+            borderLeftColor: color || 'rgb(var(--bw-green))',
             transform: `rotate(${225 + rotation}deg)` 
           }}
         />
@@ -770,7 +770,7 @@ export default function EFIGuidancePanel({
                     max={100}
                     title="Source Confidence"
                     unit="%"
-                    color={guidance.charts_spec.confidence_indicator.value > 70 ? "#10b981" : "#f59e0b"}
+                    color={guidance.charts_spec.confidence_indicator.value > 70 ? themeColors.green : themeColors.amber}
                   />
                 )}
                 
