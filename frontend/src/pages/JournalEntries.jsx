@@ -1199,21 +1199,17 @@ const JournalEntries = () => {
       setNextCursor(pagination.next_cursor || null);
       setHasMore(pagination.has_next || false);
       setTotalCount(pagination.total_count || rawEntries.length);
-      setEntries(filtered);
 
       // Calculate stats from entries
-      const totalDebit = filtered.reduce((sum, e) => sum + (e.total_debit || 0), 0);
-      const totalCredit = filtered.reduce((sum, e) => sum + (e.total_credit || 0), 0);
-      setStats({
-        total: entriesData.pagination?.total_count || entriesData.total || filtered.length,
+      const currentEntries = cursorParam ? [...entries, ...rawEntries] : rawEntries;
+      const totalDebit = currentEntries.reduce((sum, e) => sum + (e.total_debit || 0), 0);
+      const totalCredit = currentEntries.reduce((sum, e) => sum + (e.total_credit || 0), 0);
+      setStats(prev => ({
+        ...prev,
+        total: pagination.total_count || currentEntries.length,
         totalDebit,
-        totalCredit,
-        isBalanced: trialData.totals?.is_balanced ?? true
-      });
-
-      if (accountsData.code === 0) {
-        setAccounts(accountsData.accounts || []);
-      }
+        totalCredit
+      }));
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
