@@ -47,9 +47,18 @@ class ExpertQueuePriority:
 
 class ZendeskBridge:
     """
-    Abstract interface for Zendesk integration.
-    Currently stubbed - will create internal expert queue tickets.
-    In future, can be implemented to sync with actual Zendesk.
+    STUB: Abstract interface for Zendesk integration.
+    Currently returns mock responses — the internal ExpertQueueService
+    handles all escalation logic via MongoDB.
+    
+    To implement real Zendesk integration:
+    - Obtain Zendesk subdomain, API token, and agent email
+    - Implement create_ticket() to POST to /api/v2/tickets.json
+    - Implement update_ticket() to PUT to /api/v2/tickets/{id}.json
+    - Implement add_comment() to POST to /api/v2/tickets/{id}.json
+    - Set _enabled = True when credentials are configured
+    
+    See: https://developer.zendesk.com/api-reference/
     """
     
     def __init__(self, subdomain: str = None, api_token: str = None, email: str = None):
