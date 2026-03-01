@@ -27,9 +27,17 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Testing: 693+ passing tests
 
 ## Current Status
-- **671 passed, 41 skipped, 0 failed** (core tests)
+- **763 passed, 13 skipped, 0 failed** (core tests — target 730+ achieved)
 - All services healthy: backend, frontend, MongoDB
-- Awaiting Cluster 3 Part 2 (Inventory, Contacts, remaining tasks)
+- Phase 2 Cluster 3 Part 2 — COMPLETE
+
+## Completed Work — Cluster 3 Part 2 (2026-03-01)
+- **Task 1 (Inventory Tests):** `test_inventory_comprehensive.py` verified — 22 passed, 1 skipped
+- **Task 2 (Contacts Tests):** `test_contacts_comprehensive.py` verified — 24 passed
+- **Task 3 (Projects Tests):** `test_projects_comprehensive.py` fixed (payload keys: `name`→`title`, `hours`→`hours_logged`) — 17 passed
+- **Task 4 (Frontend JWT Expiry):** Global fetch wrapper in `App.js` intercepts 401s, clears session, redirects to `/login`
+- **Task 5 (Final Verification):** Full core suite: **763 passed, 13 skipped, 0 failures**
+- **Infra fixes:** Rate limiter TESTING bypass (middleware), session-scoped login_attempts cleanup in conftest.py, added 3 missing comprehensive suites to `run_core_tests.sh`
 
 ## Prioritized Backlog
 
