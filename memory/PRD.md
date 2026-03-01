@@ -27,9 +27,17 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Testing: 693+ passing tests
 
 ## Current Status
-- **763 passed, 13 skipped, 0 failed** (core tests — target 730+ achieved)
+- **865 passed, 19 skipped, 0 failed** (core tests — target 730+ maintained)
 - All services healthy: backend, frontend, MongoDB
-- Phase 2 Cluster 3 Part 2 — COMPLETE
+- Phase 2 Cluster 4 Part 1 — COMPLETE
+
+## Completed Work — Cluster 4 Part 1 (2026-03-01)
+- **Task 1 (Platform Admin):** `test_platform_admin_comprehensive.py` — 33 passed. Mapped 26 endpoints.
+- **Task 2 (AMC):** `test_amc_comprehensive.py` — 17 passed. Plans CRUD + Subscriptions lifecycle + analytics.
+- **Task 3 (Reports):** `test_reports_comprehensive.py` — 24 passed. Financial reports (8 endpoints) + Advanced reports (13 endpoints).
+- **Task 4 (Sales Orders):** `test_sales_orders_comprehensive.py` — 18 passed. Full CRUD + status + clone + reports. Fixed `extract_org_id` bug in `sales_orders_enhanced.py`.
+- **Task 5 (Time Tracking):** `test_time_tracking_comprehensive.py` — 16 passed. Entries CRUD + timer start/stop + unbilled hours + summary.
+- **Infra fixes:** Added admin@battwheels.in password for AMC tests, fixed plan change test regression, added 5 new test files to `run_core_tests.sh`.
 
 ## Completed Work — Cluster 3 Part 2 (2026-03-01)
 - **Task 1 (Inventory Tests):** `test_inventory_comprehensive.py` verified — 22 passed, 1 skipped
