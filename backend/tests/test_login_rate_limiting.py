@@ -16,11 +16,27 @@ def _base(base_url):
     return f"{base_url}/api/v1/auth/login"
 
 
-@pytest.fixture(autouse=True)
-def _clear_attempts(base_url):
-    """Clear rate limit state before each test by using a unique email per test class."""
+@pytest.fixture(autouse=True, scope="module")
+def _clear_all_test_attempts(base_url):
+    """Clear all rate limit entries for test emails before module runs."""
+    import pymongo
+    import os
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    db_name = os.environ.get("DB_NAME", "battwheels_dev")
+    client = pymongo.MongoClient(mongo_url)
+    db = client[db_name]
+    test_emails = [
+        "brute_force_test_unique_abc@nonexistent.example",
+        "brute_force_6th_test@nonexistent.example",
+        "independent_a_test@nonexistent.example",
+        "independent_b_test@nonexistent.example",
+        "retry_after_test@nonexistent.example",
+        "platform-admin@battwheels.in",
+    ]
+    db.login_attempts.delete_many({"email": {"$in": test_emails}})
     yield
-    # TTL handles cleanup; no manual cleanup needed
+    db.login_attempts.delete_many({"email": {"$in": test_emails}})
+    client.close()
 
 
 class TestLoginRateLimiting:
