@@ -111,11 +111,12 @@ export default function FailureIntelligence({ user }) {
   });
   const [saving, setSaving] = useState(false);
 
-  const fetchFailureCards = useCallback(async () => {
+  const fetchFailureCards = useCallback(async (cursorParam = null) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let url = `${API}/efi/failure-cards?limit=100`;
+      let url = `${API}/efi/failure-cards?limit=${CARDS_PAGE_SIZE}`;
+      if (cursorParam) url += `&cursor=${cursorParam}`;
       if (statusFilter && statusFilter !== "all") url += `&status=${statusFilter}`;
       if (subsystemFilter && subsystemFilter !== "all") url += `&subsystem=${subsystemFilter}`;
       if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
@@ -126,8 +127,18 @@ export default function FailureIntelligence({ user }) {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        setFailureCards(data.items || []);
+        const responseData = await response.json();
+        const items = responseData.data || responseData.items || [];
+        const pagination = responseData.pagination || {};
+        
+        if (cursorParam) {
+          setFailureCards(prev => [...prev, ...items]);
+        } else {
+          setFailureCards(items);
+        }
+        setNextCursor(pagination.next_cursor || null);
+        setHasMore(pagination.has_next || false);
+        setTotalCount(pagination.total_count || items.length);
       }
     } catch (error) {
       console.error("Failed to fetch failure cards:", error);
