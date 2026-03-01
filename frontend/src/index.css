@@ -484,7 +484,7 @@ code, .mono {
 }
 
 .btn-primary:hover {
-  background: #d4ff1a;
+  background: rgb(var(--bw-volt-hover));
   box-shadow: 0 0 20px var(--bw-volt-glow);
 }
 
