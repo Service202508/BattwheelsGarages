@@ -1710,8 +1710,27 @@ const JournalEntries = () => {
               </tbody>
             </table>
           </div>
+          {hasMore && (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+              <button
+                onClick={() => fetchData(nextCursor)}
+                data-testid="load-more-journal-entries-btn"
+                style={{
+                  padding: '8px 24px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '6px',
+                  background: 'transparent',
+                  color: 'rgba(255,255,255,0.7)',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Load More ({entries.length} of {totalCount})
+              </button>
+            </div>
+          )}
         </>
-      ) : (
+        ) : (
         <AccountLedgerTab accounts={accounts} />
       )}
 
