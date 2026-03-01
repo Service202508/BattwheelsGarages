@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://phase2-final-verify.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 ORG_ID = "dev-internal-testing-001"
 
 # Test credentials
@@ -30,7 +30,7 @@ class TestAuthTokens:
     @staticmethod
     def get_admin_token():
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code == 200:
@@ -40,7 +40,7 @@ class TestAuthTokens:
     @staticmethod
     def get_technician_token():
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
         )
         if response.status_code == 200:
