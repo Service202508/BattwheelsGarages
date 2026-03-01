@@ -50,8 +50,10 @@ export default function Tickets({ user }) {
   const [ticketTypeFilter, setTicketTypeFilter] = useState(null); // null = all, "onsite", "workshop"
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const PAGE_SIZE = 25;
   const [kpiData, setKpiData] = useState({
     open: 0,
     technician_assigned: 0,
