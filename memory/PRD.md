@@ -30,15 +30,29 @@ Complete 5-step triage of 132 test files:
 - **76 files documented in TEST_DEBT_REGISTER.md** (Bucket A, MODERATE effort)
 - **Production verified:** verify_prod_org.py 6/6 PASS, ALL GREEN
 
+### Phase 2C — Financial Test Coverage & Security (2026-02-28)
+- Added comprehensive tests for Invoices, Credit Notes, Accounting, GST (71 new tests)
+- Fixed CORS vulnerability and implemented login rate-limiting
+- Migrated Invoices and JournalEntries frontend to cursor pagination
+- Core test suite: **693 passed, 19 skipped, 0 failed**
+
+### Security — Git History Secret Scrub (2026-03-01)
+- Removed `backend/.env` and `frontend/.env` from all 4,354 commits using `git-filter-repo`
+- Scrubbed 11 secret values from docs/code files (EMERGENT_LLM_KEY, JWT_SECRET, ZOHO creds, RESEND_API_KEY, SENTRY_DSN)
+- Cleaned duplicate entries from `.gitignore`
+- Verified: 0 secrets remain in git history, application healthy post-rewrite
+- **Status: READY FOR GITHUB PUSH**
+
 ## Current Health
-- Core test suite: **542 passed, 14 skipped, 0 failed**
+- Core test suite: **693 passed, 19 skipped, 0 failed**
 - Production: **ALL GREEN** (verify_prod_org.py)
 - Razorpay: Test mode only
+- Git history: **CLEAN** — no secrets in any commit
 
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- None currently
+- Push cleaned repository to GitHub
 
 ### P1 (High)
 - Frontend migration to server-side cursor pagination (5 endpoints)
