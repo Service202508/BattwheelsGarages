@@ -102,12 +102,8 @@ class TestSuspendActivateOrg:
 
     @pytest.fixture(scope="class")
     def _test_org_id(self, base_url, _admin_h):
-        """Find a non-production org to suspend/activate."""
-        resp = requests.get(f"{base_url}{PREFIX}/organizations?search=volt&limit=1", headers=_admin_h)
-        orgs = resp.json().get("organizations", [])
-        if not orgs:
-            pytest.skip("No org found for suspend/activate test")
-        return orgs[0]["organization_id"]
+        """Use dev-internal-testing org for suspend/activate test."""
+        return "dev-internal-testing-001"
 
     def test_suspend_org(self, base_url, _admin_h, _test_org_id):
         resp = requests.post(f"{base_url}{PREFIX}/organizations/{_test_org_id}/suspend", headers=_admin_h)
