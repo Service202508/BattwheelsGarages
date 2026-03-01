@@ -683,3 +683,61 @@ async def get_quick_stats(request: Request):
             "month": today.strftime("%B %Y")
         }
     }
+
+
+
+@router.get("/recent-updates")
+async def get_recent_updates(request: Request, limit: int = 10):
+    """Get recent activities across tickets, invoices, and estimates for the dashboard."""
+    org_id = await get_org_id(request)
+    if not org_id:
+        return {"code": 0, "updates": []}
+
+    updates = []
+    seven_days_ago = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+
+    # Recent tickets
+    recent_tickets = await db.tickets.find(
+        {"organization_id": org_id, "created_at": {"$gte": seven_days_ago}},
+        {"_id": 0, "ticket_id": 1, "ticket_number": 1, "title": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).to_list(limit)
+    for t in recent_tickets:
+        updates.append({
+            "type": "ticket", "id": t.get("ticket_id"),
+            "title": f"Ticket {t.get('ticket_number', '')} created",
+            "description": t.get("title", ""),
+            "status": t.get("status", "open"),
+            "timestamp": t.get("created_at"),
+        })
+
+    # Recent invoices
+    recent_invoices = await db.invoices.find(
+        {"organization_id": org_id, "created_at": {"$gte": seven_days_ago}},
+        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "customer_name": 1, "total": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).to_list(limit)
+    for inv in recent_invoices:
+        updates.append({
+            "type": "invoice", "id": inv.get("invoice_id"),
+            "title": f"Invoice {inv.get('invoice_number', '')} created",
+            "description": f"Customer: {inv.get('customer_name', 'N/A')} · Total: ₹{inv.get('total', 0):,.0f}",
+            "status": inv.get("status", "draft"),
+            "timestamp": inv.get("created_at"),
+        })
+
+    # Recent estimates
+    recent_estimates = await db.estimates.find(
+        {"organization_id": org_id, "created_at": {"$gte": seven_days_ago}},
+        {"_id": 0, "estimate_id": 1, "estimate_number": 1, "customer_name": 1, "grand_total": 1, "status": 1, "created_at": 1}
+    ).sort("created_at", -1).to_list(limit)
+    for est in recent_estimates:
+        updates.append({
+            "type": "estimate", "id": est.get("estimate_id"),
+            "title": f"Estimate {est.get('estimate_number', '')} created",
+            "description": f"Customer: {est.get('customer_name', 'N/A')} · Total: ₹{est.get('grand_total', 0):,.0f}",
+            "status": est.get("status", "draft"),
+            "timestamp": est.get("created_at"),
+        })
+
+    # Sort by timestamp descending and limit
+    updates.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    return {"code": 0, "updates": updates[:limit]}
