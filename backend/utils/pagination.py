@@ -253,6 +253,11 @@ def enforce_pagination_on_cursor(cursor, max_limit: int = MAX_LIMIT):
 
 def encode_cursor(sort_value: Any, tiebreaker_value: Any) -> str:
     """Encode a cursor from a sort field value and a tiebreaker (unique) field value."""
+    from datetime import datetime as _dt
+    if isinstance(sort_value, _dt):
+        sort_value = sort_value.isoformat()
+    if isinstance(tiebreaker_value, _dt):
+        tiebreaker_value = tiebreaker_value.isoformat()
     payload = json.dumps({"v": sort_value, "t": tiebreaker_value})
     return base64.urlsafe_b64encode(payload.encode()).decode().rstrip("=")
 
