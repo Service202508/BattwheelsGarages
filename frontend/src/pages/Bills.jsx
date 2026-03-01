@@ -385,11 +385,11 @@ export default function Bills() {
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
           <TabsList className="bg-bw-panel border border-bw-white/[0.08]">
-            <TabsTrigger value="all" className="data-[state=active]:bg-bw-volt data-[state=active]:text-black">All</TabsTrigger>
-            <TabsTrigger value="draft" className="data-[state=active]:bg-bw-volt data-[state=active]:text-black">Draft</TabsTrigger>
-            <TabsTrigger value="approved" className="data-[state=active]:bg-bw-volt data-[state=active]:text-black">Approved</TabsTrigger>
-            <TabsTrigger value="partial_paid" className="data-[state=active]:bg-bw-volt data-[state=active]:text-black">Partial</TabsTrigger>
-            <TabsTrigger value="paid" className="data-[state=active]:bg-bw-volt data-[state=active]:text-black">Paid</TabsTrigger>
+            <TabsTrigger value="all" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black">All</TabsTrigger>
+            <TabsTrigger value="draft" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black">Draft</TabsTrigger>
+            <TabsTrigger value="approved" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black">Approved</TabsTrigger>
+            <TabsTrigger value="partial_paid" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black">Partial</TabsTrigger>
+            <TabsTrigger value="paid" className="data-[state=active]:bg-bw-volt data-[state=active]:text-bw-black">Paid</TabsTrigger>
           </TabsList>
         </Tabs>
         
