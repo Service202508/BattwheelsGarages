@@ -47,4 +47,39 @@
 
 ---
 
+### 4. Zoho Books Integration
+
+| Field | Value |
+|---|---|
+| **Files** | `core/tenant/token_vault.py` (TenantZohoSyncService), `routes/data_migration.py`, `services/ticket_estimate_service.py` |
+| **Status** | CONFIG-READY, NOT ACTIVE — env vars and data model scaffolding exist, but zero HTTP calls to Zoho APIs |
+| **Priority** | P2 (Phase 4 roadmap) |
+| **Evidence** | `ticket_estimate_service.py:178`: "Zoho sync (Phase 4 - not used yet)". No file calls `books.zoho.com` or `accounts.zoho.com`. |
+| **What it should do** | Sync contacts, invoices, and items bidirectionally with Zoho Books. |
+| **Credentials needed** | ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN, ZOHO_ORGANIZATION_ID (already in .env) |
+
+---
+
+### 5. WhatsApp Notifications (Twilio)
+
+| Field | Value |
+|---|---|
+| **Files** | `services/notification_service.py`, `services/whatsapp_service.py` |
+| **Status** | MOCKED — Twilio credentials not configured, messages never sent |
+| **Priority** | P1 (customer-facing notifications) |
+| **Fix applied** | 2026-03-01: `/send-whatsapp` now returns `{"status": "mocked", "delivered": false}` instead of deceptive `{"status": "queued"}` |
+| **Credentials needed** | TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER |
+
+---
+
+### 6. Banking Cursor Pagination
+
+| Field | Value |
+|---|---|
+| **Files** | `routes/banking_module.py`, `frontend/src/pages/Banking.jsx` |
+| **Status** | PARTIAL — Backend lacks cursor pagination, frontend not migrated |
+| **Priority** | P2 |
+
+---
+
 *Updated: 2026-03-01. This file is maintained as part of the deployment safety infrastructure.*
