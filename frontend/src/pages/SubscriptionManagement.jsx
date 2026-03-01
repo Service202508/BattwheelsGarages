@@ -152,7 +152,7 @@ export default function SubscriptionManagement() {
             toast.info("Payment cancelled");
           }
         },
-        theme: { color: "#C8FF00" }
+        theme: { color: "rgb(var(--bw-volt))" }
       });
       rzp.open();
 

@@ -176,7 +176,7 @@ const FormInput = ({
             padding: `0 ${showToggle ? 44 : 14}px 0 40px`,
             fontFamily: "'Syne', sans-serif",
             fontSize: 14,
-            color: "#F4F6F0",
+            color: "rgb(var(--bw-white))",
             outline: "none",
             boxShadow: focused ? "0 0 0 3px rgba(200,255,0,0.08)" : "none",
             transition: "border-color 0.15s, box-shadow 0.15s, background 0.15s",
@@ -223,8 +223,8 @@ const CTAButton = ({ isLoading, children, dataTestId }) => (
     style={{
       width: "100%",
       height: 44,
-      background: "#C8FF00",
-      color: "#080C0F",
+      background: "rgb(var(--bw-volt))",
+      color: "rgb(var(--bw-black))",
       border: "none",
       borderRadius: 4,
       fontFamily: "'JetBrains Mono', monospace",
@@ -266,7 +266,7 @@ const InlineError = ({ msg }) =>
         padding: "10px 14px",
         fontFamily: "'Syne', sans-serif",
         fontSize: 13,
-        color: "#FF3B2F",
+        color: "rgb(var(--bw-red))",
       }}
     >
       {msg}
@@ -302,7 +302,7 @@ const LeftPanel = () => (
       width: "55%",
       position: "relative",
       overflow: "hidden",
-      background: "#080C0F",
+      background: "rgb(var(--bw-black))",
       borderRight: "1px solid rgba(255,255,255,0.06)",
       flexShrink: 0,
     }}
@@ -397,7 +397,7 @@ const LeftPanel = () => (
             fontSize: 10,
             fontWeight: 500,
             letterSpacing: "0.16em",
-            color: "#C8FF00",
+            color: "rgb(var(--bw-volt))",
             textTransform: "uppercase",
           }}
         >
@@ -414,7 +414,7 @@ const LeftPanel = () => (
             fontSize: 52,
             fontWeight: 400,
             lineHeight: 1.1,
-            color: "#F4F6F0",
+            color: "rgb(var(--bw-white))",
             letterSpacing: "-0.02em",
             margin: 0,
           }}
@@ -422,7 +422,7 @@ const LeftPanel = () => (
           Every breakdown.
           <br />
           Resolved{" "}
-          <span style={{ color: "#C8FF00" }}>smarter.</span>
+          <span style={{ color: "rgb(var(--bw-volt))" }}>smarter.</span>
         </h1>
       </div>
 
@@ -465,7 +465,7 @@ const LeftPanel = () => (
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 14,
-            color: "#C8FF00",
+            color: "rgb(var(--bw-volt))",
             marginBottom: 4,
           }}
         >
@@ -498,7 +498,7 @@ const LeftPanel = () => (
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 14,
-            color: "#C8FF00",
+            color: "rgb(var(--bw-volt))",
             marginBottom: 4,
           }}
         >
@@ -693,7 +693,7 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#080C0F", overflow: "hidden" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "rgb(var(--bw-black))", overflow: "hidden" }}>
 
       {/* Mobile top bar */}
       <div
@@ -703,7 +703,7 @@ export default function Login({ onLogin }) {
           position: "fixed",
           top: 0, left: 0, right: 0,
           height: 56,
-          background: "#080C0F",
+          background: "rgb(var(--bw-black))",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
           alignItems: "center",
           justifyContent: "center",
@@ -744,7 +744,7 @@ export default function Login({ onLogin }) {
         style={{
           width: "45%",
           position: "relative",
-          background: "#080C0F",
+          background: "rgb(var(--bw-black))",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -767,7 +767,7 @@ export default function Login({ onLogin }) {
                 fontFamily: "'DM Serif Display', serif",
                 fontSize: 28,
                 fontWeight: 400,
-                color: "#F4F6F0",
+                color: "rgb(var(--bw-white))",
                 letterSpacing: "-0.01em",
                 margin: 0,
                 lineHeight: 1.2,
@@ -1048,7 +1048,7 @@ export default function Login({ onLogin }) {
         >
           <div
             style={{
-              background: "#111820", borderRadius: 16, padding: 32,
+              background: "rgb(var(--bw-panel))", borderRadius: 16, padding: 32,
               width: "90%", maxWidth: 420,
               border: "1px solid rgba(200,255,0,0.15)",
               boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
@@ -1060,20 +1060,20 @@ export default function Login({ onLogin }) {
                   width: 56, height: 56, borderRadius: "50%", margin: "0 auto 16px",
                   background: "rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  <Mail style={{ width: 28, height: 28, color: "#22C55E" }} />
+                  <Mail style={{ width: 28, height: 28, color: "rgb(var(--bw-green))" }} />
                 </div>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F4F6F0", marginBottom: 8 }}>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 8 }}>
                   Check your email
                 </h3>
                 <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
-                  If <strong style={{ color: "#C8FF00" }}>{forgotEmail}</strong> is registered, you'll receive a password reset link shortly. The link expires in 1 hour.
+                  If <strong style={{ color: "rgb(var(--bw-volt))" }}>{forgotEmail}</strong> is registered, you'll receive a password reset link shortly. The link expires in 1 hour.
                 </p>
                 <button
                   onClick={() => setShowForgotPassword(false)}
                   style={{
                     width: "100%", padding: "12px 0", borderRadius: 8,
                     background: "rgba(200,255,0,0.1)", border: "1px solid rgba(200,255,0,0.3)",
-                    color: "#C8FF00", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                    color: "rgb(var(--bw-volt))", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer",
                   }}
                   data-testid="forgot-done-btn"
                 >
@@ -1082,7 +1082,7 @@ export default function Login({ onLogin }) {
               </div>
             ) : (
               <>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F4F6F0", marginBottom: 4 }}>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 4 }}>
                   Forgot your password?
                 </h3>
                 <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, marginBottom: 20 }}>
@@ -1101,7 +1101,7 @@ export default function Login({ onLogin }) {
                     style={{
                       width: "100%", padding: "10px 14px", borderRadius: 8,
                       background: "rgba(244,246,240,0.06)", border: "1px solid rgba(244,246,240,0.12)",
-                      color: "#F4F6F0", fontSize: 14, fontFamily: "'JetBrains Mono', monospace",
+                      color: "rgb(var(--bw-white))", fontSize: 14, fontFamily: "'JetBrains Mono', monospace",
                       outline: "none", boxSizing: "border-box",
                     }}
                     data-testid="forgot-email-input"
@@ -1112,8 +1112,8 @@ export default function Login({ onLogin }) {
                   disabled={forgotLoading}
                   style={{
                     width: "100%", padding: "12px 0", borderRadius: 8,
-                    background: "#C8FF00", border: "none",
-                    color: "#080C0F", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                    background: "rgb(var(--bw-volt))", border: "none",
+                    color: "rgb(var(--bw-black))", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer",
                     opacity: forgotLoading ? 0.6 : 1,
                   }}
                   data-testid="forgot-submit-btn"

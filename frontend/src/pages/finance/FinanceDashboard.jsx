@@ -223,12 +223,12 @@ export default function FinanceDashboard() {
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      background: '#111820', 
+                      background: 'rgb(var(--bw-panel))', 
                       border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: '8px',
                       fontSize: '12px'
                     }}
-                    labelStyle={{ color: '#F4F6F0', fontWeight: 600 }}
+                    labelStyle={{ color: 'rgb(var(--bw-white))', fontWeight: 600 }}
                     formatter={(value, name) => [formatCurrency(value), name === 'credits' ? 'Income' : name === 'debits' ? 'Expenses' : 'Net']}
                   />
                   <Bar dataKey="credits" name="credits" fill="#C8FF00" radius={[4, 4, 0, 0]} />

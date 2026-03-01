@@ -112,7 +112,7 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
           </p>
           <span
             className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-            style={{ background: "rgba(200,255,0,0.10)", color: "#C8FF00" }}
+            style={{ background: "rgba(200,255,0,0.10)", color: "rgb(var(--bw-volt))" }}
             data-testid="org-switcher-plan-badge"
           >
             SYSTEM

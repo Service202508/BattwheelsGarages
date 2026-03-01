@@ -237,7 +237,7 @@ export default function Tickets({ user }) {
       return (
         <span style={{
           background: "rgba(255,59,47,0.10)",
-          color: "#FF3B2F",
+          color: "rgb(var(--bw-red))",
           border: "1px solid rgba(255,59,47,0.25)",
           fontFamily: "monospace",
           fontSize: "10px",
@@ -247,11 +247,11 @@ export default function Tickets({ user }) {
       );
     }
     if (minsRemaining < 120) {
-      return <span style={{ color: "#FF8C00" }}>{Math.floor(minsRemaining)}m left</span>;
+      return <span style={{ color: "rgb(var(--bw-orange))" }}>{Math.floor(minsRemaining)}m left</span>;
     }
     if (minsRemaining < 1440) {
       const hrs = Math.floor(minsRemaining / 60);
-      return <span style={{ color: "#F4F6F0" }}>{hrs}h left</span>;
+      return <span style={{ color: "rgb(var(--bw-white))" }}>{hrs}h left</span>;
     }
     return <span style={{ color: "rgba(244,246,240,0.35)" }}>On track</span>;
   };
@@ -530,7 +530,7 @@ export default function Tickets({ user }) {
                               minHeight: "44px", padding: "0 16px",
                               background: "rgba(200,255,0,0.10)",
                               border: "1px solid rgba(200,255,0,0.25)",
-                              borderRadius: "4px", color: "#C8FF00",
+                              borderRadius: "4px", color: "rgb(var(--bw-volt))",
                               fontSize: "12px", fontFamily: "Syne, sans-serif",
                               cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
                             }}

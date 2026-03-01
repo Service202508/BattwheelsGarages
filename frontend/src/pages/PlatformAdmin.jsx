@@ -128,7 +128,7 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
 const ENV_CONFIG = {
   production:  { label: "PRODUCTION",  color: "#EF4444", bg: "rgba(239,68,68,0.12)" },
   staging:     { label: "STAGING",     color: "#F59E0B", bg: "rgba(245,158,11,0.12)" },
-  development: { label: "DEVELOPMENT", color: "#22C55E", bg: "rgba(34,197,94,0.12)" },
+  development: { label: "DEVELOPMENT", color: "rgb(var(--bw-green))", bg: "rgba(34,197,94,0.12)" },
 };
 
 export default function PlatformAdmin({ user }) {
@@ -380,7 +380,7 @@ export default function PlatformAdmin({ user }) {
                 style={{
                   background: "transparent",
                   border: "1px solid rgba(200,255,0,0.30)",
-                  color: "#C8FF00",
+                  color: "rgb(var(--bw-volt))",
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: "11px",
                   letterSpacing: "0.08em",
@@ -439,9 +439,9 @@ export default function PlatformAdmin({ user }) {
                   gap: "12px",
                 }}
               >
-                <Loader2 style={{ width: "16px", height: "16px", color: "#C8FF00", flexShrink: 0, animation: "spin 1s linear infinite" }} />
+                <Loader2 style={{ width: "16px", height: "16px", color: "rgb(var(--bw-volt))", flexShrink: 0, animation: "spin 1s linear infinite" }} />
                 <div>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "#C8FF00", margin: 0 }}>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "rgb(var(--bw-volt))", margin: 0 }}>
                     Running 103-test audit…
                   </p>
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgba(244,246,240,0.35)", margin: "2px 0 0 0" }}>
@@ -492,7 +492,7 @@ export default function PlatformAdmin({ user }) {
                               alignItems: "flex-start",
                               gap: "8px",
                             }}>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "#FF3B2F", flexShrink: 0 }}>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-red))", flexShrink: 0 }}>
                                 T{String(f.n).padStart(2, "0")}.
                               </span>
                               <div>

@@ -517,7 +517,7 @@ export default function InvoicesEnhanced() {
           contact: data.customer_phone || ""
         },
         theme: {
-          color: "#C8FF00"
+          color: "rgb(var(--bw-volt))"
         },
         modal: {
           ondismiss: function() {
@@ -2190,16 +2190,16 @@ export default function InvoicesEnhanced() {
                           const styles = {
                             'created': { color: 'rgba(244,246,240,0.35)', label: 'Created' },
                             'finalized': { color: '#3B82F6', label: 'Finalized' },
-                            'irn_generated': { color: '#22C55E', label: 'IRN Generated' },
-                            'irn_cancelled': { color: '#FF3B2F', label: 'IRN Cancelled' },
+                            'irn_generated': { color: 'rgb(var(--bw-green))', label: 'IRN Generated' },
+                            'irn_cancelled': { color: 'rgb(var(--bw-red))', label: 'IRN Cancelled' },
                             'sent': { color: '#06B6D4', label: 'Sent' },
-                            'payment_recorded': { color: '#22C55E', label: 'Payment' },
-                            'payment': { color: '#22C55E', label: 'Payment' },
+                            'payment_recorded': { color: 'rgb(var(--bw-green))', label: 'Payment' },
+                            'payment': { color: 'rgb(var(--bw-green))', label: 'Payment' },
                             'pdf_downloaded': { color: 'rgba(244,246,240,0.35)', label: 'PDF Downloaded' },
                             'viewed': { color: 'rgba(244,246,240,0.35)', label: 'Viewed' },
                             'updated': { color: '#F59E0B', label: 'Updated' },
-                            'voided': { color: '#FF3B2F', label: 'Voided' },
-                            'cancelled': { color: '#FF3B2F', label: 'Cancelled' }
+                            'voided': { color: 'rgb(var(--bw-red))', label: 'Voided' },
+                            'cancelled': { color: 'rgb(var(--bw-red))', label: 'Cancelled' }
                           };
                           return styles[action?.toLowerCase()] || { color: 'rgba(244,246,240,0.35)', label: action };
                         };

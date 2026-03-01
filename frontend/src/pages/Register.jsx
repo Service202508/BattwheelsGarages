@@ -194,7 +194,7 @@ export default function Register({ onLogin }) {
     background: "rgba(255,255,255,0.04)",
     border: `1px solid ${hasErr ? "#FF3B2F" : "rgba(255,255,255,0.12)"}`,
     borderRadius: "4px",
-    color: "#F4F6F0",
+    color: "rgb(var(--bw-white))",
     fontSize: "14px",
     fontFamily: "Syne, sans-serif",
     outline: "none",
@@ -215,7 +215,7 @@ export default function Register({ onLogin }) {
       style={{
         minHeight: "100vh",
         display: "flex",
-        background: "#080C0F",
+        background: "rgb(var(--bw-black))",
         fontFamily: "Syne, sans-serif",
       }}
     >
@@ -227,7 +227,7 @@ export default function Register({ onLogin }) {
           flexDirection: "column",
           justifyContent: "center",
           padding: "60px 64px",
-          background: "#080C0F",
+          background: "rgb(var(--bw-black))",
           borderRight: "1px solid rgba(255,255,255,0.06)",
           position: "relative",
           overflow: "hidden",
@@ -264,35 +264,35 @@ export default function Register({ onLogin }) {
               style={{
                 width: "36px",
                 height: "36px",
-                background: "#C8FF00",
+                background: "rgb(var(--bw-volt))",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Zap style={{ width: "20px", height: "20px", color: "#080C0F" }} />
+              <Zap style={{ width: "20px", height: "20px", color: "rgb(var(--bw-black))" }} />
             </div>
-            <span style={{ fontSize: "16px", fontWeight: 700, color: "#F4F6F0", letterSpacing: "-0.01em" }}>
+            <span style={{ fontSize: "16px", fontWeight: 700, color: "rgb(var(--bw-white))", letterSpacing: "-0.01em" }}>
               Battwheels OS
             </span>
           </div>
 
-          <p style={{ fontSize: "11px", color: "#C8FF00", letterSpacing: "0.12em", marginBottom: "12px", fontFamily: "JetBrains Mono, monospace" }}>
+          <p style={{ fontSize: "11px", color: "rgb(var(--bw-volt))", letterSpacing: "0.12em", marginBottom: "12px", fontFamily: "JetBrains Mono, monospace" }}>
             JOIN 1,000+ EV WORKSHOPS
           </p>
           <h1
             style={{
               fontSize: "36px",
               fontWeight: 800,
-              color: "#F4F6F0",
+              color: "rgb(var(--bw-white))",
               lineHeight: 1.15,
               marginBottom: "12px",
             }}
           >
             Start your 14-day
             <br />
-            <span style={{ color: "#C8FF00" }}>free trial.</span>
+            <span style={{ color: "rgb(var(--bw-volt))" }}>free trial.</span>
           </h1>
           <p style={{ fontSize: "14px", color: "rgba(244,246,240,0.45)", marginBottom: "40px" }}>
             No credit card required. Cancel anytime.
@@ -314,7 +314,7 @@ export default function Register({ onLogin }) {
                     flexShrink: 0,
                   }}
                 >
-                  <Check style={{ width: "11px", height: "11px", color: "#C8FF00" }} />
+                  <Check style={{ width: "11px", height: "11px", color: "rgb(var(--bw-volt))" }} />
                 </div>
                 <span style={{ fontSize: "14px", color: "rgba(244,246,240,0.70)" }}>{f}</span>
               </div>
@@ -341,7 +341,7 @@ export default function Register({ onLogin }) {
           {/* ── STEP 0: Garage Details ── */}
           {step === 0 && (
             <div>
-              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#F4F6F0", marginBottom: "4px" }}>
+              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Garage Details
               </h2>
               <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "28px" }}>
@@ -357,7 +357,7 @@ export default function Register({ onLogin }) {
                   onChange={(e) => { set("garageName", e.target.value); clearErr("garageName"); }}
                   data-testid="register-garage-name"
                 />
-                {errors.garageName && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.garageName}</p>}
+                {errors.garageName && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.garageName}</p>}
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
@@ -370,7 +370,7 @@ export default function Register({ onLogin }) {
                     onChange={(e) => { set("city", e.target.value); clearErr("city"); }}
                     data-testid="register-city"
                   />
-                  {errors.city && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.city}</p>}
+                  {errors.city && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.city}</p>}
                 </div>
                 <div>
                   <label style={labelStyle}>Phone number *</label>
@@ -381,7 +381,7 @@ export default function Register({ onLogin }) {
                     onChange={(e) => { set("phone", e.target.value); clearErr("phone"); }}
                     data-testid="register-phone"
                   />
-                  {errors.phone && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.phone}</p>}
+                  {errors.phone && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.phone}</p>}
                 </div>
               </div>
 
@@ -413,7 +413,7 @@ export default function Register({ onLogin }) {
                     );
                   })}
                 </div>
-                {errors.vehicleTypes && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.vehicleTypes}</p>}
+                {errors.vehicleTypes && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.vehicleTypes}</p>}
               </div>
 
               <button
@@ -422,10 +422,10 @@ export default function Register({ onLogin }) {
                 style={{
                   width: "100%",
                   padding: "14px",
-                  background: "#C8FF00",
+                  background: "rgb(var(--bw-volt))",
                   border: "none",
                   borderRadius: "4px",
-                  color: "#080C0F",
+                  color: "rgb(var(--bw-black))",
                   fontSize: "14px",
                   fontWeight: 700,
                   cursor: "pointer",
@@ -443,7 +443,7 @@ export default function Register({ onLogin }) {
           {/* ── STEP 1: Your Account ── */}
           {step === 1 && (
             <div>
-              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#F4F6F0", marginBottom: "4px" }}>
+              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Your Account
               </h2>
               <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "28px" }}>
@@ -459,7 +459,7 @@ export default function Register({ onLogin }) {
                   onChange={(e) => { set("ownerName", e.target.value); clearErr("ownerName"); }}
                   data-testid="register-owner-name"
                 />
-                {errors.ownerName && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.ownerName}</p>}
+                {errors.ownerName && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.ownerName}</p>}
               </div>
 
               <div style={{ marginBottom: "16px" }}>
@@ -472,7 +472,7 @@ export default function Register({ onLogin }) {
                   onChange={(e) => { set("email", e.target.value); clearErr("email"); }}
                   data-testid="register-email"
                 />
-                {errors.email && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.email}</p>}
+                {errors.email && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.email}</p>}
               </div>
 
               <div style={{ marginBottom: "24px" }}>
@@ -494,7 +494,7 @@ export default function Register({ onLogin }) {
                   </button>
                 </div>
                 <PasswordStrength password={form.password} />
-                {errors.password && <p style={{ fontSize: "11px", color: "#FF3B2F", marginTop: "4px" }}>{errors.password}</p>}
+                {errors.password && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginTop: "4px" }}>{errors.password}</p>}
               </div>
 
               <div style={{ display: "flex", gap: "10px" }}>
@@ -523,10 +523,10 @@ export default function Register({ onLogin }) {
                   style={{
                     flex: 2,
                     padding: "14px",
-                    background: "#C8FF00",
+                    background: "rgb(var(--bw-volt))",
                     border: "none",
                     borderRadius: "4px",
-                    color: "#080C0F",
+                    color: "rgb(var(--bw-black))",
                     fontSize: "14px",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -545,7 +545,7 @@ export default function Register({ onLogin }) {
           {/* ── STEP 2: Confirm ── */}
           {step === 2 && (
             <div>
-              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#F4F6F0", marginBottom: "4px" }}>
+              <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Confirm & Launch
               </h2>
               <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "20px" }}>
@@ -572,7 +572,7 @@ export default function Register({ onLogin }) {
                 ].map(([label, value]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                     <span style={{ fontSize: "12px", color: "rgba(244,246,240,0.40)" }}>{label}</span>
-                    <span style={{ fontSize: "12px", color: "#F4F6F0", fontWeight: 500 }}>{value}</span>
+                    <span style={{ fontSize: "12px", color: "rgb(var(--bw-white))", fontWeight: 500 }}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -591,10 +591,10 @@ export default function Register({ onLogin }) {
                 }}
               >
                 <div>
-                  <p style={{ fontSize: "13px", fontWeight: 700, color: "#C8FF00", margin: 0 }}>14-day Free Trial</p>
+                  <p style={{ fontSize: "13px", fontWeight: 700, color: "rgb(var(--bw-volt))", margin: 0 }}>14-day Free Trial</p>
                   <p style={{ fontSize: "11px", color: "rgba(244,246,240,0.40)", margin: "2px 0 0 0" }}>then ₹2,999/month. Cancel anytime.</p>
                 </div>
-                <Check style={{ width: "18px", height: "18px", color: "#C8FF00" }} />
+                <Check style={{ width: "18px", height: "18px", color: "rgb(var(--bw-volt))" }} />
               </div>
 
               {/* Terms */}
@@ -609,24 +609,24 @@ export default function Register({ onLogin }) {
                 />
                 <label htmlFor="terms" style={{ fontSize: "12px", color: "rgba(244,246,240,0.55)", cursor: "pointer" }}>
                   I agree to the{" "}
-                  <a href="#" style={{ color: "#C8FF00", textDecoration: "none" }}>Terms of Service</a>{" "}
+                  <a href="#" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none" }}>Terms of Service</a>{" "}
                   and{" "}
-                  <a href="#" style={{ color: "#C8FF00", textDecoration: "none" }}>Privacy Policy</a>
+                  <a href="#" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none" }}>Privacy Policy</a>
                 </label>
               </div>
-              {errors.agreed && <p style={{ fontSize: "11px", color: "#FF3B2F", marginBottom: "12px" }}>{errors.agreed}</p>}
+              {errors.agreed && <p style={{ fontSize: "11px", color: "rgb(var(--bw-red))", marginBottom: "12px" }}>{errors.agreed}</p>}
 
               {/* Error messages */}
               {errors.submit && errors.submit !== "account_exists" && (
                 <div style={{ padding: "12px", background: "rgba(255,59,47,0.08)", border: "1px solid rgba(255,59,47,0.25)", borderRadius: "4px", marginBottom: "12px" }}>
-                  <p style={{ fontSize: "12px", color: "#FF3B2F", margin: 0 }}>{errors.submit}</p>
+                  <p style={{ fontSize: "12px", color: "rgb(var(--bw-red))", margin: 0 }}>{errors.submit}</p>
                 </div>
               )}
               {errors.submit === "account_exists" && (
                 <div style={{ padding: "12px", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: "4px", marginBottom: "12px" }}>
-                  <p style={{ fontSize: "12px", color: "#EAB308", margin: 0 }}>
+                  <p style={{ fontSize: "12px", color: "rgb(var(--bw-amber))", margin: 0 }}>
                     An account with this email exists.{" "}
-                    <Link to="/login" style={{ color: "#C8FF00" }}>Sign in →</Link>
+                    <Link to="/login" style={{ color: "rgb(var(--bw-volt))" }}>Sign in →</Link>
                   </p>
                 </div>
               )}
@@ -661,7 +661,7 @@ export default function Register({ onLogin }) {
                     background: submitting ? "rgba(200,255,0,0.50)" : "#C8FF00",
                     border: "none",
                     borderRadius: "4px",
-                    color: "#080C0F",
+                    color: "rgb(var(--bw-black))",
                     fontSize: "14px",
                     fontWeight: 700,
                     cursor: submitting ? "not-allowed" : "pointer",
@@ -679,7 +679,7 @@ export default function Register({ onLogin }) {
 
           <p style={{ textAlign: "center", marginTop: "20px", fontSize: "13px", color: "rgba(244,246,240,0.35)" }}>
             Already have an account?{" "}
-            <Link to="/login" style={{ color: "#C8FF00", textDecoration: "none" }}>
+            <Link to="/login" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none" }}>
               Sign in
             </Link>
           </p>

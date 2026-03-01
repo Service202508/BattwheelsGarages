@@ -329,7 +329,7 @@ export default function Dashboard({ user }) {
                             backgroundColor: '#111820', 
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '4px',
-                            color: '#F4F6F0'
+                            color: 'rgb(var(--bw-white))'
                           }}
                         />
                       </PieChart>
@@ -375,7 +375,7 @@ export default function Dashboard({ user }) {
                             backgroundColor: '#111820', 
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '4px',
-                            color: '#F4F6F0'
+                            color: 'rgb(var(--bw-white))'
                           }}
                           formatter={(value) => [`${value} hours`, 'Avg Time']}
                         />
@@ -552,7 +552,7 @@ export default function Dashboard({ user }) {
                               backgroundColor: '#111820', 
                               border: '1px solid rgba(255,255,255,0.1)',
                               borderRadius: '4px',
-                              color: '#F4F6F0'
+                              color: 'rgb(var(--bw-white))'
                             }}
                           />
                         </PieChart>
@@ -735,11 +735,11 @@ export default function Dashboard({ user }) {
                 <div className="space-y-1">
                   {leaderboard.slice(0, 5).map((tech) => {
                     const rankStyle = tech.rank === 1
-                      ? { background: "rgba(200,255,0,0.15)", color: "#C8FF00", border: "1px solid rgba(200,255,0,0.30)" }
+                      ? { background: "rgba(200,255,0,0.15)", color: "rgb(var(--bw-volt))", border: "1px solid rgba(200,255,0,0.30)" }
                       : tech.rank === 2
-                      ? { background: "rgba(244,246,240,0.08)", color: "#F4F6F0", border: "1px solid rgba(244,246,240,0.15)" }
+                      ? { background: "rgba(244,246,240,0.08)", color: "rgb(var(--bw-white))", border: "1px solid rgba(244,246,240,0.15)" }
                       : tech.rank === 3
-                      ? { background: "rgba(255,140,0,0.10)", color: "#FF8C00", border: "1px solid rgba(255,140,0,0.20)" }
+                      ? { background: "rgba(255,140,0,0.10)", color: "rgb(var(--bw-orange))", border: "1px solid rgba(255,140,0,0.20)" }
                       : { background: "transparent", color: "rgba(244,246,240,0.35)", border: "1px solid transparent" };
 
                     const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";

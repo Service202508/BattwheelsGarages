@@ -573,7 +573,7 @@ export default function Layout({ children, user, onLogout }) {
         className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
         style={{
           height: "60px",
-          background: "#080C0F",
+          background: "rgb(var(--bw-black))",
           borderTop: "1px solid rgba(255,255,255,0.08)",
         }}
       >

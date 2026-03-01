@@ -159,11 +159,11 @@ export default function FeatureGateBanner({ children }) {
           <Lock
             size={16}
             className="flex-shrink-0"
-            style={{ color: "#EAB308" }}
+            style={{ color: "rgb(var(--bw-amber))" }}
           />
           <div className="min-w-0">
             <p className="text-sm font-medium text-bw-white leading-tight whitespace-nowrap">
-              <span style={{ color: "#EAB308" }}>{featureLabel}</span>
+              <span style={{ color: "rgb(var(--bw-amber))" }}>{featureLabel}</span>
               {" "}is available on{" "}
               <span className="font-semibold">{requiredLabel} plan</span>
               {" "}and above.
@@ -187,7 +187,7 @@ export default function FeatureGateBanner({ children }) {
                 className="flex items-center gap-1 whitespace-nowrap"
                 style={{ fontSize: "11px", color: "rgba(244,246,240,0.60)" }}
               >
-                <span style={{ color: "#EAB308", fontWeight: 600 }}>&#10003;</span>
+                <span style={{ color: "rgb(var(--bw-amber))", fontWeight: 600 }}>&#10003;</span>
                 {benefit}
               </span>
             ))}
@@ -200,7 +200,7 @@ export default function FeatureGateBanner({ children }) {
           className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90 active:opacity-80"
           style={{
             background: "#EAB308",
-            color: "#080C0F",
+            color: "rgb(var(--bw-black))",
             fontFamily: "'JetBrains Mono', monospace",
           }}
           data-testid="feature-gate-upgrade-btn"

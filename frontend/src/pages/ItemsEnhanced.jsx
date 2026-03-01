@@ -1151,7 +1151,7 @@ export default function ItemsEnhanced() {
                             flex: 1, minHeight: "44px",
                             background: "rgba(200,255,0,0.08)",
                             border: "1px solid rgba(200,255,0,0.20)",
-                            borderRadius: "4px", color: "#C8FF00",
+                            borderRadius: "4px", color: "rgb(var(--bw-volt))",
                             fontSize: "12px", fontFamily: "Syne, sans-serif",
                             cursor: "pointer"
                           }}

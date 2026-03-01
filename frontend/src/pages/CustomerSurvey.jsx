@@ -357,7 +357,7 @@ export default function CustomerSurvey() {
         {state === "submitted" && (
           <div className="sv-error-state" data-testid="survey-already-submitted">
             <div className="sv-error-icon" style={{ opacity: 1 }}>✓</div>
-            <p className="sv-error-title" style={{ color: "#C8FF00" }}>Already received</p>
+            <p className="sv-error-title" style={{ color: "rgb(var(--bw-volt))" }}>Already received</p>
             <p className="sv-error-body">
               You have already submitted a review for this service. Thank you!
             </p>
@@ -376,7 +376,7 @@ export default function CustomerSurvey() {
             <h2 className="sv-thanks-title">Thank you!</h2>
             <p className="sv-thanks-body">
               Your feedback helps{" "}
-              <span style={{ color: "#F4F6F0", fontWeight: 600 }}>
+              <span style={{ color: "rgb(var(--bw-white))", fontWeight: 600 }}>
                 {surveyData.org_name}
               </span>{" "}
               serve you better.

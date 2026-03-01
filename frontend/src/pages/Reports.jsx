@@ -853,11 +853,11 @@ export default function Reports() {
                   {/* Summary Stats */}
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {[
-                      { label: "Total Tickets", value: slaReport.summary?.total_tickets_in_period ?? 0, color: "#F4F6F0" },
-                      { label: "Within SLA", value: slaReport.summary?.within_sla_count ?? 0, color: "#22C55E" },
-                      { label: "Response Breaches", value: slaReport.summary?.response_sla_breaches ?? 0, color: "#FF3B2F" },
-                      { label: "Resolution Breaches", value: slaReport.summary?.resolution_sla_breaches ?? 0, color: "#FF8C00" },
-                      { label: "Auto-Reassigned", value: slaReport.summary?.auto_reassignments_triggered ?? 0, color: "#C8FF00" },
+                      { label: "Total Tickets", value: slaReport.summary?.total_tickets_in_period ?? 0, color: "rgb(var(--bw-white))" },
+                      { label: "Within SLA", value: slaReport.summary?.within_sla_count ?? 0, color: "rgb(var(--bw-green))" },
+                      { label: "Response Breaches", value: slaReport.summary?.response_sla_breaches ?? 0, color: "rgb(var(--bw-red))" },
+                      { label: "Resolution Breaches", value: slaReport.summary?.resolution_sla_breaches ?? 0, color: "rgb(var(--bw-orange))" },
+                      { label: "Auto-Reassigned", value: slaReport.summary?.auto_reassignments_triggered ?? 0, color: "rgb(var(--bw-volt))" },
                     ].map(({ label, value, color }) => (
                       <Card key={label} className="bg-bw-panel border border-white/[0.07]">
                         <CardContent className="p-3">
@@ -1003,11 +1003,11 @@ export default function Reports() {
                           <TableBody>
                             {techReport.technicians.map((tech) => {
                               const rankStyle = tech.rank === 1
-                                ? { background: "rgba(200,255,0,0.15)", color: "#C8FF00", border: "1px solid rgba(200,255,0,0.30)" }
+                                ? { background: "rgba(200,255,0,0.15)", color: "rgb(var(--bw-volt))", border: "1px solid rgba(200,255,0,0.30)" }
                                 : tech.rank === 2
-                                ? { background: "rgba(244,246,240,0.08)", color: "#F4F6F0", border: "1px solid rgba(244,246,240,0.15)" }
+                                ? { background: "rgba(244,246,240,0.08)", color: "rgb(var(--bw-white))", border: "1px solid rgba(244,246,240,0.15)" }
                                 : tech.rank === 3
-                                ? { background: "rgba(255,140,0,0.10)", color: "#FF8C00", border: "1px solid rgba(255,140,0,0.20)" }
+                                ? { background: "rgba(255,140,0,0.10)", color: "rgb(var(--bw-orange))", border: "1px solid rgba(255,140,0,0.20)" }
                                 : {};
                               const resRateColor = tech.resolution_rate_pct >= 80 ? "#22C55E" : tech.resolution_rate_pct >= 60 ? "#EAB308" : "#FF3B2F";
                               const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
@@ -1065,14 +1065,14 @@ export default function Reports() {
                           <CardContent>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                               {[
-                                { label: "Assigned", val: selectedTech.total_tickets_assigned, color: "#F4F6F0" },
-                                { label: "Resolved", val: selectedTech.total_tickets_resolved, color: "#22C55E" },
+                                { label: "Assigned", val: selectedTech.total_tickets_assigned, color: "rgb(var(--bw-white))" },
+                                { label: "Resolved", val: selectedTech.total_tickets_resolved, color: "rgb(var(--bw-green))" },
                                 { label: "Res. Rate", val: `${selectedTech.resolution_rate_pct}%`, color: selectedTech.resolution_rate_pct >= 80 ? "#22C55E" : "#EAB308" },
                                 { label: "SLA Compliance", val: `${selectedTech.sla_compliance_rate_pct}%`, color: selectedTech.sla_compliance_rate_pct >= 90 ? "#22C55E" : selectedTech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F" },
                                 { label: "SLA Breaches (Resp)", val: selectedTech.sla_breaches_response, color: selectedTech.sla_breaches_response === 0 ? "rgba(244,246,240,0.25)" : "#EAB308" },
                                 { label: "SLA Breaches (Res)", val: selectedTech.sla_breaches_resolution, color: selectedTech.sla_breaches_resolution === 0 ? "rgba(244,246,240,0.25)" : "#FF3B2F" },
-                                { label: "Avg Response", val: selectedTech.avg_response_time_minutes ? (selectedTech.avg_response_time_minutes < 60 ? `${Math.round(selectedTech.avg_response_time_minutes)}m` : `${Math.round(selectedTech.avg_response_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
-                                { label: "Avg Resolution", val: selectedTech.avg_resolution_time_minutes ? (selectedTech.avg_resolution_time_minutes < 60 ? `${Math.round(selectedTech.avg_resolution_time_minutes)}m` : `${Math.round(selectedTech.avg_resolution_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
+                                { label: "Avg Response", val: selectedTech.avg_response_time_minutes ? (selectedTech.avg_response_time_minutes < 60 ? `${Math.round(selectedTech.avg_response_time_minutes)}m` : `${Math.round(selectedTech.avg_response_time_minutes/60)}h`) : "N/A", color: "rgb(var(--bw-white))" },
+                                { label: "Avg Resolution", val: selectedTech.avg_resolution_time_minutes ? (selectedTech.avg_resolution_time_minutes < 60 ? `${Math.round(selectedTech.avg_resolution_time_minutes)}m` : `${Math.round(selectedTech.avg_resolution_time_minutes/60)}h`) : "N/A", color: "rgb(var(--bw-white))" },
                               ].map(({ label, val, color }) => (
                                 <div key={label} className="p-3 rounded bg-white/[0.03] border border-white/[0.06]">
                                   <p className="text-[10px] text-bw-white/35 uppercase tracking-wide mb-1">{label}</p>

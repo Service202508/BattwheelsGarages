@@ -553,7 +553,7 @@ const TrialBalance = () => {
               fontFamily: 'Syne, sans-serif',
               fontSize: '24px',
               fontWeight: 700,
-              color: '#3B9EFF'
+              color: 'rgb(var(--bw-blue))'
             }}>
               {trialData.accounts?.filter(a => a.credit_balance > 0).length || 0}
             </div>

@@ -55,7 +55,7 @@ root.render(
       fallback={
         <div style={{
           display: "flex", flexDirection: "column", alignItems: "center",
-          justifyContent: "center", height: "100vh", background: "#080C0F", color: "#F4F6F0"
+          justifyContent: "center", height: "100vh", background: "rgb(var(--bw-black))", color: "rgb(var(--bw-white))"
         }}>
           <h2 style={{ fontSize: "20px", marginBottom: "8px" }}>Something went wrong</h2>
           <p style={{ color: "rgba(244,246,240,0.45)", marginBottom: "16px" }}>
@@ -64,7 +64,7 @@ root.render(
           <button
             onClick={() => window.location.reload()}
             style={{
-              background: "#C8FF00", color: "#080C0F", border: "none",
+              background: "rgb(var(--bw-volt))", color: "rgb(var(--bw-black))", border: "none",
               padding: "8px 20px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold"
             }}
           >

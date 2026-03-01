@@ -78,7 +78,7 @@ export function EstimateTotalsBlock({
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: '11px',
             letterSpacing: '0.08em',
-            color: '#C8FF00'
+            color: 'rgb(var(--bw-volt))'
           }}
         >
           Grand Total:
@@ -87,7 +87,7 @@ export function EstimateTotalsBlock({
           className="text-lg"
           style={{
             fontWeight: 700,
-            color: '#C8FF00'
+            color: 'rgb(var(--bw-volt))'
           }}
         >
           {formatAmount(total)}

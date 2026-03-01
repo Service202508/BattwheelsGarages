@@ -150,7 +150,7 @@ export function OnboardingBanner() {
             style={{
               fontFamily: "Syne, sans-serif",
               fontSize: "16px",
-              color: "#F4F6F0",
+              color: "rgb(var(--bw-white))",
               fontWeight: 600,
               margin: 0,
             }}
@@ -169,7 +169,7 @@ export function OnboardingBanner() {
             Your workshop is fully configured.
           </p>
         </div>
-        <CheckCircle2 style={{ width: "32px", height: "32px", color: "#22C55E", flexShrink: 0 }} />
+        <CheckCircle2 style={{ width: "32px", height: "32px", color: "rgb(var(--bw-green))", flexShrink: 0 }} />
       </div>
     );
   }
@@ -198,7 +198,7 @@ export function OnboardingBanner() {
           style={{
             fontFamily: "Syne, sans-serif",
             fontSize: "16px",
-            color: "#F4F6F0",
+            color: "rgb(var(--bw-white))",
             fontWeight: 600,
             margin: 0,
           }}
@@ -210,7 +210,7 @@ export function OnboardingBanner() {
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: "12px",
-            color: "#C8FF00",
+            color: "rgb(var(--bw-volt))",
             margin: 0,
           }}
         >
@@ -233,7 +233,7 @@ export function OnboardingBanner() {
           style={{
             height: "3px",
             width: `${progressPercent}%`,
-            background: "#C8FF00",
+            background: "rgb(var(--bw-volt))",
             borderRadius: "2px",
             transition: "width 0.5s ease",
           }}
