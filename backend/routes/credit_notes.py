@@ -228,13 +228,18 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     # 11. Post journal entries via double-entry service
     journal_result = await post_credit_note_journal(db, org_id, credit_note, is_paid, user_id or "")
     
-    # 12. Update invoice with credit note reference
+    # 12. Update invoice with credit note reference (update in both collections)
+    update_ops = {
+        "$push": {"credit_notes": {"credit_note_id": cn_id, "credit_note_number": cn_number, "amount": total, "date": now}},
+        "$inc": {"total_credits_applied": total}
+    }
     await db.invoices.update_one(
         {"invoice_id": body.original_invoice_id, "organization_id": org_id},
-        {
-            "$push": {"credit_notes": {"credit_note_id": cn_id, "credit_note_number": cn_number, "amount": total, "date": now}},
-            "$inc": {"total_credits_applied": total}
-        }
+        update_ops
+    )
+    await db.invoices_enhanced.update_one(
+        {"invoice_id": body.original_invoice_id, "organization_id": org_id},
+        update_ops
     )
     
     logger.info(f"Credit note {cn_number} created for invoice {invoice.get('invoice_number')} in org {org_id}")
