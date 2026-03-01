@@ -57,6 +57,9 @@ export default function InvoicesEnhanced() {
   const [invoices, setInvoices] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   const [customers, setCustomers] = useState([]);
   const [items, setItems] = useState([]);
   
@@ -162,16 +165,26 @@ export default function InvoicesEnhanced() {
     setLoading(false);
   }, []);
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = async (cursorParam = null) => {
     try {
-      let url = `${API}/invoices-enhanced/?per_page=100`;
+      let url = `${API}/invoices-enhanced/?limit=50`;
+      if (cursorParam) url += `&cursor=${cursorParam}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       if (customerFilter) url += `&customer_id=${customerFilter}`;
       
       const res = await fetch(url, { headers });
       const data = await res.json();
-      setInvoices(data.data || data.invoices || []);
+      const items = data.data || data.invoices || [];
+      const pagination = data.pagination || {};
+      if (cursorParam) {
+        setInvoices(prev => [...prev, ...items]);
+      } else {
+        setInvoices(items);
+      }
+      setNextCursor(pagination.next_cursor || null);
+      setHasMore(pagination.has_next || false);
+      setTotalCount(pagination.total_count || items.length);
     } catch (e) {
       console.error("Failed to fetch invoices:", e);
     }
