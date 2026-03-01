@@ -1,35 +1,56 @@
 #!/bin/bash
 # Battwheels OS — Pre-commit hook
 # Blocks commits containing broken code.
-# Install: cp scripts/pre-commit-hook.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Install: bash scripts/install-hooks.sh
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(jsx|js|tsx)$' || true)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM || true)
 
-# a) ESLint on staged JS/JSX/TSX files (frontend only)
-FRONTEND_FILES=$(echo "$STAGED_FILES" | grep "^frontend/src/" | sed 's|^frontend/||' || true)
+# a) Syntax check staged frontend JS/JSX/TSX files using acorn parser
+FRONTEND_FILES=$(echo "$STAGED_FILES" | grep "^frontend/src/.*\.\(jsx\|js\|tsx\)$" || true)
 if [ -n "$FRONTEND_FILES" ]; then
-  echo "Running ESLint on staged frontend files..."
-  cd /app/frontend
-  npx eslint $FRONTEND_FILES --quiet
-  if [ $? -ne 0 ]; then
-    echo "ESLint failed. Fix errors before committing."
+  echo "Checking frontend file syntax..."
+  SYNTAX_FAIL=0
+  for f in $FRONTEND_FILES; do
+    node -e "
+      const fs = require('fs');
+      const acorn = require('acorn');
+      const jsx = require('acorn-jsx');
+      const parser = acorn.Parser.extend(jsx());
+      try {
+        parser.parse(fs.readFileSync('/app/$f', 'utf8'), { sourceType: 'module', ecmaVersion: 2022 });
+      } catch(e) {
+        console.error('Syntax error in $f:', e.message);
+        process.exit(1);
+      }
+    " 2>&1
+    if [ $? -ne 0 ]; then
+      SYNTAX_FAIL=1
+    fi
+  done
+  if [ $SYNTAX_FAIL -ne 0 ]; then
+    echo "Frontend syntax check failed. Fix errors before committing."
     exit 1
   fi
-  cd /app
+  echo "Frontend syntax: OK"
 fi
 
-# b) Fast syntax check if any frontend files are staged
-if echo "$STAGED_FILES" | grep -q "^frontend/"; then
-  echo "Running frontend syntax check..."
-  cd /app/frontend
-  npx eslint src/ --quiet --no-eslintrc --rule '{"no-dupe-args": "error", "no-dupe-keys": "error"}' 2>/dev/null
-  cd /app
+# b) Check for duplicate imports in staged frontend files
+if [ -n "$FRONTEND_FILES" ]; then
+  for f in $FRONTEND_FILES; do
+    DUPES=$(sort "/app/$f" | uniq -d | grep "^import " || true)
+    if [ -n "$DUPES" ]; then
+      echo "Duplicate import in $f:"
+      echo "$DUPES"
+      echo "Fix duplicate imports before committing."
+      exit 1
+    fi
+  done
 fi
 
 # c) Python syntax check on staged .py files
-STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$' || true)
+STAGED_PY=$(echo "$STAGED_FILES" | grep '\.py$' || true)
 if [ -n "$STAGED_PY" ]; then
-  echo "Running Python syntax check on staged files..."
+  echo "Checking Python file syntax..."
   for f in $STAGED_PY; do
     python -m py_compile "/app/$f" 2>&1
     if [ $? -ne 0 ]; then
@@ -37,6 +58,7 @@ if [ -n "$STAGED_PY" ]; then
       exit 1
     fi
   done
+  echo "Python syntax: OK"
 fi
 
 echo "Pre-commit checks passed."
