@@ -106,6 +106,45 @@ export default function TicketDetail({ user }) {
     setEstimateLoading(false);
   };
 
+  const fetchEfiSuggestions = useCallback(async () => {
+    setEfiLoading(true);
+    setEfiError(null);
+    try {
+      const res = await fetch(`${API}/efi-guided/suggestions/${ticketId}`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setEfiData(data);
+      } else if (res.status !== 404) {
+        setEfiError("Failed to load EFI intelligence");
+      }
+    } catch (err) {
+      setEfiError("EFI service unavailable");
+    }
+    setEfiLoading(false);
+  }, [ticketId]);
+
+  const handleStartDiagnosticSession = async (failureCardId) => {
+    setStartingSession(true);
+    try {
+      const res = await fetch(`${API}/efi-guided/session/start`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ ticket_id: ticketId, failure_card_id: failureCardId }),
+      });
+      if (res.ok) {
+        const session = await res.json();
+        toast.success("EFI diagnostic session started");
+        fetchEfiSuggestions();
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to start session");
+      }
+    } catch (err) {
+      toast.error("Failed to start diagnostic session");
+    }
+    setStartingSession(false);
+  };
+
   const handleCreateEstimate = async () => {
     setCreatingEstimate(true);
     try {
