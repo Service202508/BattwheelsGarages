@@ -295,18 +295,17 @@ class Test6B04SuggestionsWithKnowledgeArticles:
             assert "content" in ka or ka.get("content") is None
             print(f"  - {path.get('failure_id')}: KB={ka.get('knowledge_id')}, title={ka.get('title')[:30]}...")
     
-    def test_knowledge_article_matches_subsystem(self, dev_user_token):
+    def test_knowledge_article_matches_subsystem(self, dev_user_token, ensure_test_ticket):
         """Knowledge article should match the failure card subsystem"""
         resp = requests.get(
-            f"{BASE_URL}/api/v1/efi-guided/suggestions/tkt_8b36dc571ae4",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{ensure_test_ticket}",
             headers={
                 "Authorization": f"Bearer {dev_user_token}",
                 "X-Organization-ID": "dev-internal-testing-001"
             }
         )
         
-        if resp.status_code != 200:
-            pytest.skip("Test ticket not available")
+        assert resp.status_code == 200, f"Suggestions failed: {resp.text}"
         
         data = resp.json()
         suggested_paths = data.get("suggested_paths", [])
