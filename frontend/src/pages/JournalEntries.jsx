@@ -1124,6 +1124,9 @@ const JournalEntries = () => {
   const [accounts, setAccounts] = useState([]);
   const [stats, setStats] = useState({ total: 0, totalDebit: 0, totalCredit: 0, isBalanced: true });
   const [loading, setLoading] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   const [expandedEntry, setExpandedEntry] = useState(null);
   const [showModal, setShowModal] = useState(false);
   
