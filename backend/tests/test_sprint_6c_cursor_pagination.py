@@ -20,7 +20,7 @@ import os
 import base64
 import json
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 DEV_ORG_ID = "dev-internal-testing-001"
 
 # Test credentials

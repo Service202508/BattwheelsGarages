@@ -16,7 +16,7 @@ import os
 import uuid
 
 # Get API URL from environment
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
     BASE_URL = "https://github-push-7.preview.emergentagent.com"
 

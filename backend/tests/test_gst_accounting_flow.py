@@ -12,7 +12,7 @@ import os
 from datetime import datetime, timedelta
 
 # Use public URL from environment
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
     BASE_URL = ""
 

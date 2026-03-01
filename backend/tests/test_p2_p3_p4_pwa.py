@@ -16,7 +16,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 
 # Org admin credentials
 ORG_ADMIN_EMAIL = "dev@battwheels.internal"
