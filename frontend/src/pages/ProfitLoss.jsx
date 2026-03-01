@@ -80,7 +80,7 @@ export default function ProfitLoss() {
           <Input type="date" data-testid="start-date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-36 bg-bw-black border-bw-white/[0.12] text-bw-white text-sm" />
           <span className="text-bw-white/30 text-sm">to</span>
           <Input type="date" data-testid="end-date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-36 bg-bw-black border-bw-white/[0.12] text-bw-white text-sm" />
-          <Button data-testid="refresh-pl-btn" onClick={fetchReport} className="bg-bw-volt text-black hover:bg-bw-volt-hover text-sm font-semibold">Refresh</Button>
+          <Button data-testid="refresh-pl-btn" onClick={fetchReport} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover text-sm font-semibold">Refresh</Button>
         </div>
       </div>
 

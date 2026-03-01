@@ -88,7 +88,7 @@ export default function BalanceSheet() {
           <Button
             data-testid="refresh-btn"
             onClick={() => fetchReport(asOfDate)}
-            className="bg-bw-volt text-black hover:bg-bw-volt-hover text-sm font-semibold"
+            className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover text-sm font-semibold"
           >Refresh</Button>
         </div>
       </div>

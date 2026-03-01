@@ -344,7 +344,7 @@ export default function TicketDetail({ user }) {
               ) : (
                 <div className="text-center py-4">
                   <p className="text-zinc-500 text-sm mb-3">No estimate created for this ticket yet</p>
-                  <Button size="sm" onClick={handleCreateEstimate} disabled={creatingEstimate} className="bg-bw-volt text-black hover:bg-bw-volt-hover" data-testid="create-estimate-btn">
+                  <Button size="sm" onClick={handleCreateEstimate} disabled={creatingEstimate} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover" data-testid="create-estimate-btn">
                     {creatingEstimate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                     Create Estimate
                   </Button>
@@ -365,7 +365,7 @@ export default function TicketDetail({ user }) {
                   className="bg-zinc-800 border-zinc-700 text-zinc-200 text-sm min-h-[60px]"
                   data-testid="ticket-note-input"
                 />
-                <Button size="sm" onClick={handleAddNote} disabled={addingNote || !newNote.trim()} className="bg-bw-volt text-black hover:bg-bw-volt-hover self-end" data-testid="ticket-add-note-btn">
+                <Button size="sm" onClick={handleAddNote} disabled={addingNote || !newNote.trim()} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover self-end" data-testid="ticket-add-note-btn">
                   {addingNote ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
@@ -600,7 +600,7 @@ export default function TicketDetail({ user }) {
             <Button
               onClick={handleFailureCardSubmit}
               disabled={failureCardSubmitting || !failureCardForm.confirmed_root_cause}
-              className="bg-bw-volt text-black hover:bg-bw-volt/80 font-medium"
+              className="bg-bw-volt text-bw-black hover:bg-bw-volt/80 font-medium"
               data-testid="fc-submit-btn"
             >
               {failureCardSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Brain className="w-4 h-4 mr-1" />}

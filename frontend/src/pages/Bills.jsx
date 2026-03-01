@@ -326,7 +326,7 @@ export default function Bills() {
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button onClick={() => { resetForm(); setShowCreateDialog(true); }} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+          <Button onClick={() => { resetForm(); setShowCreateDialog(true); }} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
             <Plus className="w-4 h-4 mr-2" />
             New Bill
           </Button>
@@ -702,7 +702,7 @@ export default function Bills() {
             <Button variant="outline" onClick={() => setShowCreateDialog(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleCreateBill} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+            <Button onClick={handleCreateBill} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
               Create Bill
             </Button>
           </DialogFooter>
@@ -838,7 +838,7 @@ export default function Bills() {
 
               <DialogFooter className="flex gap-2">
                 {selectedBill.status === "DRAFT" && (
-                  <Button onClick={() => handleApprove(selectedBill)} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+                  <Button onClick={() => handleApprove(selectedBill)} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
                     <CheckCircle2 className="w-4 h-4 mr-2" /> Approve
                   </Button>
                 )}

@@ -308,7 +308,7 @@ export default function Banking() {
             <ArrowRightLeft className="w-4 h-4 mr-2" />
             Transfer
           </Button>
-          <Button onClick={() => { resetAccountForm(); setShowCreateAccount(true); }} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+          <Button onClick={() => { resetAccountForm(); setShowCreateAccount(true); }} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
             <Plus className="w-4 h-4 mr-2" />
             New Account
           </Button>
@@ -418,7 +418,7 @@ export default function Banking() {
                 <Button variant="outline" size="sm" onClick={selectAllUnreconciled} className="border-bw-white/15 text-bw-white">
                   Select Unreconciled
                 </Button>
-                <Button size="sm" onClick={() => { resetTxnForm(); setShowAddTransaction(true); }} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+                <Button size="sm" onClick={() => { resetTxnForm(); setShowAddTransaction(true); }} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
                   <Plus className="w-4 h-4 mr-1" />
                   Add Transaction
                 </Button>
@@ -630,7 +630,7 @@ export default function Banking() {
             <Button variant="outline" onClick={() => setShowCreateAccount(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleCreateAccount} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+            <Button onClick={handleCreateAccount} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
               Create Account
             </Button>
           </DialogFooter>
@@ -720,7 +720,7 @@ export default function Banking() {
             <Button variant="outline" onClick={() => setShowAddTransaction(false)} className="border-bw-white/15 text-bw-white">
               Cancel
             </Button>
-            <Button onClick={handleAddTransaction} className="bg-bw-volt text-black hover:bg-bw-volt-hover">
+            <Button onClick={handleAddTransaction} className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover">
               Add Transaction
             </Button>
           </DialogFooter>

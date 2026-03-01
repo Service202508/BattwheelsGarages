@@ -69,7 +69,7 @@ export default function PeriodLocks({ user }) {
           <Button
             data-testid="lock-period-btn"
             onClick={() => setShowConfirm(true)}
-            className="bg-bw-volt text-black hover:bg-bw-volt-hover font-semibold"
+            className="bg-bw-volt text-bw-black hover:bg-bw-volt-hover font-semibold"
           >
             <Lock className="w-4 h-4 mr-2" /> Lock a Period
           </Button>

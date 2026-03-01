@@ -55,7 +55,7 @@ export default function ForgotPassword() {
                 If an account exists for <strong className="text-bw-white">{email}</strong>, you'll receive a password reset link shortly.
               </p>
               <Link to="/login">
-                <Button data-testid="back-to-login-btn" className="w-full bg-bw-volt text-black hover:bg-bw-volt-hover font-semibold mt-3">
+                <Button data-testid="back-to-login-btn" className="w-full bg-bw-volt text-bw-black hover:bg-bw-volt-hover font-semibold mt-3">
                   <ArrowLeft className="w-4 h-4 mr-2" /> Back to Login
                 </Button>
               </Link>
@@ -81,7 +81,7 @@ export default function ForgotPassword() {
                 data-testid="send-reset-btn"
                 type="submit"
                 disabled={loading || !email}
-                className="w-full bg-bw-volt text-black hover:bg-bw-volt-hover font-semibold disabled:opacity-50"
+                className="w-full bg-bw-volt text-bw-black hover:bg-bw-volt-hover font-semibold disabled:opacity-50"
               >
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </Button>
