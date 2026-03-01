@@ -258,6 +258,8 @@ class TestBankAccount:
             "account_name": f"Test Bank {uuid.uuid4().hex[:6]}",
             "account_type": "savings",
             "bank_name": "Test Bank Ltd",
+            "account_number": f"ACCT{uuid.uuid4().hex[:10].upper()}",
+            "ifsc_code": "TEST0001234",
             "opening_balance": 10000.0,
             "currency": "INR"
         })
