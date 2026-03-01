@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { colors as themeColors } from "../../theme/colors";
 import { Button } from "@/components/ui/button";
-import { colors as themeColors } from "../../theme/colors";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
