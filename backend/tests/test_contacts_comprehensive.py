@@ -25,7 +25,7 @@ class TestContactsCRUD:
     def created_customer(self, base_url, auth_headers):
         """Create a test customer"""
         data = {
-            "contact_name": f"Test Customer {unique()}",
+            "name": f"Test Customer {unique()}",
             "contact_type": "customer",
             "email": f"{unique('cust')}@test.com",
             "phone": "9876543210",
@@ -42,7 +42,7 @@ class TestContactsCRUD:
     def created_vendor(self, base_url, auth_headers):
         """Create a test vendor"""
         data = {
-            "contact_name": f"Test Vendor {unique()}",
+            "name": f"Test Vendor {unique()}",
             "contact_type": "vendor",
             "email": f"{unique('vnd')}@test.com",
             "phone": "9123456789",
