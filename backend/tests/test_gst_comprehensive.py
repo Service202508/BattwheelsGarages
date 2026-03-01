@@ -35,14 +35,14 @@ class TestGSTR1:
         assert resp.status_code == 200
         data = resp.json()
         assert "b2b" in data
-        assert "b2cl" in data or "b2cs" in data
+        assert "b2c_large" in data or "b2c_small" in data or "b2cs" in data
         assert "hsn_summary" in data
 
     def test_gstr1_b2b_section(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr1?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert isinstance(data["b2b"], list)
+        assert isinstance(data.get("b2b"), list)
 
     def test_gstr1_requires_auth(self, base_url):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr1?month=2026-03")
@@ -56,29 +56,25 @@ class TestGSTR3B:
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        # Table 3.1 (outward supplies)
-        assert "table_3_1" in data
+        assert "section_3_1" in data
 
     def test_gstr3b_rcm_section(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert "table_3_1" in data
-        table31 = data["table_3_1"]
-        # 3.1d is RCM
-        assert "d" in table31 or "rcm" in str(table31).lower() or isinstance(table31, dict)
+        assert "section_3_1_d" in data
 
     def test_gstr3b_itc_section(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert "table_4A" in data or "itc" in data or "table_4" in str(data.keys())
+        assert "section_4" in data
 
     def test_gstr3b_net_liability(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert "net_liability" in data or "liability" in data or "payable" in str(data).lower()
+        assert "summary" in data
 
     def test_gstr3b_requires_auth(self, base_url):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03")
@@ -103,17 +99,11 @@ class TestGSTSettings:
 
 class TestUpdateGSTSettings:
     def test_update_settings(self, base_url, _headers):
-        # First get current settings
-        get_resp = requests.get(f"{base_url}/api/v1/gst/organization-settings", headers=_headers)
-        if get_resp.status_code != 200:
-            pytest.skip("Cannot get current settings")
-        current = get_resp.json()
-        current_gstin = current.get("gstin", "07AAACM1234A1Z5")
-
         resp = requests.put(f"{base_url}/api/v1/gst/organization-settings", headers=_headers, json={
-            "gstin": current_gstin,
-            "state_code": "07",
-            "state_name": "Delhi"
+            "gstin": "07AAACM1234A1Z5",
+            "place_of_supply": "07",
+            "legal_name": "Battwheels",
+            "trade_name": "Battwheels"
         })
         assert resp.status_code == 200
 
@@ -176,10 +166,10 @@ class TestGSTINValidation:
 class TestGSTCalculation:
     def test_calculate_gst(self, base_url, _headers):
         resp = requests.post(f"{base_url}/api/v1/gst/calculate", headers=_headers, json={
-            "amount": 10000,
+            "subtotal": 10000,
             "gst_rate": 18,
-            "is_inter_state": False,
-            "place_of_supply": "07"
+            "org_state_code": "07",
+            "customer_state_code": "07"
         })
         assert resp.status_code == 200
         data = resp.json()
