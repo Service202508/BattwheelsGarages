@@ -337,9 +337,6 @@ export default function PlatformAdmin({ user, onLogout }) {
       <div className="border-b border-white/[0.07] bg-bw-off-black px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/dashboard")} className="text-bw-white/[0.45] hover:text-white transition">
-              <ArrowLeft className="w-5 h-5" />
-            </button>
             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
               <Crown className="w-4 h-4 text-purple-400" />
             </div>
