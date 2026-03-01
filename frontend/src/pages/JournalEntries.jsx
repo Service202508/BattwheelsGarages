@@ -1137,8 +1137,8 @@ const JournalEntries = () => {
   const [accountFilter, setAccountFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (cursorParam = null) => {
+    if (!cursorParam) setLoading(true);
     try {
       // Fetch entries
       let entriesUrl = `${API_URL}/api/journal-entries`;
@@ -1147,33 +1147,58 @@ const JournalEntries = () => {
       if (endDate) params.append('end_date', endDate);
       if (entryType) params.append('entry_type', entryType);
       if (accountFilter) params.append('account_id', accountFilter);
-      params.append('limit', '100');
+      params.append('limit', '50');
+      if (cursorParam) params.append('cursor', cursorParam);
       if (params.toString()) entriesUrl += `?${params.toString()}`;
 
       const token = localStorage.getItem('token');
       const orgId = localStorage.getItem('organization_id');
       const authHeaders = { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId || '' };
 
-      const [entriesRes, accountsRes, trialRes] = await Promise.all([
-        fetch(entriesUrl, { headers: authHeaders, credentials: 'include' }),
-        fetch(`${API_URL}/api/journal-entries/accounts/chart`, { headers: authHeaders, credentials: 'include' }),
-        fetch(`${API_URL}/api/journal-entries/reports/trial-balance`, { headers: authHeaders, credentials: 'include' })
-      ]);
+      const fetchPromises = [
+        fetch(entriesUrl, { headers: authHeaders, credentials: 'include' })
+      ];
+      if (!cursorParam) {
+        fetchPromises.push(
+          fetch(`${API_URL}/api/journal-entries/accounts/chart`, { headers: authHeaders, credentials: 'include' }),
+          fetch(`${API_URL}/api/journal-entries/reports/trial-balance`, { headers: authHeaders, credentials: 'include' })
+        );
+      }
 
-      const entriesData = await entriesRes.json();
-      const accountsData = await accountsRes.json();
-      const trialData = await trialRes.json();
+      const results = await Promise.all(fetchPromises);
+      const entriesData = await results[0].json();
+
+      if (!cursorParam && results.length > 1) {
+        const accountsData = await results[1].json();
+        const trialData = await results[2].json();
+        setAccounts(accountsData.accounts || []);
+        setStats(prev => ({
+          ...prev,
+          trialBalance: trialData
+        }));
+      }
 
       // API returns paginated {data: [...], pagination: {...}} format
       const rawEntries = entriesData.data || entriesData.entries || [];
-      let filtered = rawEntries;
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(e =>
-          e.reference_number?.toLowerCase().includes(q) ||
-          e.description?.toLowerCase().includes(q)
-        );
+      const pagination = entriesData.pagination || {};
+
+      if (cursorParam) {
+        setEntries(prev => [...prev, ...rawEntries]);
+      } else {
+        let filtered = rawEntries;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          filtered = filtered.filter(e =>
+            e.reference_number?.toLowerCase().includes(q) ||
+            e.description?.toLowerCase().includes(q)
+          );
+        }
+        setEntries(filtered);
       }
+
+      setNextCursor(pagination.next_cursor || null);
+      setHasMore(pagination.has_next || false);
+      setTotalCount(pagination.total_count || rawEntries.length);
       setEntries(filtered);
 
       // Calculate stats from entries
