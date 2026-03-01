@@ -130,17 +130,22 @@ class TestChangeOrgPlan:
 
     @pytest.fixture(scope="class")
     def _test_org_id(self, base_url, _admin_h):
-        resp = requests.get(f"{base_url}{PREFIX}/organizations?search=volt&limit=1", headers=_admin_h)
-        orgs = resp.json().get("organizations", [])
-        if not orgs:
-            pytest.skip("No org found for plan change test")
-        return orgs[0]["organization_id"]
+        """Use dev-internal-testing-001 for plan tests (not demo org)."""
+        return "dev-internal-testing-001"
+
+    @pytest.fixture(scope="class")
+    def _original_plan(self, base_url, _admin_h, _test_org_id):
+        """Capture the original plan to restore after test."""
+        resp = requests.get(f"{base_url}{PREFIX}/organizations/{_test_org_id}", headers=_admin_h)
+        if resp.status_code == 200:
+            return resp.json().get("subscription", {}).get("plan_code", "professional")
+        return "professional"
 
     def test_change_plan(self, base_url, _admin_h, _test_org_id):
         resp = requests.put(
             f"{base_url}{PREFIX}/organizations/{_test_org_id}/plan",
             headers=_admin_h,
-            json={"plan_type": "professional"}
+            json={"plan_type": "enterprise"}
         )
         assert resp.status_code == 200
         assert resp.json().get("success") is True
@@ -161,12 +166,12 @@ class TestChangeOrgPlan:
         )
         assert resp.status_code == 404
 
-    def test_change_plan_restore(self, base_url, _admin_h, _test_org_id):
-        """Restore to free plan after test."""
+    def test_change_plan_restore(self, base_url, _admin_h, _test_org_id, _original_plan):
+        """Restore plan after test."""
         resp = requests.put(
             f"{base_url}{PREFIX}/organizations/{_test_org_id}/plan",
             headers=_admin_h,
-            json={"plan_type": "free"}
+            json={"plan_type": _original_plan}
         )
         assert resp.status_code == 200
 
