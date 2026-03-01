@@ -130,8 +130,8 @@ class TestAMCSubscriptions:
     def created_sub(self, base_url, _headers, _plan_id):
         resp = requests.post(f"{base_url}{PREFIX}/subscriptions", headers=_headers, json={
             "plan_id": _plan_id,
-            "customer_id": f"cust-test-{uuid.uuid4().hex[:6]}",
-            "vehicle_id": f"veh-test-{uuid.uuid4().hex[:6]}",
+            "customer_id": "test-customer-001",
+            "vehicle_id": "veh_30c1bd83046a",
             "amount_paid": 499.0,
             "payment_status": "paid",
         })
