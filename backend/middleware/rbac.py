@@ -186,7 +186,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     
     # ============ CONFIG/ANALYTICS (previously unmapped) ============
     r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
-    r"^/api/dashboard/financial(/.*)?$":    ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/dashboard(/.*)?$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
 }
 
