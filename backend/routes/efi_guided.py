@@ -593,11 +593,14 @@ async def list_failure_cards(request: Request, subsystem: Optional[str] = None, 
 
 @router.get("/failure-cards/{failure_id}")
 async def get_failure_card(request: Request, failure_id: str):
-    org_id = extract_org_id(request)
     """Get a single failure card by ID"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
-    card = await _db.failure_cards.find_one({"failure_id": failure_id}, {"_id": 0})
+    card = await _db.failure_cards.find_one(
+        {"$or": [{"failure_id": failure_id}, {"card_id": failure_id}]},
+        {"_id": 0}
+    )
     if not card:
         raise HTTPException(status_code=404, detail="Failure card not found")
     
