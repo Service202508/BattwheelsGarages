@@ -363,9 +363,12 @@ async def get_source_details(
     org_id = extract_org_id(http_request)
     db = get_db()
     
+    # TENANT GUARD: Only return global or same-org sources
+    tenant_filter = {"$or": [{"scope": "global"}, {"organization_id": org_id}]}
+    
     # Try knowledge articles
     article = await db.knowledge_articles.find_one(
-        {"knowledge_id": source_id},
+        {"knowledge_id": source_id, **tenant_filter},
         {"_id": 0}
     )
     if article:
@@ -373,7 +376,7 @@ async def get_source_details(
     
     # Try failure cards
     card = await db.failure_cards.find_one(
-        {"failure_card_id": source_id},
+        {"failure_card_id": source_id, **tenant_filter},
         {"_id": 0}
     )
     if card:
@@ -381,7 +384,7 @@ async def get_source_details(
     
     # Try error codes
     code = await db.error_codes.find_one(
-        {"code_id": source_id},
+        {"code_id": source_id, **tenant_filter},
         {"_id": 0}
     )
     if code:
