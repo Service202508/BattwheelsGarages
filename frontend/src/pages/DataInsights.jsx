@@ -16,13 +16,15 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
-const VOLT = "#C8FF00";
-const VOLT_DIM = "rgba(200,255,0,0.08)";
-const VOLT_BORDER = "rgba(200,255,0,0.20)";
-const CYAN = "#1AFFE4";
-const AMBER = "#EAB308";
-const RED = "#EF4444";
-const BLUE = "#3B9EFF";
+import { colors as themeColors, withAlpha } from "../theme/colors";
+
+const VOLT = themeColors.volt;
+const VOLT_DIM = "var(--bw-volt-dim)";
+const VOLT_BORDER = "var(--bw-border-volt)";
+const CYAN = themeColors.teal;
+const AMBER = themeColors.amber;
+const RED = themeColors.red;
+const BLUE = themeColors.blue;
 const GRID = "rgba(255,255,255,0.05)";
 const DIM_TEXT = "rgba(244,246,240,0.45)";
 const CHART_COLORS = [VOLT, CYAN, AMBER, BLUE, "#A78BFA", "#F472B6"];
