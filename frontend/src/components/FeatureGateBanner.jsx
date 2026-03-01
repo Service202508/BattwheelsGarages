@@ -185,7 +185,7 @@ export default function FeatureGateBanner({ children }) {
               <span
                 key={benefit}
                 className="flex items-center gap-1 whitespace-nowrap"
-                style={{ fontSize: "11px", color: "rgba(244,246,240,0.60)" }}
+                style={{ fontSize: "11px", color: "rgb(var(--bw-white) / 0.60)" }}
               >
                 <span style={{ color: "rgb(var(--bw-amber))", fontWeight: 600 }}>&#10003;</span>
                 {benefit}

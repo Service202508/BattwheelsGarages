@@ -41,7 +41,7 @@ function PasswordStrength({ password }) {
           />
         ))}
       </div>
-      <p style={{ fontSize: "11px", color: score > 0 ? colors[score - 1] : "rgba(244,246,240,0.35)", margin: 0 }}>
+      <p style={{ fontSize: "11px", color: score > 0 ? colors[score - 1] : "rgb(var(--bw-white) / 0.35)", margin: 0 }}>
         {score > 0 ? labels[score - 1] : ""}
       </p>
     </div>
@@ -66,7 +66,7 @@ function StepIndicator({ current, total }) {
               fontWeight: 700,
               background: i < current ? "#22C55E" : i === current ? "#C8FF00" : "transparent",
               border: i < current ? "none" : i === current ? "none" : "1.5px solid rgba(255,255,255,0.20)",
-              color: i <= current ? "#080C0F" : "rgba(244,246,240,0.35)",
+              color: i <= current ? "#080C0F" : "rgb(var(--bw-white) / 0.35)",
               transition: "all 0.2s",
               flexShrink: 0,
             }}

@@ -652,7 +652,7 @@ function CustomerSection({ data, loading }) {
                             <div className="flex items-center gap-1.5">
                               <span className="font-medium" style={{ color: "rgb(var(--bw-white))" }}>{c.name}</span>
                               {c.at_risk && (
-                                <Badge className="text-xs px-1 py-0" style={{ background: "rgba(234,179,8,0.15)", color: AMBER, border: `1px solid ${AMBER}30` }}>
+                                <Badge className="text-xs px-1 py-0" style={{ background: "rgb(var(--bw-amber) / 0.15)", color: AMBER, border: `1px solid ${AMBER}30` }}>
                                   At Risk
                                 </Badge>
                               )}
