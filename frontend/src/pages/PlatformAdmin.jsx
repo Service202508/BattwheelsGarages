@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import {
   Building2, Users, BarChart3, ShieldAlert, CheckCircle,
   XCircle, TrendingUp, Search, RefreshCw, ChevronRight,
-  Crown, Loader2, AlertTriangle, ArrowLeft, Settings,
-  IndianRupee, Activity, UserPlus, Flame, Play, X, PhoneCall
+  Crown, Loader2, AlertTriangle, Settings,
+  IndianRupee, Activity, UserPlus, Flame, Play, X, PhoneCall, LogOut
 } from "lucide-react";
 
 const PLAN_COLORS = {

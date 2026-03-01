@@ -1328,7 +1328,7 @@ function AppRouter() {
       {/* Platform Admin — operator-only, bypasses org context */}
       <Route path="/platform-admin" element={
         <ProtectedRoute user={auth.user} loading={auth.loading}>
-          <PlatformAdmin user={auth.user} />
+          <PlatformAdmin user={auth.user} onLogout={auth.logout} />
         </ProtectedRoute>
       } />
       
