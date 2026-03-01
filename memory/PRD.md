@@ -10,14 +10,16 @@ Multi-phase project to improve application stability, maintainability, feature s
 - **3rd Party:** Razorpay, Resend, Sentry, Zoho Books, Emergent LLM (GPT-4o-mini, Gemini-2.5-flash)
 
 ## Completed Work
-- [2026-03-01] Git history secret scrubbing - Pass 3: Scrubbed `rzp_live_REDACTED`, partial Sentry DSN prefixes (`8b734d...`, `ae17014...`), Zoho Org ID (`60029414603`), `TEST_PASSWORD=admin` from all 4359 commits
-- [Previous] Git history secret scrubbing - Pass 1 & 2: Removed `.env` files from history, scrubbed hardcoded secrets from source files using git-filter-repo
+- [2026-03-01] Gitleaks-driven deep scan: Found 314 findings across 105 files. Ran 5 filter-repo passes to scrub ALL provider-specific secrets (JWTs, Razorpay keys, survey tokens, Stripe placeholders, test API keys, MongoDB creds, Sentry DSN fragments). Removed test_reports/ and audit artifacts from history. Residual 112 gitleaks findings are hashicorp-tf-password false positives (NOT GitHub partner patterns).
+- [2026-03-01] Git history secret scrubbing - Pass 3: Scrubbed rzp_live key, partial Sentry DSNs, Zoho Org ID, TEST_PASSWORD
+- [Previous] Git history secret scrubbing - Pass 1 & 2: Removed `.env` files from history, scrubbed hardcoded secrets from source files
 - [Previous] Security: CORS hardening, brute-force protection
 - [Previous] Frontend: Cursor pagination modernization
 - [Previous] Testing: 693 passing tests
 
 ## Current Status
-- All known secret values scrubbed from git history
+- All provider-specific secrets scrubbed from git history (verified by gitleaks v8.18.2)
+- 112 residual gitleaks findings are false positives (hashicorp-tf-password rule on test placeholder values)
 - Application healthy: backend, frontend, MongoDB all running
 - Awaiting user verification via GitHub push
 
