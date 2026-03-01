@@ -163,11 +163,13 @@ class TestPortalTickets:
     def test_create_support_request(self, base_url, _portal_headers):
         resp = requests.post(f"{base_url}{PREFIX}/tickets", headers=_portal_headers, json={
             "subject": "Test support request",
-            "description": "Need help with test issue",
+            "description": "Need help with test issue - this is detailed enough",
             "priority": "medium",
         })
-        # May succeed, need vehicle_id, or have internal error
-        assert resp.status_code in [200, 201, 400, 422, 500]
+        assert resp.status_code in [200, 201], f"Ticket creation failed: {resp.text}"
+        data = resp.json()
+        assert data.get("code") == 0
+        assert "ticket" in data
 
     def test_get_ticket_nonexistent(self, base_url, _portal_headers):
         resp = requests.get(f"{base_url}{PREFIX}/tickets/NONEXISTENT", headers=_portal_headers)
