@@ -143,6 +143,26 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api/v1`;
 export const AUTH_API = `${BACKEND_URL}/api`;
 
+// Global 401 interceptor — patches native fetch to catch expired JWTs
+// from ANY fetch call (not just those routed through apiFetch).
+const _originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const response = await _originalFetch(...args);
+  if (response.status === 401) {
+    const url = typeof args[0] === "string" ? args[0] : args[0]?.url || "";
+    const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/register") || url.includes("/auth/me");
+    if (!isAuthEndpoint && localStorage.getItem("token")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("organization_id");
+      localStorage.removeItem("organization");
+      if (window.location.pathname !== "/login") {
+        window.location.replace("/login");
+      }
+    }
+  }
+  return response;
+};
+
 // Re-export API utilities for convenience
 export { getAuthHeaders, getOrganizationId, setOrganizationId, apiFetch, apiGet, apiPost, apiPut, apiPatch, apiDelete } from '@/utils/api';
 
