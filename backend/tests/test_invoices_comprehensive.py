@@ -183,9 +183,11 @@ class TestRecordPayment:
     def test_record_payment(self, base_url, _headers, test_invoice):
         iid = test_invoice["invoice_id"]
         total = test_invoice.get("total", 590)
+        from datetime import datetime
+        today = datetime.now().strftime("%Y-%m-%d")
         resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/{iid}/payments", headers=_headers, json={
             "amount": min(total, 100),
-            "payment_date": "2026-02-20",
+            "payment_date": today,
             "payment_mode": "bank_transfer",
             "reference_number": "PAY-TEST-001",
             "notes": "Partial payment test"
