@@ -58,9 +58,9 @@ class TestP01RBACBypassFix:
     """
     
     def test_public_endpoint_accessible_without_auth(self):
-        """Public endpoints like /api/auth/login should be accessible without auth"""
+        """Public endpoints like /api/v1/auth/login should be accessible without auth"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "invalid@test.com", "password": "wrong_pwd_placeholder"}
         )
         # Should get 401 (invalid creds) not 403 (RBAC denied) or 500
