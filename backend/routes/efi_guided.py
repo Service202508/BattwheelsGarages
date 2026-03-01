@@ -679,8 +679,8 @@ async def upload_step_image(request: Request, failure_id: str, step_order: int =
 
 @router.get("/step-image/{image_id}")
 async def get_step_image(request: Request, image_id: str):
-    org_id = extract_org_id(request)
     """Get a step image by ID (public endpoint for display)"""
+    org_id = extract_org_id(request)
     image = await _db.efi_step_images.find_one({"image_id": image_id})
     
     if not image:
@@ -697,8 +697,8 @@ async def get_step_image(request: Request, image_id: str):
 
 @router.get("/failure-cards/{failure_id}/images")
 async def list_step_images(request: Request, failure_id: str):
-    org_id = extract_org_id(request)
     """List all images for a failure card's decision tree"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     images = await _db.efi_step_images.find(
@@ -711,8 +711,8 @@ async def list_step_images(request: Request, failure_id: str):
 
 @router.delete("/step-image/{image_id}")
 async def delete_step_image(request: Request, image_id: str):
-    org_id = extract_org_id(request)
     """Delete a step image"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     image = await _db.efi_step_images.find_one({"image_id": image_id})
