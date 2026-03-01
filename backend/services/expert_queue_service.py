@@ -1,6 +1,16 @@
 """
 Battwheels Knowledge Brain - Expert Queue Service
-Internal escalation system for human expert review (Zendesk replacement)
+Internal escalation system for human expert review.
+
+STATUS: PRODUCTION-READY (internal queue). ZendeskBridge is STUBBED.
+
+The ExpertQueueService class is fully functional using MongoDB as its
+backend. It handles escalation creation, assignment, resolution, and
+knowledge capture internally.
+
+The ZendeskBridge class is a STUB that returns mock responses. If
+Zendesk integration is needed in the future, implement the bridge
+methods to call the Zendesk API. See docs/FEATURE_GAPS.md for details.
 """
 
 import os
