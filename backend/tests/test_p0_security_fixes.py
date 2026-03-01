@@ -19,7 +19,7 @@ ORG_ID = "dev-internal-testing-001"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "TestPass@123"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "tech.a@battwheels.internal"
 TECH_PASSWORD = "TechA@123"
 
