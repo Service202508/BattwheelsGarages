@@ -131,7 +131,7 @@ const ENV_CONFIG = {
   development: { label: "DEVELOPMENT", color: "rgb(var(--bw-green))", bg: "rgba(34,197,94,0.12)" },
 };
 
-export default function PlatformAdmin({ user }) {
+export default function PlatformAdmin({ user, onLogout }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("orgs");
   const [loading, setLoading] = useState(true);
