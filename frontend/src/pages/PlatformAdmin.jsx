@@ -416,6 +416,14 @@ export default function PlatformAdmin({ user, onLogout }) {
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh
             </button>
+            <button 
+              data-testid="platform-admin-logout-btn"
+              onClick={() => { if (onLogout) onLogout(); }}
+              className="flex items-center gap-2 text-xs text-red-400/70 hover:text-red-400 transition px-3 py-1.5 rounded-lg hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
+            </button>
           </div>
         </div>
       </div>
