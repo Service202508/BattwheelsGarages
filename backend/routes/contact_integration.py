@@ -711,7 +711,7 @@ async def report_receivables_aging(
         "code": 0,
         "aging_by_customer": aging_list,
         "totals": {k: round(v, 2) for k, v in totals.items()},
-        "customer_count": len(aging_list)
+        "customer_count": len(aging_list)  # Pattern B: len() on already-fetched list (acceptable)
     }
 
 
@@ -780,5 +780,5 @@ async def report_payables_aging(
         "code": 0,
         "aging_by_vendor": aging_list,
         "totals": {k: round(v, 2) for k, v in totals.items()},
-        "vendor_count": len(aging_list)
+        "vendor_count": len(aging_list)  # Pattern B: len() on already-fetched list (acceptable)
     }

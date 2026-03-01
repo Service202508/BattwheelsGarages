@@ -470,7 +470,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     # Aggregate totals
     def aggregate(inv_list):
         return {
-            "count": len(inv_list),
+            "count": len(inv_list),  # Pattern B: len() on already-fetched list (acceptable)
             "taxable_value": sum(i["taxable_value"] for i in inv_list),
             "cgst": sum(i["cgst"] for i in inv_list),
             "sgst": sum(i["sgst"] for i in inv_list),
@@ -1221,7 +1221,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         },
         "adjustments": {
             "credit_notes": {
-                "count": len(cn_list),
+                "count": len(cn_list),  # Pattern B: len() on already-fetched list (acceptable)
                 "taxable_value": round(cn_taxable, 2),
                 "cgst": round(cn_cgst, 2),
                 "sgst": round(cn_sgst, 2),
