@@ -13,8 +13,23 @@ Usage in test files:
 """
 
 import os
+import pymongo
 import pytest
 import requests
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _clear_login_attempts():
+    """Clear login_attempts collection before the test session to avoid 429s."""
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    db_name = os.environ.get("DB_NAME", "battwheels_dev")
+    client = pymongo.MongoClient(mongo_url)
+    db = client[db_name]
+    db.login_attempts.delete_many({})
+    yield
+    db.login_attempts.delete_many({})
+    client.close()
+
 
 @pytest.fixture(scope="session")
 def base_url():
