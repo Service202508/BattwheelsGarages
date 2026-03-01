@@ -125,7 +125,6 @@ async def preprocess_complaint(
     ticket_id: str,
     complaint_text: str
 ):
-    org_id = extract_org_id(request)
     """
     FEATURE 1: Pre-process complaint when logged
     - AI classify subsystem
@@ -133,6 +132,7 @@ async def preprocess_complaint(
     - Run similarity search
     - Store results (don't show full guidance yet)
     """
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if not _embedding_manager:
@@ -155,10 +155,10 @@ async def preprocess_complaint(
         "embedding_model": result["embedding_model"],
         "similar_cards": [
             {
-                "failure_id": c["failure_id"],
-                "title": c["title"],
-                "similarity_score": c["similarity_score"],
-                "confidence_level": c["confidence_level"]
+                "failure_id": c.get("failure_id") or c.get("card_id"),
+                "title": c.get("title", ""),
+                "similarity_score": c.get("similarity_score", 0),
+                "confidence_level": c.get("confidence_level", "low")
             }
             for c in similar_cards
         ],
