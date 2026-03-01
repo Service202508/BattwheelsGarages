@@ -30,7 +30,7 @@ import pytest
 import requests
 
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://battwheels-phase3.preview.emergentagent.com")
+API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://battwheels-efi-panel.preview.emergentagent.com")
 BASE = f"{API_URL}/api"
 
 # ── Org / User constants ─────────────────────────────────────────────────────
