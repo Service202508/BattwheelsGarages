@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { colors as themeColors } from "../theme/colors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
