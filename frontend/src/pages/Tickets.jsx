@@ -564,30 +564,24 @@ export default function Tickets({ user }) {
       </Card>
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {(hasMore || tickets.length > 0) && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {(page - 1) * 10 + 1} to {Math.min(page * 10, tickets.length)} of {tickets.length} tickets
+            Showing {tickets.length} of {totalCount} tickets
           </p>
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              disabled={page === totalPages}
-              onClick={() => setPage(p => p + 1)}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+            {hasMore && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={loading}
+                onClick={() => fetchTickets(nextCursor)}
+                data-testid="load-more-tickets-btn"
+              >
+                {loading ? "Loading..." : "Load More"}
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       )}
