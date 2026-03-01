@@ -6,6 +6,7 @@ Max 5 failed login attempts per email per 15 minutes.
 Uses MongoDB login_attempts collection with TTL index.
 """
 
+import os
 import logging
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
