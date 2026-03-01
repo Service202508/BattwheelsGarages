@@ -7,9 +7,9 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const PLAN_BADGE = {
   free:         { bg: "rgba(244,246,240,0.08)", text: "rgba(244,246,240,0.35)", label: "FREE" },
-  starter:      { bg: "rgba(59,130,246,0.15)",  text: "#60a5fa",               label: "STARTER" },
-  professional: { bg: "rgba(234,179,8,0.15)",   text: "#EAB308",               label: "PROFESSIONAL" },
-  enterprise:   { bg: "rgba(200,255,0,0.10)",   text: "#C8FF00",               label: "ENTERPRISE" },
+  starter:      { bg: "rgb(var(--bw-blue) / 0.15)",  text: "rgb(var(--bw-blue))",     label: "STARTER" },
+  professional: { bg: "rgb(var(--bw-amber) / 0.15)", text: "rgb(var(--bw-amber))",    label: "PROFESSIONAL" },
+  enterprise:   { bg: "rgb(var(--bw-volt) / 0.10)",  text: "rgb(var(--bw-volt))",     label: "ENTERPRISE" },
 };
 
 function getPlanBadge(planType) {
