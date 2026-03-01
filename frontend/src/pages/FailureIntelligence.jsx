@@ -78,6 +78,10 @@ export default function FailureIntelligence({ user }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [subsystemFilter, setSubsystemFilter] = useState("all");
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const CARDS_PAGE_SIZE = 50;
   
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
