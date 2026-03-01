@@ -247,7 +247,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' https://*.emergentagent.com https://*.battwheels.com; frame-ancestors 'none';"
     return response
 
-_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "https://battwheels.com,https://app.battwheels.com,https://phase0-cleanup.preview.emergentagent.com").split(",") if o.strip()]
+_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "https://battwheels.com,https://app.battwheels.com,https://tailwind-migration-1.preview.emergentagent.com").split(",") if o.strip()]
 if os.environ.get("NODE_ENV") != "production":
     _cors_origins += ["http://localhost:3000", "http://localhost:3001"]
 app.add_middleware(CORSMiddleware, allow_credentials=True, allow_origins=_cors_origins, allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS","HEAD"], allow_headers=["Authorization","Content-Type","X-Organization-ID","X-Requested-With","Accept","X-CSRF-Token"])
