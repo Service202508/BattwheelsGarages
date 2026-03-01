@@ -231,6 +231,7 @@ class HRService:
         employee = {
             "employee_id": employee_id,
             "employee_code": employee_code,
+            "organization_id": data.get("organization_id"),
             "user_id": created_user_id,
             "first_name": data.get("first_name"),
             "last_name": data.get("last_name"),
