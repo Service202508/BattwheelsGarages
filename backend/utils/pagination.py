@@ -372,6 +372,13 @@ async def paginate_keyset(
         last = items[-1]
         next_cursor = encode_cursor(last.get(sort_field), last.get(tiebreaker_field))
 
+    # Sanitise datetime objects for JSON serialization
+    from datetime import datetime as _dt
+    for item in items:
+        for k, v in item.items():
+            if isinstance(v, _dt):
+                item[k] = v.isoformat()
+
     return {
         "data": items,
         "pagination": {
