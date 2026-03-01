@@ -27,7 +27,7 @@ const RED = themeColors.red;
 const BLUE = themeColors.blue;
 const GRID = "rgba(255,255,255,0.05)";
 const DIM_TEXT = "rgba(244,246,240,0.45)";
-const CHART_COLORS = [VOLT, CYAN, AMBER, BLUE, "#A78BFA", "#F472B6"];
+const CHART_COLORS = [VOLT, CYAN, AMBER, BLUE, themeColors.purple, "#F472B6"];
 
 const PERIODS = [
   { label: "This Week", value: "week" },
