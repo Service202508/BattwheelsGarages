@@ -226,10 +226,9 @@ try:
     from middleware.csrf import CSRFMiddleware
     from middleware.sanitization import SanitizationMiddleware
 
-    # Initialize login rate limiter
-    import asyncio
-    from middleware.rate_limiter import init_rate_limiter
-    asyncio.get_event_loop().run_until_complete(init_rate_limiter(db))
+    # Initialize login rate limiter (sync init, TTL index created on first use)
+    from middleware.rate_limiter import init_rate_limiter_sync
+    init_rate_limiter_sync(db)
 
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(SanitizationMiddleware)  # Sanitize: after CSRF, strips HTML from all JSON
