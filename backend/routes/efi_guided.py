@@ -87,8 +87,8 @@ class CaptureCompletionRequest(BaseModel):
 # ==================== HELPER ====================
 
 async def get_current_user(request: Request) -> dict:
-    org_id = extract_org_id(request)
     """Get current authenticated user"""
+    org_id = extract_org_id(request)
     token = request.cookies.get("session_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
     if token and _db is not None:
         session = await _db.user_sessions.find_one({"session_token": token}, {"_id": 0})
@@ -184,11 +184,11 @@ async def preprocess_complaint(
 
 @router.get("/suggestions/{ticket_id}")
 async def get_efi_suggestions(request: Request, ticket_id: str):
-    org_id = extract_org_id(request)
     """
     FEATURE 2: Get EFI suggestions when Job Card opened
     Returns ranked failure cards with confidence scores
     """
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     # Get ticket with preprocessing data
@@ -286,11 +286,11 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
 
 @router.post("/session/start")
 async def start_diagnostic_session(request: Request, data: StartSessionRequest):
-    org_id = extract_org_id(request)
     """
     Start EFI diagnostic session for a ticket
     Technician selects a failure card path to follow
     """
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if not _decision_engine:
@@ -312,8 +312,8 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
 
 @router.get("/session/{session_id}")
 async def get_session(request: Request, session_id: str):
-    org_id = extract_org_id(request)
     """Get current session state with step details"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _decision_engine:
@@ -328,8 +328,8 @@ async def get_session(request: Request, session_id: str):
 
 @router.get("/session/ticket/{ticket_id}")
 async def get_session_by_ticket(request: Request, ticket_id: str):
-    org_id = extract_org_id(request)
     """Get active session for a ticket"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _decision_engine:
@@ -344,11 +344,11 @@ async def record_step_outcome(request: Request, session_id: str,
     step_id: str, 
     data: RecordOutcomeRequest
 ):
-    org_id = extract_org_id(request)
     """
     FEATURE 3: Record PASS/FAIL for diagnostic step
     Advances to next step or resolution based on decision tree
     """
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _decision_engine:
@@ -374,11 +374,11 @@ async def record_step_outcome(request: Request, session_id: str,
 
 @router.get("/session/{session_id}/estimate")
 async def get_smart_estimate(request: Request, session_id: str):
-    org_id = extract_org_id(request)
     """
     FEATURE 4: Get smart estimate from completed session
     Auto-suggests parts, labor, time based on resolution
     """
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _decision_engine:
@@ -395,11 +395,11 @@ async def get_smart_estimate(request: Request, session_id: str):
 
 @router.post("/learning/capture")
 async def capture_completion(request: Request, data: CaptureCompletionRequest):
-    org_id = extract_org_id(request)
     """
     FEATURE 5: Capture job completion for learning
     Records actual steps, deviations, parts used
     """
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _learning_engine:
@@ -421,8 +421,8 @@ async def capture_completion(request: Request, data: CaptureCompletionRequest):
 
 @router.get("/learning/pending")
 async def get_pending_learning(request: Request, limit: int = Query(50, le=200)):
-    org_id = extract_org_id(request)
     """Get learning items pending engineer review"""
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     # Require admin/engineer role
@@ -438,8 +438,8 @@ async def get_pending_learning(request: Request, limit: int = Query(50, le=200))
 
 @router.post("/learning/{entry_id}/review")
 async def review_learning_item(request: Request, entry_id: str, action: str, notes: Optional[str] = None):
-    org_id = extract_org_id(request)
     """Review learning item - engineer approval"""
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
@@ -466,8 +466,8 @@ async def review_learning_item(request: Request, entry_id: str, action: str, not
 
 @router.post("/trees")
 async def create_decision_tree(request: Request, data: CreateDecisionTreeRequest):
-    org_id = extract_org_id(request)
     """Create decision tree for a failure card"""
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
@@ -492,8 +492,8 @@ async def create_decision_tree(request: Request, data: CreateDecisionTreeRequest
 
 @router.get("/trees/{failure_card_id}")
 async def get_decision_tree(request: Request, failure_card_id: str):
-    org_id = extract_org_id(request)
     """Get decision tree for a failure card"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     if not _decision_engine:
@@ -510,8 +510,8 @@ async def get_decision_tree(request: Request, failure_card_id: str):
 
 @router.post("/embeddings/generate-all")
 async def generate_all_embeddings(request: Request):
-    org_id = extract_org_id(request)
     """Generate embeddings for all failure cards"""
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if user.get("role") != "admin":
@@ -526,8 +526,8 @@ async def generate_all_embeddings(request: Request):
 
 @router.get("/embeddings/status")
 async def get_embedding_status(request: Request):
-    org_id = extract_org_id(request)
     """Get embedding status for failure cards"""
+    org_id = extract_org_id(request)
     await get_current_user(request)
     
     total = await _db.failure_cards.count_documents(org_query(org_id))
@@ -547,8 +547,8 @@ async def get_embedding_status(request: Request):
 
 @router.post("/seed")
 async def seed_failure_data(request: Request):
-    org_id = extract_org_id(request)
     """Seed failure cards and decision trees (Admin only)"""
+    org_id = extract_org_id(request)
     user = await get_current_user(request)
     
     if user.get("role") != "admin":
