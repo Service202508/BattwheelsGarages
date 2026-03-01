@@ -146,7 +146,7 @@ All files listed — 25+ markdown audit/report files, `Makefile`, `startup.sh`, 
 ```
 MONGO_URL="mongodb://localhost:27017"
 DB_NAME="battwheels"                     ← CRITICAL: Points to PRODUCTION
-CORS_ORIGINS=https://vault-purge.preview.emergentagent.com
+CORS_ORIGINS=https://github-push-7.preview.emergentagent.com
 EMERGENT_LLM_KEY=[REDACTED]
 JWT_SECRET=[REDACTED]
 ZOHO_CLIENT_ID=REDACTED_ZOHO_CLIENT_ID
@@ -169,7 +169,7 @@ ENVIRONMENT=production
 
 ## 3. `frontend/.env`
 ```
-REACT_APP_BACKEND_URL=https://vault-purge.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://github-push-7.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 ENABLE_HEALTH_CHECK=false
 REACT_APP_SENTRY_DSN=https://REDACTED_SENTRY_DSN
@@ -1049,7 +1049,7 @@ Org resolved from form submission data — the public form includes an `organiza
 ## 2. Ports
 - Backend: 8001
 - Frontend: 3000
-- External access: Via Emergent preview URL (https://vault-purge.preview.emergentagent.com)
+- External access: Via Emergent preview URL (https://github-push-7.preview.emergentagent.com)
 
 ## 3. Frontend Serving
 Separately via CRA dev server (not served by backend)

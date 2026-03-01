@@ -522,7 +522,7 @@ REACT_APP_BACKEND_URL, WDS_SOCKET_PORT, ENABLE_HEALTH_CHECK, REACT_APP_SENTRY_DS
 
 Source: server.py:250
 ```python
-_cors_origins = ["https://battwheels.com", "https://app.battwheels.com", "https://vault-purge.preview.emergentagent.com"]
+_cors_origins = ["https://battwheels.com", "https://app.battwheels.com", "https://github-push-7.preview.emergentagent.com"]
 ```
 In development mode (line 252), also adds: `http://localhost:3000`, `http://localhost:3001`
 

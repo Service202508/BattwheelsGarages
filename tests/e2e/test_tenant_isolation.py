@@ -30,7 +30,7 @@ import pytest
 import requests
 
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://vault-purge.preview.emergentagent.com")
+API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://github-push-7.preview.emergentagent.com")
 BASE = f"{API_URL}/api"
 
 # ── Org / User constants ─────────────────────────────────────────────────────
