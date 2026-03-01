@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2, Brain, X } from "lucide-react";
+import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2, Brain, X, Zap, ChevronDown, ChevronUp, BookOpen, GitBranch, Target, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
