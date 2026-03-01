@@ -52,6 +52,9 @@ CORE_TESTS=(
   backend/tests/test_efi_comprehensive.py
   backend/tests/test_login_rate_limiting.py
   backend/tests/test_invoices_comprehensive.py
+  backend/tests/test_credit_notes_comprehensive.py
+  backend/tests/test_accounting_comprehensive.py
+  backend/tests/test_gst_comprehensive.py
 )
 
 echo "========================================="
