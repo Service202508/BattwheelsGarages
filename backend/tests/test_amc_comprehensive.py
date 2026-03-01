@@ -156,12 +156,12 @@ class TestAMCSubscriptions:
 
     def test_record_service_usage(self, base_url, _headers, created_sub):
         sub_id = created_sub.get("subscription_id") or created_sub.get("id")
-        resp = requests.put(f"{base_url}{PREFIX}/subscriptions/{sub_id}/use-service", headers=_headers)
+        resp = requests.put(f"{base_url}{PREFIX}/subscriptions/{sub_id}/use-service", headers=_headers, json={})
         assert resp.status_code == 200
 
     def test_cancel_subscription(self, base_url, _headers, created_sub):
         sub_id = created_sub.get("subscription_id") or created_sub.get("id")
-        resp = requests.put(f"{base_url}{PREFIX}/subscriptions/{sub_id}/cancel", headers=_headers)
+        resp = requests.put(f"{base_url}{PREFIX}/subscriptions/{sub_id}/cancel", headers=_headers, json={"reason": "Test cancellation"})
         assert resp.status_code == 200
 
 
