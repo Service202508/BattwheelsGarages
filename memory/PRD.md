@@ -50,7 +50,7 @@ Multi-phase project to improve application stability, maintainability, feature s
 ## Prioritized Backlog
 
 ### P0
-- None — current phase complete
+- Cluster 4 Part 2: Customer Portal, Tech Portal, remaining items, final audit
 
 ### P1
 - Decompose "God-Files" (Tickets, Estimates, EFI modules)
