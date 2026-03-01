@@ -6,30 +6,30 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Design tokens
+// Design tokens — using CSS variables
 const colors = {
-  pageBg: '#0D1317',
-  cardBg: '#111820',
-  cardHover: '#1E2A38',
-  border: 'rgba(255,255,255,0.07)',
-  volt: '#C8FF00',
-  voltDim: 'rgba(200,255,0,0.15)',
-  white: '#F4F6F0',
-  muted: 'rgba(244,246,240,0.45)',
-  green: '#22C55E',
-  greenBg: 'rgba(34,197,94,0.10)',
-  greenBorder: 'rgba(34,197,94,0.25)',
-  red: '#FF3B2F',
-  redBg: 'rgba(255,59,47,0.10)',
-  redBorder: 'rgba(255,59,47,0.25)',
-  blue: '#3B9EFF',
-  blueBg: 'rgba(59,130,246,0.15)',
-  orange: '#F97316',
-  orangeBg: 'rgba(249,115,22,0.15)',
-  amber: '#F59E0B',
-  amberBg: 'rgba(245,158,11,0.15)',
-  cyan: '#06B6D4',
-  cyanBg: 'rgba(6,182,212,0.15)',
+  pageBg: 'rgb(var(--bw-off-black))',
+  cardBg: 'rgb(var(--bw-panel))',
+  cardHover: 'rgb(var(--bw-card))',
+  border: 'var(--bw-border)',
+  volt: 'rgb(var(--bw-volt))',
+  voltDim: 'rgb(var(--bw-volt) / 0.15)',
+  white: 'rgb(var(--bw-white))',
+  muted: 'var(--bw-muted)',
+  green: 'rgb(var(--bw-green))',
+  greenBg: 'rgb(var(--bw-green) / 0.10)',
+  greenBorder: 'rgb(var(--bw-green) / 0.25)',
+  red: 'rgb(var(--bw-red))',
+  redBg: 'rgb(var(--bw-red) / 0.10)',
+  redBorder: 'rgb(var(--bw-red) / 0.25)',
+  blue: 'rgb(var(--bw-blue))',
+  blueBg: 'rgb(var(--bw-blue) / 0.15)',
+  orange: 'rgb(var(--bw-orange))',
+  orangeBg: 'rgb(var(--bw-orange) / 0.15)',
+  amber: 'rgb(var(--bw-amber))',
+  amberBg: 'rgb(var(--bw-amber) / 0.15)',
+  cyan: 'rgb(var(--bw-teal))',
+  cyanBg: 'rgb(var(--bw-teal) / 0.15)',
 };
 
 // Entry type color mapping

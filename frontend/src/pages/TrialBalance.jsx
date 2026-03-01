@@ -3,22 +3,22 @@ import { Download, Calendar, FileText, Check, X, AlertTriangle } from 'lucide-re
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Design tokens
+// Design tokens — using CSS variables
 const colors = {
-  pageBg: '#0D1317',
-  cardBg: '#111820',
-  border: 'rgba(255,255,255,0.07)',
-  volt: '#C8FF00',
-  voltDim: 'rgba(200,255,0,0.08)',
-  voltBorder: 'rgba(200,255,0,0.25)',
-  white: '#F4F6F0',
-  muted: 'rgba(244,246,240,0.45)',
-  green: '#22C55E',
-  greenBg: 'rgba(34,197,94,0.08)',
-  greenBorder: 'rgba(34,197,94,0.25)',
-  red: '#FF3B2F',
-  redBg: 'rgba(255,59,47,0.08)',
-  redBorder: 'rgba(255,59,47,0.25)',
+  pageBg: 'rgb(var(--bw-off-black))',
+  cardBg: 'rgb(var(--bw-panel))',
+  border: 'var(--bw-border)',
+  volt: 'rgb(var(--bw-volt))',
+  voltDim: 'var(--bw-volt-dim)',
+  voltBorder: 'var(--bw-volt-glow)',
+  white: 'rgb(var(--bw-white))',
+  muted: 'var(--bw-muted)',
+  green: 'rgb(var(--bw-green))',
+  greenBg: 'rgb(var(--bw-green) / 0.08)',
+  greenBorder: 'rgb(var(--bw-green) / 0.25)',
+  red: 'rgb(var(--bw-red))',
+  redBg: 'rgb(var(--bw-red) / 0.08)',
+  redBorder: 'rgb(var(--bw-red) / 0.25)',
 };
 
 // Format currency
