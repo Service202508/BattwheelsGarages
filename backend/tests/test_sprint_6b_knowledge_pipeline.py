@@ -248,22 +248,22 @@ class Test6B03FixEmptyFailureCards:
 class Test6B04SuggestionsWithKnowledgeArticles:
     """GET /api/v1/efi-guided/suggestions/{ticket_id} includes knowledge_article field"""
     
-    def test_suggestions_endpoint_works(self, dev_user_token):
+    def test_suggestions_endpoint_works(self, dev_user_token, ensure_test_ticket):
         """Verify suggestions endpoint is accessible"""
         resp = requests.get(
-            f"{BASE_URL}/api/v1/efi-guided/suggestions/tkt_8b36dc571ae4",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{ensure_test_ticket}",
             headers={
                 "Authorization": f"Bearer {dev_user_token}",
                 "X-Organization-ID": "dev-internal-testing-001"
             }
         )
-        # 200 or 404 (if ticket doesn't exist) are valid
-        assert resp.status_code in [200, 404], f"Unexpected error: {resp.text}"
+        # 200 is expected now that fixture guarantees ticket exists
+        assert resp.status_code == 200, f"Unexpected error: {resp.text}"
     
-    def test_suggestions_include_knowledge_article_field(self, dev_user_token):
+    def test_suggestions_include_knowledge_article_field(self, dev_user_token, ensure_test_ticket):
         """Each suggested_path should have knowledge_article with required fields"""
         resp = requests.get(
-            f"{BASE_URL}/api/v1/efi-guided/suggestions/tkt_8b36dc571ae4",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{ensure_test_ticket}",
             headers={
                 "Authorization": f"Bearer {dev_user_token}",
                 "X-Organization-ID": "dev-internal-testing-001"
