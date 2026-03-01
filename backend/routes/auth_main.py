@@ -119,6 +119,9 @@ async def login(credentials: UserLogin):
     # Create token with default org
     token = create_token(user["user_id"], user["email"], user["role"], org_id=default_org_id, password_version=user.get("password_version", 0))
     
+    # Clear rate limit counter on successful login
+    await clear_attempts(credentials.email)
+    
     # Return single org object if user has exactly one organization (for auto-selection)
     single_org = organizations[0] if len(organizations) == 1 else None
     
