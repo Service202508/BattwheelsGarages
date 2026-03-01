@@ -27,9 +27,13 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Testing: 693+ passing tests
 
 ## Current Status
-- **906 passed, 13 skipped, 0 failed** (core tests — target 900+ achieved)
+- **906 passed, 13 skipped, 0 failed** (core tests)
 - All services healthy: backend, frontend, MongoDB
-- Phase 2 Cluster 4 Part 2 — COMPLETE. Platform ready for founder QA.
+- Phase 2 Cluster 4 complete. Platform ready for founder QA.
+- **3 additional bugs fixed during final cleanup:**
+  - Customer Portal ticket creation 500 (missing `org_id` variable in `customer_portal.py`)
+  - Cursor pagination datetime serialization (fixed `encode_cursor` in `pagination.py`)
+  - Ticket list datetime serialization (fixed in `tickets.py` legacy path)
 
 ## Completed Work — Cluster 4 Part 2 (2026-03-01)
 - **Task 0 (AMC RBAC Fix):** Added "owner" role to AMC require_admin — org owners can now access AMC endpoints.
