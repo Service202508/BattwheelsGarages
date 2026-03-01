@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { 
-  Plus, Search, Download, Loader2, ChevronLeft, ChevronRight,
+  Plus, Search, Download, Loader2, ChevronRight,
   Ticket, UserCheck, Clock, CheckCircle, AlertTriangle, Save
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
