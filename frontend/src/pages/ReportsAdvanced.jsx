@@ -31,7 +31,7 @@ const BarChartSimple = ({ data, labels, colors, height = 200, horizontal = false
                 className="h-full rounded-full flex items-center justify-end pr-2"
                 style={{ 
                   width: `${(values[idx] / maxVal) * 100}%`, 
-                  backgroundColor: colors?.[idx] || '#3B82F6',
+                  backgroundColor: colors?.[idx] || themeColors.blue,
                   minWidth: values[idx] > 0 ? '40px' : '0'
                 }}
               >
@@ -52,7 +52,7 @@ const BarChartSimple = ({ data, labels, colors, height = 200, horizontal = false
             className="w-full rounded-t transition-all duration-300 hover:opacity-80"
             style={{ 
               height: `${(values[idx] / maxVal) * (height - 30)}px`,
-              backgroundColor: colors?.[idx] || '#3B82F6',
+              backgroundColor: colors?.[idx] || themeColors.blue,
               minHeight: values[idx] > 0 ? '4px' : '0'
             }}
           />
@@ -104,7 +104,7 @@ const DonutChart = ({ data, labels, colors, size = 180 }) => {
   );
 };
 
-const LineChart = ({ data, labels, height = 150, color = "#3B82F6" }) => {
+const LineChart = ({ data, labels, height = 150, color = themeColors.blue }) => {
   const maxVal = Math.max(...data, 1);
   const minVal = Math.min(...data, 0);
   const range = maxVal - minVal || 1;
@@ -367,7 +367,7 @@ export default function ReportsAdvanced() {
                   <BarChartSimple 
                     data={monthlyRevenue.datasets?.[0]?.data || []}
                     labels={monthlyRevenue.labels || []}
-                    colors={monthlyRevenue.datasets?.map(d => d.color) || ['#3B82F6']}
+                    colors={monthlyRevenue.datasets?.map(d => d.color) || [themeColors.blue]}
                     height={180}
                   />
                   <div className="flex gap-4 mt-4 justify-center">
@@ -394,7 +394,7 @@ export default function ReportsAdvanced() {
                   <DonutChart 
                     data={statusDistribution.values || []}
                     labels={statusDistribution.labels || []}
-                    colors={statusDistribution.colors || ['#3B82F6']}
+                    colors={statusDistribution.colors || [themeColors.blue]}
                     size={160}
                   />
                 </CardContent>
@@ -428,7 +428,7 @@ export default function ReportsAdvanced() {
                     data={paymentTrend.values || []}
                     labels={paymentTrend.labels || []}
                     height={150}
-                    color="#14B8A6"
+                    color=themeColors.teal
                   />
                   <p className="text-center mt-4 text-sm text-bw-white/[0.45]">
                     Total Collected: <span className="font-bold text-green-600">{formatCurrency(paymentTrend.total_collected)}</span>
@@ -473,7 +473,7 @@ export default function ReportsAdvanced() {
                   <DonutChart 
                     data={paymentModes.values || []}
                     labels={paymentModes.labels || []}
-                    colors={paymentModes.colors || ['#3B82F6']}
+                    colors={paymentModes.colors || [themeColors.blue]}
                     size={150}
                   />
                 </CardContent>
@@ -534,7 +534,7 @@ export default function ReportsAdvanced() {
                   <BarChartSimple 
                     data={topOutstanding.map(c => c.outstanding)}
                     labels={topOutstanding.map(c => c.name)}
-                    colors={topOutstanding.map(() => '#EF4444')}
+                    colors={topOutstanding.map(() => themeColors.red)}
                     horizontal={true}
                   />
                 </CardContent>
@@ -558,7 +558,7 @@ export default function ReportsAdvanced() {
                   <BarChartSimple 
                     data={topCustomers.map(c => c.revenue)}
                     labels={topCustomers.map(c => c.name)}
-                    colors={topCustomers.map(() => '#3B82F6')}
+                    colors={topCustomers.map(() => themeColors.blue)}
                     horizontal={true}
                   />
                 </CardContent>
