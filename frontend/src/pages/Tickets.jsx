@@ -253,7 +253,7 @@ export default function Tickets({ user }) {
       const hrs = Math.floor(minsRemaining / 60);
       return <span style={{ color: "rgb(var(--bw-white))" }}>{hrs}h left</span>;
     }
-    return <span style={{ color: "rgba(244,246,240,0.35)" }}>On track</span>;
+    return <span style={{ color: "rgb(var(--bw-white) / 0.35)" }}>On track</span>;
   };
 
   return (
@@ -542,7 +542,7 @@ export default function Tickets({ user }) {
                           onClick={() => handleRowClick(ticket)}
                           style={{
                             minHeight: "44px", padding: "0 16px",
-                            background: "rgba(255,255,255,0.05)",
+                            background: "rgb(255 255 255 / 0.05)",
                             border: "1px solid rgba(255,255,255,0.10)",
                             borderRadius: "4px", color: "rgba(244,246,240,0.70)",
                             fontSize: "12px", fontFamily: "Syne, sans-serif",

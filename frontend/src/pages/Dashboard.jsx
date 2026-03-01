@@ -740,7 +740,7 @@ export default function Dashboard({ user }) {
                       ? { background: "rgba(244,246,240,0.08)", color: "rgb(var(--bw-white))", border: "1px solid rgba(244,246,240,0.15)" }
                       : tech.rank === 3
                       ? { background: "rgba(255,140,0,0.10)", color: "rgb(var(--bw-orange))", border: "1px solid rgba(255,140,0,0.20)" }
-                      : { background: "transparent", color: "rgba(244,246,240,0.35)", border: "1px solid transparent" };
+                      : { background: "transparent", color: "rgb(var(--bw-white) / 0.35)", border: "1px solid transparent" };
 
                     const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
                     const avgResDisplay = tech.avg_resolution_time_minutes

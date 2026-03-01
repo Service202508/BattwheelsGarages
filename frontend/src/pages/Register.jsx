@@ -205,7 +205,7 @@ export default function Register({ onLogin }) {
     display: "block",
     fontSize: "12px",
     fontFamily: "Syne, sans-serif",
-    color: "rgba(244,246,240,0.55)",
+    color: "rgb(var(--bw-white) / 0.55)",
     marginBottom: "6px",
     letterSpacing: "0.04em",
   };
@@ -294,7 +294,7 @@ export default function Register({ onLogin }) {
             <br />
             <span style={{ color: "rgb(var(--bw-volt))" }}>free trial.</span>
           </h1>
-          <p style={{ fontSize: "14px", color: "rgba(244,246,240,0.45)", marginBottom: "40px" }}>
+          <p style={{ fontSize: "14px", color: "var(--bw-muted)", marginBottom: "40px" }}>
             No credit card required. Cancel anytime.
           </p>
 
@@ -344,7 +344,7 @@ export default function Register({ onLogin }) {
               <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Garage Details
               </h2>
-              <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "28px" }}>
+              <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "28px" }}>
                 Step 1 of 3 — Tell us about your workshop
               </p>
 
@@ -446,7 +446,7 @@ export default function Register({ onLogin }) {
               <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Your Account
               </h2>
-              <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "28px" }}>
+              <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "28px" }}>
                 Step 2 of 3 — Create your login credentials
               </p>
 
@@ -488,7 +488,7 @@ export default function Register({ onLogin }) {
                   />
                   <button
                     onClick={() => setShowPw(!showPw)}
-                    style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(244,246,240,0.35)", padding: 0 }}
+                    style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgb(var(--bw-white) / 0.35)", padding: 0 }}
                   >
                     {showPw ? <EyeOff style={{ width: "16px", height: "16px" }} /> : <Eye style={{ width: "16px", height: "16px" }} />}
                   </button>
@@ -548,14 +548,14 @@ export default function Register({ onLogin }) {
               <h2 style={{ fontSize: "22px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "4px" }}>
                 Confirm & Launch
               </h2>
-              <p style={{ fontSize: "13px", color: "rgba(244,246,240,0.45)", marginBottom: "20px" }}>
+              <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "20px" }}>
                 Step 3 of 3 — Review your details
               </p>
 
               {/* Summary card */}
               <div
                 style={{
-                  background: "rgba(255,255,255,0.03)",
+                  background: "rgb(255 255 255 / 0.03)",
                   border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: "4px",
                   padding: "16px",
@@ -571,7 +571,7 @@ export default function Register({ onLogin }) {
                   ["Email", form.email],
                 ].map(([label, value]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <span style={{ fontSize: "12px", color: "rgba(244,246,240,0.40)" }}>{label}</span>
+                    <span style={{ fontSize: "12px", color: "rgb(var(--bw-white) / 0.40)" }}>{label}</span>
                     <span style={{ fontSize: "12px", color: "rgb(var(--bw-white))", fontWeight: 500 }}>{value}</span>
                   </div>
                 ))}
@@ -592,7 +592,7 @@ export default function Register({ onLogin }) {
               >
                 <div>
                   <p style={{ fontSize: "13px", fontWeight: 700, color: "rgb(var(--bw-volt))", margin: 0 }}>14-day Free Trial</p>
-                  <p style={{ fontSize: "11px", color: "rgba(244,246,240,0.40)", margin: "2px 0 0 0" }}>then ₹2,999/month. Cancel anytime.</p>
+                  <p style={{ fontSize: "11px", color: "rgb(var(--bw-white) / 0.40)", margin: "2px 0 0 0" }}>then ₹2,999/month. Cancel anytime.</p>
                 </div>
                 <Check style={{ width: "18px", height: "18px", color: "rgb(var(--bw-volt))" }} />
               </div>
@@ -607,7 +607,7 @@ export default function Register({ onLogin }) {
                   data-testid="register-terms-checkbox"
                   style={{ marginTop: "2px", accentColor: "rgb(var(--bw-volt))", width: "16px", height: "16px", flexShrink: 0 }}
                 />
-                <label htmlFor="terms" style={{ fontSize: "12px", color: "rgba(244,246,240,0.55)", cursor: "pointer" }}>
+                <label htmlFor="terms" style={{ fontSize: "12px", color: "rgb(var(--bw-white) / 0.55)", cursor: "pointer" }}>
                   I agree to the{" "}
                   <a href="#" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none" }}>Terms of Service</a>{" "}
                   and{" "}
@@ -677,7 +677,7 @@ export default function Register({ onLogin }) {
             </div>
           )}
 
-          <p style={{ textAlign: "center", marginTop: "20px", fontSize: "13px", color: "rgba(244,246,240,0.35)" }}>
+          <p style={{ textAlign: "center", marginTop: "20px", fontSize: "13px", color: "rgb(var(--bw-white) / 0.35)" }}>
             Already have an account?{" "}
             <Link to="/login" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none" }}>
               Sign in

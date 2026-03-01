@@ -261,7 +261,7 @@ const TrialBalance = () => {
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+            <tr style={{ background: 'rgb(255 255 255 / 0.03)' }}>
               <th style={{ 
                 padding: '14px 20px',
                 textAlign: 'left',

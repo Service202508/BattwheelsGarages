@@ -58,7 +58,7 @@ root.render(
           justifyContent: "center", height: "100vh", background: "rgb(var(--bw-black))", color: "rgb(var(--bw-white))"
         }}>
           <h2 style={{ fontSize: "20px", marginBottom: "8px" }}>Something went wrong</h2>
-          <p style={{ color: "rgba(244,246,240,0.45)", marginBottom: "16px" }}>
+          <p style={{ color: "var(--bw-muted)", marginBottom: "16px" }}>
             Our team has been notified. Please refresh the page.
           </p>
           <button

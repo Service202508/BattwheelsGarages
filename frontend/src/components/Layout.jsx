@@ -629,7 +629,7 @@ export default function Layout({ children, user, onLogout }) {
             background: "none",
             border: "none",
             cursor: "pointer",
-            color: "rgba(244,246,240,0.40)",
+            color: "rgb(var(--bw-white) / 0.40)",
             transition: "color 0.15s",
           }}
         >

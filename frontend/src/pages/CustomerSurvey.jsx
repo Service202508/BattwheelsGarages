@@ -384,7 +384,7 @@ export default function CustomerSurvey() {
             {surveyData.google_maps_url && (
               <>
                 <div className="sv-divider" />
-                <p style={{ fontSize: 13, color: "rgba(244,246,240,0.40)", marginBottom: 12, fontFamily: "Syne" }}>
+                <p style={{ fontSize: 13, color: "rgb(var(--bw-white) / 0.40)", marginBottom: 12, fontFamily: "Syne" }}>
                   Enjoyed the service?
                 </p>
                 <a

@@ -1136,7 +1136,7 @@ export default function ItemsEnhanced() {
                           onClick={() => setViewItem(item)}
                           style={{
                             flex: 1, minHeight: "44px",
-                            background: "rgba(255,255,255,0.05)",
+                            background: "rgb(255 255 255 / 0.05)",
                             border: "1px solid rgba(255,255,255,0.10)",
                             borderRadius: "4px", color: "rgba(244,246,240,0.70)",
                             fontSize: "12px", fontFamily: "Syne, sans-serif",
@@ -1149,7 +1149,7 @@ export default function ItemsEnhanced() {
                           onClick={() => setEditItem(item)}
                           style={{
                             flex: 1, minHeight: "44px",
-                            background: "rgba(200,255,0,0.08)",
+                            background: "var(--bw-volt-dim)",
                             border: "1px solid rgba(200,255,0,0.20)",
                             borderRadius: "4px", color: "rgb(var(--bw-volt))",
                             fontSize: "12px", fontFamily: "Syne, sans-serif",

@@ -132,7 +132,7 @@ const FormInput = ({
           fontSize: 10,
           fontWeight: 500,
           letterSpacing: "0.10em",
-          color: "rgba(244,246,240,0.40)",
+          color: "rgb(var(--bw-white) / 0.40)",
           textTransform: "uppercase",
         }}
       >
@@ -276,7 +276,7 @@ const InlineError = ({ msg }) =>
 // ─── OR Divider ───────────────────────────────────────────────────────────────
 const OrDivider = () => (
   <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0 0" }}>
-    <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+    <div style={{ flex: 1, height: 1, background: "var(--bw-border)" }} />
     <span
       style={{
         fontFamily: "'Syne', sans-serif",
@@ -287,7 +287,7 @@ const OrDivider = () => (
     >
       or
     </span>
-    <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+    <div style={{ flex: 1, height: 1, background: "var(--bw-border)" }} />
   </div>
 );
 
@@ -360,7 +360,7 @@ const LeftPanel = () => (
           style={{
             width: 48,
             height: 48,
-            background: "rgba(200,255,0,0.08)",
+            background: "var(--bw-volt-dim)",
             border: "1px solid rgba(200,255,0,0.25)",
             borderRadius: 4,
             display: "flex",
@@ -381,7 +381,7 @@ const LeftPanel = () => (
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: "0.20em",
-            color: "rgba(244,246,240,0.40)",
+            color: "rgb(var(--bw-white) / 0.40)",
             textTransform: "uppercase",
           }}
         >
@@ -434,7 +434,7 @@ const LeftPanel = () => (
             fontSize: 15,
             fontWeight: 400,
             lineHeight: 1.65,
-            color: "rgba(244,246,240,0.50)",
+            color: "rgb(var(--bw-white) / 0.50)",
             maxWidth: 380,
             margin: 0,
           }}
@@ -475,7 +475,7 @@ const LeftPanel = () => (
           style={{
             fontFamily: "'Syne', sans-serif",
             fontSize: 11,
-            color: "rgba(244,246,240,0.40)",
+            color: "rgb(var(--bw-white) / 0.40)",
           }}
         >
           Vehicle Categories
@@ -508,7 +508,7 @@ const LeftPanel = () => (
           style={{
             fontFamily: "'Syne', sans-serif",
             fontSize: 11,
-            color: "rgba(244,246,240,0.40)",
+            color: "rgb(var(--bw-white) / 0.40)",
           }}
         >
           Failure Intelligence
@@ -543,7 +543,7 @@ const LeftPanel = () => (
             style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: 11,
-              color: "rgba(244,246,240,0.40)",
+              color: "rgb(var(--bw-white) / 0.40)",
             }}
           >
             System Operational
@@ -714,7 +714,7 @@ export default function Login({ onLogin }) {
         <div
           style={{
             width: 28, height: 28,
-            background: "rgba(200,255,0,0.08)",
+            background: "var(--bw-volt-dim)",
             border: "1px solid rgba(200,255,0,0.25)",
             borderRadius: 4,
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -727,7 +727,7 @@ export default function Login({ onLogin }) {
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 11, fontWeight: 600,
             letterSpacing: "0.20em",
-            color: "rgba(244,246,240,0.40)",
+            color: "rgb(var(--bw-white) / 0.40)",
             textTransform: "uppercase",
           }}
         >
@@ -779,7 +779,7 @@ export default function Login({ onLogin }) {
               style={{
                 fontFamily: "'Syne', sans-serif",
                 fontSize: 14,
-                color: "rgba(244,246,240,0.45)",
+                color: "var(--bw-muted)",
                 marginTop: 4,
                 marginBottom: 0,
               }}
@@ -796,7 +796,7 @@ export default function Login({ onLogin }) {
               style={{
                 display: "flex",
                 background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                border: "1px solid var(--bw-border)",
                 borderRadius: 4,
                 padding: 3,
                 gap: 3,
@@ -1027,7 +1027,7 @@ export default function Login({ onLogin }) {
             <a href="#" className="bw-footer-link">
               Privacy Policy
             </a>
-            <span style={{ color: "rgba(244,246,240,0.15)", fontSize: 11 }}>·</span>
+            <span style={{ color: "rgb(var(--bw-white) / 0.15)", fontSize: 11 }}>·</span>
             <a href="#" className="bw-footer-link">
               Terms of Service
             </a>
@@ -1065,7 +1065,7 @@ export default function Login({ onLogin }) {
                 <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 8 }}>
                   Check your email
                 </h3>
-                <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+                <p style={{ color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
                   If <strong style={{ color: "rgb(var(--bw-volt))" }}>{forgotEmail}</strong> is registered, you'll receive a password reset link shortly. The link expires in 1 hour.
                 </p>
                 <button
@@ -1085,11 +1085,11 @@ export default function Login({ onLogin }) {
                 <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 4 }}>
                   Forgot your password?
                 </h3>
-                <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, marginBottom: 20 }}>
+                <p style={{ color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, marginBottom: 20 }}>
                   Enter your email and we'll send you a reset link.
                 </p>
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontFamily: "'Syne', sans-serif", fontSize: 12, color: "rgba(244,246,240,0.55)", marginBottom: 6 }}>
+                  <label style={{ display: "block", fontFamily: "'Syne', sans-serif", fontSize: 12, color: "rgb(var(--bw-white) / 0.55)", marginBottom: 6 }}>
                     Email Address
                   </label>
                   <input
@@ -1125,7 +1125,7 @@ export default function Login({ onLogin }) {
                   style={{
                     width: "100%", padding: "10px 0", marginTop: 8, borderRadius: 8,
                     background: "transparent", border: "1px solid rgba(244,246,240,0.12)",
-                    color: "rgba(244,246,240,0.55)", fontSize: 14, cursor: "pointer",
+                    color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, cursor: "pointer",
                     fontFamily: "'Syne', sans-serif",
                   }}
                   data-testid="forgot-cancel-btn"

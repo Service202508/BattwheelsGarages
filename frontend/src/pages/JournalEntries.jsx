@@ -169,7 +169,7 @@ const EntryLines = ({ lines }) => {
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <tr style={{ background: 'rgb(255 255 255 / 0.03)' }}>
             <th style={{ 
               padding: '10px 16px', 
               textAlign: 'left',
@@ -538,7 +538,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
                 gridTemplateColumns: '2fr 1.5fr 1fr 1fr 40px',
                 gap: '8px',
                 padding: '10px 12px',
-                background: 'rgba(255,255,255,0.03)',
+                background: 'rgb(255 255 255 / 0.03)',
                 borderBottom: `1px solid ${colors.border}`
               }}>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', color: colors.muted }}>Account</span>
@@ -965,7 +965,7 @@ const AccountLedgerTab = ({ accounts }) => {
           {/* Table */}
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <tr style={{ background: 'rgb(255 255 255 / 0.03)' }}>
                 {['Date', 'Ref No.', 'Description', 'Debit ₹', 'Credit ₹', 'Running Balance ₹'].map(h => (
                   <th key={h} style={{ 
                     padding: '12px 16px',
@@ -1565,7 +1565,7 @@ const JournalEntries = () => {
           }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <tr style={{ background: 'rgb(255 255 255 / 0.03)' }}>
                   {['Date', 'Ref No.', 'Type', 'Description', 'Source Doc', 'Debit ₹', 'Credit ₹', 'Status', ''].map(h => (
                     <th key={h} style={{ 
                       padding: '12px 16px',

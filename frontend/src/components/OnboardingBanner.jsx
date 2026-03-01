@@ -161,7 +161,7 @@ export function OnboardingBanner() {
             style={{
               fontFamily: "Syne, sans-serif",
               fontSize: "13px",
-              color: "rgba(244,246,240,0.55)",
+              color: "rgb(var(--bw-white) / 0.55)",
               marginTop: "4px",
               marginBottom: 0,
             }}
@@ -319,7 +319,7 @@ export function OnboardingBanner() {
                   style={{
                     fontFamily: "Syne, sans-serif",
                     fontSize: "12px",
-                    color: "rgba(244,246,240,0.35)",
+                    color: "rgb(var(--bw-white) / 0.35)",
                     margin: "2px 0 0 0",
                   }}
                 >
@@ -358,7 +358,7 @@ export function OnboardingBanner() {
             background: "none",
             border: "none",
             cursor: "pointer",
-            color: "rgba(244,246,240,0.35)",
+            color: "rgb(var(--bw-white) / 0.35)",
             fontFamily: "Syne, sans-serif",
             fontSize: "12px",
             padding: 0,

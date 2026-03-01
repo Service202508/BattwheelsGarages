@@ -444,7 +444,7 @@ export default function PlatformAdmin({ user }) {
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "rgb(var(--bw-volt))", margin: 0 }}>
                     Running 103-test audit…
                   </p>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgba(244,246,240,0.35)", margin: "2px 0 0 0" }}>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-white) / 0.35)", margin: "2px 0 0 0" }}>
                     This takes ~30–60 seconds
                   </p>
                 </div>
@@ -472,13 +472,13 @@ export default function PlatformAdmin({ user }) {
                         ? `✅ ${auditResult.passed}/${auditResult.total} — All systems operational`
                         : `⚠️ ${auditResult.passed}/${auditResult.total} — ${auditResult.failed} failure${auditResult.failed !== 1 ? "s" : ""} detected`}
                     </p>
-                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgba(244,246,240,0.40)", margin: "4px 0 0 0" }}>
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-white) / 0.40)", margin: "4px 0 0 0" }}>
                       Completed in {auditResult.duration_seconds}s · {new Date(auditResult.timestamp).toLocaleTimeString()}
                     </p>
 
                     {auditResult.failed > 0 && auditResult.failures && auditResult.failures.length > 0 && (
                       <div style={{ marginTop: "12px" }}>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgba(244,246,240,0.50)", marginBottom: "6px" }}>
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-white) / 0.50)", marginBottom: "6px" }}>
                           FAILED TESTS:
                         </p>
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -496,8 +496,8 @@ export default function PlatformAdmin({ user }) {
                                 T{String(f.n).padStart(2, "0")}.
                               </span>
                               <div>
-                                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgba(244,246,240,0.80)", margin: 0 }}>{f.test}</p>
-                                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "rgba(244,246,240,0.40)", margin: "1px 0 0 0" }}>{f.error}</p>
+                                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-white) / 0.80)", margin: 0 }}>{f.test}</p>
+                                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "rgb(var(--bw-white) / 0.40)", margin: "1px 0 0 0" }}>{f.error}</p>
                               </div>
                             </div>
                           ))}
@@ -507,7 +507,7 @@ export default function PlatformAdmin({ user }) {
                   </div>
                   <button
                     onClick={() => setShowAuditPanel(false)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(244,246,240,0.35)", padding: "0 0 0 16px", flexShrink: 0 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "rgb(var(--bw-white) / 0.35)", padding: "0 0 0 16px", flexShrink: 0 }}
                   >
                     <X style={{ width: "14px", height: "14px" }} />
                   </button>
