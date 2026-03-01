@@ -66,8 +66,10 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Twilio WhatsApp configuration
 
 ## Known Issues
-- 41 tests skipped (mix of missing features and password scrubbing side effects)
+- 19 tests skipped (mix of missing features, entitlement gating, and test limitations)
 - test_hr_module.py has 4 failures + 12 errors (pre-existing, older fixture pattern)
+- AMC module RBAC: `require_admin` only accepts role="admin", not "owner" — org owners cannot access AMC
+- Reports Advanced: gated by entitlements, 200 path data structure not verified
 - Banking frontend not migrated to cursor pagination
 - Razorpay uses test/disabled keys
 - expert_queue_service.py uses stub ZendeskBridge
@@ -76,4 +78,5 @@ Multi-phase project to improve application stability, maintainability, feature s
 - Dev Admin: dev@battwheels.internal / DevTest@123
 - Platform Admin: platform-admin@battwheels.in / DevTest@123
 - Demo User: demo@voltmotors.in / Demo@12345
+- AMC Admin: admin@battwheels.in / DevTest@123
 - Technician: tech.a@battwheels.internal / TechA@123
