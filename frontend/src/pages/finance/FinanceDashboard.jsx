@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { colors as themeColors } from "../../theme/colors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -231,9 +232,9 @@ export default function FinanceDashboard() {
                     labelStyle={{ color: 'rgb(var(--bw-white))', fontWeight: 600 }}
                     formatter={(value, name) => [formatCurrency(value), name === 'credits' ? 'Income' : name === 'debits' ? 'Expenses' : 'Net']}
                   />
-                  <Bar dataKey="credits" name="credits" fill="#C8FF00" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="debits" name="debits" fill="#FF8C00" radius={[4, 4, 0, 0]} />
-                  <Line type="monotone" dataKey="net" name="net" stroke="#1AFFE4" strokeWidth={2} dot={{ fill: '#1AFFE4', r: 4 }} />
+                  <Bar dataKey="credits" name="credits" fill={themeColors.volt} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="debits" name="debits" fill={themeColors.orange} radius={[4, 4, 0, 0]} />
+                  <Line type="monotone" dataKey="net" name="net" stroke={themeColors.teal} strokeWidth={2} dot={{ fill: themeColors.teal, r: 4 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>

@@ -902,7 +902,7 @@ export default function Reports() {
                                 <span style={{
                                   padding: "2px 6px", borderRadius: "2px", fontSize: "10px", fontFamily: "monospace",
                                   background: t.priority === "critical" ? "rgba(255,59,47,0.15)" : t.priority === "high" ? "rgba(255,140,0,0.15)" : "rgba(234,179,8,0.15)",
-                                  color: t.priority === "critical" ? "#FF3B2F" : t.priority === "high" ? "#FF8C00" : "#EAB308"
+                                  color: t.priority === "critical" ? "rgb(var(--bw-red))" : t.priority === "high" ? "rgb(var(--bw-orange))" : "rgb(var(--bw-amber))"
                                 }}>{t.priority?.toUpperCase()}</span>
                               </TableCell>
                               <TableCell className="text-bw-white/[0.65]">{t.assigned_technician_name || "Unassigned"}</TableCell>
@@ -1009,10 +1009,10 @@ export default function Reports() {
                                 : tech.rank === 3
                                 ? { background: "rgba(255,140,0,0.10)", color: "rgb(var(--bw-orange))", border: "1px solid rgba(255,140,0,0.20)" }
                                 : {};
-                              const resRateColor = tech.resolution_rate_pct >= 80 ? "#22C55E" : tech.resolution_rate_pct >= 60 ? "#EAB308" : "#FF3B2F";
-                              const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
+                              const resRateColor = tech.resolution_rate_pct >= 80 ? "rgb(var(--bw-green))" : tech.resolution_rate_pct >= 60 ? "rgb(var(--bw-amber))" : "rgb(var(--bw-red))";
+                              const slaColor = tech.sla_compliance_rate_pct >= 90 ? "rgb(var(--bw-green))" : tech.sla_compliance_rate_pct >= 70 ? "rgb(var(--bw-amber))" : "rgb(var(--bw-red))";
                               const breachTotal = tech.sla_breaches_response + tech.sla_breaches_resolution;
-                              const breachColor = breachTotal === 0 ? "rgba(244,246,240,0.25)" : breachTotal <= 3 ? "#EAB308" : "#FF3B2F";
+                              const breachColor = breachTotal === 0 ? "rgba(244,246,240,0.25)" : breachTotal <= 3 ? "rgb(var(--bw-amber))" : "rgb(var(--bw-red))";
                               const fmtTime = (mins) => !mins ? "N/A" : mins < 60 ? `${Math.round(mins)}m` : `${Math.round(mins/60)}h ${Math.round(mins%60)}m`;
                               return (
                                 <TableRow
@@ -1067,10 +1067,10 @@ export default function Reports() {
                               {[
                                 { label: "Assigned", val: selectedTech.total_tickets_assigned, color: "rgb(var(--bw-white))" },
                                 { label: "Resolved", val: selectedTech.total_tickets_resolved, color: "rgb(var(--bw-green))" },
-                                { label: "Res. Rate", val: `${selectedTech.resolution_rate_pct}%`, color: selectedTech.resolution_rate_pct >= 80 ? "#22C55E" : "#EAB308" },
-                                { label: "SLA Compliance", val: `${selectedTech.sla_compliance_rate_pct}%`, color: selectedTech.sla_compliance_rate_pct >= 90 ? "#22C55E" : selectedTech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F" },
-                                { label: "SLA Breaches (Resp)", val: selectedTech.sla_breaches_response, color: selectedTech.sla_breaches_response === 0 ? "rgba(244,246,240,0.25)" : "#EAB308" },
-                                { label: "SLA Breaches (Res)", val: selectedTech.sla_breaches_resolution, color: selectedTech.sla_breaches_resolution === 0 ? "rgba(244,246,240,0.25)" : "#FF3B2F" },
+                                { label: "Res. Rate", val: `${selectedTech.resolution_rate_pct}%`, color: selectedTech.resolution_rate_pct >= 80 ? "rgb(var(--bw-green))" : "rgb(var(--bw-amber))" },
+                                { label: "SLA Compliance", val: `${selectedTech.sla_compliance_rate_pct}%`, color: selectedTech.sla_compliance_rate_pct >= 90 ? "rgb(var(--bw-green))" : selectedTech.sla_compliance_rate_pct >= 70 ? "rgb(var(--bw-amber))" : "rgb(var(--bw-red))" },
+                                { label: "SLA Breaches (Resp)", val: selectedTech.sla_breaches_response, color: selectedTech.sla_breaches_response === 0 ? "rgba(244,246,240,0.25)" : "rgb(var(--bw-amber))" },
+                                { label: "SLA Breaches (Res)", val: selectedTech.sla_breaches_resolution, color: selectedTech.sla_breaches_resolution === 0 ? "rgba(244,246,240,0.25)" : "rgb(var(--bw-red))" },
                                 { label: "Avg Response", val: selectedTech.avg_response_time_minutes ? (selectedTech.avg_response_time_minutes < 60 ? `${Math.round(selectedTech.avg_response_time_minutes)}m` : `${Math.round(selectedTech.avg_response_time_minutes/60)}h`) : "N/A", color: "rgb(var(--bw-white))" },
                                 { label: "Avg Resolution", val: selectedTech.avg_resolution_time_minutes ? (selectedTech.avg_resolution_time_minutes < 60 ? `${Math.round(selectedTech.avg_resolution_time_minutes)}m` : `${Math.round(selectedTech.avg_resolution_time_minutes/60)}h`) : "N/A", color: "rgb(var(--bw-white))" },
                               ].map(({ label, val, color }) => (

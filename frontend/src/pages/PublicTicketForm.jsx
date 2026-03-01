@@ -261,7 +261,7 @@ export default function PublicTicketForm() {
         if (res.ok) { setStep(3); toast.success("Payment successful!"); }
       },
       prefill: { name: formData.customer_name, email: formData.email, contact: formData.contact_number },
-      theme: { color: "#10b981" }
+      theme: { color: "rgb(var(--bw-volt))" }
     });
     rzp.open();
   };
@@ -396,7 +396,7 @@ export default function PublicTicketForm() {
                     <p className="text-xs text-gray-500 mt-1">{type.desc}</p>
                     {isSelected && (
                       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3">
-                        <CheckCircle2 className="w-6 h-6 text-bw-volt text-500" fill="#10b981" stroke="white" />
+                        <CheckCircle2 className="w-6 h-6 text-bw-volt text-500" fill="rgb(var(--bw-volt))" stroke="white" />
                       </motion.div>
                     )}
                   </motion.button>
@@ -691,7 +691,7 @@ export default function PublicTicketForm() {
           <div className="relative p-8 text-center bg-gradient-to-br from-emerald-500 to-teal-500">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }} className="relative w-20 h-20 mx-auto mb-4 bg-bw-panel rounded-full flex items-center justify-center shadow-2xl">
-              <CheckCircle className="w-10 h-10 text-bw-volt text-500" fill="#d1fae5" />
+              <CheckCircle className="w-10 h-10 text-bw-volt text-500" fill="rgb(var(--bw-volt))" />
             </motion.div>
             <h2 className="text-2xl font-bold text-white mb-1">Request Submitted!</h2>
             <p className="text-bw-volt text-100">Your service ticket has been created</p>
