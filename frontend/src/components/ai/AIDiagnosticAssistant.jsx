@@ -186,13 +186,6 @@ Please provide:
     toast.success("Form cleared");
   };
 
-  const copyDiagnosis = () => {
-    if (diagnosis?.content) {
-      navigator.clipboard.writeText(diagnosis.content);
-      toast.success("Diagnosis copied to clipboard");
-    }
-  };
-
   const formatDiagnosis = (content) => {
     if (!content) return null;
     
