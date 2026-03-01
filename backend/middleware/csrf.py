@@ -31,8 +31,9 @@ CSRF_BYPASS_PREFIXES = (
     "/api/v1/auth/",                # Auth endpoints (versioned)
     "/api/v1/organizations/signup",  # Signup is pre-session
     "/api/v1/organizations/accept-invite",  # Invite acceptance is pre-session
-    "/api/v1/customer-portal/auth",  # Customer portal auth
-    "/api/v1/business-portal/auth",  # Business portal auth
+    "/api/v1/customer-portal/",       # Customer portal (session-token auth)
+    "/api/v1/business-portal/",       # Business portal (session-token auth)
+    "/api/v1/business/",              # Business portal routes
     "/api/v1/technician-portal/auth",  # Technician portal auth
     "/docs",
     "/openapi.json",
