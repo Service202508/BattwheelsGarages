@@ -1148,10 +1148,15 @@ async def list_estimates(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     expiry_status: Optional[str] = None,
+    cursor: Optional[str] = Query(None, description="Cursor for keyset pagination (from next_cursor)"),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
-    """List estimates with filters and standardized pagination"""
+    """List estimates with filters and standardized pagination.
+
+    Supports both cursor-based (preferred) and page-based (legacy) pagination.
+    Pass `cursor` from previous response's `next_cursor` for efficient keyset paging.
+    """
     import math
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
@@ -1187,11 +1192,29 @@ async def list_estimates(
     elif expiry_status == "active":
         query["expiry_date"] = {"$gte": today}
 
+    # Cursor-based pagination path
+    if cursor:
+        from utils.pagination import paginate_keyset
+        return await paginate_keyset(
+            estimates_collection, query,
+            sort_field="date", sort_order=-1,
+            tiebreaker_field="estimate_id",
+            limit=limit, cursor=cursor,
+        )
+
+    # Legacy page-based pagination
     total = await estimates_collection.count_documents(query)
     skip = (page - 1) * limit
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
     estimates = await estimates_collection.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+
+    # Build next_cursor from last item for cursor transition
+    from utils.pagination import encode_cursor
+    next_cursor = None
+    if estimates and page < total_pages:
+        last = estimates[-1]
+        next_cursor = encode_cursor(last.get("date"), last.get("estimate_id"))
 
     return {
         "data": estimates,
@@ -1201,7 +1224,8 @@ async def list_estimates(
             "total_count": total,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1
+            "has_prev": page > 1,
+            "next_cursor": next_cursor,
         }
     }
 
