@@ -48,10 +48,14 @@ def test_invoice(base_url, _headers, test_customer_id):
     if not test_customer_id:
         pytest.skip("No customer available to create invoice")
 
+    from datetime import datetime
+    today = datetime.now().strftime("%Y-%m-%d")
+    due = "2026-12-31"
+
     resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
         "customer_id": test_customer_id,
-        "invoice_date": "2026-02-01",
-        "due_date": "2026-03-01",
+        "invoice_date": today,
+        "due_date": due,
         "line_items": [{
             "name": "Battery Health Check",
             "description": "Full diagnostic scan",
@@ -78,13 +82,15 @@ class TestCreateInvoice:
     def test_create_invoice_success(self, base_url, _headers, test_customer_id):
         if not test_customer_id:
             pytest.skip("No customer")
+        from datetime import datetime
+        today = datetime.now().strftime("%Y-%m-%d")
         resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
             "customer_id": test_customer_id,
-            "invoice_date": "2026-02-15",
-            "due_date": "2026-03-15",
+            "invoice_date": today,
+            "due_date": "2026-12-31",
             "line_items": [{"name": "Motor Repair", "quantity": 1, "rate": 2000.0, "tax_percentage": 18.0, "tax_name": "GST"}]
         })
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Create failed: {resp.status_code} {resp.text}"
         data = resp.json()
         inv = data.get("invoice") or data
         assert inv.get("invoice_id")
@@ -241,10 +247,12 @@ class TestVoidInvoice:
     def voidable_invoice(self, base_url, _headers, test_customer_id):
         if not test_customer_id:
             pytest.skip("No customer")
+        from datetime import datetime
+        today = datetime.now().strftime("%Y-%m-%d")
         resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
             "customer_id": test_customer_id,
-            "invoice_date": "2026-02-01",
-            "due_date": "2026-03-01",
+            "invoice_date": today,
+            "due_date": "2026-12-31",
             "line_items": [{"name": "Void Test", "quantity": 1, "rate": 100.0, "tax_percentage": 18.0, "tax_name": "GST"}]
         })
         if resp.status_code != 200:
