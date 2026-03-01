@@ -413,6 +413,7 @@ class EFILearningEngine:
                     learning_entry["suggest_new_card"] = True
         
         await self.db.efi_learning_queue.insert_one(learning_entry)
+        learning_entry.pop("_id", None)
         
         return learning_entry
     
