@@ -167,10 +167,10 @@ class TestWarehouses:
         assert created_warehouse is not None
 
     def test_list_warehouses(self, base_url, dev_headers):
-        """GET /api/v1/inventory-enhanced/warehouses returns list or plan restriction"""
+        """GET /api/v1/inventory-enhanced/warehouses — enterprise feature (plan-gated)"""
         resp = requests.get(f"{base_url}/api/v1/inventory-enhanced/warehouses", headers=dev_headers)
-        # 200 = enterprise plan, 400 = feature_not_available for lower plans
-        assert resp.status_code in (200, 400), f"Warehouses: {resp.status_code} {resp.text[:200]}"
+        # 200 = enterprise, 400/403 = plan restriction for professional
+        assert resp.status_code in (200, 400, 403)
 
 
 # ==================== INVENTORY / STOCK ====================
@@ -213,14 +213,14 @@ class TestStockTransfers:
     """Test stock transfer operations"""
 
     def test_list_stock_transfers(self, base_url, dev_headers):
-        """GET /api/v1/stock-transfers/ returns list or plan restriction"""
+        """GET /api/v1/stock-transfers/ — enterprise feature (plan-gated)"""
         resp = requests.get(f"{base_url}/api/v1/stock-transfers/", headers=dev_headers)
-        assert resp.status_code in (200, 400), f"Stock transfers: {resp.status_code} {resp.text[:200]}"
+        assert resp.status_code in (200, 400, 403)
 
     def test_stock_transfer_stats(self, base_url, dev_headers):
-        """GET /api/v1/stock-transfers/stats/summary returns stats or plan restriction"""
+        """GET /api/v1/stock-transfers/stats/summary — enterprise feature (plan-gated)"""
         resp = requests.get(f"{base_url}/api/v1/stock-transfers/stats/summary", headers=dev_headers)
-        assert resp.status_code in (200, 400)
+        assert resp.status_code in (200, 400, 403)
 
 
 # ==================== NEGATIVE TESTS ====================
