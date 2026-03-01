@@ -13,14 +13,22 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 logger = logging.getLogger(__name__)
 
 _db: AsyncIOMotorDatabase = None
+_ttl_index_created = False
 
 
-async def init_rate_limiter(db: AsyncIOMotorDatabase):
-    """Initialize rate limiter with DB and create TTL index."""
+def init_rate_limiter_sync(db: AsyncIOMotorDatabase):
+    """Initialize rate limiter with DB reference (sync, TTL index created lazily)."""
     global _db
     _db = db
-    await db.login_attempts.create_index("created_at", expireAfterSeconds=900)
-    logger.info("Login rate limiter initialized with TTL index (900s)")
+    logger.info("Login rate limiter initialized (TTL index deferred)")
+
+
+async def _ensure_ttl_index():
+    """Create TTL index on first use (async)."""
+    global _ttl_index_created
+    if not _ttl_index_created and _db:
+        await _db.login_attempts.create_index("created_at", expireAfterSeconds=900)
+        _ttl_index_created = True
 
 
 async def check_login_rate_limit(email: str) -> tuple:
@@ -31,6 +39,7 @@ async def check_login_rate_limit(email: str) -> tuple:
     if not _db:
         return True, 0
 
+    await _ensure_ttl_index()
     count = await _db.login_attempts.count_documents({"email": email})
     if count >= 5:
         return False, 900
@@ -41,6 +50,7 @@ async def record_failed_attempt(email: str):
     """Record a failed login attempt."""
     if not _db:
         return
+    await _ensure_ttl_index()
     await _db.login_attempts.insert_one({
         "email": email,
         "created_at": datetime.now(timezone.utc)
