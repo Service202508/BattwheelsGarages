@@ -100,7 +100,7 @@ class TestProjectTasks:
         # Create task
         resp = requests.post(
             f"{base_url}/api/v1/projects/{pid}/tasks",
-            json={"name": f"Task {unique()}", "description": "Test task", "status": "todo"},
+            json={"title": f"Task {unique()}", "description": "Test task", "status": "todo"},
             headers=auth_headers,
         )
         assert resp.status_code == 200, f"Create task: {resp.status_code} {resp.text[:300]}"
@@ -154,7 +154,7 @@ class TestProjectTimeLogs:
         today = datetime.now().strftime("%Y-%m-%d")
         resp = requests.post(
             f"{base_url}/api/v1/projects/{pid}/time-log",
-            json={"date": today, "hours": 4.0, "description": "Development work"},
+            json={"date": today, "hours_logged": 4.0, "description": "Development work"},
             headers=auth_headers,
         )
         assert resp.status_code == 200, f"Log time: {resp.status_code} {resp.text[:300]}"
