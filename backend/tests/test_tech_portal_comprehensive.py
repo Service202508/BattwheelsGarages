@@ -140,10 +140,11 @@ class TestTechAIAssist:
 
     def test_ai_assist(self, base_url, _tech_headers):
         resp = requests.post(f"{base_url}{PREFIX}/ai-assist", headers=_tech_headers, json={
-            "question": "How do I diagnose a battery drain issue?",
+            "query": "How do I diagnose a battery drain issue?",
+            "category": "diagnosis",
             "context": {"vehicle_type": "2W"},
         })
-        # May return 200 or 500 (if LLM not configured)
+        # May return 200 or 500/503 (if LLM not configured)
         assert resp.status_code in [200, 500, 503]
 
 
