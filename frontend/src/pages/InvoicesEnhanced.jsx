@@ -1320,6 +1320,18 @@ export default function InvoicesEnhanced() {
               </table>
             </div>
           )}
+          {hasMore && (
+            <div className="flex justify-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => fetchInvoices(nextCursor)}
+                data-testid="load-more-invoices-btn"
+                className="border-white/[0.07] text-bw-white/70 hover:bg-bw-volt/[0.06]"
+              >
+                Load More ({invoices.length} of {totalCount})
+              </Button>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="overdue">
