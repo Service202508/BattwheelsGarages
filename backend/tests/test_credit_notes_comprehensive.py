@@ -46,43 +46,32 @@ def _demo_headers(base_url):
 
 @pytest.fixture(scope="module")
 def sent_invoice(base_url, _headers):
-    """Find an existing non-draft invoice in invoices_enhanced collection."""
-    import pymongo, os
-    client = pymongo.MongoClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-    db_name = os.environ.get("DB_NAME", "battwheels_dev")
-    db = client[db_name]
-
-    # Look directly in invoices_enhanced for a non-draft invoice in the dev org
-    inv = db.invoices_enhanced.find_one(
-        {"organization_id": "dev-internal-testing-001", "status": {"$ne": "draft"}},
-        {"_id": 0}
-    )
-    client.close()
-
-    if not inv:
-        # Try creating one via API
-        resp = requests.get(f"{base_url}/api/v1/contacts-enhanced/?per_page=1", headers=_headers)
-        if resp.status_code != 200:
-            pytest.skip("No customers and no existing non-draft invoices")
-        contacts = resp.json().get("contacts") or resp.json().get("data") or []
-        if not contacts:
-            pytest.skip("No customers")
-        today = datetime.now().strftime("%Y-%m-%d")
-        resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
-            "customer_id": contacts[0]["contact_id"],
-            "invoice_date": today,
-            "due_date": "2026-12-31",
-            "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%"}]
-        })
-        if resp.status_code != 200:
-            pytest.skip(f"Cannot create invoice: {resp.status_code}")
-        inv_data = resp.json().get("invoice") or resp.json()
-        requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_data['invoice_id']}/send", headers=_headers)
-        resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{inv_data['invoice_id']}", headers=_headers)
-        if resp.status_code == 200:
-            inv = resp.json().get("invoice") or resp.json()
-        else:
-            inv = inv_data
+    """Create a FRESH non-draft invoice for credit note testing (test isolation)."""
+    # First get a customer
+    resp = requests.get(f"{base_url}/api/v1/contacts-enhanced/?per_page=1", headers=_headers)
+    if resp.status_code != 200:
+        pytest.skip("No customers available for invoice creation")
+    contacts = resp.json().get("contacts") or resp.json().get("data") or []
+    if not contacts:
+        pytest.skip("No customers")
+    today = datetime.now().strftime("%Y-%m-%d")
+    resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/", headers=_headers, json={
+        "customer_id": contacts[0]["contact_id"],
+        "invoice_date": today,
+        "due_date": "2026-12-31",
+        "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%"}]
+    })
+    if resp.status_code != 200:
+        pytest.skip(f"Cannot create invoice: {resp.status_code}")
+    inv_data = resp.json().get("invoice") or resp.json()
+    inv_id = inv_data.get("invoice_id")
+    # Send the invoice so it becomes non-draft
+    requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_id}/send", headers=_headers)
+    resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{inv_id}", headers=_headers)
+    if resp.status_code == 200:
+        inv = resp.json().get("invoice") or resp.json()
+    else:
+        inv = inv_data
     return inv
 
 
