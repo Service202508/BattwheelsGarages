@@ -111,3 +111,11 @@ test_reports/
 audit_results_v2.json
 CTO_REAUDIT_REPORT.md
 .emergent/
+-e 
+# Environment files
+*.env
+*.env.*
+-e 
+# Environment files
+*.env
+*.env.*
