@@ -89,10 +89,10 @@ export default function TicketDetail({ user }) {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.all([fetchTicket(), fetchActivities(), fetchEstimate()]);
+      await Promise.all([fetchTicket(), fetchActivities(), fetchEstimate(), fetchEfiSuggestions()]);
       setLoading(false);
     })();
-  }, [fetchTicket, fetchActivities]);
+  }, [fetchTicket, fetchActivities, fetchEfiSuggestions]);
 
   const fetchEstimate = async () => {
     setEstimateLoading(true);
