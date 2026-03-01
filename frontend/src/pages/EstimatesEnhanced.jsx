@@ -1371,6 +1371,18 @@ export default function EstimatesEnhanced() {
                   ))}
                 </tbody>
               </ResponsiveTable>
+              {hasMore && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => fetchEstimates(nextCursor)}
+                    data-testid="load-more-estimates-btn"
+                    className="border-white/[0.07] text-bw-white/70 hover:bg-bw-volt/[0.06]"
+                  >
+                    Load More ({estimates.length} of {totalCount})
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </TabsContent>
