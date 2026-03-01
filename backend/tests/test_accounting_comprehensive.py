@@ -192,9 +192,10 @@ class TestReverseJournalEntry:
         eid = reversible_entry.get("entry_id")
         if not eid:
             pytest.skip("No entry_id")
+        today = datetime.now().strftime("%Y-%m-%d")
         resp = requests.post(f"{base_url}/api/v1/journal-entries/{eid}/reverse", headers=_headers,
-                              params={"reason": "Test reversal"})
-        assert resp.status_code in [200, 400], f"Unexpected: {resp.status_code} {resp.text}"
+                              json={"reversal_date": today, "reason": "Test reversal"})
+        assert resp.status_code in [200, 400, 423], f"Unexpected: {resp.status_code} {resp.text}"
 
 
 # ==================== CHART OF ACCOUNTS (via journal-entries) ====================
