@@ -105,6 +105,7 @@ class EFIDecisionTreeEngine:
             tree_dict["entry_step_id"] = tree.steps[0].step_id
         
         await self.db.efi_decision_trees.insert_one(tree_dict)
+        tree_dict.pop("_id", None)
         return tree_dict
     
     async def start_session(
