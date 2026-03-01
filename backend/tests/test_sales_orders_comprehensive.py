@@ -31,7 +31,7 @@ PREFIX = "/api/v1/sales-orders-enhanced"
 def created_order(base_url, _headers):
     """Create a sales order for testing."""
     resp = requests.post(f"{base_url}{PREFIX}/", headers=_headers, json={
-        "customer_id": f"cust-test-{uuid.uuid4().hex[:6]}",
+        "customer_id": "test-customer-001",
         "date": "2026-03-01",
         "expected_shipment_date": "2026-03-15",
         "notes": "Test sales order",
