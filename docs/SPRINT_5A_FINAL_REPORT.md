@@ -9,8 +9,8 @@
 
 | Credential | Status | Details |
 |------------|--------|---------|
-| `SENTRY_DSN` | **SET** | Real DSN (`https://REDACTED...`). Sentry monitoring active. |
-| `RESEND_API_KEY` | **SET** | Real key (`REDACTED`). Email service initialized. |
+| `SENTRY_DSN` | **SET** | Real DSN configured. Sentry monitoring active. |
+| `RESEND_API_KEY` | **SET** | Real key configured. Email service initialized. |
 | `RAZORPAY_KEY_ID` | **SET (TEST)** | Test key (`rzp_test_...`). Not live — payment creation works in test mode, will fail for real transactions. |
 | `RAZORPAY_KEY_SECRET` | **SET (TEST)** | Test secret (len=8). Paired with test key_id. |
 | `RAZORPAY_WEBHOOK_SECRET` | **SET** | Webhook validation active. |

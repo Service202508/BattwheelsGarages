@@ -490,7 +490,7 @@ class TestForm16HRMotorRegression:
 class TestWebhookIdempotencyRegression:
     """Confirms razorpay.py webhook idempotency still works after motor upgrade"""
 
-    WEBHOOK_SECRET = "REDACTED_WEBHOOK_SECRET"  # From backend/.env RAZORPAY_WEBHOOK_SECRET
+    WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "test-webhook-secret")
 
     def _build_webhook_payload(self, payment_id: str, event: str = "payment.captured",
                                 order_id: str = "order_TEST_REG_001") -> dict:

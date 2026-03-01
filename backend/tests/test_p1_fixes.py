@@ -162,7 +162,7 @@ class TestDB204OrgIdIndexes:
 class TestPY903WebhookIdempotency:
     """Verify POST /api/payments/webhook is idempotent"""
 
-    WEBHOOK_SECRET = "REDACTED_WEBHOOK_SECRET"  # From backend .env
+    WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "test-webhook-secret")
 
     def _build_webhook_payload(self, payment_id: str, event: str) -> dict:
         return {

@@ -35,7 +35,7 @@ ADMIN_PASSWORD = "admin"
 TECH_EMAIL = "tech@battwheels.in"
 TECH_PASSWORD = "DevTest@123"
 ADMIN_ORG_ID = "dev-internal-testing-001"
-RAZORPAY_WEBHOOK_SECRET = "REDACTED_WEBHOOK_SECRET"
+RAZORPAY_WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "test-webhook-secret")
 
 # Required security headers
 REQUIRED_SECURITY_HEADERS = [
