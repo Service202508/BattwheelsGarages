@@ -6,7 +6,6 @@ Max 5 failed login attempts per email per 15 minutes.
 Uses MongoDB login_attempts collection with TTL index.
 """
 
-import os
 import logging
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -37,7 +36,7 @@ async def check_login_rate_limit(email: str) -> tuple:
     Check if email is rate-limited.
     Returns (is_allowed: bool, retry_after: int).
     """
-    if _db is None or os.environ.get("TESTING") == "1":
+    if _db is None:
         return True, 0
 
     await _ensure_ttl_index()
