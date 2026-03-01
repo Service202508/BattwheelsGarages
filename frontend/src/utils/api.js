@@ -68,22 +68,6 @@ export const apiFetch = async (url, options = {}) => {
   
   const response = await fetch(url, mergedOptions);
 
-  // Intercept 401 Unauthorized — JWT expired or invalid mid-session
-  if (response.status === 401) {
-    // Skip redirect for auth endpoints themselves (login, register, etc.)
-    const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/register") || url.includes("/auth/me");
-    if (!isAuthEndpoint) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("organization_id");
-      localStorage.removeItem("organization");
-      // Redirect to login — use replace to prevent back-button loops
-      if (window.location.pathname !== "/login") {
-        window.location.replace("/login");
-      }
-      return response;
-    }
-  }
-
   // Intercept 403 feature_not_available globally
   if (response.status === 403) {
     try {
