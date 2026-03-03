@@ -1,8 +1,8 @@
 """
 Tests for Onboarding Checklist feature:
-- GET /api/organizations/onboarding/status
-- POST /api/organizations/onboarding/complete-step
-- POST /api/organizations/onboarding/skip
+- GET /api/v1/organizations/onboarding/status
+- POST /api/v1/organizations/onboarding/complete-step
+- POST /api/v1/organizations/onboarding/skip
 Tests new org (org_test_onboarding1) and Battwheels Garages (6996dcf072ffd2a2395fee7b)
 """
 import pytest
@@ -11,13 +11,11 @@ import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 
-NEW_ORG_TOKEN = "REDACTED_JWT_TOKEN"
-BATTWHEELS_TOKEN = "REDACTED_JWT_TOKEN"
+# Tokens auto-injected by conftest _auto_inject_auth fixture
 
 
 def new_org_headers():
     return {
-        "Authorization": f"Bearer {NEW_ORG_TOKEN}",
         "x-organization-id": "org_test_onboarding1",
         "Content-Type": "application/json"
     }
@@ -25,7 +23,6 @@ def new_org_headers():
 
 def battwheels_headers():
     return {
-        "Authorization": f"Bearer {BATTWHEELS_TOKEN}",
         "x-organization-id": "dev-internal-testing-001",
         "Content-Type": "application/json"
     }
@@ -50,18 +47,18 @@ def reset_test_org():
 
 
 class TestOnboardingStatusNewOrg:
-    """Tests for GET /api/organizations/onboarding/status - new org"""
+    """Tests for GET /api/v1/organizations/onboarding/status - new org"""
 
     def test_onboarding_status_returns_200(self):
         """Status endpoint returns 200 for new org"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text}"
 
     def test_onboarding_status_show_onboarding_true(self):
         """show_onboarding is True for new org (created < 7 days ago, not completed)"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         assert "show_onboarding" in data, "Response missing show_onboarding field"
@@ -70,7 +67,7 @@ class TestOnboardingStatusNewOrg:
     def test_onboarding_status_response_structure(self):
         """Response has all required fields"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         required_fields = ["onboarding_completed", "onboarding_steps_completed",
@@ -81,7 +78,7 @@ class TestOnboardingStatusNewOrg:
     def test_onboarding_status_total_steps_is_6(self):
         """Total steps is 6"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         assert data["total_steps"] == 6, f"Expected total_steps=6, got {data['total_steps']}"
@@ -89,7 +86,7 @@ class TestOnboardingStatusNewOrg:
     def test_onboarding_status_completed_count_zero_initially(self):
         """Completed count is 0 for fresh org with no data"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         # completed_count should reflect actual data (0 for clean test org)
@@ -98,43 +95,43 @@ class TestOnboardingStatusNewOrg:
     def test_onboarding_not_completed_initially(self):
         """onboarding_completed is False for fresh org"""
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         assert data["onboarding_completed"] is False, f"Expected onboarding_completed=False, got {data['onboarding_completed']}"
 
 
 class TestOnboardingStatusBattwheels:
-    """Tests for GET /api/organizations/onboarding/status - Battwheels (should never show banner)"""
+    """Tests for GET /api/v1/organizations/onboarding/status - Battwheels (should never show banner)"""
 
     def test_battwheels_returns_200(self):
         """Status endpoint returns 200 for Battwheels"""
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=battwheels_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=battwheels_headers())
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text}"
 
     def test_battwheels_show_onboarding_false(self):
         """show_onboarding is False for Battwheels (onboarding_completed=True)"""
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=battwheels_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=battwheels_headers())
         assert r.status_code == 200
         data = r.json()
         assert data["show_onboarding"] is False, f"Expected show_onboarding=False for Battwheels, got {data['show_onboarding']}"
 
     def test_battwheels_onboarding_completed_true(self):
         """onboarding_completed is True for Battwheels"""
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=battwheels_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=battwheels_headers())
         assert r.status_code == 200
         data = r.json()
         assert data["onboarding_completed"] is True, f"Expected onboarding_completed=True, got {data['onboarding_completed']}"
 
 
 class TestOnboardingCompleteStep:
-    """Tests for POST /api/organizations/onboarding/complete-step"""
+    """Tests for POST /api/v1/organizations/onboarding/complete-step"""
 
     def test_complete_step_returns_success(self):
         """Complete step returns 200 with success=True"""
         reset_test_org()
         r = requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/complete-step",
+            f"{BASE_URL}/api/v1/organizations/onboarding/complete-step",
             headers=new_org_headers(),
             json={"step": "add_first_contact"}
         )
@@ -147,12 +144,12 @@ class TestOnboardingCompleteStep:
         reset_test_org()
         # Mark add_first_contact complete
         requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/complete-step",
+            f"{BASE_URL}/api/v1/organizations/onboarding/complete-step",
             headers=new_org_headers(),
             json={"step": "add_first_contact"}
         )
         # Verify it appears in status
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         assert "add_first_contact" in data["onboarding_steps_completed"], \
@@ -162,7 +159,7 @@ class TestOnboardingCompleteStep:
         """Invalid step returns 400"""
         reset_test_org()
         r = requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/complete-step",
+            f"{BASE_URL}/api/v1/organizations/onboarding/complete-step",
             headers=new_org_headers(),
             json={"step": "invalid_step_xyz"}
         )
@@ -172,7 +169,7 @@ class TestOnboardingCompleteStep:
         """Response has expected fields"""
         reset_test_org()
         r = requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/complete-step",
+            f"{BASE_URL}/api/v1/organizations/onboarding/complete-step",
             headers=new_org_headers(),
             json={"step": "create_first_ticket"}
         )
@@ -186,13 +183,13 @@ class TestOnboardingCompleteStep:
 
 
 class TestOnboardingSkip:
-    """Tests for POST /api/organizations/onboarding/skip"""
+    """Tests for POST /api/v1/organizations/onboarding/skip"""
 
     def test_skip_returns_success(self):
         """Skip returns 200 with success=True"""
         reset_test_org()
         r = requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/skip",
+            f"{BASE_URL}/api/v1/organizations/onboarding/skip",
             headers=new_org_headers()
         )
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text}"
@@ -204,14 +201,14 @@ class TestOnboardingSkip:
         reset_test_org()
         # Skip
         r_skip = requests.post(
-            f"{BASE_URL}/api/organizations/onboarding/skip",
+            f"{BASE_URL}/api/v1/organizations/onboarding/skip",
             headers=new_org_headers()
         )
         assert r_skip.status_code == 200
 
         # Verify status now shows completed
         r_status = requests.get(
-            f"{BASE_URL}/api/organizations/onboarding/status",
+            f"{BASE_URL}/api/v1/organizations/onboarding/status",
             headers=new_org_headers()
         )
         assert r_status.status_code == 200
@@ -225,7 +222,7 @@ class TestOnboardingSkip:
         """After reset, show_onboarding becomes True again"""
         # Reset back
         reset_test_org()
-        r = requests.get(f"{BASE_URL}/api/organizations/onboarding/status", headers=new_org_headers())
+        r = requests.get(f"{BASE_URL}/api/v1/organizations/onboarding/status", headers=new_org_headers())
         assert r.status_code == 200
         data = r.json()
         assert data["show_onboarding"] is True, \

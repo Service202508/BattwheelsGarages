@@ -13,7 +13,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 API_URL = f"{BASE_URL}/api"
 
 # Test data storage
@@ -24,7 +24,7 @@ class TestCompositeItemsSummary:
     """Test composite items summary endpoint"""
     
     def test_get_summary(self):
-        """GET /api/composite-items/summary - Get composite items summary stats"""
+        """GET /api/v1/composite-items/summary - Get composite items summary stats"""
         response = requests.get(f"{API_URL}/composite-items/summary")
         assert response.status_code == 200
         data = response.json()
@@ -42,7 +42,7 @@ class TestCompositeItemsList:
     """Test composite items list endpoint"""
     
     def test_list_composite_items(self):
-        """GET /api/composite-items - List all composite items"""
+        """GET /api/v1/composite-items - List all composite items"""
         response = requests.get(f"{API_URL}/composite-items")
         assert response.status_code == 200
         data = response.json()
@@ -52,7 +52,7 @@ class TestCompositeItemsList:
         print(f"Found {data['total']} composite items")
         
     def test_list_by_type_kit(self):
-        """GET /api/composite-items?type=kit - Filter by kit type"""
+        """GET /api/v1/composite-items?type=kit - Filter by kit type"""
         response = requests.get(f"{API_URL}/composite-items?type=kit")
         assert response.status_code == 200
         data = response.json()
@@ -67,7 +67,7 @@ class TestInventoryItemsForComposite:
     """Get inventory items to use as components for composite"""
     
     def test_get_inventory_items(self):
-        """GET /api/items-enhanced/ - Get inventory items for component selection"""
+        """GET /api/v1/items-enhanced/ - Get inventory items for component selection"""
         global test_item_ids
         response = requests.get(f"{API_URL}/items-enhanced/?per_page=20")
         assert response.status_code == 200
@@ -85,7 +85,7 @@ class TestCompositeItemsCRUD:
     """Test composite items CRUD operations"""
     
     def test_create_composite_item(self):
-        """POST /api/composite-items - Create a new composite item"""
+        """POST /api/v1/composite-items - Create a new composite item"""
         global created_composite_id, test_item_ids
         
         # First get inventory items if not populated
@@ -127,7 +127,7 @@ class TestCompositeItemsCRUD:
         print(f"Component cost: {data.get('component_cost')}, Selling price: {data.get('selling_price')}")
         
     def test_get_composite_item(self):
-        """GET /api/composite-items/{id} - Get specific composite item"""
+        """GET /api/v1/composite-items/{id} - Get specific composite item"""
         global created_composite_id
         
         if not created_composite_id:
@@ -146,7 +146,7 @@ class TestCompositeItemsCRUD:
         print(f"Got composite item: {item.get('name')}, Components: {len(item.get('components', []))}")
         
     def test_check_build_availability(self):
-        """GET /api/composite-items/{id}/availability - Check if can build"""
+        """GET /api/v1/composite-items/{id}/availability - Check if can build"""
         global created_composite_id
         
         if not created_composite_id:
@@ -165,7 +165,7 @@ class TestCompositeItemsCRUD:
             print(f"Shortages: {data['shortages']}")
             
     def test_build_composite_item_insufficient_stock(self):
-        """POST /api/composite-items/{id}/build - Build should fail with insufficient stock"""
+        """POST /api/v1/composite-items/{id}/build - Build should fail with insufficient stock"""
         global created_composite_id
         
         if not created_composite_id:
@@ -192,7 +192,7 @@ class TestCompositeItemDelete:
     """Test composite item deletion"""
     
     def test_delete_composite_item(self):
-        """DELETE /api/composite-items/{id} - Delete composite item"""
+        """DELETE /api/v1/composite-items/{id} - Delete composite item"""
         global created_composite_id
         
         if not created_composite_id:
@@ -216,7 +216,7 @@ class TestInvoiceAutomationSettings:
     """Test Invoice Automation Settings endpoints"""
     
     def test_get_reminder_settings(self):
-        """GET /api/invoice-automation/reminder-settings - Get reminder settings"""
+        """GET /api/v1/invoice-automation/reminder-settings - Get reminder settings"""
         response = requests.get(f"{API_URL}/invoice-automation/reminder-settings")
         assert response.status_code == 200
         data = response.json()
@@ -227,7 +227,7 @@ class TestInvoiceAutomationSettings:
         print(f"Reminder settings: enabled={settings.get('enabled')}, include_payment_link={settings.get('include_payment_link')}")
         
     def test_update_reminder_settings(self):
-        """PUT /api/invoice-automation/reminder-settings - Update reminder settings"""
+        """PUT /api/v1/invoice-automation/reminder-settings - Update reminder settings"""
         payload = {
             "enabled": True,
             "reminder_before_days": [7, 3, 1],
@@ -243,7 +243,7 @@ class TestInvoiceAutomationSettings:
         print("Reminder settings updated successfully")
         
     def test_get_late_fee_settings(self):
-        """GET /api/invoice-automation/late-fee-settings - Get late fee settings"""
+        """GET /api/v1/invoice-automation/late-fee-settings - Get late fee settings"""
         response = requests.get(f"{API_URL}/invoice-automation/late-fee-settings")
         assert response.status_code == 200
         data = response.json()
@@ -254,7 +254,7 @@ class TestInvoiceAutomationSettings:
         print(f"Late fee settings: enabled={settings.get('enabled')}, fee_type={settings.get('fee_type')}, fee_value={settings.get('fee_value')}")
         
     def test_update_late_fee_settings(self):
-        """PUT /api/invoice-automation/late-fee-settings - Update late fee settings"""
+        """PUT /api/v1/invoice-automation/late-fee-settings - Update late fee settings"""
         payload = {
             "enabled": False,
             "fee_type": "percentage",
@@ -275,7 +275,7 @@ class TestInvoiceAutomationData:
     """Test Invoice Automation data endpoints"""
     
     def test_get_overdue_invoices(self):
-        """GET /api/invoice-automation/overdue-invoices - Get overdue invoices"""
+        """GET /api/v1/invoice-automation/overdue-invoices - Get overdue invoices"""
         response = requests.get(f"{API_URL}/invoice-automation/overdue-invoices")
         assert response.status_code == 200
         data = response.json()
@@ -286,7 +286,7 @@ class TestInvoiceAutomationData:
         print(f"Overdue: {data['total_count']} invoices, Total: ₹{data['total_overdue_amount']:,.2f}")
         
     def test_get_due_soon_invoices(self):
-        """GET /api/invoice-automation/due-soon-invoices - Get invoices due soon"""
+        """GET /api/v1/invoice-automation/due-soon-invoices - Get invoices due soon"""
         response = requests.get(f"{API_URL}/invoice-automation/due-soon-invoices?days=7")
         assert response.status_code == 200
         data = response.json()
@@ -296,7 +296,7 @@ class TestInvoiceAutomationData:
         print(f"Due soon (7 days): {data['total_count']} invoices")
         
     def test_get_aging_report(self):
-        """GET /api/invoice-automation/aging-report - Get AR aging report"""
+        """GET /api/v1/invoice-automation/aging-report - Get AR aging report"""
         response = requests.get(f"{API_URL}/invoice-automation/aging-report")
         assert response.status_code == 200
         data = response.json()
@@ -315,7 +315,7 @@ class TestRecurringInvoices:
     recurring_id = None
     
     def test_get_recurring_summary(self):
-        """GET /api/recurring-invoices/summary - Get recurring invoices summary"""
+        """GET /api/v1/recurring-invoices/summary - Get recurring invoices summary"""
         response = requests.get(f"{API_URL}/recurring-invoices/summary")
         assert response.status_code == 200
         data = response.json()
@@ -326,7 +326,7 @@ class TestRecurringInvoices:
         print(f"Recurring summary: {data['total_profiles']} profiles, {data['active']} active, MRR: ₹{data['monthly_recurring_revenue']:,.2f}")
         
     def test_list_recurring_invoices(self):
-        """GET /api/recurring-invoices - List recurring invoices"""
+        """GET /api/v1/recurring-invoices - List recurring invoices"""
         response = requests.get(f"{API_URL}/recurring-invoices")
         assert response.status_code == 200
         data = response.json()
@@ -336,7 +336,7 @@ class TestRecurringInvoices:
         print(f"Found {data['total']} recurring invoice profiles")
         
     def test_create_recurring_invoice(self):
-        """POST /api/recurring-invoices - Create recurring invoice"""
+        """POST /api/v1/recurring-invoices - Create recurring invoice"""
         # First get a customer
         response = requests.get(f"{API_URL}/contacts-enhanced/?contact_type=customer&per_page=5")
         customers = response.json().get("contacts", [])
@@ -371,7 +371,7 @@ class TestRecurringInvoices:
         print(f"Created recurring invoice: {data['recurring_id']}, Next: {data['next_invoice_date']}")
         
     def test_get_recurring_invoice(self):
-        """GET /api/recurring-invoices/{id} - Get specific recurring invoice"""
+        """GET /api/v1/recurring-invoices/{id} - Get specific recurring invoice"""
         if not TestRecurringInvoices.recurring_id:
             pytest.skip("No recurring invoice created")
             
@@ -383,7 +383,7 @@ class TestRecurringInvoices:
         print(f"Got recurring invoice: {data['recurring_invoice'].get('profile_name')}")
         
     def test_generate_invoice_now(self):
-        """POST /api/recurring-invoices/{id}/generate-now - Generate invoice"""
+        """POST /api/v1/recurring-invoices/{id}/generate-now - Generate invoice"""
         if not TestRecurringInvoices.recurring_id:
             pytest.skip("No recurring invoice created")
             
@@ -396,7 +396,7 @@ class TestRecurringInvoices:
         print(f"Generated invoice: {data['invoice_number']}")
         
     def test_stop_recurring_invoice(self):
-        """POST /api/recurring-invoices/{id}/stop - Stop recurring invoice"""
+        """POST /api/v1/recurring-invoices/{id}/stop - Stop recurring invoice"""
         if not TestRecurringInvoices.recurring_id:
             pytest.skip("No recurring invoice created")
             
@@ -407,7 +407,7 @@ class TestRecurringInvoices:
         print("Recurring invoice stopped")
         
     def test_resume_recurring_invoice(self):
-        """POST /api/recurring-invoices/{id}/resume - Resume recurring invoice"""
+        """POST /api/v1/recurring-invoices/{id}/resume - Resume recurring invoice"""
         if not TestRecurringInvoices.recurring_id:
             pytest.skip("No recurring invoice created")
             
@@ -418,7 +418,7 @@ class TestRecurringInvoices:
         print(f"Recurring invoice resumed, next: {data.get('next_invoice_date')}")
         
     def test_delete_recurring_invoice(self):
-        """DELETE /api/recurring-invoices/{id} - Delete recurring invoice"""
+        """DELETE /api/v1/recurring-invoices/{id} - Delete recurring invoice"""
         if not TestRecurringInvoices.recurring_id:
             pytest.skip("No recurring invoice created")
             

@@ -8,14 +8,14 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestInvoiceAutomationAgingReport:
     """Aging Report Tests"""
     
     def test_get_aging_report(self):
-        """Test GET /api/invoice-automation/aging-report"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/aging-report")
+        """Test GET /api/v1/invoice-automation/aging-report"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/aging-report")
         assert response.status_code == 200
         
         data = response.json()
@@ -47,8 +47,8 @@ class TestInvoiceAutomationOverdue:
     """Overdue Invoices Tests"""
     
     def test_get_overdue_invoices(self):
-        """Test GET /api/invoice-automation/overdue-invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices")
+        """Test GET /api/v1/invoice-automation/overdue-invoices"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices")
         assert response.status_code == 200
         
         data = response.json()
@@ -74,8 +74,8 @@ class TestInvoiceAutomationDueSoon:
     """Due Soon Invoices Tests"""
     
     def test_get_due_soon_invoices(self):
-        """Test GET /api/invoice-automation/due-soon-invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/due-soon-invoices?days=7")
+        """Test GET /api/v1/invoice-automation/due-soon-invoices"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/due-soon-invoices?days=7")
         assert response.status_code == 200
         
         data = response.json()
@@ -99,8 +99,8 @@ class TestInvoiceAutomationReminderSettings:
     """Reminder Settings Tests"""
     
     def test_get_reminder_settings(self):
-        """Test GET /api/invoice-automation/reminder-settings"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/reminder-settings")
+        """Test GET /api/v1/invoice-automation/reminder-settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/reminder-settings")
         assert response.status_code == 200
         
         data = response.json()
@@ -114,7 +114,7 @@ class TestInvoiceAutomationReminderSettings:
         print(f"✓ Reminder settings: enabled={settings.get('enabled')}")
     
     def test_update_reminder_settings(self):
-        """Test PUT /api/invoice-automation/reminder-settings"""
+        """Test PUT /api/v1/invoice-automation/reminder-settings"""
         payload = {
             "enabled": True,
             "reminder_before_days": [7, 3, 1],
@@ -124,7 +124,7 @@ class TestInvoiceAutomationReminderSettings:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/invoice-automation/reminder-settings",
+            f"{BASE_URL}/api/v1/invoice-automation/reminder-settings",
             json=payload
         )
         assert response.status_code == 200
@@ -134,7 +134,7 @@ class TestInvoiceAutomationReminderSettings:
         assert "message" in data
         
         # Verify settings were saved
-        get_response = requests.get(f"{BASE_URL}/api/invoice-automation/reminder-settings")
+        get_response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/reminder-settings")
         saved = get_response.json()["settings"]
         assert saved["enabled"] == True
         assert saved["include_payment_link"] == True
@@ -146,8 +146,8 @@ class TestInvoiceAutomationLateFeeSettings:
     """Late Fee Settings Tests"""
     
     def test_get_late_fee_settings(self):
-        """Test GET /api/invoice-automation/late-fee-settings"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/late-fee-settings")
+        """Test GET /api/v1/invoice-automation/late-fee-settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings")
         assert response.status_code == 200
         
         data = response.json()
@@ -162,7 +162,7 @@ class TestInvoiceAutomationLateFeeSettings:
         print(f"✓ Late fee settings: enabled={settings.get('enabled')}, type={settings.get('fee_type')}")
     
     def test_update_late_fee_settings(self):
-        """Test PUT /api/invoice-automation/late-fee-settings"""
+        """Test PUT /api/v1/invoice-automation/late-fee-settings"""
         payload = {
             "enabled": True,
             "fee_type": "percentage",
@@ -173,7 +173,7 @@ class TestInvoiceAutomationLateFeeSettings:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/invoice-automation/late-fee-settings",
+            f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings",
             json=payload
         )
         assert response.status_code == 200
@@ -182,7 +182,7 @@ class TestInvoiceAutomationLateFeeSettings:
         assert data.get("code") == 0
         
         # Verify settings were saved
-        get_response = requests.get(f"{BASE_URL}/api/invoice-automation/late-fee-settings")
+        get_response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings")
         saved = get_response.json()["settings"]
         assert saved["enabled"] == True
         assert saved["fee_type"] == "percentage"
@@ -198,16 +198,16 @@ class TestInvoiceAutomationReminders:
     @pytest.fixture
     def overdue_invoice_id(self):
         """Get an overdue invoice for testing"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices")
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices")
         data = response.json()
         if data.get("overdue_invoices"):
             return data["overdue_invoices"][0]["invoice_id"]
         pytest.skip("No overdue invoices available for testing")
     
     def test_send_reminder(self, overdue_invoice_id):
-        """Test POST /api/invoice-automation/send-reminder/{id}"""
+        """Test POST /api/v1/invoice-automation/send-reminder/{id}"""
         response = requests.post(
-            f"{BASE_URL}/api/invoice-automation/send-reminder/{overdue_invoice_id}"
+            f"{BASE_URL}/api/v1/invoice-automation/send-reminder/{overdue_invoice_id}"
         )
         assert response.status_code == 200
         
@@ -221,14 +221,14 @@ class TestInvoiceAutomationReminders:
     def test_send_reminder_invalid_invoice(self):
         """Test sending reminder to non-existent invoice"""
         response = requests.post(
-            f"{BASE_URL}/api/invoice-automation/send-reminder/INVALID-ID"
+            f"{BASE_URL}/api/v1/invoice-automation/send-reminder/INVALID-ID"
         )
         assert response.status_code == 404
     
     def test_get_reminder_history(self, overdue_invoice_id):
-        """Test GET /api/invoice-automation/reminder-history"""
+        """Test GET /api/v1/invoice-automation/reminder-history"""
         response = requests.get(
-            f"{BASE_URL}/api/invoice-automation/reminder-history?invoice_id={overdue_invoice_id}"
+            f"{BASE_URL}/api/v1/invoice-automation/reminder-history?invoice_id={overdue_invoice_id}"
         )
         assert response.status_code == 200
         
@@ -245,16 +245,16 @@ class TestInvoiceAutomationLateFees:
     @pytest.fixture
     def overdue_invoice_id(self):
         """Get an overdue invoice for testing"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices")
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices")
         data = response.json()
         if data.get("overdue_invoices"):
             return data["overdue_invoices"][0]["invoice_id"]
         pytest.skip("No overdue invoices available for testing")
     
     def test_calculate_late_fee(self, overdue_invoice_id):
-        """Test GET /api/invoice-automation/calculate-late-fee/{id}"""
+        """Test GET /api/v1/invoice-automation/calculate-late-fee/{id}"""
         response = requests.get(
-            f"{BASE_URL}/api/invoice-automation/calculate-late-fee/{overdue_invoice_id}"
+            f"{BASE_URL}/api/v1/invoice-automation/calculate-late-fee/{overdue_invoice_id}"
         )
         assert response.status_code == 200
         
@@ -276,7 +276,7 @@ class TestInvoiceAutomationAutoCredits:
     def test_auto_apply_credits_invalid_invoice(self):
         """Test auto apply credits to non-existent invoice"""
         response = requests.post(
-            f"{BASE_URL}/api/invoice-automation/auto-apply-credits/INVALID-ID"
+            f"{BASE_URL}/api/v1/invoice-automation/auto-apply-credits/INVALID-ID"
         )
         assert response.status_code == 404
 
@@ -287,7 +287,7 @@ class TestInvoicePaymentsStripe:
     @pytest.fixture
     def unpaid_invoice_id(self):
         """Get an unpaid invoice for testing"""
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?status=sent&per_page=10")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?status=sent&per_page=10")
         data = response.json()
         for inv in data.get("invoices", []):
             if inv.get("balance_due", 0) > 0:
@@ -295,14 +295,14 @@ class TestInvoicePaymentsStripe:
         pytest.skip("No unpaid invoices available for testing")
     
     def test_create_payment_link(self, unpaid_invoice_id):
-        """Test POST /api/invoice-payments/create-payment-link"""
+        """Test POST /api/v1/invoice-payments/create-payment-link"""
         payload = {
             "invoice_id": unpaid_invoice_id,
             "origin_url": ""
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/invoice-payments/create-payment-link",
+            f"{BASE_URL}/api/v1/invoice-payments/create-payment-link",
             json=payload
         )
         
@@ -328,7 +328,7 @@ class TestInvoicePaymentsStripe:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/invoice-payments/create-payment-link",
+            f"{BASE_URL}/api/v1/invoice-payments/create-payment-link",
             json=payload
         )
         assert response.status_code == 404
@@ -336,14 +336,14 @@ class TestInvoicePaymentsStripe:
     def test_get_payment_status_invalid_session(self):
         """Test payment status for non-existent session"""
         response = requests.get(
-            f"{BASE_URL}/api/invoice-payments/status/invalid-session-id"
+            f"{BASE_URL}/api/v1/invoice-payments/status/invalid-session-id"
         )
         assert response.status_code == 404
     
     def test_get_invoice_payment_link(self, unpaid_invoice_id):
-        """Test GET /api/invoice-payments/invoice/{id}/payment-link"""
+        """Test GET /api/v1/invoice-payments/invoice/{id}/payment-link"""
         response = requests.get(
-            f"{BASE_URL}/api/invoice-payments/invoice/{unpaid_invoice_id}/payment-link"
+            f"{BASE_URL}/api/v1/invoice-payments/invoice/{unpaid_invoice_id}/payment-link"
         )
         assert response.status_code == 200
         
@@ -354,8 +354,8 @@ class TestInvoicePaymentsStripe:
         print(f"✓ Invoice payment link check: has_link={data['has_payment_link']}")
     
     def test_list_payment_transactions(self):
-        """Test GET /api/invoice-payments/transactions"""
-        response = requests.get(f"{BASE_URL}/api/invoice-payments/transactions")
+        """Test GET /api/v1/invoice-payments/transactions"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-payments/transactions")
         assert response.status_code == 200
         
         data = response.json()
@@ -366,8 +366,8 @@ class TestInvoicePaymentsStripe:
         print(f"✓ Payment transactions: {data['total']} total")
     
     def test_get_online_payments_summary(self):
-        """Test GET /api/invoice-payments/summary"""
-        response = requests.get(f"{BASE_URL}/api/invoice-payments/summary")
+        """Test GET /api/v1/invoice-payments/summary"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-payments/summary")
         assert response.status_code == 200
         
         data = response.json()
@@ -388,7 +388,7 @@ class TestInvoiceAutomationBulkReminders:
     def test_send_bulk_reminders_empty_list(self):
         """Test bulk reminders with empty list"""
         response = requests.post(
-            f"{BASE_URL}/api/invoice-automation/send-bulk-reminders",
+            f"{BASE_URL}/api/v1/invoice-automation/send-bulk-reminders",
             json=[]
         )
         assert response.status_code == 200
@@ -402,7 +402,7 @@ class TestInvoiceAutomationBulkReminders:
     def test_send_bulk_reminders(self):
         """Test bulk reminders with valid invoice IDs"""
         # Get overdue invoices
-        overdue_response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices")
+        overdue_response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices")
         overdue_data = overdue_response.json()
         
         if not overdue_data.get("overdue_invoices"):
@@ -412,7 +412,7 @@ class TestInvoiceAutomationBulkReminders:
         invoice_ids = [inv["invoice_id"] for inv in overdue_data["overdue_invoices"][:2]]
         
         response = requests.post(
-            f"{BASE_URL}/api/invoice-automation/send-bulk-reminders",
+            f"{BASE_URL}/api/v1/invoice-automation/send-bulk-reminders",
             json=invoice_ids
         )
         assert response.status_code == 200

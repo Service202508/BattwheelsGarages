@@ -16,18 +16,18 @@ import requests
 import uuid
 from typing import Optional
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 if not BASE_URL:
-    BASE_URL = ''
+    BASE_URL = 'http://localhost:8001'
 
 # Test organization ID
-ORG_ID = "org_71f0df814d6d"
+ORG_ID = "dev-internal-testing-001"
 
 
 @pytest.fixture(scope="module")
 def auth_headers():
     """Login and get auth token for all tests"""
-    login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
+    login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -47,8 +47,8 @@ class TestUsersPanel:
     """Test Users & Roles panel - List users, invite user, edit role"""
     
     def test_list_organization_users(self, auth_headers):
-        """GET /api/org/users - List all users in org"""
-        res = requests.get(f"{BASE_URL}/api/org/users", headers=auth_headers)
+        """GET /api/v1/org/users - List all users in org"""
+        res = requests.get(f"{BASE_URL}/api/v1/org/users", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get users: {res.text}"
         
         data = res.json()
@@ -67,8 +67,8 @@ class TestUsersPanel:
             assert "user_id" in membership, "Membership should have 'user_id'"
     
     def test_get_organization_roles(self, auth_headers):
-        """GET /api/org/roles - Get available roles and permissions"""
-        res = requests.get(f"{BASE_URL}/api/org/roles", headers=auth_headers)
+        """GET /api/v1/org/roles - Get available roles and permissions"""
+        res = requests.get(f"{BASE_URL}/api/v1/org/roles", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get roles: {res.text}"
         
         data = res.json()
@@ -95,16 +95,16 @@ class TestCustomFieldsBuilder:
     """Test Custom Fields Builder - CRUD operations"""
     
     def test_get_custom_fields_list(self, auth_headers):
-        """GET /api/settings/custom-fields - Get list of custom fields"""
-        res = requests.get(f"{BASE_URL}/api/settings/custom-fields", headers=auth_headers)
+        """GET /api/v1/settings/custom-fields - Get list of custom fields"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/custom-fields", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get custom fields: {res.text}"
         
         data = res.json()
         assert isinstance(data, list), "Custom fields should return a list"
     
     def test_get_custom_fields_by_module(self, auth_headers):
-        """GET /api/settings/custom-fields?module=vehicles - Filter by module"""
-        res = requests.get(f"{BASE_URL}/api/settings/custom-fields?module=vehicles", headers=auth_headers)
+        """GET /api/v1/settings/custom-fields?module=vehicles - Filter by module"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/custom-fields?module=vehicles", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get custom fields: {res.text}"
         
         data = res.json()
@@ -115,7 +115,7 @@ class TestCustomFieldsBuilder:
                 assert field["module"] == "vehicles", f"Wrong module: {field.get('module')}"
     
     def test_create_custom_field(self, auth_headers):
-        """POST /api/settings/custom-fields - Create a custom field"""
+        """POST /api/v1/settings/custom-fields - Create a custom field"""
         test_field = {
             "module": "vehicles",
             "field_name": f"test_field_{uuid.uuid4().hex[:8]}",
@@ -129,7 +129,7 @@ class TestCustomFieldsBuilder:
             "options": []
         }
         
-        res = requests.post(f"{BASE_URL}/api/settings/custom-fields", headers=auth_headers, json=test_field)
+        res = requests.post(f"{BASE_URL}/api/v1/settings/custom-fields", headers=auth_headers, json=test_field)
         assert res.status_code == 200, f"Failed to create custom field: {res.text}"
         
         data = res.json()
@@ -142,7 +142,7 @@ class TestCustomFieldsBuilder:
         return data["field_id"]
     
     def test_create_dropdown_custom_field(self, auth_headers):
-        """POST /api/settings/custom-fields - Create a dropdown field"""
+        """POST /api/v1/settings/custom-fields - Create a dropdown field"""
         test_field = {
             "module": "tickets",
             "field_name": f"test_dropdown_{uuid.uuid4().hex[:8]}",
@@ -159,7 +159,7 @@ class TestCustomFieldsBuilder:
             ]
         }
         
-        res = requests.post(f"{BASE_URL}/api/settings/custom-fields", headers=auth_headers, json=test_field)
+        res = requests.post(f"{BASE_URL}/api/v1/settings/custom-fields", headers=auth_headers, json=test_field)
         assert res.status_code == 200, f"Failed to create dropdown field: {res.text}"
         
         data = res.json()
@@ -170,7 +170,7 @@ class TestCustomFieldsBuilder:
             assert len(data["options"]) >= 3, "Should have at least 3 options"
     
     def test_delete_custom_field(self, auth_headers):
-        """DELETE /api/settings/custom-fields/{field_id} - Delete a field"""
+        """DELETE /api/v1/settings/custom-fields/{field_id} - Delete a field"""
         # First create a field to delete
         test_field = {
             "module": "vehicles",
@@ -180,14 +180,14 @@ class TestCustomFieldsBuilder:
             "is_required": False
         }
         
-        create_res = requests.post(f"{BASE_URL}/api/settings/custom-fields", headers=auth_headers, json=test_field)
+        create_res = requests.post(f"{BASE_URL}/api/v1/settings/custom-fields", headers=auth_headers, json=test_field)
         assert create_res.status_code == 200, f"Failed to create field: {create_res.text}"
         
         field_id = create_res.json().get("field_id")
         assert field_id, "No field_id in create response"
         
         # Now delete it
-        delete_res = requests.delete(f"{BASE_URL}/api/settings/custom-fields/{field_id}", headers=auth_headers)
+        delete_res = requests.delete(f"{BASE_URL}/api/v1/settings/custom-fields/{field_id}", headers=auth_headers)
         assert delete_res.status_code == 200, f"Failed to delete field: {delete_res.text}"
 
 
@@ -195,23 +195,23 @@ class TestWorkflowRulesBuilder:
     """Test Workflow Rules Builder - CRUD operations"""
     
     def test_get_workflow_rules_list(self, auth_headers):
-        """GET /api/settings/workflows - Get list of workflow rules"""
-        res = requests.get(f"{BASE_URL}/api/settings/workflows", headers=auth_headers)
+        """GET /api/v1/settings/workflows - Get list of workflow rules"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/workflows", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get workflows: {res.text}"
         
         data = res.json()
         assert isinstance(data, list), "Workflows should return a list"
     
     def test_get_workflow_rules_by_module(self, auth_headers):
-        """GET /api/settings/workflows?module=tickets - Filter by module"""
-        res = requests.get(f"{BASE_URL}/api/settings/workflows?module=tickets", headers=auth_headers)
+        """GET /api/v1/settings/workflows?module=tickets - Filter by module"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/workflows?module=tickets", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get workflows: {res.text}"
         
         data = res.json()
         assert isinstance(data, list), "Workflows should return a list"
     
     def test_create_workflow_rule(self, auth_headers):
-        """POST /api/settings/workflows - Create a workflow rule"""
+        """POST /api/v1/settings/workflows - Create a workflow rule"""
         test_rule = {
             "module": "tickets",
             "name": f"Test Workflow {uuid.uuid4().hex[:4]}",
@@ -234,7 +234,7 @@ class TestWorkflowRulesBuilder:
             "is_active": True
         }
         
-        res = requests.post(f"{BASE_URL}/api/settings/workflows", headers=auth_headers, json=test_rule)
+        res = requests.post(f"{BASE_URL}/api/v1/settings/workflows", headers=auth_headers, json=test_rule)
         assert res.status_code == 200, f"Failed to create workflow: {res.text}"
         
         data = res.json()
@@ -246,7 +246,7 @@ class TestWorkflowRulesBuilder:
         return data["rule_id"]
     
     def test_update_workflow_rule(self, auth_headers):
-        """PATCH /api/settings/workflows/{rule_id} - Update a workflow rule"""
+        """PATCH /api/v1/settings/workflows/{rule_id} - Update a workflow rule"""
         # First create a rule
         test_rule = {
             "module": "tickets",
@@ -257,7 +257,7 @@ class TestWorkflowRulesBuilder:
             "is_active": True
         }
         
-        create_res = requests.post(f"{BASE_URL}/api/settings/workflows", headers=auth_headers, json=test_rule)
+        create_res = requests.post(f"{BASE_URL}/api/v1/settings/workflows", headers=auth_headers, json=test_rule)
         assert create_res.status_code == 200, f"Failed to create workflow: {create_res.text}"
         
         rule_id = create_res.json().get("rule_id")
@@ -269,14 +269,14 @@ class TestWorkflowRulesBuilder:
             "description": "Updated description"
         }
         
-        update_res = requests.patch(f"{BASE_URL}/api/settings/workflows/{rule_id}", headers=auth_headers, json=update_data)
+        update_res = requests.patch(f"{BASE_URL}/api/v1/settings/workflows/{rule_id}", headers=auth_headers, json=update_data)
         assert update_res.status_code == 200, f"Failed to update workflow: {update_res.text}"
         
         data = update_res.json()
         assert data["is_active"] == False, "is_active should be False"
     
     def test_delete_workflow_rule(self, auth_headers):
-        """DELETE /api/settings/workflows/{rule_id} - Delete a workflow rule"""
+        """DELETE /api/v1/settings/workflows/{rule_id} - Delete a workflow rule"""
         # First create a rule to delete
         test_rule = {
             "module": "tickets",
@@ -287,13 +287,13 @@ class TestWorkflowRulesBuilder:
             "is_active": False
         }
         
-        create_res = requests.post(f"{BASE_URL}/api/settings/workflows", headers=auth_headers, json=test_rule)
+        create_res = requests.post(f"{BASE_URL}/api/v1/settings/workflows", headers=auth_headers, json=test_rule)
         assert create_res.status_code == 200, f"Failed to create workflow: {create_res.text}"
         
         rule_id = create_res.json().get("rule_id")
         
         # Now delete it
-        delete_res = requests.delete(f"{BASE_URL}/api/settings/workflows/{rule_id}", headers=auth_headers)
+        delete_res = requests.delete(f"{BASE_URL}/api/v1/settings/workflows/{rule_id}", headers=auth_headers)
         assert delete_res.status_code == 200, f"Failed to delete workflow: {delete_res.text}"
 
 
@@ -301,8 +301,8 @@ class TestWorkOrderSettings:
     """Test Work Orders Settings panel"""
     
     def test_get_work_orders_settings(self, auth_headers):
-        """GET /api/settings/modules/work-orders - Get work orders settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/work-orders", headers=auth_headers)
+        """GET /api/v1/settings/modules/work-orders - Get work orders settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/work-orders", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get work orders settings: {res.text}"
         
         data = res.json()
@@ -310,7 +310,7 @@ class TestWorkOrderSettings:
         # Settings exist as dict - could be empty initially or have default values
     
     def test_update_work_orders_settings(self, auth_headers):
-        """PATCH /api/settings/modules/work-orders - Update work orders settings"""
+        """PATCH /api/v1/settings/modules/work-orders - Update work orders settings"""
         update_data = {
             "labor_rate": 850.00,
             "approval_threshold": 25000,
@@ -319,7 +319,7 @@ class TestWorkOrderSettings:
             "default_priority": "normal"
         }
         
-        res = requests.patch(f"{BASE_URL}/api/settings/modules/work-orders", headers=auth_headers, json=update_data)
+        res = requests.patch(f"{BASE_URL}/api/v1/settings/modules/work-orders", headers=auth_headers, json=update_data)
         assert res.status_code == 200, f"Failed to update work orders settings: {res.text}"
         
         data = res.json()
@@ -332,8 +332,8 @@ class TestCustomersSettings:
     """Test Customers Settings panel"""
     
     def test_get_customers_settings(self, auth_headers):
-        """GET /api/settings/modules/customers - Get customers settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/customers", headers=auth_headers)
+        """GET /api/v1/settings/modules/customers - Get customers settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/customers", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get customers settings: {res.text}"
         
         data = res.json()
@@ -347,7 +347,7 @@ class TestCustomersSettings:
         assert len(found_fields) >= 1, f"Should have at least one customer setting. Got: {list(data.keys())}"
     
     def test_update_customers_settings(self, auth_headers):
-        """PATCH /api/settings/modules/customers - Update customers settings"""
+        """PATCH /api/v1/settings/modules/customers - Update customers settings"""
         update_data = {
             "default_credit_limit": 100000,
             "default_payment_terms": 30,
@@ -355,7 +355,7 @@ class TestCustomersSettings:
             "require_gst_for_b2b": True
         }
         
-        res = requests.patch(f"{BASE_URL}/api/settings/modules/customers", headers=auth_headers, json=update_data)
+        res = requests.patch(f"{BASE_URL}/api/v1/settings/modules/customers", headers=auth_headers, json=update_data)
         assert res.status_code == 200, f"Failed to update customers settings: {res.text}"
         
         data = res.json()
@@ -368,8 +368,8 @@ class TestEFISettings:
     """Test EFI (Failure Intelligence) Settings panel"""
     
     def test_get_efi_settings(self, auth_headers):
-        """GET /api/settings/modules/efi - Get EFI settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/efi", headers=auth_headers)
+        """GET /api/v1/settings/modules/efi - Get EFI settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/efi", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get EFI settings: {res.text}"
         
         data = res.json()
@@ -383,7 +383,7 @@ class TestEFISettings:
         assert len(found_fields) >= 1, f"Should have at least one EFI setting. Got: {list(data.keys())}"
     
     def test_update_efi_settings(self, auth_headers):
-        """PATCH /api/settings/modules/efi - Update EFI settings"""
+        """PATCH /api/v1/settings/modules/efi - Update EFI settings"""
         update_data = {
             "enable_ai_diagnosis": True,
             "enable_knowledge_base": True,
@@ -392,7 +392,7 @@ class TestEFISettings:
             "confidence_threshold": 0.75
         }
         
-        res = requests.patch(f"{BASE_URL}/api/settings/modules/efi", headers=auth_headers, json=update_data)
+        res = requests.patch(f"{BASE_URL}/api/v1/settings/modules/efi", headers=auth_headers, json=update_data)
         assert res.status_code == 200, f"Failed to update EFI settings: {res.text}"
         
         data = res.json()
@@ -405,8 +405,8 @@ class TestPortalSettings:
     """Test Customer Portal Settings panel"""
     
     def test_get_portal_settings(self, auth_headers):
-        """GET /api/settings/modules/portal - Get portal settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/portal", headers=auth_headers)
+        """GET /api/v1/settings/modules/portal - Get portal settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/portal", headers=auth_headers)
         assert res.status_code == 200, f"Failed to get portal settings: {res.text}"
         
         data = res.json()
@@ -420,7 +420,7 @@ class TestPortalSettings:
         assert len(found_fields) >= 1, f"Should have at least one portal setting. Got: {list(data.keys())}"
     
     def test_update_portal_settings(self, auth_headers):
-        """PATCH /api/settings/modules/portal - Update portal settings"""
+        """PATCH /api/v1/settings/modules/portal - Update portal settings"""
         update_data = {
             "enable_customer_portal": True,
             "enable_vendor_portal": False,
@@ -429,7 +429,7 @@ class TestPortalSettings:
             "allow_estimate_approval": True
         }
         
-        res = requests.patch(f"{BASE_URL}/api/settings/modules/portal", headers=auth_headers, json=update_data)
+        res = requests.patch(f"{BASE_URL}/api/v1/settings/modules/portal", headers=auth_headers, json=update_data)
         assert res.status_code == 200, f"Failed to update portal settings: {res.text}"
         
         data = res.json()
@@ -442,8 +442,8 @@ class TestSettingsNavigation:
     """Test settings navigation and category structure"""
     
     def test_categories_structure(self, auth_headers):
-        """GET /api/settings/categories - Verify complete structure"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        """GET /api/v1/settings/categories - Verify complete structure"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         assert res.status_code == 200, f"Failed to get categories: {res.text}"
         
         data = res.json()
@@ -466,7 +466,7 @@ class TestSettingsNavigation:
     
     def test_users_roles_category_items(self, auth_headers):
         """Verify Users & Roles category has correct items"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         data = res.json()
         
         users_cat = next((c for c in data["categories"] if c["id"] == "users"), None)
@@ -478,7 +478,7 @@ class TestSettingsNavigation:
     
     def test_customization_category_items(self, auth_headers):
         """Verify Customization category has custom-fields and workflows"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         data = res.json()
         
         custom_cat = next((c for c in data["categories"] if c["id"] == "customization"), None)
@@ -489,7 +489,7 @@ class TestSettingsNavigation:
     
     def test_automation_category_has_workflows(self, auth_headers):
         """Verify Automation category has workflows"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         data = res.json()
         
         auto_cat = next((c for c in data["categories"] if c["id"] == "automation"), None)
@@ -500,7 +500,7 @@ class TestSettingsNavigation:
     
     def test_modules_category_has_all_modules(self, auth_headers):
         """Verify Module Settings has all expected modules"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         data = res.json()
         
         modules_cat = next((c for c in data["categories"] if c["id"] == "modules"), None)

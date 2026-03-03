@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Use public URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
-    BASE_URL = ""
+    BASE_URL = "http://localhost:8001"
 
 # Test credentials
 TEST_EMAIL = "dev@battwheels.internal"
@@ -41,7 +41,7 @@ class TestGSTAccountingFlow:
         """Setup test session with authentication"""
         if not TestGSTAccountingFlow.token:
             response = requests.post(
-                f"{BASE_URL}/api/auth/login",
+                f"{BASE_URL}/api/v1/auth/login",
                 json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
             )
             if response.status_code == 200:
@@ -59,7 +59,7 @@ class TestGSTAccountingFlow:
     def test_01_login(self):
         """Test login with provided credentials"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -73,7 +73,7 @@ class TestGSTAccountingFlow:
     def test_02_list_tickets(self):
         """Verify test tickets are displayed (TKT-00101 to TKT-00105)"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed to list tickets: {response.text}"
@@ -94,7 +94,7 @@ class TestGSTAccountingFlow:
         """Open a ticket and verify ticket details page loads"""
         # First list tickets to get an ID
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=self.headers
         )
         assert response.status_code == 200
@@ -107,7 +107,7 @@ class TestGSTAccountingFlow:
         
         # Get single ticket details
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed to get ticket details: {response.text}"
@@ -134,7 +134,7 @@ class TestGSTAccountingFlow:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/contacts-enhanced/",
+            f"{BASE_URL}/api/v1/contacts-enhanced/",
             headers=self.headers,
             json=contact_data
         )
@@ -146,7 +146,7 @@ class TestGSTAccountingFlow:
             print(f"PASS: Customer contact created: {TestGSTAccountingFlow.created_contact_id}")
         else:
             # Try to get existing contact for testing
-            list_resp = requests.get(f"{BASE_URL}/api/contacts-enhanced/", headers=self.headers)
+            list_resp = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/", headers=self.headers)
             if list_resp.status_code == 200:
                 contacts = list_resp.json().get("contacts", [])
                 if contacts:
@@ -174,7 +174,7 @@ class TestGSTAccountingFlow:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/items-enhanced",
+            f"{BASE_URL}/api/v1/items-enhanced",
             headers=self.headers,
             json=item_data
         )
@@ -186,7 +186,7 @@ class TestGSTAccountingFlow:
             print(f"PASS: Inventory item created: {TestGSTAccountingFlow.created_item_id}")
         else:
             # Try to get existing item for testing
-            list_resp = requests.get(f"{BASE_URL}/api/items-enhanced", headers=self.headers)
+            list_resp = requests.get(f"{BASE_URL}/api/v1/items-enhanced", headers=self.headers)
             if list_resp.status_code == 200:
                 items = list_resp.json().get("items", [])
                 if items:
@@ -202,7 +202,7 @@ class TestGSTAccountingFlow:
         # Ensure we have a contact
         if not TestGSTAccountingFlow.created_contact_id:
             # Get any available contact
-            response = requests.get(f"{BASE_URL}/api/contacts-enhanced", headers=self.headers)
+            response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced", headers=self.headers)
             if response.status_code == 200:
                 contacts = response.json().get("contacts", [])
                 if contacts:
@@ -248,7 +248,7 @@ class TestGSTAccountingFlow:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/",
+            f"{BASE_URL}/api/v1/estimates-enhanced/",
             headers=self.headers,
             json=estimate_data
         )
@@ -276,7 +276,7 @@ class TestGSTAccountingFlow:
             pytest.skip("No estimate created")
         
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}",
             headers=self.headers
         )
         
@@ -313,7 +313,7 @@ class TestGSTAccountingFlow:
         
         # First transition: draft → sent
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
             headers=self.headers,
             json={"status": "sent", "reason": "Sent to customer"}
         )
@@ -323,7 +323,7 @@ class TestGSTAccountingFlow:
         
         # Second transition: sent → accepted (or use mark-accepted)
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/mark-accepted",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/mark-accepted",
             headers=self.headers,
             json={}
         )
@@ -331,7 +331,7 @@ class TestGSTAccountingFlow:
         if response.status_code != 200:
             # Fallback to PUT status endpoint
             response = requests.put(
-                f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
+                f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
                 headers=self.headers,
                 json={"status": "accepted", "reason": "Customer approved via test"}
             )
@@ -342,7 +342,7 @@ class TestGSTAccountingFlow:
         
         # Verify final status
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}",
             headers=self.headers
         )
         
@@ -363,7 +363,7 @@ class TestGSTAccountingFlow:
             pytest.skip("No estimate created")
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/convert-to-invoice",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/convert-to-invoice",
             headers=self.headers,
             json={}
         )
@@ -382,13 +382,13 @@ class TestGSTAccountingFlow:
         # If we have an invoice from conversion, use it
         if TestGSTAccountingFlow.created_invoice_id:
             response = requests.get(
-                f"{BASE_URL}/api/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
+                f"{BASE_URL}/api/v1/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
                 headers=self.headers
             )
         else:
             # Get list of invoices
             response = requests.get(
-                f"{BASE_URL}/api/invoices-enhanced",
+                f"{BASE_URL}/api/v1/invoices-enhanced",
                 headers=self.headers
             )
             
@@ -397,7 +397,7 @@ class TestGSTAccountingFlow:
                 if invoices:
                     TestGSTAccountingFlow.created_invoice_id = invoices[0].get("invoice_id")
                     response = requests.get(
-                        f"{BASE_URL}/api/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
+                        f"{BASE_URL}/api/v1/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
                         headers=self.headers
                     )
         
@@ -430,7 +430,7 @@ class TestGSTAccountingFlow:
         if not TestGSTAccountingFlow.created_invoice_id:
             # Get an invoice to test payment
             response = requests.get(
-                f"{BASE_URL}/api/invoices-enhanced",
+                f"{BASE_URL}/api/v1/invoices-enhanced",
                 headers=self.headers
             )
             if response.status_code == 200:
@@ -446,7 +446,7 @@ class TestGSTAccountingFlow:
         
         # Get invoice details for amount
         response = requests.get(
-            f"{BASE_URL}/api/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}",
             headers=self.headers
         )
         
@@ -478,7 +478,7 @@ class TestGSTAccountingFlow:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/payments-received",
+            f"{BASE_URL}/api/v1/payments-received",
             headers=self.headers,
             json=payment_data
         )
@@ -491,7 +491,7 @@ class TestGSTAccountingFlow:
             print(f"Payment recording returned: {response.status_code}")
             # May fail if no customer_id, try direct invoice payment
             response = requests.post(
-                f"{BASE_URL}/api/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}/payments",
+                f"{BASE_URL}/api/v1/invoices-enhanced/{TestGSTAccountingFlow.created_invoice_id}/payments",
                 headers=self.headers,
                 json={
                     "amount": min(balance_due, 1000),
@@ -510,7 +510,7 @@ class TestGSTAccountingFlow:
     def test_12_chart_of_accounts(self):
         """Check Chart of Accounts is properly loaded"""
         response = requests.get(
-            f"{BASE_URL}/api/chart-of-accounts",
+            f"{BASE_URL}/api/v1/chart-of-accounts",
             headers=self.headers
         )
         
@@ -530,7 +530,7 @@ class TestGSTAccountingFlow:
         else:
             # Try alternative endpoint
             response = requests.get(
-                f"{BASE_URL}/api/accounts",
+                f"{BASE_URL}/api/v1/accounts",
                 headers=self.headers
             )
             if response.status_code == 200:
@@ -546,7 +546,7 @@ class TestGSTAccountingFlow:
         """Verify Zoho 'Turn Off Sync' endpoint exists"""
         # Test the endpoint exists (GET to check)
         response = requests.get(
-            f"{BASE_URL}/api/zoho-sync/test-connection",
+            f"{BASE_URL}/api/v1/zoho-sync/test-connection",
             headers=self.headers
         )
         
@@ -557,7 +557,7 @@ class TestGSTAccountingFlow:
         # The actual disconnect is a POST and we don't want to trigger it
         # Just verify the endpoint is routed
         response = requests.options(
-            f"{BASE_URL}/api/zoho-sync/disconnect-and-purge",
+            f"{BASE_URL}/api/v1/zoho-sync/disconnect-and-purge",
             headers=self.headers
         )
         
@@ -570,7 +570,7 @@ class TestGSTAccountingFlow:
     def test_14_tax_configurations(self):
         """Verify GST tax configurations (5%, 12%, 18%, 28%)"""
         response = requests.get(
-            f"{BASE_URL}/api/gst/taxes",
+            f"{BASE_URL}/api/v1/gst/taxes",
             headers=self.headers
         )
         
@@ -592,7 +592,7 @@ class TestGSTAccountingFlow:
             print(f"PASS: Tax configurations verified")
         else:
             # Try alternative endpoints
-            response = requests.get(f"{BASE_URL}/api/taxes", headers=self.headers)
+            response = requests.get(f"{BASE_URL}/api/v1/taxes", headers=self.headers)
             if response.status_code == 200:
                 taxes = response.json().get("taxes", [])
                 print(f"Found {len(taxes)} taxes via /taxes endpoint")
@@ -622,7 +622,7 @@ class TestListModules:
     def setup(self):
         if not TestListModules.token:
             response = requests.post(
-                f"{BASE_URL}/api/auth/login",
+                f"{BASE_URL}/api/v1/auth/login",
                 json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
             )
             if response.status_code == 200:
@@ -635,7 +635,7 @@ class TestListModules:
 
     def test_list_estimates(self):
         """List all estimates"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/", headers=self.headers)
         assert response.status_code == 200, f"Failed: {response.text}"
         data = response.json()
         estimates = data.get("estimates", [])
@@ -643,7 +643,7 @@ class TestListModules:
 
     def test_list_invoices(self):
         """List all invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced", headers=self.headers)
         assert response.status_code == 200, f"Failed: {response.text}"
         data = response.json()
         invoices = data.get("invoices", [])
@@ -651,7 +651,7 @@ class TestListModules:
 
     def test_list_contacts(self):
         """List all contacts"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced", headers=self.headers)
         assert response.status_code == 200, f"Failed: {response.text}"
         data = response.json()
         contacts = data.get("contacts", [])
@@ -659,7 +659,7 @@ class TestListModules:
 
     def test_list_items(self):
         """List all items"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced", headers=self.headers)
         assert response.status_code == 200, f"Failed: {response.text}"
         data = response.json()
         items = data.get("items", [])
@@ -667,7 +667,7 @@ class TestListModules:
 
     def test_list_payments(self):
         """List all payments"""
-        response = requests.get(f"{BASE_URL}/api/payments-received", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received", headers=self.headers)
         if response.status_code == 200:
             data = response.json()
             payments = data.get("payments", [])

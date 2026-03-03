@@ -3,9 +3,9 @@ Battwheels OS - EFI Search and Embeddings Tests
 Tests for the 5-stage AI matching pipeline, hybrid search with BM25, and embedding management
 
 Tests cover:
-- POST /api/efi/match - AI matching endpoint with symptom text and error codes
-- GET /api/efi/embeddings/status - Check embedding status
-- POST /api/efi/embeddings/generate - Start embedding generation
+- POST /api/v1/efi/match - AI matching endpoint with symptom text and error codes
+- GET /api/v1/efi/embeddings/status - Check embedding status
+- POST /api/v1/efi/embeddings/generate - Start embedding generation
 - Hybrid search with BM25 scoring and fuzzy matching
 - Text search service with query expansion and EV synonyms
 - Fallback behavior when embeddings are disabled
@@ -16,7 +16,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -30,7 +30,7 @@ class TestEmbeddingEndpoints:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -45,9 +45,9 @@ class TestEmbeddingEndpoints:
         }
     
     def test_get_embedding_status(self, auth_headers):
-        """Test GET /api/efi/embeddings/status - Check embedding status"""
+        """Test GET /api/v1/efi/embeddings/status - Check embedding status"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/embeddings/status",
+            f"{BASE_URL}/api/v1/efi/embeddings/status",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -79,9 +79,9 @@ class TestEmbeddingEndpoints:
         print(f"  - Coverage: {data['embedding_coverage_percent']}%")
     
     def test_generate_embeddings_disabled(self, auth_headers):
-        """Test POST /api/efi/embeddings/generate - Returns appropriate message when disabled"""
+        """Test POST /api/v1/efi/embeddings/generate - Returns appropriate message when disabled"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/embeddings/generate",
+            f"{BASE_URL}/api/v1/efi/embeddings/generate",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -108,7 +108,7 @@ class TestAIMatchingPipeline:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -123,7 +123,7 @@ class TestAIMatchingPipeline:
         }
     
     def test_match_with_symptom_text_and_error_codes(self, auth_headers):
-        """Test POST /api/efi/match - AI matching with symptom text and error codes"""
+        """Test POST /api/v1/efi/match - AI matching with symptom text and error codes"""
         match_request = {
             "symptom_text": "Battery not charging, voltage imbalance detected, cells showing uneven readings",
             "error_codes": ["BMS001", "CELL_IMBALANCE"],
@@ -133,7 +133,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -181,7 +181,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -208,7 +208,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -234,7 +234,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -260,7 +260,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -283,7 +283,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -306,7 +306,7 @@ class TestHybridSearchBM25:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -330,7 +330,7 @@ class TestHybridSearchBM25:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -367,7 +367,7 @@ class TestHybridSearchBM25:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -383,7 +383,7 @@ class TestHybridSearchBM25:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -419,7 +419,7 @@ class TestHybridSearchBM25:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -444,7 +444,7 @@ class TestFailureCardCRUDExtended:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -459,7 +459,7 @@ class TestFailureCardCRUDExtended:
         }
     
     def test_create_failure_card_full(self, auth_headers):
-        """Test POST /api/efi/failure-cards - Create with all fields"""
+        """Test POST /api/v1/efi/failure-cards - Create with all fields"""
         card_data = {
             "title": "TEST_Search_Full Card Creation",
             "description": "Complete failure card with all fields for search testing",
@@ -489,7 +489,7 @@ class TestFailureCardCRUDExtended:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -515,10 +515,10 @@ class TestFailureCardCRUDExtended:
         print(f"  - Confidence: {data['confidence_score']}")
     
     def test_list_failure_cards_pagination(self, auth_headers):
-        """Test GET /api/efi/failure-cards - List with pagination"""
+        """Test GET /api/v1/efi/failure-cards - List with pagination"""
         # Get first page
         response1 = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?limit=5&skip=0",
+            f"{BASE_URL}/api/v1/efi/failure-cards?limit=5&skip=0",
             headers=auth_headers
         )
         assert response1.status_code == 200
@@ -533,7 +533,7 @@ class TestFailureCardCRUDExtended:
         
         # Get second page
         response2 = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?limit=5&skip=5",
+            f"{BASE_URL}/api/v1/efi/failure-cards?limit=5&skip=5",
             headers=auth_headers
         )
         assert response2.status_code == 200
@@ -550,10 +550,10 @@ class TestFailureCardCRUDExtended:
         print(f"  - Page 2: {len(data2['items'])} items")
     
     def test_list_failure_cards_filters(self, auth_headers):
-        """Test GET /api/efi/failure-cards - List with multiple filters"""
+        """Test GET /api/v1/efi/failure-cards - List with multiple filters"""
         # Filter by status
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?status=draft&subsystem=battery",
+            f"{BASE_URL}/api/v1/efi/failure-cards?status=draft&subsystem=battery",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -568,10 +568,10 @@ class TestFailureCardCRUDExtended:
         print(f"  - Results: {len(data['items'])}")
     
     def test_get_single_failure_card(self, auth_headers):
-        """Test GET /api/efi/failure-cards/{id} - Get single card"""
+        """Test GET /api/v1/efi/failure-cards/{id} - Get single card"""
         # First get a card ID
         list_response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?limit=1",
+            f"{BASE_URL}/api/v1/efi/failure-cards?limit=1",
             headers=auth_headers
         )
         assert list_response.status_code == 200
@@ -581,7 +581,7 @@ class TestFailureCardCRUDExtended:
             card_id = cards[0]["failure_id"]
             
             response = requests.get(
-                f"{BASE_URL}/api/efi/failure-cards/{card_id}",
+                f"{BASE_URL}/api/v1/efi/failure-cards/{card_id}",
                 headers=auth_headers
             )
             assert response.status_code == 200
@@ -595,7 +595,7 @@ class TestFailureCardCRUDExtended:
             print(f"✓ Get single card: {card_id}")
     
     def test_update_failure_card(self, auth_headers):
-        """Test PUT /api/efi/failure-cards/{id} - Update card"""
+        """Test PUT /api/v1/efi/failure-cards/{id} - Update card"""
         # Create a card to update
         card_data = {
             "title": "TEST_Update_Card",
@@ -609,7 +609,7 @@ class TestFailureCardCRUDExtended:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -624,7 +624,7 @@ class TestFailureCardCRUDExtended:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/efi/failure-cards/{card_id}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{card_id}",
             headers=auth_headers,
             json=update_data
         )
@@ -640,7 +640,7 @@ class TestFailureCardCRUDExtended:
         print(f"  - Version: {updated['version']}")
     
     def test_approve_failure_card(self, auth_headers):
-        """Test POST /api/efi/failure-cards/{id}/approve - Approve card"""
+        """Test POST /api/v1/efi/failure-cards/{id}/approve - Approve card"""
         # Create a draft card
         card_data = {
             "title": "TEST_Approve_Card",
@@ -654,7 +654,7 @@ class TestFailureCardCRUDExtended:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -664,7 +664,7 @@ class TestFailureCardCRUDExtended:
         
         # Approve the card
         approve_response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards/{card_id}/approve",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{card_id}/approve",
             headers=auth_headers
         )
         assert approve_response.status_code == 200
@@ -676,7 +676,7 @@ class TestFailureCardCRUDExtended:
         
         # Verify status changed
         get_response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/{card_id}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{card_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -693,7 +693,7 @@ class TestSearchServiceIntegration:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -710,7 +710,7 @@ class TestSearchServiceIntegration:
     def test_search_by_text_in_list(self, auth_headers):
         """Test searching failure cards by text"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?search=battery",
+            f"{BASE_URL}/api/v1/efi/failure-cards?search=battery",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -722,7 +722,7 @@ class TestSearchServiceIntegration:
     def test_search_by_error_code(self, auth_headers):
         """Test searching failure cards by error code"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?search=BMS001",
+            f"{BASE_URL}/api/v1/efi/failure-cards?search=BMS001",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -734,7 +734,7 @@ class TestSearchServiceIntegration:
         """Test searching failure cards by signature hash"""
         # First get a card's signature hash
         list_response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?limit=1",
+            f"{BASE_URL}/api/v1/efi/failure-cards?limit=1",
             headers=auth_headers
         )
         assert list_response.status_code == 200
@@ -744,7 +744,7 @@ class TestSearchServiceIntegration:
             sig_hash = cards[0]["signature_hash"]
             
             response = requests.get(
-                f"{BASE_URL}/api/efi/failure-cards?search={sig_hash}",
+                f"{BASE_URL}/api/v1/efi/failure-cards?search={sig_hash}",
                 headers=auth_headers
             )
             assert response.status_code == 200
@@ -762,7 +762,7 @@ class TestCleanupSearchTests:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -779,7 +779,7 @@ class TestCleanupSearchTests:
     def test_cleanup_verification(self, auth_headers):
         """Verify test data can be identified for cleanup"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?search=TEST_",
+            f"{BASE_URL}/api/v1/efi/failure-cards?search=TEST_",
             headers=auth_headers
         )
         assert response.status_code == 200

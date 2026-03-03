@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test organization ID
 ORG_ID = "org_71f0df814d6d"
@@ -24,7 +24,7 @@ TECH_PASSWORD = "DevTest@123"
 @pytest.fixture(scope="module")
 def admin_token():
     """Get admin auth token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -36,7 +36,7 @@ def admin_token():
 @pytest.fixture(scope="module")
 def tech_token():
     """Get technician auth token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TECH_EMAIL,
         "password": TECH_PASSWORD
     })
@@ -78,8 +78,8 @@ class TestOrganizationContext:
     """Test organization context initialization"""
     
     def test_org_endpoint_returns_org_info(self, admin_token):
-        """Test /api/org endpoint returns organization info"""
-        response = requests.get(f"{BASE_URL}/api/org", headers={
+        """Test /api/v1/org endpoint returns organization info"""
+        response = requests.get(f"{BASE_URL}/api/v1/org", headers={
             "Authorization": f"Bearer {admin_token}"
         })
         
@@ -91,8 +91,8 @@ class TestOrganizationContext:
         print(f"✓ Organization context: {data['organization_id']}")
     
     def test_org_endpoint_for_technician(self, tech_token):
-        """Test /api/org endpoint works for technician"""
-        response = requests.get(f"{BASE_URL}/api/org", headers={
+        """Test /api/v1/org endpoint works for technician"""
+        response = requests.get(f"{BASE_URL}/api/v1/org", headers={
             "Authorization": f"Bearer {tech_token}"
         })
         
@@ -107,7 +107,7 @@ class TestFinancialSummaryWithOrgId:
     
     def test_summary_with_org_returns_data(self, admin_headers):
         """Summary with org_id should return actual financial data"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/summary", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/summary", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -127,7 +127,7 @@ class TestFinancialSummaryWithOrgId:
     
     def test_summary_has_correct_structure(self, admin_headers):
         """Verify summary response structure"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/summary", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/summary", headers=admin_headers)
         data = response.json()
         
         # Receivables structure
@@ -152,7 +152,7 @@ class TestFinancialSummaryWithoutOrgId:
     
     def test_summary_without_org_returns_empty(self, admin_headers_no_org):
         """Summary without org_id should return graceful empty response"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/summary", headers=admin_headers_no_org)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/summary", headers=admin_headers_no_org)
         
         # Should NOT return 400 error - graceful degradation
         assert response.status_code == 200
@@ -173,7 +173,7 @@ class TestCashFlowWithOrgId:
     
     def test_cash_flow_returns_monthly_data(self, admin_headers):
         """Cash flow should return monthly data with org_id"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/cash-flow?period=fiscal_year", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/cash-flow?period=fiscal_year", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -200,7 +200,7 @@ class TestCashFlowWithOrgId:
     
     def test_cash_flow_without_org_returns_empty(self, admin_headers_no_org):
         """Cash flow without org_id should return empty gracefully"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/cash-flow?period=fiscal_year", headers=admin_headers_no_org)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/cash-flow?period=fiscal_year", headers=admin_headers_no_org)
         
         assert response.status_code == 200
         data = response.json()
@@ -218,7 +218,7 @@ class TestIncomeExpenseWithOrgId:
     
     def test_income_expense_returns_data(self, admin_headers):
         """Income/expense should return data with org_id"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/income-expense?period=fiscal_year&method=accrual", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/income-expense?period=fiscal_year&method=accrual", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -236,7 +236,7 @@ class TestTopExpensesWithOrgId:
     
     def test_top_expenses_returns_categories(self, admin_headers):
         """Top expenses should return category breakdown"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/top-expenses?period=fiscal_year", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/top-expenses?period=fiscal_year", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -255,7 +255,7 @@ class TestProjectsWatchlistWithOrgId:
     
     def test_projects_returns_tickets(self, admin_headers):
         """Projects watchlist should return active tickets"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/projects-watchlist", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/projects-watchlist", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -273,7 +273,7 @@ class TestQuickStatsWithOrgId:
     
     def test_quick_stats_returns_counts(self, admin_headers):
         """Quick stats should return this month's counts"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/quick-stats", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/quick-stats", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -292,7 +292,7 @@ class TestTicketsWithOrgId:
     
     def test_tickets_filtered_by_org(self, admin_headers):
         """Tickets should be filtered by organization_id"""
-        response = requests.get(f"{BASE_URL}/api/tickets?limit=10", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets?limit=10", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -308,7 +308,7 @@ class TestTicketsWithOrgId:
     
     def test_technician_sees_tickets(self, tech_headers):
         """Technician should see their assigned tickets"""
-        response = requests.get(f"{BASE_URL}/api/tickets?limit=10", headers=tech_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets?limit=10", headers=tech_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -322,7 +322,7 @@ class TestBankAccountsWithOrgId:
     
     def test_bank_accounts_returns_data(self, admin_headers):
         """Bank accounts should return account list"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/financial/bank-accounts", headers=admin_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/financial/bank-accounts", headers=admin_headers)
         
         assert response.status_code == 200
         data = response.json()
@@ -347,7 +347,7 @@ class TestTicketCreationWithOrgId:
             "category": "service"
         }
         
-        response = requests.post(f"{BASE_URL}/api/tickets", json=ticket_data, headers=admin_headers)
+        response = requests.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data, headers=admin_headers)
         
         assert response.status_code in [200, 201]
         data = response.json()

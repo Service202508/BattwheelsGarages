@@ -1,7 +1,7 @@
 """
 Zoho Books Phase 3 & 4 Tests
 Tests for:
-1. Convert Ticket Estimate to Invoice (POST /api/ticket-estimates/{id}/convert-to-invoice)
+1. Convert Ticket Estimate to Invoice (POST /api/v1/ticket-estimates/{id}/convert-to-invoice)
 2. Stock Transfers module (Create, Ship, Receive, Void workflow)
 3. Stock Transfers Statistics endpoint
 """
@@ -14,7 +14,7 @@ import time
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
-    BASE_URL = ""
+    BASE_URL = "http://localhost:8001"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -31,7 +31,7 @@ created_invoices = []
 def auth_token():
     """Login and get auth token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
     )
     if response.status_code == 200:
@@ -70,7 +70,7 @@ def test_ticket(api_client):
         "assigned_technician_name": "Test Tech"
     }
     
-    response = api_client.post(f"{BASE_URL}/api/tickets", json=ticket_data)
+    response = api_client.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data)
     
     if response.status_code == 201 or response.status_code == 200:
         ticket = response.json().get("ticket") or response.json()
@@ -79,7 +79,7 @@ def test_ticket(api_client):
         return ticket_id
     
     # Try to use existing ticket
-    list_response = api_client.get(f"{BASE_URL}/api/tickets?status=open")
+    list_response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=open")
     if list_response.status_code == 200:
         tickets = list_response.json().get("tickets", [])
         if tickets:
@@ -92,7 +92,7 @@ def test_ticket(api_client):
 def test_estimate_for_conversion(api_client, test_ticket):
     """Create an approved estimate ready for conversion"""
     # Ensure estimate exists
-    ensure_response = api_client.post(f"{BASE_URL}/api/tickets/{test_ticket}/estimate/ensure")
+    ensure_response = api_client.post(f"{BASE_URL}/api/v1/tickets/{test_ticket}/estimate/ensure")
     
     if ensure_response.status_code != 200:
         pytest.skip(f"Could not ensure estimate: {ensure_response.text}")
@@ -111,7 +111,7 @@ def test_estimate_for_conversion(api_client, test_ticket):
     # Add line items if none exist
     if not estimate.get("line_items"):
         add_item_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": f"TEST_ConversionPart_{uuid.uuid4().hex[:6]}",
@@ -129,7 +129,7 @@ def test_estimate_for_conversion(api_client, test_ticket):
     
     # Approve the estimate if draft
     if estimate.get("status") == "draft":
-        approve_response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{estimate_id}/approve")
+        approve_response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/approve")
         if approve_response.status_code == 200:
             estimate = approve_response.json()["estimate"]
             print(f"Approved estimate: {estimate_id}")
@@ -144,7 +144,7 @@ def test_estimate_for_conversion(api_client, test_ticket):
 def test_warehouses(api_client):
     """Create or get test warehouses for stock transfers"""
     # Check if warehouses exist via inventory-enhanced endpoint
-    list_response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+    list_response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
     
     if list_response.status_code == 200:
         warehouses = list_response.json().get("warehouses", [])
@@ -171,8 +171,8 @@ def test_warehouses(api_client):
         "is_active": True
     }
     
-    response1 = api_client.post(f"{BASE_URL}/api/inventory-enhanced/warehouses", json=warehouse1_data)
-    response2 = api_client.post(f"{BASE_URL}/api/inventory-enhanced/warehouses", json=warehouse2_data)
+    response1 = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses", json=warehouse1_data)
+    response2 = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses", json=warehouse2_data)
     
     print(f"Warehouse 1 response: {response1.status_code} - {response1.text[:200]}")
     print(f"Warehouse 2 response: {response2.status_code} - {response2.text[:200]}")
@@ -194,7 +194,7 @@ def test_item_with_stock(api_client, test_warehouses):
     # The stock_transfers module checks item_stock collection with warehouse_id filter
     
     # Try to find an item that has stock - we'll seed stock directly via the API
-    list_response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=50")
+    list_response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=50")
     if list_response.status_code != 200:
         pytest.skip(f"Could not list items: {list_response.status_code}")
     
@@ -228,14 +228,14 @@ def test_item_with_stock(api_client, test_warehouses):
 # ==================== CONVERT TO INVOICE TESTS ====================
 
 class TestConvertEstimateToInvoice:
-    """Tests for POST /api/ticket-estimates/{id}/convert-to-invoice"""
+    """Tests for POST /api/v1/ticket-estimates/{id}/convert-to-invoice"""
     
     def test_convert_approved_estimate_to_invoice(self, api_client, test_estimate_for_conversion):
         """Test converting an approved estimate to invoice"""
         estimate_id = test_estimate_for_conversion
         
         # Check estimate status first
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}")
         
         if get_response.status_code != 200:
             pytest.skip(f"Could not get estimate: {get_response.text}")
@@ -251,7 +251,7 @@ class TestConvertEstimateToInvoice:
             pytest.skip(f"Estimate not in approved status: {estimate.get('status')}")
         
         # Convert to invoice
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{estimate_id}/convert-to-invoice")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/convert-to-invoice")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -294,7 +294,7 @@ class TestConvertEstimateToInvoice:
             "priority": "low"
         }
         
-        ticket_response = api_client.post(f"{BASE_URL}/api/tickets", json=ticket_data)
+        ticket_response = api_client.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data)
         
         if ticket_response.status_code not in [200, 201]:
             pytest.skip("Could not create test ticket for draft test")
@@ -303,7 +303,7 @@ class TestConvertEstimateToInvoice:
         ticket_id = ticket.get("ticket_id")
         
         # Ensure estimate (will be in draft)
-        ensure_response = api_client.post(f"{BASE_URL}/api/tickets/{ticket_id}/estimate/ensure")
+        ensure_response = api_client.post(f"{BASE_URL}/api/v1/tickets/{ticket_id}/estimate/ensure")
         
         if ensure_response.status_code != 200:
             pytest.skip("Could not ensure estimate")
@@ -315,7 +315,7 @@ class TestConvertEstimateToInvoice:
         assert estimate.get("status") == "draft", f"Expected draft status, got {estimate.get('status')}"
         
         # Try to convert draft estimate - should fail
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{estimate_id}/convert-to-invoice")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/convert-to-invoice")
         
         assert response.status_code == 400, f"Expected 400 for draft estimate, got {response.status_code}: {response.text}"
         
@@ -329,7 +329,7 @@ class TestConvertEstimateToInvoice:
         estimate_id = test_estimate_for_conversion
         
         # Get estimate to check status
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}")
         
         if get_response.status_code != 200:
             pytest.skip("Could not get estimate")
@@ -341,7 +341,7 @@ class TestConvertEstimateToInvoice:
             pytest.skip("Estimate not yet converted - run test_convert_approved_estimate_to_invoice first")
         
         # Try to convert again - should fail
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{estimate_id}/convert-to-invoice")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/convert-to-invoice")
         
         assert response.status_code == 400, f"Expected 400 for already converted estimate, got {response.status_code}"
         
@@ -354,7 +354,7 @@ class TestConvertEstimateToInvoice:
         """Test converting a non-existent estimate"""
         fake_estimate_id = f"est_fake_{uuid.uuid4().hex[:12]}"
         
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{fake_estimate_id}/convert-to-invoice")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{fake_estimate_id}/convert-to-invoice")
         
         assert response.status_code in [400, 404], f"Expected 400/404 for fake estimate, got {response.status_code}"
         
@@ -364,7 +364,7 @@ class TestConvertEstimateToInvoice:
 # ==================== STOCK TRANSFERS TESTS ====================
 
 class TestStockTransfersCreate:
-    """Tests for POST /api/stock-transfers/ - Create stock transfer"""
+    """Tests for POST /api/v1/stock-transfers/ - Create stock transfer"""
     
     def test_create_stock_transfer(self, api_client, test_warehouses, test_item_with_stock):
         """Test creating a stock transfer between warehouses"""
@@ -390,7 +390,7 @@ class TestStockTransfersCreate:
             "organization_id": ORGANIZATION_ID
         }
         
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json=transfer_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json=transfer_data)
         
         # Handle insufficient stock case - this is expected behavior when stock isn't seeded
         if response.status_code == 400:
@@ -435,7 +435,7 @@ class TestStockTransfersCreate:
             ]
         }
         
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json=transfer_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json=transfer_data)
         
         assert response.status_code == 400, f"Expected 400 for same warehouse, got {response.status_code}"
         
@@ -457,7 +457,7 @@ class TestStockTransfersCreate:
             ]
         }
         
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json=transfer_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json=transfer_data)
         
         assert response.status_code == 400, f"Expected 400 for insufficient stock, got {response.status_code}"
         
@@ -490,7 +490,7 @@ class TestStockTransfersWorkflow:
             "organization_id": ORGANIZATION_ID
         }
         
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json=transfer_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json=transfer_data)
         
         if response.status_code == 200:
             self.transfer = response.json()["transfer"]
@@ -507,9 +507,9 @@ class TestStockTransfersWorkflow:
             pytest.skip(f"Could not create transfer: {response.status_code} - {response.text}")
     
     def test_ship_transfer(self, api_client):
-        """Test POST /api/stock-transfers/{id}/ship"""
+        """Test POST /api/v1/stock-transfers/{id}/ship"""
         response = api_client.post(
-            f"{BASE_URL}/api/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user"
+            f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -527,10 +527,10 @@ class TestStockTransfersWorkflow:
     def test_cannot_ship_non_draft_transfer(self, api_client):
         """Test that only draft transfers can be shipped"""
         # First ship the transfer
-        api_client.post(f"{BASE_URL}/api/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
+        api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
         
         # Try to ship again
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
         
         assert response.status_code == 400, f"Expected 400 for non-draft transfer, got {response.status_code}"
         
@@ -540,13 +540,13 @@ class TestStockTransfersWorkflow:
         print("Correctly rejected shipping non-draft transfer")
     
     def test_receive_transfer(self, api_client):
-        """Test POST /api/stock-transfers/{id}/receive"""
+        """Test POST /api/v1/stock-transfers/{id}/receive"""
         # First ship the transfer
-        ship_response = api_client.post(f"{BASE_URL}/api/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
+        ship_response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}/ship?shipped_by=test_user")
         
         if ship_response.status_code != 200:
             # Might already be shipped
-            get_response = api_client.get(f"{BASE_URL}/api/stock-transfers/{self.transfer_id}")
+            get_response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}")
             if get_response.status_code == 200:
                 transfer = get_response.json()["transfer"]
                 if transfer.get("status") != "in_transit":
@@ -554,7 +554,7 @@ class TestStockTransfersWorkflow:
         
         # Receive the transfer
         response = api_client.post(
-            f"{BASE_URL}/api/stock-transfers/{self.transfer_id}/receive?received_by=test_receiver"
+            f"{BASE_URL}/api/v1/stock-transfers/{self.transfer_id}/receive?received_by=test_receiver"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -580,7 +580,7 @@ class TestStockTransfersWorkflow:
         if not all([source_wh, dest_wh, item_id]):
             pytest.skip("Could not get transfer details")
         
-        new_transfer = api_client.post(f"{BASE_URL}/api/stock-transfers/", json={
+        new_transfer = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json={
             "source_warehouse_id": source_wh,
             "destination_warehouse_id": dest_wh,
             "line_items": [{"item_id": item_id, "quantity": 1}]
@@ -593,7 +593,7 @@ class TestStockTransfersWorkflow:
         created_transfers.append(new_transfer_id)
         
         # Try to receive draft transfer
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/{new_transfer_id}/receive?received_by=test")
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{new_transfer_id}/receive?received_by=test")
         
         assert response.status_code == 400, f"Expected 400 for non-transit transfer, got {response.status_code}"
         
@@ -601,7 +601,7 @@ class TestStockTransfersWorkflow:
 
 
 class TestStockTransfersVoid:
-    """Tests for POST /api/stock-transfers/{id}/void"""
+    """Tests for POST /api/v1/stock-transfers/{id}/void"""
     
     @pytest.fixture(autouse=True)
     def setup_transfer(self, api_client, test_warehouses, test_item_with_stock):
@@ -616,7 +616,7 @@ class TestStockTransfersVoid:
     
     def create_fresh_transfer(self, api_client, qty=1):
         """Helper to create fresh transfer"""
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json={
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json={
             "source_warehouse_id": self.source_wh,
             "destination_warehouse_id": self.dest_wh,
             "reason": f"TEST_Void_{uuid.uuid4().hex[:6]}",
@@ -642,7 +642,7 @@ class TestStockTransfersVoid:
             pytest.skip("Could not create transfer (insufficient stock in warehouse - validation working correctly)")
         
         response = api_client.post(
-            f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_cancellation"
+            f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_cancellation"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -665,14 +665,14 @@ class TestStockTransfersVoid:
             pytest.skip("Could not create transfer (insufficient stock in warehouse - validation working correctly)")
         
         # Ship the transfer
-        ship_response = api_client.post(f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/ship?shipped_by=test")
+        ship_response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/ship?shipped_by=test")
         
         if ship_response.status_code != 200:
             pytest.skip("Could not ship transfer")
         
         # Now void it
         response = api_client.post(
-            f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_in_transit_void"
+            f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_in_transit_void"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -692,15 +692,15 @@ class TestStockTransfersVoid:
             pytest.skip("Could not create transfer (insufficient stock in warehouse - validation working correctly)")
         
         # Ship then receive
-        api_client.post(f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/ship?shipped_by=test")
-        receive_response = api_client.post(f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/receive?received_by=test")
+        api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/ship?shipped_by=test")
+        receive_response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/receive?received_by=test")
         
         if receive_response.status_code != 200:
             pytest.skip("Could not receive transfer")
         
         # Now void it
         response = api_client.post(
-            f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_received_void"
+            f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/void?voided_by=test_admin&reason=TEST_received_void"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -719,10 +719,10 @@ class TestStockTransfersVoid:
             pytest.skip("Could not create transfer (insufficient stock in warehouse - validation working correctly)")
         
         # Void it first time
-        api_client.post(f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/void?voided_by=test&reason=first")
+        api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/void?voided_by=test&reason=first")
         
         # Try to void again
-        response = api_client.post(f"{BASE_URL}/api/stock-transfers/{transfer['transfer_id']}/void?voided_by=test&reason=second")
+        response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/{transfer['transfer_id']}/void?voided_by=test&reason=second")
         
         assert response.status_code == 400, f"Expected 400 for already voided, got {response.status_code}"
         
@@ -730,11 +730,11 @@ class TestStockTransfersVoid:
 
 
 class TestStockTransfersStats:
-    """Tests for GET /api/stock-transfers/stats/summary"""
+    """Tests for GET /api/v1/stock-transfers/stats/summary"""
     
     def test_get_stats_summary(self, api_client):
         """Test getting stock transfer statistics"""
-        response = api_client.get(f"{BASE_URL}/api/stock-transfers/stats/summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/stats/summary")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -763,7 +763,7 @@ class TestStockTransfersStats:
     
     def test_get_stats_with_org_filter(self, api_client):
         """Test getting stats filtered by organization"""
-        response = api_client.get(f"{BASE_URL}/api/stock-transfers/stats/summary?organization_id={ORGANIZATION_ID}")
+        response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/stats/summary?organization_id={ORGANIZATION_ID}")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -774,11 +774,11 @@ class TestStockTransfersStats:
 
 
 class TestStockTransfersList:
-    """Tests for GET /api/stock-transfers/ - List transfers"""
+    """Tests for GET /api/v1/stock-transfers/ - List transfers"""
     
     def test_list_transfers(self, api_client):
         """Test listing all transfers"""
-        response = api_client.get(f"{BASE_URL}/api/stock-transfers/")
+        response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -799,7 +799,7 @@ class TestStockTransfersList:
     def test_list_transfers_by_status(self, api_client):
         """Test filtering transfers by status"""
         for status in ["draft", "in_transit", "received", "void"]:
-            response = api_client.get(f"{BASE_URL}/api/stock-transfers/?status={status}")
+            response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/?status={status}")
             
             assert response.status_code == 200, f"Expected 200 for status {status}"
             
@@ -818,7 +818,7 @@ class TestStockTransfersList:
         item_id, _ = test_item_with_stock
         
         # Create a transfer
-        create_response = api_client.post(f"{BASE_URL}/api/stock-transfers/", json={
+        create_response = api_client.post(f"{BASE_URL}/api/v1/stock-transfers/", json={
             "source_warehouse_id": source_wh,
             "destination_warehouse_id": dest_wh,
             "line_items": [{"item_id": item_id, "quantity": 1}]
@@ -836,7 +836,7 @@ class TestStockTransfersList:
         created_transfers.append(transfer_id)
         
         # Get the transfer
-        response = api_client.get(f"{BASE_URL}/api/stock-transfers/{transfer_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/stock-transfers/{transfer_id}")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         

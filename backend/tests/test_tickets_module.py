@@ -17,7 +17,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -31,7 +31,7 @@ class TestTicketModuleAuth:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -50,7 +50,7 @@ class TestTicketModuleAuth:
     def test_admin_login_success(self):
         """Test admin login with valid credentials"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -73,7 +73,7 @@ class TestTicketCRUD:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -307,7 +307,7 @@ class TestTicketLifecycle:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         return response.json()["token"]
@@ -324,7 +324,7 @@ class TestTicketLifecycle:
     def technician_id(self, auth_headers):
         """Get a technician user ID"""
         response = requests.get(
-            f"{BASE_URL}/api/technicians",
+            f"{BASE_URL}/api/v1/technicians",
             headers=auth_headers
         )
         if response.status_code == 200:
@@ -333,7 +333,7 @@ class TestTicketLifecycle:
                 return technicians[0]["user_id"]
         # Return admin user_id as fallback
         response = requests.get(
-            f"{BASE_URL}/api/auth/me",
+            f"{BASE_URL}/api/v1/auth/me",
             headers=auth_headers
         )
         return response.json()["user_id"]
@@ -507,7 +507,7 @@ class TestAIMatching:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         return response.json()["token"]
@@ -660,7 +660,7 @@ class TestTicketStats:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         return response.json()["token"]
@@ -703,7 +703,7 @@ class TestErrorHandling:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         return response.json()["token"]
@@ -793,7 +793,7 @@ class TestCleanup:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         return response.json()["token"]

@@ -13,7 +13,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -31,7 +31,7 @@ class TestDeliveryChallans:
     def setup(self):
         """Login once for all tests"""
         if TestDeliveryChallans.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             })
             assert response.status_code == 200, f"Login failed: {response.text}"
@@ -150,7 +150,7 @@ class TestVendorCredits:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestVendorCredits.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             })
             assert response.status_code == 200
@@ -270,7 +270,7 @@ class TestBillsEnhanced:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestBillsEnhanced.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             })
             assert response.status_code == 200
@@ -299,7 +299,7 @@ class TestFinancialReports:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestFinancialReports.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             })
             assert response.status_code == 200

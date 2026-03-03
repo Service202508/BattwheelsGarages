@@ -3,7 +3,7 @@ Setup Wizard, Email Service, and Usage Tracker Tests
 =====================================================
 
 Tests for Phase 5 SaaS features:
-- Organization Setup Wizard APIs (PATCH /api/organizations/me/settings, POST /api/organizations/me/complete-setup, GET /api/organizations/me/setup-status)
+- Organization Setup Wizard APIs (PATCH /api/v1/organizations/me/settings, POST /api/v1/organizations/me/complete-setup, GET /api/v1/organizations/me/setup-status)
 - Email Service (invitation emails logged/sent)
 - Usage Tracker service
 - Integration with existing team management
@@ -14,7 +14,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestSetupWizardAPIs:
     """Organization Setup Wizard API Tests"""
@@ -23,8 +23,8 @@ class TestSetupWizardAPIs:
     def setup(self):
         """Login and get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": "test403debug@example.com", "password": "test_pwd_placeholder"}
+            f"{BASE_URL}/api/v1/auth/login",
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -34,9 +34,9 @@ class TestSetupWizardAPIs:
         yield
     
     def test_get_setup_status(self):
-        """GET /api/organizations/me/setup-status - Check setup completion status"""
+        """GET /api/v1/organizations/me/setup-status - Check setup completion status"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/me/setup-status",
+            f"{BASE_URL}/api/v1/organizations/me/setup-status",
             headers=self.headers
         )
         assert response.status_code == 200, f"Setup status failed: {response.text}"
@@ -49,7 +49,7 @@ class TestSetupWizardAPIs:
         print(f"Setup status: completed={data['setup_completed']}")
     
     def test_update_organization_settings_profile(self):
-        """PATCH /api/organizations/me/settings - Update organization profile (Step 1)"""
+        """PATCH /api/v1/organizations/me/settings - Update organization profile (Step 1)"""
         payload = {
             "name": "TestOrg403Debug Updated",
             "industry_type": "ev_garage",
@@ -64,7 +64,7 @@ class TestSetupWizardAPIs:
         }
         
         response = requests.patch(
-            f"{BASE_URL}/api/organizations/me/settings",
+            f"{BASE_URL}/api/v1/organizations/me/settings",
             headers=self.headers,
             json=payload
         )
@@ -75,7 +75,7 @@ class TestSetupWizardAPIs:
         
         # Verify changes persisted via GET
         verify_response = requests.get(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             headers=self.headers
         )
         assert verify_response.status_code == 200
@@ -88,7 +88,7 @@ class TestSetupWizardAPIs:
         print("Profile settings verified via GET")
     
     def test_update_organization_settings_business(self):
-        """PATCH /api/organizations/me/settings - Update business settings (Step 2)"""
+        """PATCH /api/v1/organizations/me/settings - Update business settings (Step 2)"""
         payload = {
             "settings": {
                 "timezone": "Asia/Kolkata",
@@ -103,7 +103,7 @@ class TestSetupWizardAPIs:
         }
         
         response = requests.patch(
-            f"{BASE_URL}/api/organizations/me/settings",
+            f"{BASE_URL}/api/v1/organizations/me/settings",
             headers=self.headers,
             json=payload
         )
@@ -114,7 +114,7 @@ class TestSetupWizardAPIs:
         
         # Verify changes persisted
         verify_response = requests.get(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             headers=self.headers
         )
         assert verify_response.status_code == 200
@@ -126,9 +126,9 @@ class TestSetupWizardAPIs:
         print("Business settings verified via GET")
     
     def test_complete_setup(self):
-        """POST /api/organizations/me/complete-setup - Mark setup as complete"""
+        """POST /api/v1/organizations/me/complete-setup - Mark setup as complete"""
         response = requests.post(
-            f"{BASE_URL}/api/organizations/me/complete-setup",
+            f"{BASE_URL}/api/v1/organizations/me/complete-setup",
             headers=self.headers
         )
         assert response.status_code == 200, f"Complete setup failed: {response.text}"
@@ -139,7 +139,7 @@ class TestSetupWizardAPIs:
         
         # Verify setup_completed flag
         verify_response = requests.get(
-            f"{BASE_URL}/api/organizations/me/setup-status",
+            f"{BASE_URL}/api/v1/organizations/me/setup-status",
             headers=self.headers
         )
         assert verify_response.status_code == 200
@@ -149,18 +149,18 @@ class TestSetupWizardAPIs:
         print(f"Setup completion verified: completed_at={status_data.get('setup_completed_at')}")
     
     def test_settings_requires_auth(self):
-        """PATCH /api/organizations/me/settings - Requires authentication"""
+        """PATCH /api/v1/organizations/me/settings - Requires authentication"""
         response = requests.patch(
-            f"{BASE_URL}/api/organizations/me/settings",
+            f"{BASE_URL}/api/v1/organizations/me/settings",
             json={"name": "Unauthorized"}
         )
         assert response.status_code in [401, 403], f"Expected 401/403, got {response.status_code}"
         print("Settings endpoint properly requires authentication")
     
     def test_complete_setup_requires_auth(self):
-        """POST /api/organizations/me/complete-setup - Requires authentication"""
+        """POST /api/v1/organizations/me/complete-setup - Requires authentication"""
         response = requests.post(
-            f"{BASE_URL}/api/organizations/me/complete-setup"
+            f"{BASE_URL}/api/v1/organizations/me/complete-setup"
         )
         assert response.status_code in [401, 403], f"Expected 401/403, got {response.status_code}"
         print("Complete-setup endpoint properly requires authentication")
@@ -173,8 +173,8 @@ class TestTeamInvitationWithEmail:
     def setup(self):
         """Login and get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": "test403debug@example.com", "password": "test_pwd_placeholder"}
+            f"{BASE_URL}/api/v1/auth/login",
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -183,7 +183,7 @@ class TestTeamInvitationWithEmail:
         yield
     
     def test_invite_user_sends_email(self):
-        """POST /api/organizations/me/invite - Creates invite and logs/sends email"""
+        """POST /api/v1/organizations/me/invite - Creates invite and logs/sends email"""
         # Use unique email to avoid duplicate invite errors
         unique_email = f"TEST_wizard_{datetime.now().strftime('%H%M%S')}@example.com"
         
@@ -194,7 +194,7 @@ class TestTeamInvitationWithEmail:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=self.headers,
             json=payload
         )
@@ -212,16 +212,16 @@ class TestTeamInvitationWithEmail:
         invite_id = data.get("invite_id")
         if invite_id:
             cleanup_response = requests.delete(
-                f"{BASE_URL}/api/organizations/me/invites/{invite_id}",
+                f"{BASE_URL}/api/v1/organizations/me/invites/{invite_id}",
                 headers=self.headers
             )
             print(f"Cleanup invite: {cleanup_response.status_code}")
     
     def test_duplicate_invite_rejected(self):
-        """POST /api/organizations/me/invite - Rejects duplicate pending invites"""
+        """POST /api/v1/organizations/me/invite - Rejects duplicate pending invites"""
         # First check for existing pending invites
         list_response = requests.get(
-            f"{BASE_URL}/api/organizations/me/invites",
+            f"{BASE_URL}/api/v1/organizations/me/invites",
             headers=self.headers
         )
         invites = list_response.json().get("invites", [])
@@ -230,7 +230,7 @@ class TestTeamInvitationWithEmail:
         if pending_emails:
             # Try to create duplicate
             response = requests.post(
-                f"{BASE_URL}/api/organizations/me/invite",
+                f"{BASE_URL}/api/v1/organizations/me/invite",
                 headers=self.headers,
                 json={"name": "Duplicate", "email": pending_emails[0], "role": "technician"}
             )
@@ -247,8 +247,8 @@ class TestSubscriptionAndUsage:
     def setup(self):
         """Login and get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": "test403debug@example.com", "password": "test_pwd_placeholder"}
+            f"{BASE_URL}/api/v1/auth/login",
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -257,9 +257,9 @@ class TestSubscriptionAndUsage:
         yield
     
     def test_subscription_current_still_works(self):
-        """GET /api/subscriptions/current - Subscription endpoint still working"""
+        """GET /api/v1/subscriptions/current - Subscription endpoint still working"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/current",
+            f"{BASE_URL}/api/v1/subscriptions/current",
             headers=self.headers
         )
         assert response.status_code == 200, f"Subscription current failed: {response.text}"
@@ -271,9 +271,9 @@ class TestSubscriptionAndUsage:
         print(f"Subscription: plan={data.get('plan', {}).get('code') if isinstance(data.get('plan'), dict) else data.get('plan')}, status={data.get('status')}")
     
     def test_subscription_limits_still_works(self):
-        """GET /api/subscriptions/limits - Usage limits endpoint still working"""
+        """GET /api/v1/subscriptions/limits - Usage limits endpoint still working"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/limits",
+            f"{BASE_URL}/api/v1/subscriptions/limits",
             headers=self.headers
         )
         assert response.status_code == 200, f"Subscription limits failed: {response.text}"
@@ -286,9 +286,9 @@ class TestSubscriptionAndUsage:
         print(f"Limits: {list(limits.keys())}")
     
     def test_subscription_entitlements_still_works(self):
-        """GET /api/subscriptions/entitlements - Entitlements endpoint still working"""
+        """GET /api/v1/subscriptions/entitlements - Entitlements endpoint still working"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/entitlements",
+            f"{BASE_URL}/api/v1/subscriptions/entitlements",
             headers=self.headers
         )
         assert response.status_code == 200, f"Subscription entitlements failed: {response.text}"
@@ -308,8 +308,8 @@ class TestTeamManagementStillWorks:
     def setup(self):
         """Login and get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": "test403debug@example.com", "password": "test_pwd_placeholder"}
+            f"{BASE_URL}/api/v1/auth/login",
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -318,9 +318,9 @@ class TestTeamManagementStillWorks:
         yield
     
     def test_list_members_works(self):
-        """GET /api/organizations/me/members - List members works"""
+        """GET /api/v1/organizations/me/members - List members works"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/me/members",
+            f"{BASE_URL}/api/v1/organizations/me/members",
             headers=self.headers
         )
         assert response.status_code == 200, f"List members failed: {response.text}"
@@ -330,9 +330,9 @@ class TestTeamManagementStillWorks:
         print(f"Team members count: {data['total']}")
     
     def test_list_invites_works(self):
-        """GET /api/organizations/me/invites - List invites works"""
+        """GET /api/v1/organizations/me/invites - List invites works"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/me/invites",
+            f"{BASE_URL}/api/v1/organizations/me/invites",
             headers=self.headers
         )
         assert response.status_code == 200, f"List invites failed: {response.text}"
@@ -342,9 +342,9 @@ class TestTeamManagementStillWorks:
         print(f"Invites count: {data['total']}")
     
     def test_organization_me_works(self):
-        """GET /api/organizations/me - Org details works"""
+        """GET /api/v1/organizations/me - Org details works"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             headers=self.headers
         )
         assert response.status_code == 200, f"Get org failed: {response.text}"

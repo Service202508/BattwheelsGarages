@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -21,7 +21,7 @@ class TestAIAssistHealthEndpoint:
 
     def test_ai_health_endpoint_available(self):
         """Test that AI health endpoint returns available status"""
-        response = requests.get(f"{BASE_URL}/api/ai-assist/health")
+        response = requests.get(f"{BASE_URL}/api/v1/ai-assist/health")
         assert response.status_code == 200
         data = response.json()
         assert "status" in data
@@ -37,7 +37,7 @@ class TestAIAssistDiagnoseEndpoint:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code == 200:
@@ -48,7 +48,7 @@ class TestAIAssistDiagnoseEndpoint:
     def technician_token(self):
         """Get technician authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECHNICIAN_EMAIL, "password": TECHNICIAN_PASSWORD}
         )
         if response.status_code == 200:
@@ -70,7 +70,7 @@ class TestAIAssistDiagnoseEndpoint:
             }
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {admin_token}",
@@ -106,7 +106,7 @@ class TestAIAssistDiagnoseEndpoint:
             }
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {technician_token}",
@@ -137,7 +137,7 @@ class TestAIAssistDiagnoseEndpoint:
             }
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {admin_token}",
@@ -163,7 +163,7 @@ class TestAIAssistDiagnoseEndpoint:
             }
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {technician_token}",
@@ -191,7 +191,7 @@ class TestAIAssistDiagnoseEndpoint:
             }
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {admin_token}",
@@ -212,7 +212,7 @@ class TestAIAssistDiagnoseEndpoint:
             "portal_type": "admin"
         }
         response = requests.post(
-            f"{BASE_URL}/api/ai-assist/diagnose",
+            f"{BASE_URL}/api/v1/ai-assist/diagnose",
             json=payload,
             headers={
                 "Authorization": f"Bearer {admin_token}",
@@ -231,7 +231,7 @@ class TestAuthenticationEndpoints:
     def test_admin_login_success(self):
         """Test admin login returns valid token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -244,7 +244,7 @@ class TestAuthenticationEndpoints:
     def test_technician_login_success(self):
         """Test technician login returns valid token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECHNICIAN_EMAIL, "password": TECHNICIAN_PASSWORD}
         )
         assert response.status_code == 200
@@ -257,7 +257,7 @@ class TestAuthenticationEndpoints:
     def test_invalid_login_rejected(self):
         """Test invalid credentials are rejected"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "invalid@test.com", "password": "wrong_pwd_placeholder"}
         )
         assert response.status_code == 401

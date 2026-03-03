@@ -60,7 +60,7 @@ class TestFlow01Registration:
         print("PASS: /register page accessible")
 
     def test_signup_creates_org(self):
-        """POST /api/organizations/signup creates org, returns token"""
+        """POST /api/v1/organizations/signup creates org, returns token"""
         payload = {
             "name": AUDIT_WORKSHOP,
             "city": AUDIT_CITY,
@@ -73,7 +73,7 @@ class TestFlow01Registration:
             "industry_type": "ev_garage",
         }
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json=payload,
             timeout=15,
         )
@@ -83,7 +83,7 @@ class TestFlow01Registration:
                                         "already exists" in str(data.get("detail", ""))):
             print("INFO: Org already exists, logging in instead")
             login_res = requests.post(
-                f"{BASE_URL}/api/auth/login",
+                f"{BASE_URL}/api/v1/auth/login",
                 json={"email": AUDIT_EMAIL, "password": AUDIT_PASS},
                 timeout=10,
             )
@@ -110,10 +110,10 @@ class TestFlow01Registration:
         print(f"PASS: Org created {state['org_id']}, trial ends {trial_expiry[:10]}")
 
     def test_user_has_owner_role(self):
-        """GET /api/organizations/me/members shows owner role"""
+        """GET /api/v1/organizations/me/members shows owner role"""
         assert state["token"], "No token from signup"
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/members",
+            f"{BASE_URL}/api/v1/organizations/me/members",
             headers=auth_headers(),
             timeout=10,
         )
@@ -125,10 +125,10 @@ class TestFlow01Registration:
         print(f"PASS: Owner role confirmed — {owner.get('role')}")
 
     def test_onboarding_checklist_visible(self):
-        """GET /api/organizations/onboarding/status returns checklist"""
+        """GET /api/v1/organizations/onboarding/status returns checklist"""
         assert state["token"], "No token from signup"
         res = requests.get(
-            f"{BASE_URL}/api/organizations/onboarding/status",
+            f"{BASE_URL}/api/v1/organizations/onboarding/status",
             headers=auth_headers(),
             timeout=10,
         )
@@ -152,14 +152,14 @@ class TestFlow02WorkshopProfile:
     """FLOW 02 — Workshop Profile: add GSTIN and address"""
 
     def test_update_org_profile(self):
-        """PUT /api/organizations/me updates GSTIN and address"""
+        """PUT /api/v1/organizations/me updates GSTIN and address"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "gstin": "07AABCU9603R1ZP",
             "address": "Koramangala, Bangalore",
         }
         res = requests.put(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -168,10 +168,10 @@ class TestFlow02WorkshopProfile:
         print("PASS: Workshop profile updated with GSTIN and address")
 
     def test_profile_persists(self):
-        """GET /api/organizations/me returns saved GSTIN"""
+        """GET /api/v1/organizations/me returns saved GSTIN"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             headers=auth_headers(),
             timeout=10,
         )
@@ -190,7 +190,7 @@ class TestFlow03InviteTeam:
     """FLOW 03 — Invite Technician team member"""
 
     def test_invite_technician(self):
-        """POST /api/organizations/me/invite sends invite"""
+        """POST /api/v1/organizations/me/invite sends invite"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "email": "tech-audit@battwheelstest.com",
@@ -198,7 +198,7 @@ class TestFlow03InviteTeam:
             "role": "technician",
         }
         res = requests.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -214,7 +214,7 @@ class TestFlow03InviteTeam:
     def test_tech_user_no_finance_access(self):
         """Tech user cannot access payroll endpoint → 403/401"""
         login_res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "tech@battwheels.in", "password": "DevTest@123"},
             timeout=10,
         )
@@ -227,7 +227,7 @@ class TestFlow03InviteTeam:
             "Content-Type": "application/json",
             "X-Organization-ID": tech_org_id,
         }
-        res = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers, timeout=10)
+        res = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers, timeout=10)
         assert res.status_code in [403, 401], \
             f"Technician should be blocked from payroll, got {res.status_code}"
         print(f"PASS: Technician correctly blocked from payroll (HTTP {res.status_code})")
@@ -240,7 +240,7 @@ class TestFlow04Inventory:
     """FLOW 04 — Add BMS Module and Brake Pad Set"""
 
     def test_add_bms_module(self):
-        """POST /api/inventory creates BMS Module item"""
+        """POST /api/v1/inventory creates BMS Module item"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "name": "BMS Module",
@@ -254,7 +254,7 @@ class TestFlow04Inventory:
             "reorder_quantity": 5,
         }
         res = requests.post(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -269,7 +269,7 @@ class TestFlow04Inventory:
         print(f"PASS: BMS Module created id={item_id}, qty={qty}")
 
     def test_add_brake_pad(self):
-        """POST /api/inventory creates Brake Pad Set item"""
+        """POST /api/v1/inventory creates Brake Pad Set item"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "name": "Brake Pad Set",
@@ -283,7 +283,7 @@ class TestFlow04Inventory:
             "reorder_quantity": 10,
         }
         res = requests.post(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -296,10 +296,10 @@ class TestFlow04Inventory:
         print(f"PASS: Brake Pad Set created id={item_id}")
 
     def test_items_appear_in_list(self):
-        """GET /api/inventory returns both new items"""
+        """GET /api/v1/inventory returns both new items"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             headers=auth_headers(),
             timeout=10,
         )
@@ -319,7 +319,7 @@ class TestFlow05CustomerVehicle:
     """FLOW 05 — Add Rajesh Kumar customer and vehicle"""
 
     def test_create_contact(self):
-        """POST /api/contacts-enhanced/ creates Rajesh Kumar"""
+        """POST /api/v1/contacts-enhanced/ creates Rajesh Kumar"""
         assert state["token"], "No token from Flow 01"
         import time as _t
         unique_ts = int(_t.time())
@@ -331,7 +331,7 @@ class TestFlow05CustomerVehicle:
             "city": "Delhi",
         }
         res = requests.post(
-            f"{BASE_URL}/api/contacts-enhanced/",
+            f"{BASE_URL}/api/v1/contacts-enhanced/",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -351,7 +351,7 @@ class TestFlow05CustomerVehicle:
         print(f"PASS: Contact Rajesh Kumar created id={contact_id}")
 
     def test_add_vehicle_to_contact(self):
-        """POST /api/vehicles creates Ola S1 Pro for Rajesh Kumar"""
+        """POST /api/v1/vehicles creates Ola S1 Pro for Rajesh Kumar"""
         assert state["token"], "No token from Flow 01"
         assert state["contact_id"], "No contact from Flow 05"
         payload = {
@@ -365,7 +365,7 @@ class TestFlow05CustomerVehicle:
             "battery_capacity": 3.97,
         }
         res = requests.post(
-            f"{BASE_URL}/api/vehicles",
+            f"{BASE_URL}/api/v1/vehicles",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -387,7 +387,7 @@ class TestFlow06CreateTicket:
     """FLOW 06 — Create service ticket"""
 
     def test_create_ticket(self):
-        """POST /api/tickets creates high priority ticket"""
+        """POST /api/v1/tickets creates high priority ticket"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "title": "Battery not charging, range reduced to 30km, BMS warning on display",
@@ -408,7 +408,7 @@ class TestFlow06CreateTicket:
             payload["vehicle_id"] = state["vehicle_id"]
 
         res = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=payload,
             headers=auth_headers(),
             timeout=15,
@@ -429,7 +429,7 @@ class TestFlow06CreateTicket:
         """Dashboard shows at least 0 open tickets (fresh org ok)"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=auth_headers(),
             timeout=10,
         )
@@ -446,7 +446,7 @@ class TestFlow07EFIDiagnostics:
     """FLOW 07 — EFI/AI diagnostics"""
 
     def test_efi_diagnose(self):
-        """POST /api/ai/diagnose returns result"""
+        """POST /api/v1/ai/diagnose returns result"""
         assert state["token"], "No token from Flow 01"
         payload = {
             "issue_description": "Battery not charging, reduced range 30km, BMS warning",
@@ -457,7 +457,7 @@ class TestFlow07EFIDiagnostics:
             payload["ticket_id"] = state["ticket_id"]
 
         res = requests.post(
-            f"{BASE_URL}/api/ai/diagnose",
+            f"{BASE_URL}/api/v1/ai/diagnose",
             json=payload,
             headers=auth_headers(),
             timeout=60,
@@ -475,10 +475,10 @@ class TestFlow07EFIDiagnostics:
         print(f"PASS: EFI returned result with keys: {list(data.keys())}")
 
     def test_efi_failure_cards(self):
-        """GET /api/efi/failure-cards returns cards"""
+        """GET /api/v1/efi/failure-cards returns cards"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers(),
             timeout=10,
         )
@@ -493,10 +493,10 @@ class TestFlow08CloseTicket:
     """FLOW 08 — Update and close ticket"""
 
     def test_update_status_in_progress(self):
-        """PUT /api/tickets/{id} sets status to in_progress"""
+        """PUT /api/v1/tickets/{id} sets status to in_progress"""
         assert state["token"] and state["ticket_id"], "Missing token or ticket"
         res = requests.put(
-            f"{BASE_URL}/api/tickets/{state['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{state['ticket_id']}",
             json={"status": "in_progress"},
             headers=auth_headers(),
             timeout=10,
@@ -505,7 +505,7 @@ class TestFlow08CloseTicket:
         print("PASS: Ticket status set to in_progress")
 
     def test_close_ticket_with_resolution(self):
-        """PUT /api/tickets/{id} closes ticket with resolution"""
+        """PUT /api/v1/tickets/{id} closes ticket with resolution"""
         assert state["token"] and state["ticket_id"], "Missing token or ticket"
         payload = {
             "status": "resolved",
@@ -513,7 +513,7 @@ class TestFlow08CloseTicket:
             "resolution_notes": "BMS recalibrated, brake pads replaced",
         }
         res = requests.put(
-            f"{BASE_URL}/api/tickets/{state['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{state['ticket_id']}",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -522,10 +522,10 @@ class TestFlow08CloseTicket:
         print("PASS: Ticket closed with resolution")
 
     def test_ticket_shows_resolved(self):
-        """GET /api/tickets/{id} shows resolved status"""
+        """GET /api/v1/tickets/{id} shows resolved status"""
         assert state["token"] and state["ticket_id"], "Missing token or ticket"
         res = requests.get(
-            f"{BASE_URL}/api/tickets/{state['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{state['ticket_id']}",
             headers=auth_headers(),
             timeout=10,
         )
@@ -545,14 +545,14 @@ class TestFlow09CreateInvoice:
     """FLOW 09 — Create invoice from ticket"""
 
     def test_create_invoice(self):
-        """POST /api/invoices-enhanced/ creates invoice"""
+        """POST /api/v1/invoices-enhanced/ creates invoice"""
         assert state["token"], "No token from Flow 01"
         # Invoice requires customer_id; use contact if available, else create one
         customer_id = state.get("contact_id")
         if not customer_id:
             # Create contact on-the-fly
             cr = requests.post(
-                f"{BASE_URL}/api/contacts-enhanced/",
+                f"{BASE_URL}/api/v1/contacts-enhanced/",
                 json={"contact_type": "customer", "name": "Rajesh Kumar", "phone": "9876543210"},
                 headers=auth_headers(), timeout=10,
             )
@@ -577,7 +577,7 @@ class TestFlow09CreateInvoice:
             payload["ticket_id"] = state["ticket_id"]
 
         res = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/",
+            f"{BASE_URL}/api/v1/invoices-enhanced/",
             json=payload,
             headers=auth_headers(),
             timeout=15,
@@ -594,7 +594,7 @@ class TestFlow09CreateInvoice:
         """GET invoice shows GST amounts"""
         assert state["token"] and state["invoice_id"], "Missing token or invoice"
         res = requests.get(
-            f"{BASE_URL}/api/invoices-enhanced/{state['invoice_id']}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{state['invoice_id']}",
             headers=auth_headers(),
             timeout=10,
         )
@@ -624,7 +624,7 @@ class TestFlow10RecordPayment:
     """FLOW 10 — Record payment against invoice"""
 
     def test_record_payment(self):
-        """POST /api/payments records payment for invoice"""
+        """POST /api/v1/payments records payment for invoice"""
         assert state["token"] and state["invoice_id"], "Missing token or invoice"
         payload = {
             "invoice_id": state["invoice_id"],
@@ -634,7 +634,7 @@ class TestFlow10RecordPayment:
             "notes": "Full payment received",
         }
         res = requests.post(
-            f"{BASE_URL}/api/payments",
+            f"{BASE_URL}/api/v1/payments",
             json=payload,
             headers=auth_headers(),
             timeout=10,
@@ -647,7 +647,7 @@ class TestFlow10RecordPayment:
         """GET invoice shows paid status"""
         assert state["token"] and state["invoice_id"], "Missing token or invoice"
         res = requests.get(
-            f"{BASE_URL}/api/invoices-enhanced/{state['invoice_id']}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{state['invoice_id']}",
             headers=auth_headers(),
             timeout=10,
         )
@@ -667,10 +667,10 @@ class TestFlow11FinancialReports:
     """FLOW 11 — Trial Balance, P&L, GST Summary"""
 
     def test_trial_balance_loads(self):
-        """GET /api/reports/trial-balance returns data"""
+        """GET /api/v1/reports/trial-balance returns data"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers(),
             timeout=15,
         )
@@ -679,10 +679,10 @@ class TestFlow11FinancialReports:
         print(f"PASS: Trial Balance returned keys: {list(data.keys())}")
 
     def test_profit_loss_loads(self):
-        """GET /api/reports/profit-loss returns data"""
+        """GET /api/v1/reports/profit-loss returns data"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/reports/profit-loss",
+            f"{BASE_URL}/api/v1/reports/profit-loss",
             headers=auth_headers(),
             timeout=15,
         )
@@ -691,16 +691,16 @@ class TestFlow11FinancialReports:
         print(f"PASS: P&L returned keys: {list(data.keys())}")
 
     def test_gst_summary_loads(self):
-        """GET /api/reports/gst-summary or /api/gst/summary"""
+        """GET /api/v1/reports/gst-summary or /api/v1/gst/summary"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/reports/gst-summary",
+            f"{BASE_URL}/api/v1/reports/gst-summary",
             headers=auth_headers(),
             timeout=15,
         )
         if res.status_code == 404:
             res = requests.get(
-                f"{BASE_URL}/api/gst/summary",
+                f"{BASE_URL}/api/v1/gst/summary",
                 headers=auth_headers(),
                 timeout=15,
             )
@@ -718,7 +718,7 @@ class TestFlow12TallyExport:
     def _get_admin_headers(self):
         """Use admin org which has journal entries"""
         login_res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASS},
             timeout=10,
         )
@@ -731,12 +731,12 @@ class TestFlow12TallyExport:
         }
 
     def test_tally_export(self):
-        """GET /api/finance/export/tally-xml returns XML"""
+        """GET /api/v1/finance/export/tally-xml returns XML"""
         assert state["token"], "No token from Flow 01"
         # Use admin org for Tally test (audit org may have no journal entries)
         h = self._get_admin_headers()
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=h,
             params={"date_from": "2025-01-01", "date_to": "2026-12-31"},
             timeout=20,
@@ -744,7 +744,7 @@ class TestFlow12TallyExport:
         # If audit org has no entries, try without date range
         if res.status_code == 404:
             res = requests.get(
-                f"{BASE_URL}/api/finance/export/tally-xml",
+                f"{BASE_URL}/api/v1/finance/export/tally-xml",
                 headers=h,
                 timeout=20,
             )
@@ -772,7 +772,7 @@ class TestFlow13Payroll:
     def _get_admin_headers(self):
         """Get admin org headers that have professional plan with payroll feature"""
         login_res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASS},
             timeout=10,
         )
@@ -785,7 +785,7 @@ class TestFlow13Payroll:
         }
 
     def test_add_employee(self):
-        """POST /api/hr/employees creates Ravi Kumar"""
+        """POST /api/v1/hr/employees creates Ravi Kumar"""
         assert state["token"], "No token from Flow 01"
         h = self._get_admin_headers()
         payload = {
@@ -811,7 +811,7 @@ class TestFlow13Payroll:
             "esi_enrolled": True,
         }
         res = requests.post(
-            f"{BASE_URL}/api/hr/employees",
+            f"{BASE_URL}/api/v1/hr/employees",
             json=payload,
             headers=h,
             timeout=15,
@@ -819,7 +819,7 @@ class TestFlow13Payroll:
         data = res.json()
         if res.status_code == 400 and "already" in str(data.get("detail", "")).lower():
             emp_res = requests.get(
-                f"{BASE_URL}/api/hr/employees",
+                f"{BASE_URL}/api/v1/hr/employees",
                 headers=h,
                 timeout=10,
             )
@@ -837,11 +837,11 @@ class TestFlow13Payroll:
         print(f"PASS: Employee Ravi Kumar created id={emp_id}")
 
     def test_run_payroll(self):
-        """POST /api/hr/payroll/generate for Feb 2026"""
+        """POST /api/v1/hr/payroll/generate for Feb 2026"""
         assert state.get("employee_id") or True, "No employee from Flow 13"
         h = self._get_admin_headers()
         res = requests.post(
-            f"{BASE_URL}/api/hr/payroll/generate",
+            f"{BASE_URL}/api/v1/hr/payroll/generate",
             params={"month": "February", "year": 2026},
             headers=h,
             timeout=30,
@@ -851,10 +851,10 @@ class TestFlow13Payroll:
         print(f"PASS: Payroll generated. Keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
 
     def test_payroll_records_available(self):
-        """GET /api/hr/payroll/records returns records"""
+        """GET /api/v1/hr/payroll/records returns records"""
         h = self._get_admin_headers()
         res = requests.get(
-            f"{BASE_URL}/api/hr/payroll/records",
+            f"{BASE_URL}/api/v1/hr/payroll/records",
             headers=h,
             params={"month": "February", "year": 2026},
             timeout=10,
@@ -877,7 +877,7 @@ class TestFlow14PublicTicket:
         print("PASS: /submit-ticket page accessible without auth")
 
     def test_public_submit_without_slug_gives_friendly_error(self):
-        """POST /api/public/tickets/submit without org slug → friendly 400"""
+        """POST /api/v1/public/tickets/submit without org slug → friendly 400"""
         payload = {
             "vehicle_category": "2W_EV",
             "vehicle_number": "MH01AB0001",
@@ -889,7 +889,7 @@ class TestFlow14PublicTicket:
             "resolution_type": "workshop",
         }
         res = requests.post(
-            f"{BASE_URL}/api/public/tickets/submit",
+            f"{BASE_URL}/api/v1/public/tickets/submit",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=10,
@@ -908,9 +908,9 @@ class TestFlow14PublicTicket:
         print(f"PASS: Public ticket without slug returns {res.status_code}: {error_msg[:100]}")
 
     def test_public_vehicle_categories(self):
-        """GET /api/public/vehicle-categories loads without auth"""
+        """GET /api/v1/public/vehicle-categories loads without auth"""
         res = requests.get(
-            f"{BASE_URL}/api/public/vehicle-categories",
+            f"{BASE_URL}/api/v1/public/vehicle-categories",
             timeout=10,
         )
         assert res.status_code == 200, f"Public vehicle categories failed: {res.text}"
@@ -926,10 +926,10 @@ class TestFlow15DataInsights:
     """FLOW 15 — Data Insights 6 sections"""
 
     def test_insights_revenue(self):
-        """GET /api/insights/revenue"""
+        """GET /api/v1/insights/revenue"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/revenue",
+            f"{BASE_URL}/api/v1/insights/revenue",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -938,10 +938,10 @@ class TestFlow15DataInsights:
         print(f"PASS: Revenue insights loaded")
 
     def test_insights_operations(self):
-        """GET /api/insights/operations"""
+        """GET /api/v1/insights/operations"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/operations",
+            f"{BASE_URL}/api/v1/insights/operations",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -950,10 +950,10 @@ class TestFlow15DataInsights:
         print(f"PASS: Operations insights loaded")
 
     def test_insights_technician(self):
-        """GET /api/insights/technician-performance"""
+        """GET /api/v1/insights/technician-performance"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/technician-performance",
+            f"{BASE_URL}/api/v1/insights/technician-performance",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -962,10 +962,10 @@ class TestFlow15DataInsights:
         print(f"PASS: Technician insights HTTP {res.status_code}")
 
     def test_insights_inventory(self):
-        """GET /api/insights/inventory"""
+        """GET /api/v1/insights/inventory"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/inventory",
+            f"{BASE_URL}/api/v1/insights/inventory",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -974,10 +974,10 @@ class TestFlow15DataInsights:
         print(f"PASS: Inventory insights HTTP {res.status_code}")
 
     def test_insights_efi(self):
-        """GET /api/insights/efi-intelligence"""
+        """GET /api/v1/insights/efi-intelligence"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/efi-intelligence",
+            f"{BASE_URL}/api/v1/insights/efi-intelligence",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -986,10 +986,10 @@ class TestFlow15DataInsights:
         print(f"PASS: EFI insights HTTP {res.status_code}")
 
     def test_insights_customer(self):
-        """GET /api/insights/customer-intelligence"""
+        """GET /api/v1/insights/customer-intelligence"""
         assert state["token"], "No token from Flow 01"
         res = requests.get(
-            f"{BASE_URL}/api/insights/customer-intelligence",
+            f"{BASE_URL}/api/v1/insights/customer-intelligence",
             headers=auth_headers(),
             params={"period": "month"},
             timeout=15,
@@ -1005,7 +1005,7 @@ class TestFlow16BookDemo:
     """FLOW 16 — Book Demo lead capture"""
 
     def test_book_demo_endpoint(self):
-        """POST /api/book-demo submits lead without auth"""
+        """POST /api/v1/book-demo submits lead without auth"""
         payload = {
             "name": "Test Lead",
             "workshop_name": "Test Workshop",
@@ -1014,7 +1014,7 @@ class TestFlow16BookDemo:
             "vehicles_per_month": "10-50",
         }
         res = requests.post(
-            f"{BASE_URL}/api/book-demo",
+            f"{BASE_URL}/api/v1/book-demo",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=10,
@@ -1024,10 +1024,10 @@ class TestFlow16BookDemo:
         print(f"PASS: Book demo submitted: {data}")
 
     def test_book_demo_validation(self):
-        """POST /api/book-demo without required fields → 422"""
+        """POST /api/v1/book-demo without required fields → 422"""
         payload = {"name": "Incomplete"}
         res = requests.post(
-            f"{BASE_URL}/api/book-demo",
+            f"{BASE_URL}/api/v1/book-demo",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=10,

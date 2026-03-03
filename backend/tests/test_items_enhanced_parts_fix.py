@@ -1,9 +1,9 @@
 """
 Test: Parts Catalog in Add Item to Estimate dialog
-Bug Fix: Trailing slash issue in GET /api/items-enhanced/ endpoint
+Bug Fix: Trailing slash issue in GET /api/v1/items-enhanced/ endpoint
 
 Tests:
-1. GET /api/items-enhanced/ returns inventory items (with trailing slash)
+1. GET /api/v1/items-enhanced/ returns inventory items (with trailing slash)
 2. Items are loaded when popover opens (no search required)
 3. Search filters items correctly
 """
@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 
 class TestItemsEnhancedPartsFix:
@@ -25,7 +25,7 @@ class TestItemsEnhancedPartsFix:
         
         # Login to get token
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers=self.headers
         )
@@ -36,9 +36,9 @@ class TestItemsEnhancedPartsFix:
                 self.headers["Authorization"] = f"Bearer {token}"
     
     def test_items_enhanced_with_trailing_slash(self):
-        """Test: GET /api/items-enhanced/ with trailing slash returns items"""
+        """Test: GET /api/v1/items-enhanced/ with trailing slash returns items"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=20&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=20&item_type=inventory",
             headers=self.headers
         )
         
@@ -54,12 +54,12 @@ class TestItemsEnhancedPartsFix:
         assert "item_id" in item, "Item should have 'item_id'"
         assert "rate" in item or "selling_price" in item, "Item should have 'rate' or 'selling_price'"
         
-        print(f"SUCCESS: GET /api/items-enhanced/ returned {len(data['items'])} items")
+        print(f"SUCCESS: GET /api/v1/items-enhanced/ returned {len(data['items'])} items")
     
     def test_items_enhanced_without_search_query(self):
         """Test: Items load without search query (initial load when popover opens)"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=20&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=20&item_type=inventory",
             headers=self.headers
         )
         
@@ -78,7 +78,7 @@ class TestItemsEnhancedPartsFix:
         """Test: Search filters items correctly"""
         search_term = "motor"
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=20&item_type=inventory&search={search_term}",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=20&item_type=inventory&search={search_term}",
             headers=self.headers
         )
         
@@ -104,7 +104,7 @@ class TestItemsEnhancedPartsFix:
     def test_items_enhanced_inventory_type_filter(self):
         """Test: item_type=inventory filter works"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=20&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=20&item_type=inventory",
             headers=self.headers
         )
         
@@ -123,7 +123,7 @@ class TestItemsEnhancedPartsFix:
     def test_items_have_required_fields_for_estimate(self):
         """Test: Items have fields needed for estimate line items"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=5&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=5&item_type=inventory",
             headers=self.headers
         )
         
@@ -159,7 +159,7 @@ class TestItemsEnhancedPagination:
     def setup(self):
         self.headers = {"Content-Type": "application/json"}
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers=self.headers
         )
@@ -172,7 +172,7 @@ class TestItemsEnhancedPagination:
     def test_pagination_context(self):
         """Test: Response includes pagination context"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=5&page=1&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=5&page=1&item_type=inventory",
             headers=self.headers
         )
         

@@ -10,7 +10,10 @@ from datetime import datetime, timezone
 import logging
 
 from services.data_sanitization_service import DataSanitizationService, DataValidationService
-from services.zoho_realtime_sync import ZohoRealTimeSyncService
+try:
+    from services.zoho_realtime_sync import ZohoRealTimeSyncService
+except ImportError:
+    ZohoRealTimeSyncService = None
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/data-management", tags=["Data Management"])

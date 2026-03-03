@@ -10,17 +10,17 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test credentials
 TEST_EMAIL = "dev@battwheels.internal"
-TEST_PASSWORD = "admin"
+TEST_PASSWORD = "DevTest@123"
 
 @pytest.fixture(scope="module")
 def auth_token():
     """Get authentication token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
     )
     assert response.status_code == 200, f"Login failed: {response.text}"
@@ -41,8 +41,8 @@ class TestBugCFix:
     """
     
     def test_estimates_list_returns_data_key(self, headers):
-        """GET /api/estimates-enhanced/ returns 'data' key (not just 'estimates')"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=100", headers=headers)
+        """GET /api/v1/estimates-enhanced/ returns 'data' key (not just 'estimates')"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=100", headers=headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -56,7 +56,7 @@ class TestBugCFix:
     
     def test_estimates_list_has_pagination(self, headers):
         """Verify pagination metadata is present"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=100", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=100", headers=headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -72,9 +72,9 @@ class TestBugBFix:
     """
     
     def test_estimate_detail_has_line_items(self, headers):
-        """GET /api/estimates-enhanced/{id} returns line_items array"""
+        """GET /api/v1/estimates-enhanced/{id} returns line_items array"""
         # First get an estimate ID
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10", headers=headers)
         estimates = response.json().get("data", [])
         assert len(estimates) > 0, "No estimates to test"
         
@@ -89,7 +89,7 @@ class TestBugBFix:
             estimate_id = estimates[0]["estimate_id"]
         
         # Fetch detail
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}", headers=headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -100,13 +100,13 @@ class TestBugBFix:
     
     def test_line_items_have_required_fields(self, headers):
         """Verify line items have all required fields for edit modal"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10", headers=headers)
         estimates = response.json().get("data", [])
         
         # Find estimate with line items
         for est in estimates:
             if est.get("line_items_count", 0) >= 1:
-                response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{est['estimate_id']}", headers=headers)
+                response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{est['estimate_id']}", headers=headers)
                 estimate = response.json()["estimate"]
                 
                 for item in estimate.get("line_items", []):
@@ -125,9 +125,9 @@ class TestBugAFix:
     """
     
     def test_update_estimate_with_line_items(self, headers):
-        """PUT /api/estimates-enhanced/{id} accepts line_items and recalculates totals"""
+        """PUT /api/v1/estimates-enhanced/{id} accepts line_items and recalculates totals"""
         # Find a draft estimate
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10&status=draft", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10&status=draft", headers=headers)
         estimates = response.json().get("data", [])
         draft_estimates = [e for e in estimates if e.get("status") == "draft"]
         
@@ -148,7 +148,7 @@ class TestBugAFix:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -171,7 +171,7 @@ class TestBugAFix:
     
     def test_update_estimate_returns_line_items(self, headers):
         """Verify PUT response includes updated line_items"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10&status=draft", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10&status=draft", headers=headers)
         estimates = response.json().get("data", [])
         draft_estimates = [e for e in estimates if e.get("status") == "draft"]
         
@@ -181,7 +181,7 @@ class TestBugAFix:
         estimate_id = draft_estimates[0]["estimate_id"]
         
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json={
                 "line_items": [
@@ -206,9 +206,9 @@ class TestChainFix:
     """
     
     def test_estimate_to_invoice_finds_estimate(self, headers):
-        """POST /api/invoices-enhanced/from-estimate/{id} finds estimate (not 404)"""
+        """POST /api/v1/invoices-enhanced/from-estimate/{id} finds estimate (not 404)"""
         # Get a draft estimate
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10&status=draft", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10&status=draft", headers=headers)
         estimates = response.json().get("data", [])
         draft_estimates = [e for e in estimates if e.get("status") == "draft"]
         
@@ -219,7 +219,7 @@ class TestChainFix:
         
         # Try to convert - should fail with 400 (not accepted), NOT 404 (not found)
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/from-estimate/{estimate_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/from-estimate/{estimate_id}",
             headers=headers
         )
         
@@ -232,7 +232,7 @@ class TestChainFix:
     
     def test_converted_estimate_cannot_convert_again(self, headers):
         """Already converted estimates should not be convertible again"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10", headers=headers)
         estimates = response.json().get("data", [])
         converted = [e for e in estimates if e.get("status") == "converted"]
         
@@ -242,7 +242,7 @@ class TestChainFix:
         estimate_id = converted[0]["estimate_id"]
         
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/from-estimate/{estimate_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/from-estimate/{estimate_id}",
             headers=headers
         )
         
@@ -254,8 +254,8 @@ class TestTicketEstimates:
     """Test ticket-linked estimates functionality"""
     
     def test_ticket_estimates_list(self, headers):
-        """GET /api/ticket-estimates returns estimates list"""
-        response = requests.get(f"{BASE_URL}/api/ticket-estimates?per_page=100", headers=headers)
+        """GET /api/v1/ticket-estimates returns estimates list"""
+        response = requests.get(f"{BASE_URL}/api/v1/ticket-estimates?per_page=100", headers=headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -269,7 +269,7 @@ class TestDiscountTypeOptions:
     
     def test_estimate_accepts_none_discount(self, headers):
         """PUT with discount_type='none' should work"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10&status=draft", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10&status=draft", headers=headers)
         estimates = response.json().get("data", [])
         draft_estimates = [e for e in estimates if e.get("status") == "draft"]
         
@@ -279,7 +279,7 @@ class TestDiscountTypeOptions:
         estimate_id = draft_estimates[0]["estimate_id"]
         
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json={"discount_type": "none", "discount_value": 0}
         )
@@ -289,7 +289,7 @@ class TestDiscountTypeOptions:
     
     def test_estimate_accepts_percent_discount(self, headers):
         """PUT with discount_type='percent' should work"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10&status=draft", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10&status=draft", headers=headers)
         estimates = response.json().get("data", [])
         draft_estimates = [e for e in estimates if e.get("status") == "draft"]
         
@@ -299,7 +299,7 @@ class TestDiscountTypeOptions:
         estimate_id = draft_estimates[0]["estimate_id"]
         
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json={"discount_type": "percent", "discount_value": 5}
         )

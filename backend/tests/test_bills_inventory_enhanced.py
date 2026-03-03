@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test data tracking
 created_ids = {
@@ -39,7 +39,7 @@ class TestBillsEnhancedSummary:
     
     def test_get_bills_summary(self, api_client):
         """Test bills summary endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -61,7 +61,7 @@ class TestBillsEnhancedCRUD:
     def setup_vendor(self, api_client):
         """Create a test vendor for bill creation"""
         # First check if we have existing vendors
-        response = api_client.get(f"{BASE_URL}/api/contacts-enhanced/?contact_type=vendor&per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/?contact_type=vendor&per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("contacts") and len(data["contacts"]) > 0:
@@ -80,7 +80,7 @@ class TestBillsEnhancedCRUD:
             "gst_treatment": "registered",
             "payment_terms": 30
         }
-        response = api_client.post(f"{BASE_URL}/api/contacts-enhanced/", json=vendor_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/contacts-enhanced/", json=vendor_data)
         if response.status_code in [200, 201]:
             data = response.json()
             self.vendor_id = data["contact"]["contact_id"]
@@ -118,7 +118,7 @@ class TestBillsEnhancedCRUD:
             "vendor_notes": "Test bill created by automated tests"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/", json=bill_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/", json=bill_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -139,7 +139,7 @@ class TestBillsEnhancedCRUD:
     
     def test_list_bills(self, api_client):
         """Test listing bills"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -153,7 +153,7 @@ class TestBillsEnhancedCRUD:
             pytest.skip("No bills created to test")
         
         bill_id = created_ids["bills"][0]
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/{bill_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -170,13 +170,13 @@ class TestBillsEnhancedCRUD:
             pytest.skip("No bills created to test")
         
         bill_id = created_ids["bills"][0]
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/{bill_id}/open")
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}/open")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status changed
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/{bill_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}")
         bill = response.json()["bill"]
         assert bill["status"] == "open"
         print(f"✓ Opened bill: {bill['bill_number']}")
@@ -193,13 +193,13 @@ class TestBillPayments:
         bill_id = created_ids["bills"][0]
         
         # Get bill to check balance
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/{bill_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}")
         bill = response.json()["bill"]
         
         if bill["status"] == "draft":
             # Open the bill first
-            api_client.post(f"{BASE_URL}/api/bills-enhanced/{bill_id}/open")
-            response = api_client.get(f"{BASE_URL}/api/bills-enhanced/{bill_id}")
+            api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}/open")
+            response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}")
             bill = response.json()["bill"]
         
         if bill["balance_due"] <= 0:
@@ -215,7 +215,7 @@ class TestBillPayments:
             "notes": "Test payment"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/{bill_id}/payments", json=payment_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}/payments", json=payment_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -229,7 +229,7 @@ class TestBillPayments:
             pytest.skip("No bills created to test")
         
         bill_id = created_ids["bills"][0]
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/{bill_id}/payments")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}/payments")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -246,7 +246,7 @@ class TestBillActions:
             pytest.skip("No bills created to test")
         
         bill_id = created_ids["bills"][0]
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/{bill_id}/clone")
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/{bill_id}/clone")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -265,7 +265,7 @@ class TestPurchaseOrdersSummary:
     
     def test_get_po_summary(self, api_client):
         """Test PO summary endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders/summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -285,7 +285,7 @@ class TestPurchaseOrdersCRUD:
     @pytest.fixture(autouse=True)
     def setup_vendor(self, api_client):
         """Get or create vendor for PO"""
-        response = api_client.get(f"{BASE_URL}/api/contacts-enhanced/?contact_type=vendor&per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/?contact_type=vendor&per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("contacts") and len(data["contacts"]) > 0:
@@ -312,7 +312,7 @@ class TestPurchaseOrdersCRUD:
             "vendor_notes": "Test PO created by automated tests"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/purchase-orders", json=po_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders", json=po_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -326,7 +326,7 @@ class TestPurchaseOrdersCRUD:
     
     def test_list_purchase_orders(self, api_client):
         """Test listing purchase orders"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -339,7 +339,7 @@ class TestPurchaseOrdersCRUD:
             pytest.skip("No POs created to test")
         
         po_id = created_ids["purchase_orders"][0]
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -358,13 +358,13 @@ class TestPurchaseOrderStatusTransitions:
             pytest.skip("No POs created to test")
         
         po_id = created_ids["purchase_orders"][0]
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}/issue")
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}/issue")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}")
         po = response.json()["purchase_order"]
         assert po["status"] == "issued"
         print(f"✓ Issued PO: {po['po_number']}")
@@ -375,13 +375,13 @@ class TestPurchaseOrderStatusTransitions:
             pytest.skip("No POs created to test")
         
         po_id = created_ids["purchase_orders"][0]
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}/receive")
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}/receive")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}")
         po = response.json()["purchase_order"]
         assert po["status"] == "received"
         print(f"✓ Received PO: {po['po_number']}")
@@ -392,7 +392,7 @@ class TestPurchaseOrderStatusTransitions:
             pytest.skip("No POs created to test")
         
         po_id = created_ids["purchase_orders"][0]
-        response = api_client.post(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}/convert-to-bill")
+        response = api_client.post(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}/convert-to-bill")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -401,7 +401,7 @@ class TestPurchaseOrderStatusTransitions:
         created_ids["bills"].append(bill["bill_id"])
         
         # Verify PO status changed to billed
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/purchase-orders/{po_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/purchase-orders/{po_id}")
         po = response.json()["purchase_order"]
         assert po["status"] == "billed"
         print(f"✓ Converted PO to bill: {bill['bill_number']}")
@@ -412,7 +412,7 @@ class TestBillsReports:
     
     def test_aging_report(self, api_client):
         """Test payables aging report"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/reports/aging")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/reports/aging")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -425,7 +425,7 @@ class TestBillsReports:
     
     def test_vendor_wise_report(self, api_client):
         """Test vendor-wise report"""
-        response = api_client.get(f"{BASE_URL}/api/bills-enhanced/reports/vendor-wise")
+        response = api_client.get(f"{BASE_URL}/api/v1/bills-enhanced/reports/vendor-wise")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -440,7 +440,7 @@ class TestInventorySummary:
     
     def test_get_inventory_summary(self, api_client):
         """Test inventory summary endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -460,7 +460,7 @@ class TestWarehouseManagement:
     
     def test_list_warehouses(self, api_client):
         """Test listing warehouses"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -480,7 +480,7 @@ class TestWarehouseManagement:
             "is_active": True
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/warehouses", json=warehouse_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses", json=warehouse_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -494,7 +494,7 @@ class TestWarehouseManagement:
         """Test getting warehouse details"""
         if not created_ids["warehouses"]:
             # Use existing warehouse
-            response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+            response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
             warehouses = response.json().get("warehouses", [])
             if not warehouses:
                 pytest.skip("No warehouses available")
@@ -502,7 +502,7 @@ class TestWarehouseManagement:
         else:
             warehouse_id = created_ids["warehouses"][0]
         
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses/{warehouse_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses/{warehouse_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -519,7 +519,7 @@ class TestItemVariants:
     @pytest.fixture(autouse=True)
     def setup_item(self, api_client):
         """Get or create an item for variant testing"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("items") and len(data["items"]) > 0:
@@ -537,7 +537,7 @@ class TestItemVariants:
             "track_inventory": True,
             "reorder_level": 10
         }
-        response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         if response.status_code in [200, 201]:
             data = response.json()
             self.item_id = data["item"]["item_id"]
@@ -549,7 +549,7 @@ class TestItemVariants:
     def test_create_variant(self, api_client):
         """Test creating an item variant"""
         # Get a warehouse
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
         warehouses = response.json().get("warehouses", [])
         warehouse_id = warehouses[0]["warehouse_id"] if warehouses else ""
         
@@ -563,7 +563,7 @@ class TestItemVariants:
             "warehouse_id": warehouse_id
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/variants", json=variant_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/variants", json=variant_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -576,7 +576,7 @@ class TestItemVariants:
     
     def test_list_variants(self, api_client):
         """Test listing variants"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/variants")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/variants")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -589,7 +589,7 @@ class TestItemVariants:
             pytest.skip("No variants created to test")
         
         variant_id = created_ids["variants"][0]
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/variants/{variant_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/variants/{variant_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -606,7 +606,7 @@ class TestBundlesKits:
     @pytest.fixture(autouse=True)
     def setup_items(self, api_client):
         """Get items for bundle components"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("items") and len(data["items"]) >= 2:
@@ -628,7 +628,7 @@ class TestBundlesKits:
             "auto_calculate_rate": True
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/bundles", json=bundle_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/bundles", json=bundle_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -641,7 +641,7 @@ class TestBundlesKits:
     
     def test_list_bundles(self, api_client):
         """Test listing bundles"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/bundles")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/bundles")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -654,7 +654,7 @@ class TestBundlesKits:
             pytest.skip("No bundles created to test")
         
         bundle_id = created_ids["bundles"][0]
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/bundles/{bundle_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/bundles/{bundle_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -672,14 +672,14 @@ class TestSerialBatchTracking:
     def setup_item_and_warehouse(self, api_client):
         """Get item and warehouse for serial/batch testing"""
         # Get item
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("items") and len(data["items"]) > 0:
                 self.item_id = data["items"][0]["item_id"]
         
         # Get warehouse
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
         if response.status_code == 200:
             data = response.json()
             if data.get("warehouses") and len(data["warehouses"]) > 0:
@@ -698,7 +698,7 @@ class TestSerialBatchTracking:
             "notes": "Test serial number"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/serial-batches", json=serial_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/serial-batches", json=serial_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -721,7 +721,7 @@ class TestSerialBatchTracking:
             "notes": "Test batch"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/serial-batches", json=batch_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/serial-batches", json=batch_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -734,7 +734,7 @@ class TestSerialBatchTracking:
     
     def test_list_serial_batches(self, api_client):
         """Test listing serial numbers and batches"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/serial-batches?status=all")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/serial-batches?status=all")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -749,7 +749,7 @@ class TestStockAdjustments:
     def setup_item_and_warehouse(self, api_client):
         """Get item and warehouse for adjustment testing"""
         # Get item
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         if response.status_code == 200:
             data = response.json()
             if data.get("items") and len(data["items"]) > 0:
@@ -757,7 +757,7 @@ class TestStockAdjustments:
                 self.item_name = data["items"][0]["name"]
         
         # Get warehouse
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses")
         if response.status_code == 200:
             data = response.json()
             if data.get("warehouses") and len(data["warehouses"]) > 0:
@@ -778,7 +778,7 @@ class TestStockAdjustments:
             "notes": "Test adjustment"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/adjustments", json=adjustment_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/adjustments", json=adjustment_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -800,7 +800,7 @@ class TestStockAdjustments:
             "reference_number": f"ADJ-{uuid.uuid4().hex[:6].upper()}"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/inventory-enhanced/adjustments", json=adjustment_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/inventory-enhanced/adjustments", json=adjustment_data)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -811,7 +811,7 @@ class TestStockAdjustments:
     
     def test_list_adjustments(self, api_client):
         """Test listing adjustments"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/adjustments")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/adjustments")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -824,7 +824,7 @@ class TestInventoryReports:
     
     def test_stock_summary_report(self, api_client):
         """Test stock summary report"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/reports/stock-summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/stock-summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -836,7 +836,7 @@ class TestInventoryReports:
     
     def test_low_stock_report(self, api_client):
         """Test low stock report"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/reports/low-stock")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/low-stock")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -848,7 +848,7 @@ class TestInventoryReports:
     
     def test_valuation_report(self, api_client):
         """Test inventory valuation report"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/reports/valuation")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/valuation")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -860,7 +860,7 @@ class TestInventoryReports:
     
     def test_movement_report(self, api_client):
         """Test stock movement report"""
-        response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/reports/movement?days=30")
+        response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/movement?days=30")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -894,7 +894,7 @@ class TestCleanup:
         # Delete test variants
         for variant_id in created_ids["variants"]:
             try:
-                api_client.delete(f"{BASE_URL}/api/inventory-enhanced/variants/{variant_id}")
+                api_client.delete(f"{BASE_URL}/api/v1/inventory-enhanced/variants/{variant_id}")
                 cleaned["variants"] += 1
             except:
                 pass

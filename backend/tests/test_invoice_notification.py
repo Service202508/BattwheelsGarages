@@ -1,12 +1,12 @@
 """
 Test Suite for Invoice PDF Generation and Notification Services
 Tests:
-- GET /api/invoices/{id}/pdf - Generate and download invoice PDF
-- POST /api/notifications/send-email - Queue email notification
-- POST /api/notifications/send-whatsapp - Queue WhatsApp notification
-- POST /api/notifications/ticket-notification/{id} - Send ticket status notification
-- GET /api/notifications/logs - Get notification logs
-- GET /api/notifications/stats - Get notification statistics
+- GET /api/v1/invoices/{id}/pdf - Generate and download invoice PDF
+- POST /api/v1/notifications/send-email - Queue email notification
+- POST /api/v1/notifications/send-whatsapp - Queue WhatsApp notification
+- POST /api/v1/notifications/ticket-notification/{id} - Send ticket status notification
+- GET /api/v1/notifications/logs - Get notification logs
+- GET /api/v1/notifications/stats - Get notification statistics
 - Invoice PDF content validation (company header, GST breakdown, bank details)
 """
 
@@ -17,7 +17,7 @@ import json
 from datetime import datetime
 
 # Get BASE_URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -30,7 +30,7 @@ class TestInvoicePDFGeneration:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -39,8 +39,8 @@ class TestInvoicePDFGeneration:
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_list_invoices(self):
-        """Test GET /api/invoices - List all invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoices", headers=self.headers)
+        """Test GET /api/v1/invoices - List all invoices"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoices", headers=self.headers)
         assert response.status_code == 200, f"Failed to list invoices: {response.text}"
         invoices = response.json()
         assert isinstance(invoices, list), "Response should be a list"
@@ -60,7 +60,7 @@ class TestInvoicePDFGeneration:
             "contact_number": "+919876543210",
             "customer_email": "test@example.com"
         }
-        ticket_response = requests.post(f"{BASE_URL}/api/tickets", json=ticket_data, headers=self.headers)
+        ticket_response = requests.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data, headers=self.headers)
         assert ticket_response.status_code == 200, f"Failed to create ticket: {ticket_response.text}"
         ticket = ticket_response.json()
         ticket_id = ticket["ticket_id"]
@@ -88,7 +88,7 @@ class TestInvoicePDFGeneration:
             "notes": "Test invoice for PDF generation"
         }
         
-        response = requests.post(f"{BASE_URL}/api/invoices", json=invoice_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/invoices", json=invoice_data, headers=self.headers)
         assert response.status_code == 200, f"Failed to create invoice: {response.text}"
         invoice = response.json()
         assert "invoice_id" in invoice, "Invoice should have invoice_id"
@@ -96,7 +96,7 @@ class TestInvoicePDFGeneration:
         return invoice
     
     def test_get_invoice_pdf(self):
-        """Test GET /api/invoices/{id}/pdf - Generate and download PDF"""
+        """Test GET /api/v1/invoices/{id}/pdf - Generate and download PDF"""
         # First get list of invoices
         invoices = self.test_list_invoices()
         
@@ -108,7 +108,7 @@ class TestInvoicePDFGeneration:
             invoice_id = invoices[0]["invoice_id"]
         
         # Get PDF
-        response = requests.get(f"{BASE_URL}/api/invoices/{invoice_id}/pdf", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices/{invoice_id}/pdf", headers=self.headers)
         assert response.status_code == 200, f"Failed to get invoice PDF: {response.text}"
         
         # Verify it's a PDF
@@ -133,7 +133,7 @@ class TestInvoicePDFGeneration:
     
     def test_invoice_pdf_not_found(self):
         """Test PDF generation for non-existent invoice returns 404"""
-        response = requests.get(f"{BASE_URL}/api/invoices/nonexistent_invoice_id/pdf", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices/nonexistent_invoice_id/pdf", headers=self.headers)
         assert response.status_code == 404, f"Expected 404, got: {response.status_code}"
         print("✓ Non-existent invoice returns 404")
     
@@ -171,7 +171,7 @@ class TestNotificationService:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -180,7 +180,7 @@ class TestNotificationService:
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_send_email_notification(self):
-        """Test POST /api/notifications/send-email - Queue email notification"""
+        """Test POST /api/v1/notifications/send-email - Queue email notification"""
         email_data = {
             "recipient_email": "test@example.com",
             "recipient_name": "Test User",
@@ -195,7 +195,7 @@ class TestNotificationService:
             }
         }
         
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"Failed to queue email: {response.text}"
         
         result = response.json()
@@ -218,12 +218,12 @@ class TestNotificationService:
             "context": {}
         }
         
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 400, f"Expected 400 for invalid template, got: {response.status_code}"
         print("✓ Invalid email template returns 400")
     
     def test_send_whatsapp_notification(self):
-        """Test POST /api/notifications/send-whatsapp - Queue WhatsApp notification"""
+        """Test POST /api/v1/notifications/send-whatsapp - Queue WhatsApp notification"""
         whatsapp_data = {
             "phone_number": "+919876543210",
             "template": "ticket_created",
@@ -235,7 +235,7 @@ class TestNotificationService:
             }
         }
         
-        response = requests.post(f"{BASE_URL}/api/notifications/send-whatsapp", json=whatsapp_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-whatsapp", json=whatsapp_data, headers=self.headers)
         assert response.status_code == 200, f"Failed to queue WhatsApp: {response.text}"
         
         result = response.json()
@@ -257,12 +257,12 @@ class TestNotificationService:
             "context": {}
         }
         
-        response = requests.post(f"{BASE_URL}/api/notifications/send-whatsapp", json=whatsapp_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-whatsapp", json=whatsapp_data, headers=self.headers)
         assert response.status_code == 400, f"Expected 400 for invalid template, got: {response.status_code}"
         print("✓ Invalid WhatsApp template returns 400")
     
     def test_ticket_notification(self):
-        """Test POST /api/notifications/ticket-notification/{id} - Send ticket status notification"""
+        """Test POST /api/v1/notifications/ticket-notification/{id} - Send ticket status notification"""
         # First create a ticket with contact info
         ticket_data = {
             "title": "TEST_Notification Test Ticket",
@@ -275,7 +275,7 @@ class TestNotificationService:
             "customer_email": "test@example.com"
         }
         
-        ticket_response = requests.post(f"{BASE_URL}/api/tickets", json=ticket_data, headers=self.headers)
+        ticket_response = requests.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data, headers=self.headers)
         assert ticket_response.status_code == 200, f"Failed to create ticket: {ticket_response.text}"
         ticket = ticket_response.json()
         ticket_id = ticket["ticket_id"]
@@ -283,7 +283,7 @@ class TestNotificationService:
         
         # Send ticket notification
         response = requests.post(
-            f"{BASE_URL}/api/notifications/ticket-notification/{ticket_id}?notification_type=ticket_created",
+            f"{BASE_URL}/api/v1/notifications/ticket-notification/{ticket_id}?notification_type=ticket_created",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed to send ticket notification: {response.text}"
@@ -301,15 +301,15 @@ class TestNotificationService:
     def test_ticket_notification_not_found(self):
         """Test ticket notification for non-existent ticket returns 404"""
         response = requests.post(
-            f"{BASE_URL}/api/notifications/ticket-notification/nonexistent_ticket?notification_type=ticket_created",
+            f"{BASE_URL}/api/v1/notifications/ticket-notification/nonexistent_ticket?notification_type=ticket_created",
             headers=self.headers
         )
         assert response.status_code == 404, f"Expected 404, got: {response.status_code}"
         print("✓ Non-existent ticket notification returns 404")
     
     def test_get_notification_logs(self):
-        """Test GET /api/notifications/logs - Get notification logs"""
-        response = requests.get(f"{BASE_URL}/api/notifications/logs", headers=self.headers)
+        """Test GET /api/v1/notifications/logs - Get notification logs"""
+        response = requests.get(f"{BASE_URL}/api/v1/notifications/logs", headers=self.headers)
         assert response.status_code == 200, f"Failed to get notification logs: {response.text}"
         
         logs = response.json()
@@ -321,22 +321,22 @@ class TestNotificationService:
             print(f"  - Sample log: channel={log.get('channel')}, status={log.get('status')}, template={log.get('template')}")
     
     def test_get_notification_logs_filtered(self):
-        """Test GET /api/notifications/logs with filters"""
+        """Test GET /api/v1/notifications/logs with filters"""
         # Filter by channel
-        response = requests.get(f"{BASE_URL}/api/notifications/logs?channel=email", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/notifications/logs?channel=email", headers=self.headers)
         assert response.status_code == 200, f"Failed to get filtered logs: {response.text}"
         logs = response.json()
         print(f"✓ Retrieved {len(logs)} email notification logs")
         
         # Filter by status
-        response = requests.get(f"{BASE_URL}/api/notifications/logs?status=queued", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/notifications/logs?status=queued", headers=self.headers)
         assert response.status_code == 200, f"Failed to get filtered logs: {response.text}"
         logs = response.json()
         print(f"✓ Retrieved {len(logs)} queued notification logs")
     
     def test_get_notification_stats(self):
-        """Test GET /api/notifications/stats - Get notification statistics"""
-        response = requests.get(f"{BASE_URL}/api/notifications/stats", headers=self.headers)
+        """Test GET /api/v1/notifications/stats - Get notification statistics"""
+        response = requests.get(f"{BASE_URL}/api/v1/notifications/stats", headers=self.headers)
         assert response.status_code == 200, f"Failed to get notification stats: {response.text}"
         
         stats = response.json()
@@ -381,7 +381,7 @@ class TestEmailTemplates:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -402,7 +402,7 @@ class TestEmailTemplates:
                 "priority": "high"
             }
         }
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_created template failed: {response.text}"
         result = response.json()
         assert result.get("status") == "queued"
@@ -420,7 +420,7 @@ class TestEmailTemplates:
                 "technician_phone": "+919876543210"
             }
         }
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_assigned template failed: {response.text}"
         result = response.json()
         assert result.get("status") == "queued"
@@ -439,7 +439,7 @@ class TestEmailTemplates:
                 "approve_url": "https://example.com/approve/TKT001"
             }
         }
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"estimate_shared template failed: {response.text}"
         result = response.json()
         assert result.get("status") == "queued"
@@ -459,7 +459,7 @@ class TestEmailTemplates:
                 "invoice_url": "https://example.com/invoice/INV001"
             }
         }
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"invoice_generated template failed: {response.text}"
         result = response.json()
         assert result.get("status") == "queued"
@@ -477,7 +477,7 @@ class TestEmailTemplates:
                 "resolution": "Battery replaced successfully"
             }
         }
-        response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_resolved template failed: {response.text}"
         result = response.json()
         assert result.get("status") == "queued"

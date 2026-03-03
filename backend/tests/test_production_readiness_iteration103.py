@@ -13,7 +13,7 @@ import os
 import json
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 ORG_ID = "dev-internal-testing-001"
 
 # ==================== AUTH FIXTURE ====================
@@ -21,7 +21,7 @@ ORG_ID = "dev-internal-testing-001"
 @pytest.fixture(scope="module")
 def auth_headers():
     """Get JWT auth headers for dev@battwheels.internal"""
-    res = requests.post(f"{BASE_URL}/api/auth/login", json={
+    res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -48,25 +48,25 @@ def org_id():
 # ==================== TASK 1: RAZORPAY REFUND ENDPOINTS ====================
 
 class TestRazorpayRefundEndpoints:
-    """Task 1: POST /api/payments/razorpay/refund - Credit note refund endpoint"""
+    """Task 1: POST /api/v1/payments/razorpay/refund - Credit note refund endpoint"""
 
     def test_razorpay_refund_endpoint_exists_and_validates(self, auth_headers):
-        """POST /api/payments/razorpay/refund - should exist, validates input"""
+        """POST /api/v1/payments/razorpay/refund - should exist, validates input"""
         # Should return 422 (validation error) not 404 (endpoint not found)
         res = requests.post(
-            f"{BASE_URL}/api/payments/razorpay/refund",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund",
             json={},  # Missing required fields
             headers=auth_headers
         )
         assert res.status_code in [400, 422, 200], f"Endpoint should exist, got {res.status_code}: {res.text[:300]}"
         # 422 = validation error (good - endpoint exists, but input invalid)
         # 400 = business logic error (also good)
-        print(f"POST /api/payments/razorpay/refund validation status: {res.status_code}")
+        print(f"POST /api/v1/payments/razorpay/refund validation status: {res.status_code}")
 
     def test_razorpay_refund_with_nonexistent_credit_note(self, auth_headers):
-        """POST /api/payments/razorpay/refund - returns 404 for nonexistent credit note"""
+        """POST /api/v1/payments/razorpay/refund - returns 404 for nonexistent credit note"""
         res = requests.post(
-            f"{BASE_URL}/api/payments/razorpay/refund",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund",
             json={
                 "credit_note_id": "TEST_NONEXISTENT_CN_9999",
                 "payment_id": "pay_TEST123456",
@@ -81,10 +81,10 @@ class TestRazorpayRefundEndpoints:
         print(f"Refund with nonexistent CN: {res.status_code} - {data.get('detail')}")
 
     def test_razorpay_refund_with_existing_credit_note(self, auth_headers):
-        """POST /api/payments/razorpay/refund - should process with MOCK when no Razorpay key"""
+        """POST /api/v1/payments/razorpay/refund - should process with MOCK when no Razorpay key"""
         # First create a credit note
         create_res = requests.post(
-            f"{BASE_URL}/api/zoho/creditnotes",
+            f"{BASE_URL}/api/v1/zoho/creditnotes",
             json={
                 "customer_id": "TEST_CUST",
                 "customer_name": "TEST_Customer",
@@ -113,7 +113,7 @@ class TestRazorpayRefundEndpoints:
         
         # Now initiate refund with MOCK payment ID
         res = requests.post(
-            f"{BASE_URL}/api/payments/razorpay/refund",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund",
             json={
                 "credit_note_id": cn_id,
                 "payment_id": "pay_MOCK_TEST_001",
@@ -134,20 +134,20 @@ class TestRazorpayRefundEndpoints:
         print(f"Refund created: {data.get('refund_id')} (mock: {data.get('is_mock')})")
 
     def test_get_refund_status_endpoint(self, auth_headers):
-        """GET /api/payments/razorpay/refund/{refund_id} - status check endpoint"""
+        """GET /api/v1/payments/razorpay/refund/{refund_id} - status check endpoint"""
         # Test with nonexistent refund ID
         res = requests.get(
-            f"{BASE_URL}/api/payments/razorpay/refund/RFND_NONEXISTENT_9999",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund/RFND_NONEXISTENT_9999",
             headers=auth_headers
         )
         assert res.status_code == 404, f"Should return 404 for nonexistent refund, got {res.status_code}"
-        print(f"GET /api/payments/razorpay/refund/{{id}} 404: {res.status_code}")
+        print(f"GET /api/v1/payments/razorpay/refund/{{id}} 404: {res.status_code}")
 
     def test_check_razorpay_payment_endpoint(self, auth_headers):
-        """GET /api/payments/check-razorpay/{invoice_id} - check if invoice has Razorpay payment"""
+        """GET /api/v1/payments/check-razorpay/{invoice_id} - check if invoice has Razorpay payment"""
         # Test with a nonexistent invoice - should return has_razorpay_payment: False
         res = requests.get(
-            f"{BASE_URL}/api/payments/check-razorpay/INV_NONEXISTENT_TEST_9999",
+            f"{BASE_URL}/api/v1/payments/check-razorpay/INV_NONEXISTENT_TEST_9999",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Should return 200, got {res.status_code}: {res.text[:300]}"
@@ -157,10 +157,10 @@ class TestRazorpayRefundEndpoints:
         print(f"check-razorpay for nonexistent invoice: has_razorpay_payment={data.get('has_razorpay_payment')}")
 
     def test_razorpay_refund_status_check_with_mock_id(self, auth_headers):
-        """GET /api/payments/razorpay/refund/{refund_id} - returns mock status for mock refunds"""
+        """GET /api/v1/payments/razorpay/refund/{refund_id} - returns mock status for mock refunds"""
         # Create a credit note and initiate refund first
         create_res = requests.post(
-            f"{BASE_URL}/api/zoho/creditnotes",
+            f"{BASE_URL}/api/v1/zoho/creditnotes",
             json={
                 "customer_id": "TEST_CUST",
                 "customer_name": "TEST_Customer",
@@ -187,7 +187,7 @@ class TestRazorpayRefundEndpoints:
         
         # Initiate refund
         refund_res = requests.post(
-            f"{BASE_URL}/api/payments/razorpay/refund",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund",
             json={
                 "credit_note_id": cn_id,
                 "payment_id": "pay_MOCK_STATUS_TEST",
@@ -205,7 +205,7 @@ class TestRazorpayRefundEndpoints:
         
         # Check refund status
         status_res = requests.get(
-            f"{BASE_URL}/api/payments/razorpay/refund/{refund_id}",
+            f"{BASE_URL}/api/v1/payments/razorpay/refund/{refund_id}",
             headers=auth_headers
         )
         assert status_res.status_code == 200, f"Status check should return 200, got {status_res.status_code}"
@@ -223,10 +223,10 @@ class TestForm16Endpoints:
     """Task 2: Form 16 PDF generation endpoints"""
 
     def test_form16_data_endpoint_exists(self, auth_headers):
-        """GET /api/hr/payroll/form16/{employee_id}/{fy} - endpoint should exist"""
+        """GET /api/v1/hr/payroll/form16/{employee_id}/{fy} - endpoint should exist"""
         # Use a dummy employee_id - should return 404 not 500 or 422
         res = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/emp_NONEXISTENT_9999/2024-25",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/emp_NONEXISTENT_9999/2024-25",
             headers=auth_headers
         )
         assert res.status_code in [404, 200], f"Endpoint should exist, got {res.status_code}: {res.text[:300]}"
@@ -236,10 +236,10 @@ class TestForm16Endpoints:
         print(f"Form 16 data endpoint status: {res.status_code}")
 
     def test_form16_pdf_endpoint_exists(self, auth_headers):
-        """GET /api/hr/payroll/form16/{employee_id}/{fy}/pdf - PDF endpoint should exist"""
+        """GET /api/v1/hr/payroll/form16/{employee_id}/{fy}/pdf - PDF endpoint should exist"""
         # Use a dummy employee_id - should return 404 not 500/422
         res = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/emp_NONEXISTENT_9999/2024-25/pdf",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/emp_NONEXISTENT_9999/2024-25/pdf",
             headers=auth_headers
         )
         # Should return 404 for no payroll data, NOT 404 for "endpoint not found" with different structure
@@ -248,9 +248,9 @@ class TestForm16Endpoints:
         print(f"Form 16 PDF endpoint status: {res.status_code}")
 
     def test_form16_invalid_fy_format(self, auth_headers):
-        """GET /api/hr/payroll/form16/{employee_id}/{fy}/pdf - should validate FY format"""
+        """GET /api/v1/hr/payroll/form16/{employee_id}/{fy}/pdf - should validate FY format"""
         res = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/emp_NONEXISTENT_9999/INVALID_FY/pdf",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/emp_NONEXISTENT_9999/INVALID_FY/pdf",
             headers=auth_headers
         )
         # Should return 400 for invalid FY format, NOT 404 for employee not found
@@ -259,10 +259,10 @@ class TestForm16Endpoints:
         print(f"Form 16 invalid FY: {res.status_code}")
 
     def test_form16_with_existing_employee(self, auth_headers):
-        """GET /api/hr/payroll/form16/{employee_id}/{fy} - works with valid employee but no payroll data"""
+        """GET /api/v1/hr/payroll/form16/{employee_id}/{fy} - works with valid employee but no payroll data"""
         # Get an existing employee first
         emp_res = requests.get(
-            f"{BASE_URL}/api/hr/employees?limit=1",
+            f"{BASE_URL}/api/v1/hr/employees?limit=1",
             headers=auth_headers
         )
         if emp_res.status_code != 200:
@@ -277,7 +277,7 @@ class TestForm16Endpoints:
         
         # Try to get Form 16 for 2024-25 (likely no payroll data)
         res = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{employee_id}/2024-25",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{employee_id}/2024-25",
             headers=auth_headers
         )
         # Should be 200 (with data) or 404 (no payroll data for that FY)
@@ -302,9 +302,9 @@ class TestSLAEndpoints:
     """Task 3: SLA Automation endpoints"""
 
     def test_sla_config_get(self, auth_headers):
-        """GET /api/sla/config - should return SLA configuration"""
+        """GET /api/v1/sla/config - should return SLA configuration"""
         res = requests.get(
-            f"{BASE_URL}/api/sla/config",
+            f"{BASE_URL}/api/v1/sla/config",
             headers=auth_headers
         )
         assert res.status_code == 200, f"SLA config GET failed: {res.status_code}: {res.text[:300]}"
@@ -318,9 +318,9 @@ class TestSLAEndpoints:
         print(f"SLA config: {json.dumps(config, indent=2)[:200]}")
 
     def test_sla_config_put(self, auth_headers):
-        """PUT /api/sla/config - can update SLA configuration"""
+        """PUT /api/v1/sla/config - can update SLA configuration"""
         res = requests.put(
-            f"{BASE_URL}/api/sla/config",
+            f"{BASE_URL}/api/v1/sla/config",
             json={
                 "CRITICAL": {"response_hours": 1, "resolution_hours": 4},
                 "HIGH": {"response_hours": 4, "resolution_hours": 8},
@@ -336,9 +336,9 @@ class TestSLAEndpoints:
         print(f"SLA config updated successfully")
 
     def test_sla_dashboard(self, auth_headers):
-        """GET /api/sla/dashboard - should return SLA breach stats"""
+        """GET /api/v1/sla/dashboard - should return SLA breach stats"""
         res = requests.get(
-            f"{BASE_URL}/api/sla/dashboard",
+            f"{BASE_URL}/api/v1/sla/dashboard",
             headers=auth_headers
         )
         assert res.status_code == 200, f"SLA dashboard failed: {res.status_code}: {res.text[:300]}"
@@ -351,19 +351,19 @@ class TestSLAEndpoints:
         print(f"SLA dashboard: breaches_today={data.get('sla_breaches_today')}, at_risk={data.get('at_risk_tickets')}")
 
     def test_sla_status_ticket_not_found(self, auth_headers):
-        """GET /api/sla/status/{ticket_id} - returns 404 for unknown ticket"""
+        """GET /api/v1/sla/status/{ticket_id} - returns 404 for unknown ticket"""
         res = requests.get(
-            f"{BASE_URL}/api/sla/status/tkt_NONEXISTENT_9999",
+            f"{BASE_URL}/api/v1/sla/status/tkt_NONEXISTENT_9999",
             headers=auth_headers
         )
         assert res.status_code == 404, f"Should return 404 for unknown ticket, got {res.status_code}: {res.text[:300]}"
         print(f"SLA status for nonexistent ticket: {res.status_code}")
 
     def test_sla_status_existing_ticket(self, auth_headers):
-        """GET /api/sla/status/{ticket_id} - returns SLA status for existing ticket"""
+        """GET /api/v1/sla/status/{ticket_id} - returns SLA status for existing ticket"""
         # Get an existing ticket first
         tickets_res = requests.get(
-            f"{BASE_URL}/api/tickets?limit=1",
+            f"{BASE_URL}/api/v1/tickets?limit=1",
             headers=auth_headers
         )
         if tickets_res.status_code != 200:
@@ -377,7 +377,7 @@ class TestSLAEndpoints:
         ticket_id = tickets[0]["ticket_id"]
         
         res = requests.get(
-            f"{BASE_URL}/api/sla/status/{ticket_id}",
+            f"{BASE_URL}/api/v1/sla/status/{ticket_id}",
             headers=auth_headers
         )
         assert res.status_code == 200, f"SLA status failed: {res.status_code}: {res.text[:300]}"
@@ -389,9 +389,9 @@ class TestSLAEndpoints:
         print(f"SLA status for ticket {ticket_id}: response={data['response_sla'].get('status')}, resolution={data['resolution_sla'].get('status')}")
 
     def test_sla_check_breaches(self, auth_headers):
-        """POST /api/sla/check-breaches - manual breach check works"""
+        """POST /api/v1/sla/check-breaches - manual breach check works"""
         res = requests.post(
-            f"{BASE_URL}/api/sla/check-breaches",
+            f"{BASE_URL}/api/v1/sla/check-breaches",
             headers=auth_headers
         )
         assert res.status_code == 200, f"SLA check-breaches failed: {res.status_code}: {res.text[:300]}"
@@ -408,9 +408,9 @@ class TestSLAOnTicketCreation:
     """Task 3: New ticket should have SLA deadline fields"""
 
     def test_new_ticket_has_sla_fields(self, auth_headers):
-        """POST /api/tickets - new ticket should include sla_response_due_at and sla_resolution_due_at"""
+        """POST /api/v1/tickets - new ticket should include sla_response_due_at and sla_resolution_due_at"""
         res = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json={
                 "title": "TEST_SLA Ticket for deadline verification",
                 "description": "Testing SLA deadline injection on ticket creation",
@@ -444,12 +444,12 @@ class TestSLAOnTicketCreation:
         # Cleanup: attempt to delete the test ticket
         ticket_id = ticket.get("ticket_id")
         if ticket_id:
-            requests.delete(f"{BASE_URL}/api/tickets/{ticket_id}", headers=auth_headers)
+            requests.delete(f"{BASE_URL}/api/v1/tickets/{ticket_id}", headers=auth_headers)
 
     def test_sla_deadlines_correct_for_high_priority(self, auth_headers):
         """SLA deadlines for HIGH priority: response=4h, resolution=8h"""
         res = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json={
                 "title": "TEST_SLA HIGH Priority deadline check",
                 "description": "Testing SLA deadline values for HIGH priority",
@@ -489,7 +489,7 @@ class TestSLAOnTicketCreation:
         # Cleanup
         ticket_id = ticket.get("ticket_id")
         if ticket_id:
-            requests.delete(f"{BASE_URL}/api/tickets/{ticket_id}", headers=auth_headers)
+            requests.delete(f"{BASE_URL}/api/v1/tickets/{ticket_id}", headers=auth_headers)
 
 
 # ==================== TASK 4: SENTRY MONITORING ====================
@@ -500,7 +500,7 @@ class TestSentryMonitoring:
     def test_backend_server_responds(self, auth_headers):
         """Backend server starts without errors even without SENTRY_DSN"""
         # Test the server is running and responding
-        res = requests.get(f"{BASE_URL}/api/auth/me", headers=auth_headers)
+        res = requests.get(f"{BASE_URL}/api/v1/auth/me", headers=auth_headers)
         assert res.status_code == 200, f"Server should be running, got {res.status_code}"
         data = res.json()
         assert "user_id" in data
@@ -510,8 +510,8 @@ class TestSentryMonitoring:
         """Backend should handle all API calls normally regardless of Sentry status"""
         # Test multiple endpoints to ensure no Sentry-related crashes
         endpoints = [
-            f"{BASE_URL}/api/sla/config",
-            f"{BASE_URL}/api/hr/employees?limit=1",
+            f"{BASE_URL}/api/v1/sla/config",
+            f"{BASE_URL}/api/v1/hr/employees?limit=1",
         ]
         for endpoint in endpoints:
             res = requests.get(endpoint, headers=auth_headers)
@@ -525,9 +525,9 @@ class TestPaginatedEndpoints:
     """Regression: Previously paginated endpoints still work"""
 
     def test_invoices_paginated(self, auth_headers):
-        """GET /api/zoho/invoices - paginated endpoint still works"""
+        """GET /api/v1/zoho/invoices - paginated endpoint still works"""
         res = requests.get(
-            f"{BASE_URL}/api/zoho/invoices?page=1&per_page=10",
+            f"{BASE_URL}/api/v1/zoho/invoices?page=1&per_page=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Invoices endpoint failed: {res.status_code}: {res.text[:200]}"
@@ -536,9 +536,9 @@ class TestPaginatedEndpoints:
         print(f"Invoices paginated: {res.status_code}, count={len(data.get('invoices', data.get('data', [])))}")
 
     def test_bills_paginated(self, auth_headers):
-        """GET /api/zoho/bills - paginated endpoint still works"""
+        """GET /api/v1/zoho/bills - paginated endpoint still works"""
         res = requests.get(
-            f"{BASE_URL}/api/zoho/bills?page=1&per_page=10",
+            f"{BASE_URL}/api/v1/zoho/bills?page=1&per_page=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Bills endpoint failed: {res.status_code}: {res.text[:200]}"
@@ -547,9 +547,9 @@ class TestPaginatedEndpoints:
         print(f"Bills paginated: {res.status_code}")
 
     def test_contacts_paginated(self, auth_headers):
-        """GET /api/zoho/contacts - paginated endpoint still works"""
+        """GET /api/v1/zoho/contacts - paginated endpoint still works"""
         res = requests.get(
-            f"{BASE_URL}/api/zoho/contacts?page=1&per_page=10",
+            f"{BASE_URL}/api/v1/zoho/contacts?page=1&per_page=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Contacts endpoint failed: {res.status_code}: {res.text[:200]}"
@@ -558,9 +558,9 @@ class TestPaginatedEndpoints:
         print(f"Contacts paginated: {res.status_code}")
 
     def test_tickets_paginated(self, auth_headers):
-        """GET /api/tickets - paginated endpoint still works"""
+        """GET /api/v1/tickets - paginated endpoint still works"""
         res = requests.get(
-            f"{BASE_URL}/api/tickets?limit=10",
+            f"{BASE_URL}/api/v1/tickets?limit=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Tickets endpoint failed: {res.status_code}: {res.text[:200]}"
@@ -569,9 +569,9 @@ class TestPaginatedEndpoints:
         print(f"Tickets paginated: {res.status_code}, total={data.get('total', data.get('count', 'N/A'))}")
 
     def test_credit_notes_paginated(self, auth_headers):
-        """GET /api/zoho/creditnotes - credit notes endpoint still works"""
+        """GET /api/v1/zoho/creditnotes - credit notes endpoint still works"""
         res = requests.get(
-            f"{BASE_URL}/api/zoho/creditnotes?per_page=10",
+            f"{BASE_URL}/api/v1/zoho/creditnotes?per_page=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Credit notes endpoint failed: {res.status_code}: {res.text[:200]}"
@@ -580,9 +580,9 @@ class TestPaginatedEndpoints:
         print(f"Credit notes paginated: {res.status_code}")
 
     def test_employees_paginated(self, auth_headers):
-        """GET /api/hr/employees - HR employees still paginates"""
+        """GET /api/v1/hr/employees - HR employees still paginates"""
         res = requests.get(
-            f"{BASE_URL}/api/hr/employees?page=1&limit=10",
+            f"{BASE_URL}/api/v1/hr/employees?page=1&limit=10",
             headers=auth_headers
         )
         assert res.status_code == 200, f"Employees endpoint failed: {res.status_code}: {res.text[:200]}"

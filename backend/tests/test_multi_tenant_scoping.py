@@ -75,7 +75,7 @@ class TestOrganizationContext:
         self.tech_headers = {"Authorization": f"Bearer {self.tech_token}"}
     
     def test_get_current_organization(self):
-        """Test GET /api/org - returns current organization profile"""
+        """Test GET /api/v1/org - returns current organization profile"""
         response = requests.get(
             f"{BASE_URL}/api/v1/organizations/me",
             headers=self.admin_headers
@@ -88,7 +88,7 @@ class TestOrganizationContext:
         print(f"✓ Current organization: {data['name']} ({data['organization_id']})")
     
     def test_get_organization_settings(self):
-        """Test GET /api/org/settings - returns organization settings"""
+        """Test GET /api/v1/org/settings - returns organization settings"""
         response = requests.get(
             f"{BASE_URL}/api/v1/organizations/me",
             headers=self.admin_headers
@@ -103,7 +103,7 @@ class TestOrganizationContext:
         print(f"✓ Organization settings retrieved - org: {data['name']}")
     
     def test_list_organization_users(self):
-        """Test GET /api/org/users - lists users in organization"""
+        """Test GET /api/v1/org/users - lists users in organization"""
         response = requests.get(
             f"{BASE_URL}/api/v1/organizations/me/members",
             headers=self.admin_headers
@@ -116,7 +116,7 @@ class TestOrganizationContext:
         print(f"✓ Organization users: {data['total']} members")
     
     def test_list_user_organizations(self):
-        """Test GET /api/org/list - lists all organizations user belongs to"""
+        """Test GET /api/v1/org/list - lists all organizations user belongs to"""
         response = requests.get(
             f"{BASE_URL}/api/v1/organizations/my-organizations",
             headers=self.admin_headers
@@ -153,7 +153,7 @@ class TestVehiclesScoping:
             self.org_id = None
     
     def test_list_vehicles_without_header(self):
-        """Test GET /api/vehicles - uses user's default organization"""
+        """Test GET /api/v1/vehicles - uses user's default organization"""
         response = requests.get(
             f"{BASE_URL}/api/v1/vehicles",
             headers=self.headers
@@ -164,7 +164,7 @@ class TestVehiclesScoping:
         print(f"✓ Vehicles list (default org): {len(data)} vehicles")
     
     def test_list_vehicles_with_org_header(self):
-        """Test GET /api/vehicles with X-Organization-ID header"""
+        """Test GET /api/v1/vehicles with X-Organization-ID header"""
         if not self.org_id:
             pytest.skip("No org_id available")
         
@@ -200,7 +200,7 @@ class TestTicketsScoping:
             self.org_id = None
     
     def test_list_tickets_without_header(self):
-        """Test GET /api/tickets - uses user's default organization"""
+        """Test GET /api/v1/tickets - uses user's default organization"""
         response = requests.get(
             f"{BASE_URL}/api/v1/tickets",
             headers=self.headers
@@ -215,7 +215,7 @@ class TestTicketsScoping:
         print(f"✓ Tickets list (default org): {len(tickets)} tickets")
     
     def test_list_tickets_with_org_header(self):
-        """Test GET /api/tickets with X-Organization-ID header"""
+        """Test GET /api/v1/tickets with X-Organization-ID header"""
         if not self.org_id:
             pytest.skip("No org_id available")
         
@@ -249,7 +249,7 @@ class TestCustomersScoping:
             self.org_id = None
     
     def test_list_customers_without_header(self):
-        """Test GET /api/customers - uses user's default organization"""
+        """Test GET /api/v1/customers - uses user's default organization"""
         response = requests.get(
             f"{BASE_URL}/api/v1/customers",
             headers=self.headers
@@ -264,7 +264,7 @@ class TestCustomersScoping:
         print(f"✓ Customers list (default org): {len(customers)} customers")
     
     def test_list_customers_with_org_header(self):
-        """Test GET /api/customers with X-Organization-ID header"""
+        """Test GET /api/v1/customers with X-Organization-ID header"""
         if not self.org_id:
             pytest.skip("No org_id available")
         
@@ -298,7 +298,7 @@ class TestInventoryScoping:
             self.org_id = None
     
     def test_list_inventory_without_header(self):
-        """Test GET /api/inventory - uses user's default organization"""
+        """Test GET /api/v1/inventory - uses user's default organization"""
         response = requests.get(
             f"{BASE_URL}/api/v1/inventory",
             headers=self.headers
@@ -403,7 +403,7 @@ class TestAvailableRoles:
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_get_available_roles(self):
-        """Test GET /api/org/roles - returns available roles and permissions"""
+        """Test GET /api/v1/org/roles - returns available roles and permissions"""
         response = requests.get(
             f"{BASE_URL}/api/v1/permissions/roles",
             headers=self.headers

@@ -12,18 +12,18 @@ from datetime import datetime, date, timedelta
 from typing import Optional
 
 BASE_URL = "http://localhost:8001"
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 TODAY = date.today().isoformat()
 YEAR = date.today().year
 MONTH = date.today().month
 
 # ─── Auth ────────────────────────────────────────────────────────────────────
 def get_token(email, password):
-    r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": email, "password": password})
+    r = requests.post(f"{BASE_URL}/api/v1/auth/login", json={"email": email, "password": password})
     d = r.json()
     return d.get("token") or d.get("access_token")
 
-ADMIN_TOKEN = get_token("admin@battwheels.in", "admin")
+ADMIN_TOKEN = get_token("dev@battwheels.internal", "DevTest@123")
 if not ADMIN_TOKEN:
     print("FATAL: Cannot authenticate admin@battwheels.in / admin")
     sys.exit(1)
@@ -85,7 +85,7 @@ print("SECTION 1 — CHART OF ACCOUNTS INTEGRITY")
 print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
-coa_resp = api_get("/api/finance/chart-of-accounts")
+coa_resp = api_get("/api/v1/finance/chart-of-accounts")
 coa_data = []
 if coa_resp and coa_resp.status_code == 200:
     d = coa_resp.json()
@@ -174,7 +174,7 @@ for a in coa_data:
 print(f"    Account IDs: Cash={CASH_ACCOUNT_ID} Revenue={REVENUE_ACCOUNT_ID} AR={AR_ACCOUNT_ID} AP={AP_ACCOUNT_ID}")
 
 # T1.4 — Create custom account
-cust_acc_resp = api_post("/api/finance/chart-of-accounts", {
+cust_acc_resp = api_post("/api/v1/finance/chart-of-accounts", {
     "name": "Audit Test Account",
     "type": "EXPENSE",
     "code": "9999",
@@ -185,7 +185,7 @@ if cust_acc_resp and cust_acc_resp.status_code in [200,201]:
     d = cust_acc_resp.json()
     cust_acc_id = d.get("id") or d.get("account_id") or d.get("_id")
     # Verify it appears in CoA
-    verify_resp = api_get("/api/finance/chart-of-accounts")
+    verify_resp = api_get("/api/v1/finance/chart-of-accounts")
     verify_data = []
     if verify_resp and verify_resp.status_code == 200:
         vd = verify_resp.json()
@@ -220,9 +220,9 @@ if CASH_ACCOUNT_ID and REVENUE_ACCOUNT_ID:
             {"account_id": REVENUE_ACCOUNT_ID, "type": "CREDIT", "amount": 1000}
         ]
     }
-    je_resp = api_post("/api/journal-entries", je_body)
+    je_resp = api_post("/api/v1/journal-entries", je_body)
     if je_resp is None:
-        je_resp = api_post("/api/finance/journal-entries", je_body)
+        je_resp = api_post("/api/v1/finance/journal-entries", je_body)
     if je_resp and je_resp.status_code in [200,201]:
         d = je_resp.json()
         JOURNAL_ID = d.get("id") or d.get("journal_entry_id") or d.get("entry_id") or d.get("_id")
@@ -237,9 +237,9 @@ else:
 
 # T2.2 — Verify entry is balanced
 if JOURNAL_ID:
-    je_get = api_get(f"/api/journal-entries/{JOURNAL_ID}")
+    je_get = api_get(f"/api/v1/journal-entries/{JOURNAL_ID}")
     if je_get is None or je_get.status_code != 200:
-        je_get = api_get(f"/api/finance/journal-entries/{JOURNAL_ID}")
+        je_get = api_get(f"/api/v1/finance/journal-entries/{JOURNAL_ID}")
     if je_get and je_get.status_code == 200:
         d = je_get.json()
         lines = d.get("lines", [])
@@ -263,9 +263,9 @@ unbal_body = {
         {"account_id": REVENUE_ACCOUNT_ID or "dummy", "type": "CREDIT", "amount": 300}
     ]
 }
-unbal_resp = api_post("/api/journal-entries", unbal_body)
+unbal_resp = api_post("/api/v1/journal-entries", unbal_body)
 if unbal_resp is None:
-    unbal_resp = api_post("/api/finance/journal-entries", unbal_body)
+    unbal_resp = api_post("/api/v1/finance/journal-entries", unbal_body)
 if unbal_resp:
     rejected = unbal_resp.status_code in [400, 422]
     detail = f"Status={unbal_resp.status_code} — {'CORRECTLY REJECTED' if rejected else 'ACCEPTED (CRITICAL BUG!)'}: {unbal_resp.text[:150]}"
@@ -275,7 +275,7 @@ else:
     r_ok("S2","T2.3","Unbalanced entry rejected (CRITICAL)", False, "No response", critical=True)
 
 # T2.4 — Trial balance balanced
-tb_resp = api_get("/api/finance/trial-balance")
+tb_resp = api_get("/api/v1/finance/trial-balance")
 TB_DR = TB_CR = 0
 if tb_resp and tb_resp.status_code == 200:
     d = tb_resp.json()
@@ -295,9 +295,9 @@ r_ok("S2","T2.5","Trial balance reflects journal entry",
      f"TB has values: DR=₹{TB_DR:,.0f} CR=₹{TB_CR:,.0f} (manual entry included if TB is live)")
 
 # T2.6 — Journal listing paginated
-je_list = api_get("/api/journal-entries", {"page":1,"limit":10})
+je_list = api_get("/api/v1/journal-entries", {"page":1,"limit":10})
 if je_list is None:
-    je_list = api_get("/api/finance/journal-entries", {"page":1,"limit":10})
+    je_list = api_get("/api/v1/finance/journal-entries", {"page":1,"limit":10})
 if je_list and je_list.status_code == 200:
     d = je_list.json()
     has_pagination = "pagination" in d or ("page" in d and "total" in d)
@@ -309,9 +309,9 @@ else:
          f"Status={je_list.status_code if je_list else 'NONE'}")
 
 # T2.7 — Filter by source type
-je_inv = api_get("/api/journal-entries", {"source_type":"INVOICE"})
+je_inv = api_get("/api/v1/journal-entries", {"source_type":"INVOICE"})
 if je_inv is None:
-    je_inv = api_get("/api/finance/journal-entries", {"source_type":"INVOICE"})
+    je_inv = api_get("/api/v1/finance/journal-entries", {"source_type":"INVOICE"})
 if je_inv and je_inv.status_code == 200:
     d = je_inv.json()
     entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -338,7 +338,7 @@ CONTACT_ID = None
 INVOICE_ID = None
 
 # Create test contact first
-cont_resp = api_post("/api/contacts-enhanced", {
+cont_resp = api_post("/api/v1/contacts-enhanced", {
     "name": "Audit Test Customer",
     "type": "CUSTOMER",
     "email": "auditcust@test.com",
@@ -363,7 +363,7 @@ if CONTACT_ID:
             "tax_rate": 18
         }]
     }
-    inv_resp = api_post("/api/invoices-enhanced", inv_body)
+    inv_resp = api_post("/api/v1/invoices-enhanced", inv_body)
     if inv_resp and inv_resp.status_code in [200,201]:
         d = inv_resp.json()
         INVOICE_ID = d.get("id") or d.get("invoice_id") or d.get("_id")
@@ -385,9 +385,9 @@ else:
 if INVOICE_ID:
     import time
     time.sleep(1)  # brief pause for async JE creation
-    je_inv_resp = api_get("/api/journal-entries", {"source_document_id": INVOICE_ID})
+    je_inv_resp = api_get("/api/v1/journal-entries", {"source_document_id": INVOICE_ID})
     if je_inv_resp is None or je_inv_resp.status_code != 200:
-        je_inv_resp = api_get("/api/finance/journal-entries", {"source_document_id": INVOICE_ID})
+        je_inv_resp = api_get("/api/v1/finance/journal-entries", {"source_document_id": INVOICE_ID})
     if je_inv_resp and je_inv_resp.status_code == 200:
         d = je_inv_resp.json()
         entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -413,7 +413,7 @@ else:
 
 # T3.3 — GST split check
 if INVOICE_ID:
-    inv_detail = api_get(f"/api/invoices-enhanced/{INVOICE_ID}")
+    inv_detail = api_get(f"/api/v1/invoices-enhanced/{INVOICE_ID}")
     if inv_detail and inv_detail.status_code == 200:
         d = inv_detail.json()
         cgst = d.get("cgst", d.get("cgst_amount", 0))
@@ -438,7 +438,7 @@ else:
 
 # T3.4 — Record full payment
 if INVOICE_ID:
-    pay_resp = api_post(f"/api/invoices-enhanced/{INVOICE_ID}/payment", {
+    pay_resp = api_post(f"/api/v1/invoices-enhanced/{INVOICE_ID}/payment", {
         "amount": 11800,
         "payment_mode": "BANK_TRANSFER",
         "payment_date": TODAY
@@ -450,7 +450,7 @@ if INVOICE_ID:
              True, f"Status={pay_resp.status_code} invoice_status={status}")
     else:
         # Try alternate payment endpoint
-        pay_resp2 = api_post(f"/api/invoices/{INVOICE_ID}/payment", {
+        pay_resp2 = api_post(f"/api/v1/invoices/{INVOICE_ID}/payment", {
             "amount": 11800, "payment_mode": "BANK_TRANSFER", "payment_date": TODAY
         })
         if pay_resp2 and pay_resp2.status_code in [200,201]:
@@ -465,9 +465,9 @@ else:
 if INVOICE_ID:
     time.sleep(1)
     # Look for any new JEs related to invoice after payment
-    je_pay_resp = api_get("/api/journal-entries", {"source_document_id": INVOICE_ID})
+    je_pay_resp = api_get("/api/v1/journal-entries", {"source_document_id": INVOICE_ID})
     if je_pay_resp is None or je_pay_resp.status_code != 200:
-        je_pay_resp = api_get("/api/finance/journal-entries", {"source_document_id": INVOICE_ID})
+        je_pay_resp = api_get("/api/v1/finance/journal-entries", {"source_document_id": INVOICE_ID})
     if je_pay_resp and je_pay_resp.status_code == 200:
         d = je_pay_resp.json()
         entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -484,7 +484,7 @@ else:
 # T3.6 — Partial payment
 INVOICE_ID2 = None
 if CONTACT_ID:
-    inv2_resp = api_post("/api/invoices-enhanced", {
+    inv2_resp = api_post("/api/v1/invoices-enhanced", {
         "customer_id": CONTACT_ID,
         "invoice_date": TODAY,
         "due_date": (date.today() + timedelta(days=30)).isoformat(),
@@ -495,7 +495,7 @@ if CONTACT_ID:
         INVOICE_ID2 = d.get("id") or d.get("invoice_id") or d.get("_id")
         created_ids["invoice2"] = INVOICE_ID2
         # Record partial payment
-        partial_pay = api_post(f"/api/invoices-enhanced/{INVOICE_ID2}/payment", {
+        partial_pay = api_post(f"/api/v1/invoices-enhanced/{INVOICE_ID2}/payment", {
             "amount": 2000, "payment_mode": "CASH", "payment_date": TODAY
         })
         if partial_pay and partial_pay.status_code in [200,201]:
@@ -514,7 +514,7 @@ else:
 
 # T3.7 — Invoice PDF
 if INVOICE_ID:
-    pdf_resp = requests.get(f"{BASE_URL}/api/invoices-enhanced/{INVOICE_ID}/pdf",
+    pdf_resp = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{INVOICE_ID}/pdf",
                            headers=HEADERS, timeout=30)
     if pdf_resp and pdf_resp.status_code == 200:
         content_type = pdf_resp.headers.get("content-type","")
@@ -530,9 +530,9 @@ else:
     r_ok("S3","T3.7","Invoice PDF generation", False, "No invoice")
 
 # T3.8 — AR aging report
-ar_resp = api_get("/api/reports/ar-aging")
+ar_resp = api_get("/api/v1/reports/ar-aging")
 if ar_resp is None:
-    ar_resp = api_get("/api/finance/ar-aging")
+    ar_resp = api_get("/api/v1/finance/ar-aging")
 if ar_resp and ar_resp.status_code == 200:
     d = ar_resp.json()
     text = json.dumps(d).lower()
@@ -556,7 +556,7 @@ VENDOR_ID = None
 BILL_ID = None
 
 # Create vendor
-vend_resp = api_post("/api/contacts-enhanced", {
+vend_resp = api_post("/api/v1/contacts-enhanced", {
     "name": "Audit Test Vendor",
     "type": "VENDOR",
     "email": "auditvendor@test.com",
@@ -581,9 +581,9 @@ if VENDOR_ID:
             "tax_rate": 18
         }]
     }
-    bill_resp = api_post("/api/bills", bill_body)
+    bill_resp = api_post("/api/v1/bills", bill_body)
     if bill_resp is None or bill_resp.status_code not in [200,201]:
-        bill_resp = api_post("/api/bills-enhanced", bill_body)
+        bill_resp = api_post("/api/v1/bills-enhanced", bill_body)
     if bill_resp and bill_resp.status_code in [200,201]:
         d = bill_resp.json()
         BILL_ID = d.get("id") or d.get("bill_id") or d.get("_id")
@@ -604,9 +604,9 @@ else:
 # T4.2 — Bill creates AP journal entry
 if BILL_ID:
     time.sleep(1)
-    je_bill = api_get("/api/journal-entries", {"source_document_id": BILL_ID})
+    je_bill = api_get("/api/v1/journal-entries", {"source_document_id": BILL_ID})
     if je_bill is None or je_bill.status_code != 200:
-        je_bill = api_get("/api/finance/journal-entries", {"source_document_id": BILL_ID})
+        je_bill = api_get("/api/v1/finance/journal-entries", {"source_document_id": BILL_ID})
     if je_bill and je_bill.status_code == 200:
         d = je_bill.json()
         entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -632,9 +632,9 @@ else:
 
 # T4.3 — Approve bill
 if BILL_ID:
-    approve_resp = api_post(f"/api/bills/{BILL_ID}/approve", {})
+    approve_resp = api_post(f"/api/v1/bills/{BILL_ID}/approve", {})
     if approve_resp is None or approve_resp.status_code not in [200,201]:
-        approve_resp = api_put(f"/api/bills/{BILL_ID}/approve")
+        approve_resp = api_put(f"/api/v1/bills/{BILL_ID}/approve")
     if approve_resp and approve_resp.status_code in [200,201]:
         r_ok("S4","T4.3","Approve bill", True, f"Status={approve_resp.status_code}")
     else:
@@ -645,7 +645,7 @@ else:
 
 # T4.4 — Bill payment
 if BILL_ID:
-    bill_pay = api_post(f"/api/bills/{BILL_ID}/payment", {
+    bill_pay = api_post(f"/api/v1/bills/{BILL_ID}/payment", {
         "amount": 5900, "payment_mode": "BANK_TRANSFER", "payment_date": TODAY
     })
     if bill_pay and bill_pay.status_code in [200,201]:
@@ -653,7 +653,7 @@ if BILL_ID:
              f"Status={bill_pay.status_code}")
     else:
         # Try bills-enhanced
-        bill_pay2 = api_post(f"/api/bills-enhanced/{BILL_ID}/payment", {
+        bill_pay2 = api_post(f"/api/v1/bills-enhanced/{BILL_ID}/payment", {
             "amount": 5900, "payment_mode": "BANK_TRANSFER", "payment_date": TODAY
         })
         if bill_pay2 and bill_pay2.status_code in [200,201]:
@@ -665,9 +665,9 @@ else:
     r_ok("S4","T4.4","Bill payment recorded", False, "No bill")
 
 # T4.5 — AP aging
-ap_resp = api_get("/api/reports/ap-aging")
+ap_resp = api_get("/api/v1/reports/ap-aging")
 if ap_resp is None:
-    ap_resp = api_get("/api/finance/ap-aging")
+    ap_resp = api_get("/api/v1/finance/ap-aging")
 if ap_resp and ap_resp.status_code == 200:
     r_ok("S4","T4.5","AP aging report", True,
          f"Keys: {list(ap_resp.json().keys())[:6]}")
@@ -687,7 +687,7 @@ print("="*60)
 EXPENSE_ID = None
 
 # T5.1 — Create expense
-exp_resp = api_post("/api/expenses", {
+exp_resp = api_post("/api/v1/expenses", {
     "description": "Audit test expense",
     "amount": 2500,
     "category": "Tools",
@@ -705,9 +705,9 @@ else:
 
 # T5.2 — Approve expense
 if EXPENSE_ID:
-    exp_approve = api_post(f"/api/expenses/{EXPENSE_ID}/approve", {})
+    exp_approve = api_post(f"/api/v1/expenses/{EXPENSE_ID}/approve", {})
     if exp_approve is None or exp_approve.status_code not in [200,201]:
-        exp_approve = api_put(f"/api/expenses/{EXPENSE_ID}/approve")
+        exp_approve = api_put(f"/api/v1/expenses/{EXPENSE_ID}/approve")
     if exp_approve and exp_approve.status_code in [200,201]:
         r_ok("S5","T5.2","Approve expense", True, f"Status={exp_approve.status_code}")
     else:
@@ -719,9 +719,9 @@ else:
 # T5.3 — Expense journal entry
 if EXPENSE_ID:
     time.sleep(1)
-    je_exp = api_get("/api/journal-entries", {"source_document_id": EXPENSE_ID})
+    je_exp = api_get("/api/v1/journal-entries", {"source_document_id": EXPENSE_ID})
     if je_exp is None or je_exp.status_code != 200:
-        je_exp = api_get("/api/finance/journal-entries", {"source_document_id": EXPENSE_ID})
+        je_exp = api_get("/api/v1/finance/journal-entries", {"source_document_id": EXPENSE_ID})
     if je_exp and je_exp.status_code == 200:
         d = je_exp.json()
         entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -745,7 +745,7 @@ else:
     r_ok("S5","T5.3","Expense journal entry correct", False, "No expense")
 
 # T5.4 — Expense in P&L
-pl_resp = api_get("/api/reports/profit-loss")
+pl_resp = api_get("/api/v1/reports/profit-loss")
 if pl_resp and pl_resp.status_code == 200:
     d = pl_resp.json()
     text = json.dumps(d).lower()
@@ -769,7 +769,7 @@ ITEM_ID = None
 TICKET_ID = None
 
 # T6.1 — Create inventory item
-item_resp = api_post("/api/inventory/items", {
+item_resp = api_post("/api/v1/inventory/items", {
     "name": "Audit Test Battery Cell",
     "sku": "AUDIT-BATT-001",
     "purchase_rate": 800,
@@ -778,7 +778,7 @@ item_resp = api_post("/api/inventory/items", {
     "reorder_level": 10
 })
 if item_resp is None or item_resp.status_code not in [200,201]:
-    item_resp = api_post("/api/inventory", {
+    item_resp = api_post("/api/v1/inventory", {
         "name": "Audit Test Battery Cell",
         "sku": "AUDIT-BATT-001",
         "purchase_price": 800,
@@ -797,9 +797,9 @@ else:
 
 # T6.2 — Stock level correct
 if ITEM_ID:
-    item_get = api_get(f"/api/inventory/items/{ITEM_ID}")
+    item_get = api_get(f"/api/v1/inventory/items/{ITEM_ID}")
     if item_get is None or item_get.status_code != 200:
-        item_get = api_get(f"/api/inventory/{ITEM_ID}")
+        item_get = api_get(f"/api/v1/inventory/{ITEM_ID}")
     if item_get and item_get.status_code == 200:
         d = item_get.json()
         qty = d.get("current_stock_qty", d.get("quantity", d.get("stock_quantity", d.get("qty", -1))))
@@ -816,7 +816,7 @@ else:
 # Create ticket first
 TICKET_ID = None
 if CONTACT_ID:
-    tick_resp = api_post("/api/tickets", {
+    tick_resp = api_post("/api/v1/tickets", {
         "title": "Audit Test Ticket",
         "description": "Battery issue for audit",
         "customer_id": CONTACT_ID,
@@ -831,21 +831,21 @@ if CONTACT_ID:
 
 if TICKET_ID and ITEM_ID:
     # Add part to job card
-    jc_resp = api_post(f"/api/tickets/{TICKET_ID}/job-card/parts", {
+    jc_resp = api_post(f"/api/v1/tickets/{TICKET_ID}/job-card/parts", {
         "item_id": ITEM_ID,
         "quantity": 2,
         "unit_cost": 800
     })
     if jc_resp is None or jc_resp.status_code not in [200,201]:
-        jc_resp = api_post(f"/api/tickets/{TICKET_ID}/parts", {
+        jc_resp = api_post(f"/api/v1/tickets/{TICKET_ID}/parts", {
             "item_id": ITEM_ID, "quantity": 2
         })
     if jc_resp and jc_resp.status_code in [200,201]:
         # Check stock after
         time.sleep(1)
-        item_after = api_get(f"/api/inventory/items/{ITEM_ID}")
+        item_after = api_get(f"/api/v1/inventory/items/{ITEM_ID}")
         if item_after is None or item_after.status_code != 200:
-            item_after = api_get(f"/api/inventory/{ITEM_ID}")
+            item_after = api_get(f"/api/v1/inventory/{ITEM_ID}")
         if item_after and item_after.status_code == 200:
             d = item_after.json()
             new_qty = d.get("current_stock_qty", d.get("quantity", d.get("stock_quantity", -1)))
@@ -864,9 +864,9 @@ else:
 # T6.4 — COGS entry posted
 if TICKET_ID:
     time.sleep(1)
-    je_jc = api_get("/api/journal-entries", {"source_type": "JOB_CARD"})
+    je_jc = api_get("/api/v1/journal-entries", {"source_type": "JOB_CARD"})
     if je_jc is None or je_jc.status_code != 200:
-        je_jc = api_get("/api/finance/journal-entries", {"source_type": "JOB_CARD"})
+        je_jc = api_get("/api/v1/finance/journal-entries", {"source_type": "JOB_CARD"})
     if je_jc and je_jc.status_code == 200:
         d = je_jc.json()
         entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -889,7 +889,7 @@ else:
     r_ok("S6","T6.4","COGS entry posted on job card", False, "No ticket")
 
 # T6.5 — Stock valuation report
-val_resp = api_get("/api/reports/inventory-valuation")
+val_resp = api_get("/api/v1/reports/inventory-valuation")
 if val_resp and val_resp.status_code == 200:
     d = val_resp.json()
     text = json.dumps(d).lower()
@@ -901,7 +901,7 @@ else:
          f"Status={val_resp.status_code if val_resp else 'NONE'}: {val_resp.text[:150] if val_resp else ''}")
 
 # T6.6 — Reorder suggestions
-reorder_resp = api_get("/api/inventory/reorder-suggestions")
+reorder_resp = api_get("/api/v1/inventory/reorder-suggestions")
 if reorder_resp and reorder_resp.status_code == 200:
     r_ok("S6","T6.6","Reorder suggestions endpoint", True,
          f"Keys: {list(reorder_resp.json().keys())[:6] if isinstance(reorder_resp.json(),dict) else 'list'}")
@@ -919,7 +919,7 @@ print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # T7.1 — GST summary
-gst_resp = api_get("/api/reports/gst-summary", {"month": MONTH, "year": YEAR})
+gst_resp = api_get("/api/v1/reports/gst-summary", {"month": MONTH, "year": YEAR})
 if gst_resp and gst_resp.status_code == 200:
     d = gst_resp.json()
     text = json.dumps(d).lower()
@@ -933,9 +933,9 @@ else:
          f"Status={gst_resp.status_code if gst_resp else 'NONE'}: {gst_resp.text[:200] if gst_resp else ''}")
 
 # T7.2 — GSTR-1 data
-gstr1_resp = api_get("/api/reports/gstr1")
+gstr1_resp = api_get("/api/v1/reports/gstr1")
 if gstr1_resp is None:
-    gstr1_resp = api_get("/api/reports/gst-r1")
+    gstr1_resp = api_get("/api/v1/reports/gst-r1")
 if gstr1_resp and gstr1_resp.status_code == 200:
     d = gstr1_resp.json()
     text = json.dumps(d).lower()
@@ -949,7 +949,7 @@ else:
 
 # T7.3 — Multiple GST rates
 if CONTACT_ID:
-    multi_gst_resp = api_post("/api/invoices-enhanced", {
+    multi_gst_resp = api_post("/api/v1/invoices-enhanced", {
         "customer_id": CONTACT_ID,
         "invoice_date": TODAY,
         "due_date": (date.today() + timedelta(days=30)).isoformat(),
@@ -1010,7 +1010,7 @@ import calendar
 year_start = f"{YEAR}-01-01"
 
 # T8.1 — P&L
-pl_resp = api_get("/api/reports/profit-loss", {"date_from": year_start, "date_to": TODAY})
+pl_resp = api_get("/api/v1/reports/profit-loss", {"date_from": year_start, "date_to": TODAY})
 if pl_resp and pl_resp.status_code == 200:
     d = pl_resp.json()
     text = json.dumps(d).lower()
@@ -1024,7 +1024,7 @@ else:
          f"Status={pl_resp.status_code if pl_resp else 'NONE'}: {pl_resp.text[:200] if pl_resp else ''}")
 
 # T8.2 — Balance Sheet: Assets = Liabilities + Equity
-bs_resp = api_get("/api/reports/balance-sheet")
+bs_resp = api_get("/api/v1/reports/balance-sheet")
 if bs_resp and bs_resp.status_code == 200:
     d = bs_resp.json()
     text = json.dumps(d).lower()
@@ -1046,7 +1046,7 @@ else:
          f"Status={bs_resp.status_code if bs_resp else 'NONE'}: {bs_resp.text[:200] if bs_resp else ''}")
 
 # T8.3 — Final Trial Balance
-tb2_resp = api_get("/api/finance/trial-balance")
+tb2_resp = api_get("/api/v1/finance/trial-balance")
 if tb2_resp and tb2_resp.status_code == 200:
     d = tb2_resp.json()
     tb_dr = float(d.get("total_debits", d.get("total_dr", 0)))
@@ -1060,7 +1060,7 @@ else:
     r_ok("S8","T8.3","Trial balance balanced (final)", False, "Cannot fetch")
 
 # T8.4 — Finance dashboard
-fin_dash = api_get("/api/finance/dashboard")
+fin_dash = api_get("/api/v1/finance/dashboard")
 if fin_dash and fin_dash.status_code == 200:
     d = fin_dash.json()
     text = json.dumps(d).lower()
@@ -1075,8 +1075,8 @@ else:
 # T8.5 — P&L period comparison
 last_month = MONTH - 1 if MONTH > 1 else 12
 last_year = YEAR if MONTH > 1 else YEAR - 1
-pl_this = api_get("/api/reports/profit-loss", {"period": "this_month"})
-pl_last = api_get("/api/reports/profit-loss", {
+pl_this = api_get("/api/v1/reports/profit-loss", {"period": "this_month"})
+pl_last = api_get("/api/v1/reports/profit-loss", {
     "date_from": f"{last_year}-{last_month:02d}-01",
     "date_to": f"{last_year}-{last_month:02d}-{calendar.monthrange(last_year,last_month)[1]}"
 })
@@ -1099,7 +1099,7 @@ PAYROLL_ID = None
 LEAVE_ID = None
 
 # T9.1 — Create employee
-emp_resp = api_post("/api/hr/employees", {
+emp_resp = api_post("/api/v1/hr/employees", {
     "name": "Audit Test Tech",
     "designation": "Senior Technician",
     "department": "Workshop",
@@ -1122,7 +1122,7 @@ else:
 
 # T9.2 — Verify employee fields
 if EMP_ID:
-    emp_get = api_get(f"/api/hr/employees/{EMP_ID}")
+    emp_get = api_get(f"/api/v1/hr/employees/{EMP_ID}")
     if emp_get and emp_get.status_code == 200:
         d = emp_get.json()
         basic = float(d.get("basic_salary", d.get("salary", 0)))
@@ -1144,9 +1144,9 @@ if EMP_ID:
         "year": YEAR,
         "employee_ids": [EMP_ID]
     }
-    pr_resp = api_post("/api/hr/payroll", payroll_body)
+    pr_resp = api_post("/api/v1/hr/payroll", payroll_body)
     if pr_resp is None or pr_resp.status_code not in [200,201]:
-        pr_resp = api_post("/api/hr/payroll/run", payroll_body)
+        pr_resp = api_post("/api/v1/hr/payroll/run", payroll_body)
     if pr_resp and pr_resp.status_code in [200,201]:
         d = pr_resp.json()
         PAYROLL_ID = d.get("id") or d.get("payroll_run_id") or d.get("payroll_id") or d.get("_id")
@@ -1160,9 +1160,9 @@ else:
 
 # T9.4 — Payroll calculation accuracy
 if PAYROLL_ID:
-    pr_get = api_get(f"/api/hr/payroll/{PAYROLL_ID}")
+    pr_get = api_get(f"/api/v1/hr/payroll/{PAYROLL_ID}")
     if pr_get is None or pr_get.status_code != 200:
-        pr_get = api_get(f"/api/hr/payroll/records", {"month": MONTH, "year": YEAR, "employee_id": EMP_ID})
+        pr_get = api_get(f"/api/v1/hr/payroll/records", {"month": MONTH, "year": YEAR, "employee_id": EMP_ID})
     if pr_get and pr_get.status_code == 200:
         d = pr_get.json()
         if isinstance(d, list) and len(d) > 0:
@@ -1188,7 +1188,7 @@ if PAYROLL_ID:
              f"Cannot fetch payroll record: {pr_get.status_code if pr_get else 'NONE'}")
 elif EMP_ID:
     # Try fetching payroll records
-    pr_list = api_get("/api/hr/payroll/records", {"month": MONTH, "year": YEAR})
+    pr_list = api_get("/api/v1/hr/payroll/records", {"month": MONTH, "year": YEAR})
     if pr_list and pr_list.status_code == 200:
         d = pr_list.json()
         records = d.get("data", d if isinstance(d,list) else [])
@@ -1207,9 +1207,9 @@ else:
 
 # T9.5 — Payroll journal entry
 time.sleep(1)
-pr_je = api_get("/api/journal-entries", {"source_type": "PAYROLL"})
+pr_je = api_get("/api/v1/journal-entries", {"source_type": "PAYROLL"})
 if pr_je is None or pr_je.status_code != 200:
-    pr_je = api_get("/api/finance/journal-entries", {"source_type": "PAYROLL"})
+    pr_je = api_get("/api/v1/finance/journal-entries", {"source_type": "PAYROLL"})
 if pr_je and pr_je.status_code == 200:
     d = pr_je.json()
     entries = d.get("data", d.get("journal_entries", d if isinstance(d,list) else []))
@@ -1248,7 +1248,7 @@ else:
 # T9.7 — Payslip PDF
 if PAYROLL_ID and EMP_ID:
     payslip_resp = requests.get(
-        f"{BASE_URL}/api/hr/payroll/{PAYROLL_ID}/payslip/{EMP_ID}/pdf",
+        f"{BASE_URL}/api/v1/hr/payroll/{PAYROLL_ID}/payslip/{EMP_ID}/pdf",
         headers=HEADERS, timeout=30
     )
     if payslip_resp.status_code == 200:
@@ -1259,7 +1259,7 @@ if PAYROLL_ID and EMP_ID:
     else:
         # Try alternate path
         payslip_resp2 = requests.get(
-            f"{BASE_URL}/api/hr/employees/{EMP_ID}/payslip/{YEAR}/{MONTH}/pdf",
+            f"{BASE_URL}/api/v1/hr/employees/{EMP_ID}/payslip/{YEAR}/{MONTH}/pdf",
             headers=HEADERS, timeout=30
         )
         if payslip_resp2.status_code == 200:
@@ -1273,7 +1273,7 @@ else:
 # T9.8 — Leave management
 if EMP_ID:
     next_week = (date.today() + timedelta(days=7)).isoformat()
-    leave_resp = api_post("/api/hr/leaves", {
+    leave_resp = api_post("/api/v1/hr/leaves", {
         "employee_id": EMP_ID,
         "leave_type": "SICK",
         "from_date": next_week,
@@ -1293,7 +1293,7 @@ else:
 
 # T9.9 — Attendance
 if EMP_ID:
-    att_resp = api_post("/api/hr/attendance", {
+    att_resp = api_post("/api/v1/hr/attendance", {
         "employee_id": EMP_ID,
         "date": TODAY,
         "status": "PRESENT",
@@ -1310,9 +1310,9 @@ else:
 
 # T9.10 — Form 16
 if EMP_ID:
-    f16_resp = api_get(f"/api/hr/employees/{EMP_ID}/form16/2024-25")
+    f16_resp = api_get(f"/api/v1/hr/employees/{EMP_ID}/form16/2024-25")
     if f16_resp is None or f16_resp.status_code != 200:
-        f16_resp = api_get(f"/api/hr/employees/{EMP_ID}/form16", {"financial_year": "2024-25"})
+        f16_resp = api_get(f"/api/v1/hr/employees/{EMP_ID}/form16", {"financial_year": "2024-25"})
     if f16_resp and f16_resp.status_code == 200:
         ct = f16_resp.headers.get("content-type","")
         is_pdf = "pdf" in ct.lower() or f16_resp.content[:4] == b'%PDF'
@@ -1336,7 +1336,7 @@ print("="*60)
 BANK_ID = None
 
 # T10.1 — Fetch existing bank accounts
-bank_list = api_get("/api/banking/accounts")
+bank_list = api_get("/api/v1/banking/accounts")
 if bank_list and bank_list.status_code == 200:
     d = bank_list.json()
     accounts = d.get("data", d if isinstance(d,list) else [])
@@ -1347,7 +1347,7 @@ else:
          f"Status={bank_list.status_code if bank_list else 'NONE'}: {bank_list.text[:200] if bank_list else ''}")
 
 # T10.2 — Create bank account
-bank_resp = api_post("/api/banking/accounts", {
+bank_resp = api_post("/api/v1/banking/accounts", {
     "account_name": "Audit Test Bank",
     "account_number": "9999000099990001",
     "bank_name": "HDFC Bank",
@@ -1366,7 +1366,7 @@ else:
 
 # T10.3 — Bank transactions
 if BANK_ID:
-    tx_resp = api_get("/api/banking/transactions", {"account_id": BANK_ID})
+    tx_resp = api_get("/api/v1/banking/transactions", {"account_id": BANK_ID})
     if tx_resp and tx_resp.status_code == 200:
         r_ok("S10","T10.3","Bank transactions list", True,
              f"Keys: {list(tx_resp.json().keys())[:6] if isinstance(tx_resp.json(),dict) else 'list'}")
@@ -1378,7 +1378,7 @@ else:
 
 # T10.4 — Bank reconciliation
 if BANK_ID:
-    recon_resp = api_get("/api/banking/reconciliation", {"account_id": BANK_ID})
+    recon_resp = api_get("/api/v1/banking/reconciliation", {"account_id": BANK_ID})
     if recon_resp and recon_resp.status_code == 200:
         d = recon_resp.json()
         text = json.dumps(d).lower()
@@ -1401,14 +1401,14 @@ print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # T11.1 — EFI analysis real AI
-efi_resp = api_post("/api/efi/analyze", {
+efi_resp = api_post("/api/v1/efi/analyze", {
     "symptoms": ["battery not charging", "reduced range by 40%", "BMS warning light on"],
     "vehicle_type": "2W",
     "make": "Ola Electric",
     "model": "S1 Pro"
 })
 if efi_resp is None or efi_resp.status_code not in [200,201]:
-    efi_resp = api_post("/api/efi/intelligence/analyze", {
+    efi_resp = api_post("/api/v1/efi/intelligence/analyze", {
         "symptoms": ["battery not charging", "reduced range by 40%", "BMS warning light on"],
         "vehicle_type": "2W"
     })
@@ -1429,9 +1429,9 @@ else:
          f"Status={efi_resp.status_code if efi_resp else 'NONE'}: {efi_resp.text[:300] if efi_resp else ''}")
 
 # T11.2 — EFI failure history
-hist_resp = api_get("/api/efi/failure-history", {"vehicle_type": "2W"})
+hist_resp = api_get("/api/v1/efi/failure-history", {"vehicle_type": "2W"})
 if hist_resp is None:
-    hist_resp = api_get("/api/efi/history", {"vehicle_type": "2W"})
+    hist_resp = api_get("/api/v1/efi/history", {"vehicle_type": "2W"})
 if hist_resp and hist_resp.status_code == 200:
     d = hist_resp.json()
     count = len(d) if isinstance(d,list) else d.get("count", d.get("total", "?"))
@@ -1443,14 +1443,14 @@ else:
 # T11.3 — Second call (should use patterns/cache)
 import time as tmod
 start = tmod.time()
-efi_resp2 = api_post("/api/efi/analyze", {
+efi_resp2 = api_post("/api/v1/efi/analyze", {
     "symptoms": ["battery not charging", "reduced range by 40%", "BMS warning light on"],
     "vehicle_type": "2W",
     "make": "Ola Electric",
     "model": "S1 Pro"
 })
 if efi_resp2 is None or efi_resp2.status_code not in [200,201]:
-    efi_resp2 = api_post("/api/efi/intelligence/analyze", {
+    efi_resp2 = api_post("/api/v1/efi/intelligence/analyze", {
         "symptoms": ["battery not charging", "reduced range by 40%", "BMS warning light on"],
         "vehicle_type": "2W"
     })
@@ -1462,14 +1462,14 @@ else:
     r_ok("S11","T11.3","EFI second call", False, f"Failed: {efi_resp2.status_code if efi_resp2 else 'NONE'}")
 
 # T11.4 — EFI 3W vehicle type
-efi_3w = api_post("/api/efi/analyze", {
+efi_3w = api_post("/api/v1/efi/analyze", {
     "symptoms": ["motor overheating", "power cut on incline"],
     "vehicle_type": "3W",
     "make": "Mahindra",
     "model": "Treo"
 })
 if efi_3w is None or efi_3w.status_code not in [200,201]:
-    efi_3w = api_post("/api/efi/intelligence/analyze", {
+    efi_3w = api_post("/api/v1/efi/intelligence/analyze", {
         "symptoms": ["motor overheating", "power cut on incline"],
         "vehicle_type": "3W"
     })
@@ -1486,14 +1486,14 @@ else:
          f"Status={efi_3w.status_code if efi_3w else 'NONE'}")
 
 # T11.5 — Confidence scoring honest
-efi_vague = api_post("/api/efi/analyze", {
+efi_vague = api_post("/api/v1/efi/analyze", {
     "symptoms": ["vehicle not working properly"],
     "vehicle_type": "2W",
     "make": "Unknown",
     "model": "Unknown"
 })
 if efi_vague is None or efi_vague.status_code not in [200,201]:
-    efi_vague = api_post("/api/efi/intelligence/analyze", {
+    efi_vague = api_post("/api/v1/efi/intelligence/analyze", {
         "symptoms": ["vehicle not working properly"],
         "vehicle_type": "2W"
     })
@@ -1518,7 +1518,7 @@ print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # T12.1 — Final trial balance
-tb_final = api_get("/api/finance/trial-balance")
+tb_final = api_get("/api/v1/finance/trial-balance")
 FINAL_TB_DR = FINAL_TB_CR = 0
 if tb_final and tb_final.status_code == 200:
     d = tb_final.json()
@@ -1532,9 +1532,9 @@ else:
     r_ok("S12","T12.1","Trial balance final check", False, "Cannot fetch", critical=True)
 
 # T12.2 — No orphaned journal entries (qualitative)
-je_all = api_get("/api/journal-entries", {"limit": 100})
+je_all = api_get("/api/v1/journal-entries", {"limit": 100})
 if je_all is None or je_all.status_code != 200:
-    je_all = api_get("/api/finance/journal-entries", {"limit": 100})
+    je_all = api_get("/api/v1/finance/journal-entries", {"limit": 100})
 orphans = 0
 if je_all and je_all.status_code == 200:
     d = je_all.json()
@@ -1568,7 +1568,7 @@ else:
     r_ok("S12","T12.3","Accounting equation", False, "Balance sheet unavailable", critical=True)
 
 # T12.4 — GST reconciliation
-gst_final = api_get("/api/reports/gst-summary", {"month": MONTH, "year": YEAR})
+gst_final = api_get("/api/v1/reports/gst-summary", {"month": MONTH, "year": YEAR})
 if gst_final and gst_final.status_code == 200:
     d = gst_final.json()
     output = float(d.get("output_tax", d.get("output_gst", d.get("total_output", 0))))
@@ -1589,7 +1589,7 @@ if INVOICE_ID and je_inv_resp and je_inv_resp.status_code == 200:
     entries_je = d_je.get("data", d_je.get("journal_entries", d_je if isinstance(d_je,list) else []))
     if isinstance(entries_je, list) and len(entries_je) > 0:
         entry_date = entries_je[0].get("date", entries_je[0].get("entry_date",""))[:10]
-        invoice_resp_check = api_get(f"/api/invoices-enhanced/{INVOICE_ID}")
+        invoice_resp_check = api_get(f"/api/v1/invoices-enhanced/{INVOICE_ID}")
         if invoice_resp_check and invoice_resp_check.status_code == 200:
             inv_date = invoice_resp_check.json().get("invoice_date", invoice_resp_check.json().get("date",""))[:10]
             accrual = entry_date == inv_date or entry_date == TODAY
@@ -1625,39 +1625,39 @@ def try_delete(name, paths):
 
 if created_ids.get("custom_account"):
     try_delete("custom_account", [
-        f"/api/finance/chart-of-accounts/{created_ids['custom_account']}"
+        f"/api/v1/finance/chart-of-accounts/{created_ids['custom_account']}"
     ])
 if created_ids.get("invoice"):
-    try_delete("invoice", [f"/api/invoices-enhanced/{created_ids['invoice']}"])
+    try_delete("invoice", [f"/api/v1/invoices-enhanced/{created_ids['invoice']}"])
 if created_ids.get("invoice2"):
-    try_delete("invoice2", [f"/api/invoices-enhanced/{created_ids['invoice2']}"])
+    try_delete("invoice2", [f"/api/v1/invoices-enhanced/{created_ids['invoice2']}"])
 if created_ids.get("invoice_multigst"):
-    try_delete("invoice_multigst", [f"/api/invoices-enhanced/{created_ids['invoice_multigst']}"])
+    try_delete("invoice_multigst", [f"/api/v1/invoices-enhanced/{created_ids['invoice_multigst']}"])
 if created_ids.get("bill"):
-    try_delete("bill", [f"/api/bills/{created_ids['bill']}", f"/api/bills-enhanced/{created_ids['bill']}"])
+    try_delete("bill", [f"/api/v1/bills/{created_ids['bill']}", f"/api/v1/bills-enhanced/{created_ids['bill']}"])
 if created_ids.get("expense"):
-    try_delete("expense", [f"/api/expenses/{created_ids['expense']}"])
+    try_delete("expense", [f"/api/v1/expenses/{created_ids['expense']}"])
 if created_ids.get("ticket"):
-    try_delete("ticket", [f"/api/tickets/{created_ids['ticket']}"])
+    try_delete("ticket", [f"/api/v1/tickets/{created_ids['ticket']}"])
 if created_ids.get("inventory_item"):
     try_delete("inventory_item", [
-        f"/api/inventory/items/{created_ids['inventory_item']}",
-        f"/api/inventory/{created_ids['inventory_item']}"
+        f"/api/v1/inventory/items/{created_ids['inventory_item']}",
+        f"/api/v1/inventory/{created_ids['inventory_item']}"
     ])
 if created_ids.get("employee"):
-    try_delete("employee", [f"/api/hr/employees/{created_ids['employee']}"])
+    try_delete("employee", [f"/api/v1/hr/employees/{created_ids['employee']}"])
 if created_ids.get("bank_account"):
-    try_delete("bank_account", [f"/api/banking/accounts/{created_ids['bank_account']}"])
+    try_delete("bank_account", [f"/api/v1/banking/accounts/{created_ids['bank_account']}"])
 if created_ids.get("contact"):
-    try_delete("contact", [f"/api/contacts-enhanced/{created_ids['contact']}"])
+    try_delete("contact", [f"/api/v1/contacts-enhanced/{created_ids['contact']}"])
 if created_ids.get("vendor"):
-    try_delete("vendor", [f"/api/contacts-enhanced/{created_ids['vendor']}"])
+    try_delete("vendor", [f"/api/v1/contacts-enhanced/{created_ids['vendor']}"])
 
 for s in cleanup_status:
     print(f"  {s}")
 
 # Final TB after cleanup
-tb_cleanup = api_get("/api/finance/trial-balance")
+tb_cleanup = api_get("/api/v1/finance/trial-balance")
 if tb_cleanup and tb_cleanup.status_code == 200:
     d = tb_cleanup.json()
     dr = float(d.get("total_debits", d.get("total_dr", 0)))

@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -21,7 +21,7 @@ class TestAuthentication:
     
     def test_admin_login(self):
         """Test admin login returns token and user data"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -34,7 +34,7 @@ class TestAuthentication:
     
     def test_technician_login(self):
         """Test technician login returns token and user data"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECH_EMAIL,
             "password": TECH_PASSWORD
         })
@@ -48,7 +48,7 @@ class TestAuthentication:
 @pytest.fixture
 def admin_token():
     """Get admin authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -60,7 +60,7 @@ def admin_token():
 @pytest.fixture
 def tech_token():
     """Get technician authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TECH_EMAIL,
         "password": TECH_PASSWORD
     })
@@ -70,18 +70,18 @@ def tech_token():
 
 
 class TestTicketsAPI:
-    """Tests for GET /api/tickets endpoint"""
+    """Tests for GET /api/v1/tickets endpoint"""
     
     def test_get_all_tickets(self, admin_token):
         """Test fetching all tickets"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to get tickets: {response.text}"
         data = response.json()
         assert isinstance(data, list), "Response should be a list"
-        print(f"✓ GET /api/tickets - returned {len(data)} tickets")
+        print(f"✓ GET /api/v1/tickets - returned {len(data)} tickets")
         
         # Verify ticket structure if tickets exist
         if len(data) > 0:
@@ -94,7 +94,7 @@ class TestTicketsAPI:
     def test_get_tickets_by_status_open(self, admin_token):
         """Test filtering tickets by status=open"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?status=open",
+            f"{BASE_URL}/api/v1/tickets?status=open",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to filter tickets: {response.text}"
@@ -103,12 +103,12 @@ class TestTicketsAPI:
         # All returned tickets should have status=open
         for ticket in data:
             assert ticket["status"] == "open", f"Ticket {ticket['ticket_id']} has status {ticket['status']}, expected 'open'"
-        print(f"✓ GET /api/tickets?status=open - returned {len(data)} open tickets")
+        print(f"✓ GET /api/v1/tickets?status=open - returned {len(data)} open tickets")
     
     def test_get_tickets_by_status_technician_assigned(self, admin_token):
         """Test filtering tickets by status=technician_assigned"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?status=technician_assigned",
+            f"{BASE_URL}/api/v1/tickets?status=technician_assigned",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to filter tickets: {response.text}"
@@ -116,12 +116,12 @@ class TestTicketsAPI:
         
         for ticket in data:
             assert ticket["status"] == "technician_assigned", f"Ticket status mismatch"
-        print(f"✓ GET /api/tickets?status=technician_assigned - returned {len(data)} tickets")
+        print(f"✓ GET /api/v1/tickets?status=technician_assigned - returned {len(data)} tickets")
     
     def test_get_tickets_by_status_in_progress(self, admin_token):
         """Test filtering tickets by status=in_progress"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?status=in_progress",
+            f"{BASE_URL}/api/v1/tickets?status=in_progress",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to filter tickets: {response.text}"
@@ -129,12 +129,12 @@ class TestTicketsAPI:
         
         for ticket in data:
             assert ticket["status"] == "in_progress", f"Ticket status mismatch"
-        print(f"✓ GET /api/tickets?status=in_progress - returned {len(data)} tickets")
+        print(f"✓ GET /api/v1/tickets?status=in_progress - returned {len(data)} tickets")
     
     def test_get_tickets_by_status_resolved(self, admin_token):
         """Test filtering tickets by status=resolved"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?status=resolved",
+            f"{BASE_URL}/api/v1/tickets?status=resolved",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to filter tickets: {response.text}"
@@ -142,23 +142,23 @@ class TestTicketsAPI:
         
         for ticket in data:
             assert ticket["status"] == "resolved", f"Ticket status mismatch"
-        print(f"✓ GET /api/tickets?status=resolved - returned {len(data)} tickets")
+        print(f"✓ GET /api/v1/tickets?status=resolved - returned {len(data)} tickets")
     
     def test_unauthorized_access(self):
         """Test that unauthorized access returns 401"""
-        response = requests.get(f"{BASE_URL}/api/tickets")
+        response = requests.get(f"{BASE_URL}/api/v1/tickets")
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Unauthorized access returns 401")
 
 
 class TestTicketDetails:
-    """Tests for GET /api/tickets/{ticket_id} endpoint"""
+    """Tests for GET /api/v1/tickets/{ticket_id} endpoint"""
     
     def test_get_ticket_by_id(self, admin_token):
         """Test fetching a specific ticket by ID"""
         # First get list of tickets
         list_response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert list_response.status_code == 200
@@ -171,7 +171,7 @@ class TestTicketDetails:
         
         # Get specific ticket
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to get ticket: {response.text}"
@@ -193,7 +193,7 @@ class TestTicketDetails:
         present_optional = [f for f in optional_fields if f in data and data[f] is not None]
         print(f"  - Optional fields present: {present_optional}")
         
-        print(f"✓ GET /api/tickets/{ticket_id} - ticket details retrieved")
+        print(f"✓ GET /api/v1/tickets/{ticket_id} - ticket details retrieved")
         print(f"  - Customer: {data.get('customer_name', 'N/A')}")
         print(f"  - Vehicle: {data.get('vehicle_number', 'N/A')}")
         print(f"  - Status: {data.get('status', 'N/A')}")
@@ -201,7 +201,7 @@ class TestTicketDetails:
     def test_get_nonexistent_ticket(self, admin_token):
         """Test fetching a non-existent ticket returns 404"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/nonexistent_ticket_id",
+            f"{BASE_URL}/api/v1/tickets/nonexistent_ticket_id",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 404, f"Expected 404, got {response.status_code}"
@@ -209,12 +209,12 @@ class TestTicketDetails:
 
 
 class TestTechniciansAPI:
-    """Tests for GET /api/technicians endpoint"""
+    """Tests for GET /api/v1/technicians endpoint"""
     
     def test_get_technicians(self, admin_token):
         """Test fetching list of technicians"""
         response = requests.get(
-            f"{BASE_URL}/api/technicians",
+            f"{BASE_URL}/api/v1/technicians",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to get technicians: {response.text}"
@@ -228,19 +228,19 @@ class TestTechniciansAPI:
             assert "name" in tech, "Missing name"
             assert tech.get("role") == "technician", "Role should be technician"
         
-        print(f"✓ GET /api/technicians - returned {len(data)} technicians")
+        print(f"✓ GET /api/v1/technicians - returned {len(data)} technicians")
         for tech in data:
             print(f"  - {tech.get('name', 'N/A')} ({tech.get('email', 'N/A')})")
 
 
 class TestTicketUpdate:
-    """Tests for PUT /api/tickets/{ticket_id} endpoint"""
+    """Tests for PUT /api/v1/tickets/{ticket_id} endpoint"""
     
     def test_assign_technician_to_ticket(self, admin_token):
         """Test assigning a technician to an open ticket"""
         # Get list of tickets
         tickets_response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         tickets = tickets_response.json()
@@ -257,7 +257,7 @@ class TestTicketUpdate:
         
         # Get technicians
         tech_response = requests.get(
-            f"{BASE_URL}/api/technicians",
+            f"{BASE_URL}/api/v1/technicians",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         technicians = tech_response.json()
@@ -269,7 +269,7 @@ class TestTicketUpdate:
         
         # Assign technician
         response = requests.put(
-            f"{BASE_URL}/api/tickets/{open_ticket['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{open_ticket['ticket_id']}",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={
                 "status": "technician_assigned",
@@ -290,7 +290,7 @@ class TestTicketUpdate:
         """Test updating ticket status to in_progress"""
         # Get tickets with technician_assigned status
         tickets_response = requests.get(
-            f"{BASE_URL}/api/tickets?status=technician_assigned",
+            f"{BASE_URL}/api/v1/tickets?status=technician_assigned",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         tickets = tickets_response.json()
@@ -302,7 +302,7 @@ class TestTicketUpdate:
         
         # Update to in_progress
         response = requests.put(
-            f"{BASE_URL}/api/tickets/{ticket['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{ticket['ticket_id']}",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={"status": "in_progress"}
         )
@@ -316,7 +316,7 @@ class TestTicketUpdate:
         """Test updating ticket with estimated items"""
         # Get any ticket
         tickets_response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         tickets = tickets_response.json()
@@ -337,7 +337,7 @@ class TestTicketUpdate:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/tickets/{ticket['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{ticket['ticket_id']}",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={"estimated_items": estimated_items}
         )
@@ -353,38 +353,38 @@ class TestTicketUpdate:
 
 
 class TestInventoryAPI:
-    """Tests for GET /api/inventory endpoint (used in Job Card)"""
+    """Tests for GET /api/v1/inventory endpoint (used in Job Card)"""
     
     def test_get_inventory(self, admin_token):
         """Test fetching inventory items"""
         response = requests.get(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to get inventory: {response.text}"
         data = response.json()
         assert isinstance(data, list), "Response should be a list"
         
-        print(f"✓ GET /api/inventory - returned {len(data)} items")
+        print(f"✓ GET /api/v1/inventory - returned {len(data)} items")
         if len(data) > 0:
             item = data[0]
             print(f"  - Sample item: {item.get('name', 'N/A')} (₹{item.get('unit_price', 0)})")
 
 
 class TestServicesAPI:
-    """Tests for GET /api/services endpoint (used in Job Card)"""
+    """Tests for GET /api/v1/services endpoint (used in Job Card)"""
     
     def test_get_services(self, admin_token):
         """Test fetching service offerings"""
         response = requests.get(
-            f"{BASE_URL}/api/services",
+            f"{BASE_URL}/api/v1/services",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200, f"Failed to get services: {response.text}"
         data = response.json()
         assert isinstance(data, list), "Response should be a list"
         
-        print(f"✓ GET /api/services - returned {len(data)} services")
+        print(f"✓ GET /api/v1/services - returned {len(data)} services")
         if len(data) > 0:
             service = data[0]
             print(f"  - Sample service: {service.get('name', 'N/A')} (₹{service.get('base_price', 0)})")
@@ -396,7 +396,7 @@ class TestKPIData:
     def test_kpi_counts(self, admin_token):
         """Test that KPI counts can be calculated from tickets"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 200
@@ -429,7 +429,7 @@ class TestKPIData:
 
 
 class TestTicketCreation:
-    """Tests for POST /api/tickets endpoint"""
+    """Tests for POST /api/v1/tickets endpoint"""
     
     def test_create_ticket(self, admin_token):
         """Test creating a new ticket"""
@@ -450,7 +450,7 @@ class TestTicketCreation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"Authorization": f"Bearer {admin_token}"},
             json=ticket_data
         )
@@ -475,19 +475,19 @@ class TestTicketCreation:
 
 
 class TestInvoiceGeneration:
-    """Tests for POST /api/invoices endpoint (used in Job Card)"""
+    """Tests for POST /api/v1/invoices endpoint (used in Job Card)"""
     
     def test_invoice_endpoint_exists(self, admin_token):
         """Test that invoice endpoint is accessible"""
         # Just verify the endpoint exists and requires proper data
         response = requests.post(
-            f"{BASE_URL}/api/invoices",
+            f"{BASE_URL}/api/v1/invoices",
             headers={"Authorization": f"Bearer {admin_token}"},
             json={}  # Empty body to test validation
         )
         # Should return 422 (validation error) or 404 (ticket not found), not 500
         assert response.status_code in [400, 404, 422], f"Unexpected status: {response.status_code}"
-        print(f"✓ POST /api/invoices endpoint accessible (returns {response.status_code} for invalid data)")
+        print(f"✓ POST /api/v1/invoices endpoint accessible (returns {response.status_code} for invalid data)")
 
 
 if __name__ == "__main__":

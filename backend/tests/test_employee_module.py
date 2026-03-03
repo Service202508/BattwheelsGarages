@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestEmployeeModule:
     """Employee Management API Tests"""
@@ -15,7 +15,7 @@ class TestEmployeeModule:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Setup test fixtures"""
-        self.admin_email = "dev@battwheels.internal"
+        self.admin_email = "admin@battwheels.in"
         self.admin_password = "DevTest@123"
         self.test_employee_email = "test.employee@battwheels.in"
         self.test_employee_password = "test123"
@@ -24,7 +24,7 @@ class TestEmployeeModule:
         
     def get_admin_token(self):
         """Get admin authentication token"""
-        response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": self.admin_email,
             "password": self.admin_password
         })
@@ -35,7 +35,7 @@ class TestEmployeeModule:
     
     def test_admin_login(self):
         """Test admin can login successfully"""
-        response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": self.admin_email,
             "password": self.admin_password
         })
@@ -47,7 +47,7 @@ class TestEmployeeModule:
     
     def test_employee_login(self):
         """Test existing employee can login with work_email and password"""
-        response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": self.test_employee_email,
             "password": self.test_employee_password
         })
@@ -61,16 +61,16 @@ class TestEmployeeModule:
     # ==================== GET EMPLOYEES TESTS ====================
     
     def test_get_employees_list(self):
-        """Test GET /api/employees returns list of employees"""
+        """Test GET /api/v1/employees returns list of employees"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
-        print(f"✓ GET /api/employees returned {len(data)} employees")
+        print(f"✓ GET /api/v1/employees returned {len(data)} employees")
         
         # Verify employee structure
         if len(data) > 0:
@@ -88,10 +88,10 @@ class TestEmployeeModule:
             print(f"✓ Employee structure validated: {emp['full_name']}")
     
     def test_get_employees_filter_by_department(self):
-        """Test GET /api/employees with department filter"""
+        """Test GET /api/v1/employees with department filter"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees?department=service",
+            f"{BASE_URL}/api/v1/employees?department=service",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
@@ -101,10 +101,10 @@ class TestEmployeeModule:
         print(f"✓ Department filter working: {len(data)} employees in service")
     
     def test_get_employees_filter_by_status(self):
-        """Test GET /api/employees with status filter"""
+        """Test GET /api/v1/employees with status filter"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees?status=active",
+            f"{BASE_URL}/api/v1/employees?status=active",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
@@ -114,12 +114,12 @@ class TestEmployeeModule:
         print(f"✓ Status filter working: {len(data)} active employees")
     
     def test_get_single_employee(self):
-        """Test GET /api/employees/{id} returns single employee details"""
+        """Test GET /api/v1/employees/{id} returns single employee details"""
         token = self.get_admin_token()
         
         # First get list to find an employee ID
         list_response = self.session.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"}
         )
         employees = list_response.json()
@@ -129,19 +129,19 @@ class TestEmployeeModule:
         
         # Get single employee
         response = self.session.get(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         emp = response.json()
         assert emp["employee_id"] == employee_id
-        print(f"✓ GET /api/employees/{employee_id} returned: {emp['full_name']}")
+        print(f"✓ GET /api/v1/employees/{employee_id} returned: {emp['full_name']}")
     
     def test_get_nonexistent_employee(self):
-        """Test GET /api/employees/{id} returns 404 for non-existent employee"""
+        """Test GET /api/v1/employees/{id} returns 404 for non-existent employee"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees/emp_nonexistent123",
+            f"{BASE_URL}/api/v1/employees/emp_nonexistent123",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 404
@@ -150,10 +150,10 @@ class TestEmployeeModule:
     # ==================== MANAGERS & ROLES TESTS ====================
     
     def test_get_managers_list(self):
-        """Test GET /api/employees/managers/list returns managers"""
+        """Test GET /api/v1/employees/managers/list returns managers"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees/managers/list",
+            f"{BASE_URL}/api/v1/employees/managers/list",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
@@ -162,13 +162,13 @@ class TestEmployeeModule:
         # Managers should have admin or manager role
         for mgr in data:
             assert mgr.get("employee_id") is not None
-        print(f"✓ GET /api/employees/managers/list returned {len(data)} managers")
+        print(f"✓ GET /api/v1/employees/managers/list returned {len(data)} managers")
     
     def test_get_roles_list(self):
-        """Test GET /api/employees/roles/list returns available roles"""
+        """Test GET /api/v1/employees/roles/list returns available roles"""
         token = self.get_admin_token()
         response = self.session.get(
-            f"{BASE_URL}/api/employees/roles/list",
+            f"{BASE_URL}/api/v1/employees/roles/list",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
@@ -182,12 +182,12 @@ class TestEmployeeModule:
         assert "technician" in role_values
         assert "accountant" in role_values
         assert "customer_support" in role_values
-        print(f"✓ GET /api/employees/roles/list returned {len(data)} roles")
+        print(f"✓ GET /api/v1/employees/roles/list returned {len(data)} roles")
     
     # ==================== CREATE EMPLOYEE TESTS ====================
     
     def test_create_employee_full(self):
-        """Test POST /api/employees creates employee with user account and calculated deductions"""
+        """Test POST /api/v1/employees creates employee with user account and calculated deductions"""
         token = self.get_admin_token()
         
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -240,7 +240,7 @@ class TestEmployeeModule:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json=employee_data
         )
@@ -286,7 +286,7 @@ class TestEmployeeModule:
         print(f"  Gross: ₹{salary['gross_salary']}, PF: ₹{salary['pf_deduction']}, Net: ₹{salary['net_salary']}")
         
         # Verify new employee can login
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": test_email,
             "password": "test_pwd_placeholder"
         })
@@ -301,7 +301,7 @@ class TestEmployeeModule:
         return emp
     
     def test_create_employee_duplicate_email(self):
-        """Test POST /api/employees rejects duplicate email"""
+        """Test POST /api/v1/employees rejects duplicate email"""
         token = self.get_admin_token()
         
         employee_data = {
@@ -316,7 +316,7 @@ class TestEmployeeModule:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json=employee_data
         )
@@ -328,12 +328,12 @@ class TestEmployeeModule:
     # ==================== UPDATE EMPLOYEE TESTS ====================
     
     def test_update_employee(self):
-        """Test PUT /api/employees/{id} updates employee details"""
+        """Test PUT /api/v1/employees/{id} updates employee details"""
         token = self.get_admin_token()
         
         # Get existing employee
         list_response = self.session.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"}
         )
         employees = list_response.json()
@@ -348,7 +348,7 @@ class TestEmployeeModule:
         }
         
         response = self.session.put(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"},
             json=update_data
         )
@@ -360,7 +360,7 @@ class TestEmployeeModule:
         
         # Revert change
         self.session.put(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"},
             json={"designation": original_designation}
         )
@@ -371,7 +371,7 @@ class TestEmployeeModule:
         
         # Get existing employee
         list_response = self.session.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"}
         )
         employees = list_response.json()
@@ -387,7 +387,7 @@ class TestEmployeeModule:
         }
         
         response = self.session.put(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"},
             json=update_data
         )
@@ -410,7 +410,7 @@ class TestEmployeeModule:
         
         # Revert changes
         self.session.put(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "basic_salary": original_salary["basic_salary"],
@@ -421,7 +421,7 @@ class TestEmployeeModule:
     # ==================== DELETE EMPLOYEE TESTS ====================
     
     def test_delete_employee_soft_delete(self):
-        """Test DELETE /api/employees/{id} performs soft delete (deactivates)"""
+        """Test DELETE /api/v1/employees/{id} performs soft delete (deactivates)"""
         token = self.get_admin_token()
         
         # Create a test employee to delete
@@ -429,7 +429,7 @@ class TestEmployeeModule:
         test_email = f"TEST_delete_{timestamp}@battwheels.in"
         
         create_response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "first_name": "TEST_Delete",
@@ -449,7 +449,7 @@ class TestEmployeeModule:
         
         # Delete (soft delete)
         delete_response = self.session.delete(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"}
         )
         
@@ -458,7 +458,7 @@ class TestEmployeeModule:
         
         # Verify employee is now terminated
         get_response = self.session.get(
-            f"{BASE_URL}/api/employees/{employee_id}",
+            f"{BASE_URL}/api/v1/employees/{employee_id}",
             headers={"Authorization": f"Bearer {token}"}
         )
         
@@ -468,7 +468,7 @@ class TestEmployeeModule:
         assert deleted_emp["termination_date"] is not None
         
         # Verify user account is deactivated
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": test_email,
             "password": "test123"
         })
@@ -487,7 +487,7 @@ class TestEmployeeModule:
         test_email = f"TEST_pf_{timestamp}@battwheels.in"
         
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "first_name": "TEST_PF",
@@ -520,7 +520,7 @@ class TestEmployeeModule:
         
         # Create employee with gross <= 21000
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "first_name": "TEST_ESI",
@@ -555,7 +555,7 @@ class TestEmployeeModule:
         
         # Create employee with gross > 21000
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "first_name": "TEST_ESI_High",
@@ -589,7 +589,7 @@ class TestEmployeeModule:
         
         # Create employee with gross > 15000
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "first_name": "TEST_PT",
@@ -617,21 +617,21 @@ class TestEmployeeModule:
     
     def test_unauthorized_access(self):
         """Test endpoints require authentication"""
-        response = self.session.get(f"{BASE_URL}/api/employees")
+        response = self.session.get(f"{BASE_URL}/api/v1/employees")
         assert response.status_code == 401
         print("✓ Unauthorized access returns 401")
     
     def test_non_admin_cannot_create_employee(self):
         """Test non-admin users cannot create employees"""
         # Login as technician
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": self.test_employee_email,
             "password": self.test_employee_password
         })
         tech_token = login_response.json().get("token")
         
         response = self.session.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {tech_token}"},
             json={
                 "first_name": "Unauthorized",
@@ -658,7 +658,7 @@ class TestCleanup:
         session.headers.update({"Content-Type": "application/json"})
         
         # Login as admin
-        login_response = session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -666,7 +666,7 @@ class TestCleanup:
         
         # Get all employees
         response = session.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers={"Authorization": f"Bearer {token}"}
         )
         employees = response.json()
@@ -676,7 +676,7 @@ class TestCleanup:
         for emp in employees:
             if emp.get("first_name", "").startswith("TEST_"):
                 session.delete(
-                    f"{BASE_URL}/api/employees/{emp['employee_id']}",
+                    f"{BASE_URL}/api/v1/employees/{emp['employee_id']}",
                     headers={"Authorization": f"Bearer {token}"}
                 )
                 deleted_count += 1

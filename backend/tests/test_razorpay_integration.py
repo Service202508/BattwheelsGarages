@@ -1,8 +1,8 @@
 """
 Razorpay Integration Tests for Battwheels OS
 Tests for:
-- /api/payments/config GET endpoint (returns configuration status)
-- /api/payments/config POST endpoint (validates and saves credentials)
+- /api/v1/payments/config GET endpoint (returns configuration status)
+- /api/v1/payments/config POST endpoint (validates and saves credentials)
 - Organization Settings Finance tab with Razorpay card
 - Invoice page payment buttons when balance_due > 0
 """
@@ -41,7 +41,7 @@ class TestRazorpayConfigAPI:
             pytest.skip(f"Login failed with status {login_response.status_code}")
     
     def test_get_payment_config_returns_status(self):
-        """Test GET /api/payments/config returns configuration status"""
+        """Test GET /api/v1/payments/config returns configuration status"""
         response = self.session.get(f"{BASE_URL}/api/v1/payments/config")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -58,7 +58,7 @@ class TestRazorpayConfigAPI:
         print(f"Message: {data['message']}")
     
     def test_get_payment_config_without_auth(self):
-        """Test GET /api/payments/config without authentication"""
+        """Test GET /api/v1/payments/config without authentication"""
         # Create session without auth
         session = requests.Session()
         session.headers.update({"Content-Type": "application/json"})
@@ -76,7 +76,7 @@ class TestRazorpayConfigAPI:
             print(f"Without auth - endpoint requires authentication (401)")
     
     def test_post_payment_config_validation_invalid_credentials(self):
-        """Test POST /api/payments/config validates credentials before saving"""
+        """Test POST /api/v1/payments/config validates credentials before saving"""
         # Try with fake credentials - should fail validation
         fake_config = {
             "key_id": "rzp_test_REDACTED",
@@ -96,7 +96,7 @@ class TestRazorpayConfigAPI:
         print(f"Validation error: {data.get('detail', data.get('error', 'Unknown'))}")
     
     def test_post_payment_config_validation_short_credentials(self):
-        """Test POST /api/payments/config validates credential length"""
+        """Test POST /api/v1/payments/config validates credential length"""
         # Try with too short credentials
         short_config = {
             "key_id": "rzp_test",  # Too short
@@ -113,7 +113,7 @@ class TestRazorpayConfigAPI:
         print(f"Short credentials validation response: {response.status_code}")
     
     def test_post_payment_config_missing_required_fields(self):
-        """Test POST /api/payments/config requires key_id and key_secret"""
+        """Test POST /api/v1/payments/config requires key_id and key_secret"""
         # Missing key_secret
         partial_config = {
             "key_id": "rzp_test_REDACTED",
@@ -126,7 +126,7 @@ class TestRazorpayConfigAPI:
         assert response.status_code == 422, f"Expected 422 for missing fields, got {response.status_code}"
     
     def test_payment_orders_endpoint_exists(self):
-        """Test GET /api/payments/orders endpoint exists"""
+        """Test GET /api/v1/payments/orders endpoint exists"""
         response = self.session.get(f"{BASE_URL}/api/v1/payments/orders")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -136,7 +136,7 @@ class TestRazorpayConfigAPI:
         print(f"Payment orders: {len(data.get('orders', []))}")
     
     def test_payment_links_endpoint_exists(self):
-        """Test GET /api/payments/links endpoint exists"""
+        """Test GET /api/v1/payments/links endpoint exists"""
         response = self.session.get(f"{BASE_URL}/api/v1/payments/links")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -293,7 +293,7 @@ class TestWebhookEndpoint:
     """Test Razorpay webhook endpoint"""
     
     def test_webhook_endpoint_exists(self):
-        """Test POST /api/payments/webhook endpoint exists"""
+        """Test POST /api/v1/payments/webhook endpoint exists"""
         # Send invalid payload - should get 400 not 404
         session = requests.Session()
         session.headers.update({"Content-Type": "application/json"})

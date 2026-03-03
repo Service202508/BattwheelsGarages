@@ -1,6 +1,6 @@
 """
 Test Service Ticket Dashboard Stats
-- Tests GET /api/dashboard/stats endpoint
+- Tests GET /api/v1/dashboard/stats endpoint
 - Verifies service_ticket_stats object structure
 - Verifies resolution_type counting (onsite, workshop, pickup, remote)
 - Verifies average resolution time calculation
@@ -12,7 +12,7 @@ import requests
 import os
 from datetime import datetime, timezone, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 
 class TestServiceTicketDashboard:
@@ -22,7 +22,7 @@ class TestServiceTicketDashboard:
     def setup(self):
         """Setup - get auth token"""
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
@@ -35,9 +35,9 @@ class TestServiceTicketDashboard:
             pytest.skip("Authentication failed - cannot test dashboard")
     
     def test_dashboard_stats_endpoint_returns_200(self):
-        """Test GET /api/dashboard/stats returns 200"""
+        """Test GET /api/v1/dashboard/stats returns 200"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -46,7 +46,7 @@ class TestServiceTicketDashboard:
     def test_dashboard_stats_contains_service_ticket_stats(self):
         """Test that response contains service_ticket_stats object"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         assert response.status_code == 200
@@ -58,7 +58,7 @@ class TestServiceTicketDashboard:
     def test_service_ticket_stats_structure(self):
         """Test that service_ticket_stats has all required fields"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         assert response.status_code == 200
@@ -86,7 +86,7 @@ class TestServiceTicketDashboard:
     def test_service_ticket_stats_total_open_is_numeric(self):
         """Test that total_open is a numeric value"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -100,7 +100,7 @@ class TestServiceTicketDashboard:
     def test_onsite_resolution_count(self):
         """Test that onsite_resolution is counted correctly"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -114,7 +114,7 @@ class TestServiceTicketDashboard:
     def test_workshop_visit_count(self):
         """Test that workshop_visit is counted correctly (includes unspecified resolution_type)"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -128,7 +128,7 @@ class TestServiceTicketDashboard:
     def test_pickup_remote_counts(self):
         """Test that pickup and remote counts are tracked"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -145,7 +145,7 @@ class TestServiceTicketDashboard:
     def test_avg_resolution_time_hours(self):
         """Test that avg_resolution_time_hours is calculated"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -159,7 +159,7 @@ class TestServiceTicketDashboard:
     def test_onsite_resolution_percentage(self):
         """Test that onsite_resolution_percentage is from 30-day data"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -173,7 +173,7 @@ class TestServiceTicketDashboard:
     def test_30d_metrics(self):
         """Test 30-day resolved ticket metrics"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -190,7 +190,7 @@ class TestServiceTicketDashboard:
     def test_total_open_matches_sum_of_resolution_types(self):
         """Test that total_open >= sum of resolution types (may not be exact due to edge cases)"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -215,7 +215,7 @@ class TestServiceTicketDashboard:
     def test_percentage_calculation_consistency(self):
         """Test that onsite_resolution_percentage is consistent with 30d data"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -241,7 +241,7 @@ class TestDashboardStatsDataVerification:
     def setup(self):
         """Setup - get auth token"""
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
@@ -256,7 +256,7 @@ class TestDashboardStatsDataVerification:
     def test_dashboard_stats_data_types_valid(self):
         """Test all stats have valid data types"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -286,7 +286,7 @@ class TestDashboardStatsDataVerification:
     def test_open_repair_orders_matches_service_ticket_total(self):
         """Test that open_repair_orders matches service_ticket_stats.total_open"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         data = response.json()
@@ -305,7 +305,7 @@ class TestServiceTicketCreationAndStats:
     def setup(self):
         """Setup - get auth token"""
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
@@ -322,7 +322,7 @@ class TestServiceTicketCreationAndStats:
         """Create an onsite resolution ticket and verify stats update"""
         # Get initial stats
         initial_response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=self.headers
         )
         initial_data = initial_response.json()
@@ -340,7 +340,7 @@ class TestServiceTicketCreationAndStats:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_payload,
             headers=self.headers
         )
@@ -352,7 +352,7 @@ class TestServiceTicketCreationAndStats:
             
             # Verify stats updated
             updated_response = requests.get(
-                f"{BASE_URL}/api/dashboard/stats",
+                f"{BASE_URL}/api/v1/dashboard/stats",
                 headers=self.headers
             )
             updated_data = updated_response.json()
@@ -362,7 +362,7 @@ class TestServiceTicketCreationAndStats:
             print(f"PASS: Onsite count increased from {initial_onsite} to {updated_onsite}")
             
             # Cleanup - close the ticket
-            requests.delete(f"{BASE_URL}/api/tickets/{ticket_id}", headers=self.headers)
+            requests.delete(f"{BASE_URL}/api/v1/tickets/{ticket_id}", headers=self.headers)
         else:
             print(f"INFO: Could not create ticket - {create_response.status_code}: {create_response.text}")
             pytest.skip("Ticket creation endpoint not available")

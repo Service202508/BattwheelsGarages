@@ -8,17 +8,17 @@ import pytest
 import requests
 import subprocess
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 
 # ── Credentials ─────────────────────────────────────────────────────────────
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "admin"
+ADMIN_PASSWORD = "DevTest@123"
 
 @pytest.fixture(scope="module")
 def auth_token():
     """Obtain JWT for admin user."""
     resp = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
     )
     assert resp.status_code == 200, f"Login failed: {resp.status_code} {resp.text}"
@@ -30,7 +30,7 @@ def auth_token():
 def org_id(auth_token):
     """Fetch org_id of the admin's organisation."""
     resp = requests.get(
-        f"{BASE_URL}/api/organizations/my-organizations",
+        f"{BASE_URL}/api/v1/organizations/my-organizations",
         headers={"Authorization": f"Bearer {auth_token}"},
     )
     assert resp.status_code == 200, f"Could not fetch orgs: {resp.text}"
@@ -51,25 +51,25 @@ def auth_headers(auth_token, org_id):
 # S1.01 — Health endpoint regression
 # ─────────────────────────────────────────────────────────────────────────────
 class TestS1_01_HealthEndpoint:
-    """S1.01: GET /api/health must return 200 with status=ok"""
+    """S1.01: GET /api/v1/health must return 200 with status=ok"""
 
     def test_health_returns_200(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.text}"
-        print("PASS S1.01: /api/health returned 200")
+        print("PASS S1.01: /api/v1/health returned 200")
 
     def test_health_response_has_status_ok(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         data = resp.json()
         status = data.get("status", "")
         assert status.lower() == "ok", f"Expected status='ok', got '{status}'"
-        print(f"PASS S1.01: /api/health status={status}")
+        print(f"PASS S1.01: /api/v1/health status={status}")
 
     def test_health_response_structure(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         data = resp.json()
-        assert "status" in data, "Missing 'status' field in /api/health response"
-        print(f"PASS S1.01: /api/health response structure: {list(data.keys())}")
+        assert "status" in data, "Missing 'status' field in /api/v1/health response"
+        print(f"PASS S1.01: /api/v1/health response structure: {list(data.keys())}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -88,7 +88,7 @@ class TestS1_06_CORSNoWildcard:
     def test_no_wildcard_for_arbitrary_origin(self):
         """App must NOT echo back ACAO for unknown origins (tested on internal port)"""
         resp = requests.options(
-            f"{self.INTERNAL_URL}/api/health",
+            f"{self.INTERNAL_URL}/api/v1/health",
             headers={
                 "Origin": "https://evil-attacker.example.com",
                 "Access-Control-Request-Method": "GET",
@@ -111,9 +111,9 @@ class TestS1_06_CORSNoWildcard:
 
     def test_allowed_origin_gets_correct_acao(self):
         """Allowed origin gets echoed back (not wildcard) at app level"""
-        allowed = "https://org-hub-redesign.preview.emergentagent.com"
+        allowed = "https://zero-tolerance-check.preview.emergentagent.com"
         resp = requests.options(
-            f"{self.INTERNAL_URL}/api/health",
+            f"{self.INTERNAL_URL}/api/v1/health",
             headers={
                 "Origin": allowed,
                 "Access-Control-Request-Method": "GET",
@@ -131,7 +131,7 @@ class TestS1_06_CORSNoWildcard:
         """Verify the CORS_ORIGINS environment default has no '*' entry."""
         cors_raw = os.environ.get(
             "CORS_ORIGINS",
-            "https://battwheels.com,https://app.battwheels.com,https://org-hub-redesign.preview.emergentagent.com",
+            "https://battwheels.com,https://app.battwheels.com,https://zero-tolerance-check.preview.emergentagent.com",
         )
         origins = [o.strip() for o in cors_raw.split(",") if o.strip()]
         assert "*" not in origins, f"FAIL S1.06: '*' found in CORS_ORIGINS list: {origins}"
@@ -139,10 +139,10 @@ class TestS1_06_CORSNoWildcard:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SE4.06 — Security headers on every /api/* response
+# SE4.06 — Security headers on every /api/v1/* response
 # ─────────────────────────────────────────────────────────────────────────────
 class TestSE4_06_SecurityHeaders:
-    """SE4.06: Required security headers must be present on every /api/* response"""
+    """SE4.06: Required security headers must be present on every /api/v1/* response"""
 
     REQUIRED_HEADERS = [
         "X-Content-Type-Options",
@@ -161,37 +161,37 @@ class TestSE4_06_SecurityHeaders:
         return missing
 
     def test_health_has_security_headers(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
-        missing = self._check_headers(resp, "/api/health")
-        assert not missing, f"Missing security headers on /api/health: {missing}"
-        print(f"PASS SE4.06: /api/health has all security headers")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
+        missing = self._check_headers(resp, "/api/v1/health")
+        assert not missing, f"Missing security headers on /api/v1/health: {missing}"
+        print(f"PASS SE4.06: /api/v1/health has all security headers")
 
     def test_x_content_type_options_value(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         val = resp.headers.get("X-Content-Type-Options", "")
         assert val.lower() == "nosniff", f"Expected 'nosniff', got '{val}'"
         print(f"PASS SE4.06: X-Content-Type-Options={val}")
 
     def test_x_frame_options_value(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         val = resp.headers.get("X-Frame-Options", "")
         assert val.upper() == "DENY", f"Expected 'DENY', got '{val}'"
         print(f"PASS SE4.06: X-Frame-Options={val}")
 
     def test_hsts_value(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         val = resp.headers.get("Strict-Transport-Security", "")
         assert "max-age=" in val, f"Strict-Transport-Security missing max-age: '{val}'"
         print(f"PASS SE4.06: Strict-Transport-Security={val}")
 
     def test_referrer_policy_value(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         val = resp.headers.get("Referrer-Policy", "")
         assert val, f"Referrer-Policy is empty"
         print(f"PASS SE4.06: Referrer-Policy={val}")
 
     def test_csp_value(self):
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         val = resp.headers.get("Content-Security-Policy", "")
         assert val, f"Content-Security-Policy is empty"
         assert "default-src" in val, f"CSP missing 'default-src': '{val}'"
@@ -200,18 +200,18 @@ class TestSE4_06_SecurityHeaders:
     def test_auth_endpoint_has_security_headers(self, auth_headers):
         """Security headers must be present on authenticated endpoints too"""
         resp = requests.get(
-            f"{BASE_URL}/api/organizations/my-organizations",
+            f"{BASE_URL}/api/v1/organizations/my-organizations",
             headers=auth_headers,
         )
-        missing = self._check_headers(resp, "/api/organizations/my-organizations")
+        missing = self._check_headers(resp, "/api/v1/organizations/my-organizations")
         assert not missing, (
-            f"Missing security headers on /api/organizations/my-organizations: {missing}"
+            f"Missing security headers on /api/v1/organizations/my-organizations: {missing}"
         )
-        print(f"PASS SE4.06: /api/organizations/my-organizations has all security headers")
+        print(f"PASS SE4.06: /api/v1/organizations/my-organizations has all security headers")
 
     def test_all_six_headers_present_on_health(self):
         """One omnibus test: all 6 headers present at once"""
-        resp = requests.get(f"{BASE_URL}/api/health")
+        resp = requests.get(f"{BASE_URL}/api/v1/health")
         present = {k.lower(): v for k, v in resp.headers.items()}
         results = {h: present.get(h.lower(), "MISSING") for h in self.REQUIRED_HEADERS}
         missing = [h for h, v in results.items() if v == "MISSING"]
@@ -297,21 +297,21 @@ class TestDB2_06_MongoBackup:
 # FN11.05 — Trial balance endpoint
 # ─────────────────────────────────────────────────────────────────────────────
 class TestFN11_05_TrialBalance:
-    """FN11.05: GET /api/reports/trial-balance returns 200 with required fields"""
+    """FN11.05: GET /api/v1/reports/trial-balance returns 200 with required fields"""
 
     def test_trial_balance_returns_200(self, auth_headers):
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers,
         )
         assert resp.status_code == 200, (
             f"Expected 200, got {resp.status_code}: {resp.text[:300]}"
         )
-        print(f"PASS FN11.05: /api/reports/trial-balance returned 200")
+        print(f"PASS FN11.05: /api/v1/reports/trial-balance returned 200")
 
     def test_trial_balance_has_is_balanced_field(self, auth_headers):
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers,
         )
         data = resp.json()
@@ -323,7 +323,7 @@ class TestFN11_05_TrialBalance:
 
     def test_trial_balance_has_summary_with_totals(self, auth_headers):
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers,
         )
         data = resp.json()
@@ -338,7 +338,7 @@ class TestFN11_05_TrialBalance:
 
     def test_trial_balance_has_accounts_array(self, auth_headers):
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers,
         )
         data = resp.json()
@@ -351,7 +351,7 @@ class TestFN11_05_TrialBalance:
     def test_trial_balance_debits_equal_credits_when_balanced(self, auth_headers):
         """If is_balanced=True, total_debit must equal total_credit"""
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers=auth_headers,
         )
         data = resp.json()
@@ -380,7 +380,7 @@ class TestFN11_05_TrialBalance:
     def test_trial_balance_with_date_filter(self, auth_headers):
         """Trial balance accepts optional as_of_date query parameter"""
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             params={"as_of_date": "2025-12-31"},
             headers=auth_headers,
         )
@@ -396,7 +396,7 @@ class TestFN11_05_TrialBalance:
     def test_trial_balance_missing_org_id_returns_400(self, auth_token):
         """Without X-Organization-ID header, endpoint returns 400"""
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert resp.status_code in (400, 401, 422), (
@@ -407,7 +407,7 @@ class TestFN11_05_TrialBalance:
     def test_trial_balance_invalid_date_returns_400(self, auth_headers):
         """Invalid date format returns 400"""
         resp = requests.get(
-            f"{BASE_URL}/api/reports/trial-balance",
+            f"{BASE_URL}/api/v1/reports/trial-balance",
             params={"as_of_date": "not-a-date"},
             headers=auth_headers,
         )
@@ -421,12 +421,12 @@ class TestFN11_05_TrialBalance:
 # FN11.11 — Signup endpoint regression
 # ─────────────────────────────────────────────────────────────────────────────
 class TestFN11_11_SignupRegression:
-    """FN11.11: POST /api/organizations/register must NOT return 401 (publicly accessible)"""
+    """FN11.11: POST /api/v1/organizations/register must NOT return 401 (publicly accessible)"""
 
     def test_register_endpoint_not_401(self):
         """Signup endpoint should be publicly accessible (no auth required)"""
         resp = requests.post(
-            f"{BASE_URL}/api/organizations/register",
+            f"{BASE_URL}/api/v1/organizations/register",
             json={
                 "organization_name": "TEST_AuditTestOrg999",
                 "email": "TEST_audit_signup_999@example.com",
@@ -437,15 +437,15 @@ class TestFN11_11_SignupRegression:
         )
         # Must NOT be 401 (which would mean auth is wrongly required)
         assert resp.status_code != 401, (
-            f"FAIL FN11.11: /api/organizations/register returned 401 — "
+            f"FAIL FN11.11: /api/v1/organizations/register returned 401 — "
             f"endpoint must be publicly accessible without auth"
         )
-        print(f"PASS FN11.11: /api/organizations/register returned {resp.status_code} (not 401)")
+        print(f"PASS FN11.11: /api/v1/organizations/register returned {resp.status_code} (not 401)")
 
     def test_signup_endpoint_is_accessible(self):
         """Signup endpoint returns 200, 201, 400, or 409 — never 401 or 403"""
         resp = requests.post(
-            f"{BASE_URL}/api/organizations/register",
+            f"{BASE_URL}/api/v1/organizations/register",
             json={
                 "organization_name": "TEST_AuditSignup2",
                 "email": "TEST_audit2@example.com",
@@ -465,9 +465,9 @@ class TestFN11_11_SignupRegression:
         )
 
     def test_signup_also_accessible(self):
-        """/api/organizations/signup is also publicly accessible"""
+        """/api/v1/organizations/signup is also publicly accessible"""
         resp = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "organization_name": "TEST_AuditSignup3",
                 "email": "TEST_audit3@example.com",
@@ -476,6 +476,6 @@ class TestFN11_11_SignupRegression:
             },
         )
         assert resp.status_code != 401, (
-            f"FAIL FN11.11: /api/organizations/signup returned 401"
+            f"FAIL FN11.11: /api/v1/organizations/signup returned 401"
         )
-        print(f"PASS FN11.11: /api/organizations/signup returned {resp.status_code}")
+        print(f"PASS FN11.11: /api/v1/organizations/signup returned {resp.status_code}")

@@ -3,11 +3,11 @@ Test Items/Price Lists Integration with Quotes/Estimates Module
 Tests automatic customer-specific pricing when creating quotes.
 
 Features tested:
-- GET /api/items-enhanced/item-price/{item_id} - Get item price with optional contact_id
-- GET /api/items-enhanced/contact-pricing-summary/{contact_id} - Get customer's pricing config
-- GET /api/estimates-enhanced/item-pricing/{item_id}?customer_id= - Get item pricing for estimates
-- GET /api/estimates-enhanced/customer-pricing/{customer_id} - Get customer's price list info
-- POST /api/estimates-enhanced/ - Create estimate with automatic price list application
+- GET /api/v1/items-enhanced/item-price/{item_id} - Get item price with optional contact_id
+- GET /api/v1/items-enhanced/contact-pricing-summary/{contact_id} - Get customer's pricing config
+- GET /api/v1/estimates-enhanced/item-pricing/{item_id}?customer_id= - Get item pricing for estimates
+- GET /api/v1/estimates-enhanced/customer-pricing/{customer_id} - Get customer's price list info
+- POST /api/v1/estimates-enhanced/ - Create estimate with automatic price list application
 """
 
 import pytest
@@ -16,7 +16,7 @@ import os
 import uuid
 
 # Use the public URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test data from the review request
 TEST_CUSTOMER_ID = "CUST-93AE14BE3618"  # Full Zoho Test Co - has Wholesale price list
@@ -32,7 +32,7 @@ class TestItemsEnhancedPriceEndpoints:
     
     def test_get_item_price_without_contact(self):
         """Test getting item price without contact - should return base rate"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/item-price/{TEST_ITEM_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/item-price/{TEST_ITEM_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -51,7 +51,7 @@ class TestItemsEnhancedPriceEndpoints:
     def test_get_item_price_with_contact_having_price_list(self):
         """Test getting item price with contact that has assigned price list"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/item-price/{TEST_ITEM_ID}",
+            f"{BASE_URL}/api/v1/items-enhanced/item-price/{TEST_ITEM_ID}",
             params={"contact_id": TEST_CUSTOMER_ID}
         )
         assert response.status_code == 200
@@ -70,12 +70,12 @@ class TestItemsEnhancedPriceEndpoints:
     
     def test_get_item_price_invalid_item(self):
         """Test getting price for non-existent item"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/item-price/INVALID-ITEM-ID")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/item-price/INVALID-ITEM-ID")
         assert response.status_code == 404
     
     def test_get_contact_pricing_summary(self):
         """Test getting pricing summary for a contact with price list"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/contact-pricing-summary/{TEST_CUSTOMER_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/contact-pricing-summary/{TEST_CUSTOMER_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -92,7 +92,7 @@ class TestItemsEnhancedPriceEndpoints:
     
     def test_get_contact_pricing_summary_invalid_contact(self):
         """Test getting pricing summary for non-existent contact"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/contact-pricing-summary/INVALID-CONTACT")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/contact-pricing-summary/INVALID-CONTACT")
         assert response.status_code == 404
 
 
@@ -101,7 +101,7 @@ class TestEstimatesEnhancedPricingEndpoints:
     
     def test_get_item_pricing_for_estimate_without_customer(self):
         """Test getting item pricing without customer - returns base rate"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/item-pricing/{TEST_ITEM_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/item-pricing/{TEST_ITEM_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -117,7 +117,7 @@ class TestEstimatesEnhancedPricingEndpoints:
     def test_get_item_pricing_for_estimate_with_customer(self):
         """Test getting item pricing with customer that has price list"""
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/item-pricing/{TEST_ITEM_ID}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/item-pricing/{TEST_ITEM_ID}",
             params={"customer_id": TEST_CUSTOMER_ID}
         )
         assert response.status_code == 200
@@ -136,12 +136,12 @@ class TestEstimatesEnhancedPricingEndpoints:
     
     def test_get_item_pricing_invalid_item(self):
         """Test getting pricing for non-existent item"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/item-pricing/INVALID-ITEM")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/item-pricing/INVALID-ITEM")
         assert response.status_code == 404
     
     def test_get_customer_pricing_info(self):
         """Test getting customer pricing info for estimates UI"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/customer-pricing/{TEST_CUSTOMER_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/customer-pricing/{TEST_CUSTOMER_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -158,7 +158,7 @@ class TestEstimatesEnhancedPricingEndpoints:
     
     def test_get_customer_pricing_invalid_customer(self):
         """Test getting pricing for non-existent customer"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/customer-pricing/INVALID-CUSTOMER")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/customer-pricing/INVALID-CUSTOMER")
         assert response.status_code == 404
 
 
@@ -182,7 +182,7 @@ class TestEstimateCreationWithPriceList:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/",
+            f"{BASE_URL}/api/v1/estimates-enhanced/",
             json=estimate_data
         )
         assert response.status_code == 200
@@ -234,7 +234,7 @@ class TestEstimateCreationWithPriceList:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/",
+            f"{BASE_URL}/api/v1/estimates-enhanced/",
             json=estimate_data
         )
         assert response.status_code == 200
@@ -270,7 +270,7 @@ class TestEstimateCreationWithPriceList:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/",
+            f"{BASE_URL}/api/v1/estimates-enhanced/",
             json=estimate_data
         )
         assert response.status_code == 200
@@ -296,7 +296,7 @@ class TestPriceListVerification:
     
     def test_verify_wholesale_price_list_exists(self):
         """Verify the Wholesale price list exists with correct discount"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/price-lists/{TEST_PRICE_LIST_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists/{TEST_PRICE_LIST_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -309,7 +309,7 @@ class TestPriceListVerification:
     
     def test_verify_customer_has_price_list_assigned(self):
         """Verify the test customer has the Wholesale price list assigned"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/contact-price-lists/{TEST_CUSTOMER_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/contact-price-lists/{TEST_CUSTOMER_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -327,7 +327,7 @@ class TestExistingEstimatesWithPriceList:
         """Get an existing estimate and verify price list info is present"""
         # Get list of estimates for the test customer
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/",
+            f"{BASE_URL}/api/v1/estimates-enhanced/",
             params={"customer_id": TEST_CUSTOMER_ID, "per_page": 5}
         )
         assert response.status_code == 200
@@ -354,12 +354,12 @@ def cleanup_test_estimates():
     yield
     # After tests, delete TEST_ prefixed estimates
     try:
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=100")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=100")
         if response.status_code == 200:
             estimates = response.json().get("estimates", [])
             for est in estimates:
                 if est.get("subject", "").startswith("TEST_"):
-                    requests.delete(f"{BASE_URL}/api/estimates-enhanced/{est['estimate_id']}")
+                    requests.delete(f"{BASE_URL}/api/v1/estimates-enhanced/{est['estimate_id']}")
     except:
         pass
 

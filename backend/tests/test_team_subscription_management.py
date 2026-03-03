@@ -32,7 +32,7 @@ class TestAuthentication:
     @pytest.fixture(scope="class")
     def auth_data(self, session):
         """Get auth token and org_id from login"""
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "test403debug@example.com",
             "password": "test_pwd_placeholder"
         })
@@ -59,8 +59,8 @@ class TestSubscriptionManagement(TestAuthentication):
     """Test Subscription Management API endpoints"""
     
     def test_get_current_subscription(self, session, auth_headers):
-        """Test GET /api/subscriptions/current - Returns current subscription"""
-        response = session.get(f"{BASE_URL}/api/subscriptions/current", headers=auth_headers)
+        """Test GET /api/v1/subscriptions/current - Returns current subscription"""
+        response = session.get(f"{BASE_URL}/api/v1/subscriptions/current", headers=auth_headers)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -71,8 +71,8 @@ class TestSubscriptionManagement(TestAuthentication):
         print(f"Current plan: {data['plan']['code']}, status: {data['status']}")
     
     def test_get_subscription_entitlements(self, session, auth_headers):
-        """Test GET /api/subscriptions/entitlements - Returns feature entitlements"""
-        response = session.get(f"{BASE_URL}/api/subscriptions/entitlements", headers=auth_headers)
+        """Test GET /api/v1/subscriptions/entitlements - Returns feature entitlements"""
+        response = session.get(f"{BASE_URL}/api/v1/subscriptions/entitlements", headers=auth_headers)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -87,8 +87,8 @@ class TestSubscriptionManagement(TestAuthentication):
         print(f"Plan: {data['plan']}, Active: {data['is_active']}, Features count: {len(features)}")
     
     def test_get_subscription_limits(self, session, auth_headers):
-        """Test GET /api/subscriptions/limits - Returns usage limits"""
-        response = session.get(f"{BASE_URL}/api/subscriptions/limits", headers=auth_headers)
+        """Test GET /api/v1/subscriptions/limits - Returns usage limits"""
+        response = session.get(f"{BASE_URL}/api/v1/subscriptions/limits", headers=auth_headers)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -107,12 +107,12 @@ class TestSubscriptionManagement(TestAuthentication):
     def test_subscription_requires_auth(self, session):
         """Test subscription endpoints require authentication"""
         # Without auth
-        response = session.get(f"{BASE_URL}/api/subscriptions/current")
+        response = session.get(f"{BASE_URL}/api/v1/subscriptions/current")
         assert response.status_code in [401, 403], f"Expected 401/403 without auth, got {response.status_code}"
     
     def test_compare_plans_public(self, session):
-        """Test GET /api/subscriptions/plans/compare - Public endpoint"""
-        response = session.get(f"{BASE_URL}/api/subscriptions/plans/compare")
+        """Test GET /api/v1/subscriptions/plans/compare - Public endpoint"""
+        response = session.get(f"{BASE_URL}/api/v1/subscriptions/plans/compare")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -129,8 +129,8 @@ class TestTeamManagement(TestAuthentication):
     """Test Team Management API endpoints"""
     
     def test_list_members(self, session, auth_headers):
-        """Test GET /api/organizations/me/members - List team members"""
-        response = session.get(f"{BASE_URL}/api/organizations/me/members", headers=auth_headers)
+        """Test GET /api/v1/organizations/me/members - List team members"""
+        response = session.get(f"{BASE_URL}/api/v1/organizations/me/members", headers=auth_headers)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -148,8 +148,8 @@ class TestTeamManagement(TestAuthentication):
         print(f"Found {len(members)} team members")
     
     def test_list_invitations(self, session, auth_headers):
-        """Test GET /api/organizations/me/invites - List invitations"""
-        response = session.get(f"{BASE_URL}/api/organizations/me/invites", headers=auth_headers)
+        """Test GET /api/v1/organizations/me/invites - List invitations"""
+        response = session.get(f"{BASE_URL}/api/v1/organizations/me/invites", headers=auth_headers)
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -160,11 +160,11 @@ class TestTeamManagement(TestAuthentication):
         print(f"Found {len(invites)} invitations")
     
     def test_invite_user(self, session, auth_headers):
-        """Test POST /api/organizations/me/invite - Send invitation"""
+        """Test POST /api/v1/organizations/me/invite - Send invitation"""
         test_email = f"TEST_invite_{uuid.uuid4().hex[:8]}@example.com"
         
         response = session.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=auth_headers,
             json={
                 "name": "Test Invite User",
@@ -189,7 +189,7 @@ class TestTeamManagement(TestAuthentication):
         test_email = f"TEST_dup_{uuid.uuid4().hex[:8]}@example.com"
         
         response1 = session.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=auth_headers,
             json={
                 "name": "Test Dup User",
@@ -201,7 +201,7 @@ class TestTeamManagement(TestAuthentication):
         
         # Try duplicate
         response2 = session.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=auth_headers,
             json={
                 "name": "Test Dup User",
@@ -217,7 +217,7 @@ class TestTeamManagement(TestAuthentication):
         test_email = f"TEST_invalid_{uuid.uuid4().hex[:8]}@example.com"
         
         response = session.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=auth_headers,
             json={
                 "name": "Test User",
@@ -229,12 +229,12 @@ class TestTeamManagement(TestAuthentication):
         print("Invalid role correctly rejected")
     
     def test_cancel_invitation(self, session, auth_headers):
-        """Test DELETE /api/organizations/me/invites/{invite_id} - Cancel invitation"""
+        """Test DELETE /api/v1/organizations/me/invites/{invite_id} - Cancel invitation"""
         # Create a new invite to cancel
         test_email = f"TEST_cancel_{uuid.uuid4().hex[:8]}@example.com"
         
         create_response = session.post(
-            f"{BASE_URL}/api/organizations/me/invite",
+            f"{BASE_URL}/api/v1/organizations/me/invite",
             headers=auth_headers,
             json={
                 "name": "Test Cancel User",
@@ -247,7 +247,7 @@ class TestTeamManagement(TestAuthentication):
         
         # Cancel the invite
         response = session.delete(
-            f"{BASE_URL}/api/organizations/me/invites/{invite_id}",
+            f"{BASE_URL}/api/v1/organizations/me/invites/{invite_id}",
             headers=auth_headers
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -259,17 +259,17 @@ class TestTeamManagement(TestAuthentication):
     def test_cancel_nonexistent_invitation(self, session, auth_headers):
         """Test cancelling non-existent invitation returns 404"""
         response = session.delete(
-            f"{BASE_URL}/api/organizations/me/invites/inv_nonexistent123",
+            f"{BASE_URL}/api/v1/organizations/me/invites/inv_nonexistent123",
             headers=auth_headers
         )
         assert response.status_code == 404, f"Expected 404, got {response.status_code}"
         print("Non-existent invite cancel correctly returns 404")
     
     def test_update_member_role(self, session, auth_headers, auth_data):
-        """Test PATCH /api/organizations/me/members/{user_id}/role - Update role"""
+        """Test PATCH /api/v1/organizations/me/members/{user_id}/role - Update role"""
         # First get members
         members_response = session.get(
-            f"{BASE_URL}/api/organizations/me/members",
+            f"{BASE_URL}/api/v1/organizations/me/members",
             headers=auth_headers
         )
         assert members_response.status_code == 200
@@ -288,7 +288,7 @@ class TestTeamManagement(TestAuthentication):
         
         # Update role
         response = session.patch(
-            f"{BASE_URL}/api/organizations/me/members/{target_member['user_id']}/role",
+            f"{BASE_URL}/api/v1/organizations/me/members/{target_member['user_id']}/role",
             headers=auth_headers,
             json={"role": "manager"}
         )
@@ -301,7 +301,7 @@ class TestTeamManagement(TestAuthentication):
     def test_update_role_invalid(self, session, auth_headers):
         """Test invalid role update returns 400"""
         response = session.patch(
-            f"{BASE_URL}/api/organizations/me/members/some_user_id/role",
+            f"{BASE_URL}/api/v1/organizations/me/members/some_user_id/role",
             headers=auth_headers,
             json={"role": "superadmin"}  # Invalid role
         )
@@ -311,9 +311,9 @@ class TestTeamManagement(TestAuthentication):
     def test_team_endpoints_require_auth(self, session):
         """Test team endpoints require authentication"""
         endpoints = [
-            ("GET", f"{BASE_URL}/api/organizations/me/members"),
-            ("GET", f"{BASE_URL}/api/organizations/me/invites"),
-            ("POST", f"{BASE_URL}/api/organizations/me/invite"),
+            ("GET", f"{BASE_URL}/api/v1/organizations/me/members"),
+            ("GET", f"{BASE_URL}/api/v1/organizations/me/invites"),
+            ("POST", f"{BASE_URL}/api/v1/organizations/me/invite"),
         ]
         
         for method, url in endpoints:
@@ -329,9 +329,9 @@ class TestOrganizationSwitcher(TestAuthentication):
     """Test Organization Switcher related endpoints"""
     
     def test_get_my_organizations(self, session, auth_headers):
-        """Test GET /api/organizations/my-organizations - Get user's orgs"""
+        """Test GET /api/v1/organizations/my-organizations - Get user's orgs"""
         response = session.get(
-            f"{BASE_URL}/api/organizations/my-organizations",
+            f"{BASE_URL}/api/v1/organizations/my-organizations",
             headers=auth_headers
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -352,9 +352,9 @@ class TestOrganizationSwitcher(TestAuthentication):
         print(f"User belongs to {len(orgs)} organization(s)")
     
     def test_get_current_organization(self, session, auth_headers):
-        """Test GET /api/organizations/me - Get current org details"""
+        """Test GET /api/v1/organizations/me - Get current org details"""
         response = session.get(
-            f"{BASE_URL}/api/organizations/me",
+            f"{BASE_URL}/api/v1/organizations/me",
             headers=auth_headers
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"

@@ -20,8 +20,8 @@ class TestCSRFCookieIssuance:
     """CSRF token cookie must be issued on GET responses."""
 
     def test_get_sets_csrf_cookie(self):
-        """GET /api/health sets csrf_token cookie"""
-        res = requests.get(f"{BASE_URL}/api/health")
+        """GET /api/v1/health sets csrf_token cookie"""
+        res = requests.get(f"{BASE_URL}/api/v1/health")
         assert res.status_code == 200
         assert "csrf_token" in res.cookies, "csrf_token cookie not set on GET"
         assert len(res.cookies["csrf_token"]) >= 32, "csrf_token too short"
@@ -82,7 +82,7 @@ class TestCSRFEnforcement:
         """POST with session cookie but no CSRF token → 403"""
         # First GET to obtain csrf_token cookie
         session = requests.Session()
-        session.get(f"{BASE_URL}/api/health")
+        session.get(f"{BASE_URL}/api/v1/health")
 
         # POST with a fake session cookie (simulating cookie auth) but NO CSRF header
         session.cookies.set("session_token", "fake_session_for_csrf_test")
@@ -105,7 +105,7 @@ class TestCSRFEnforcement:
     def test_post_with_csrf_mismatch_blocked(self):
         """POST with mismatched CSRF cookie/header → 403"""
         session = requests.Session()
-        session.get(f"{BASE_URL}/api/health")
+        session.get(f"{BASE_URL}/api/v1/health")
 
         # Set mismatched CSRF values
         session.cookies.set("csrf_token", "cookie_value_abc")

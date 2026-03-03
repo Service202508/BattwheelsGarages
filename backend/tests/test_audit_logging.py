@@ -39,7 +39,7 @@ def get_token():
     global TOKEN
     if TOKEN:
         return TOKEN
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
     })
     TOKEN = resp.json().get("token", "")

@@ -90,10 +90,10 @@ async def cleanup():
 def main():
     asyncio.run(seed())
 
-    tok_a = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in", "password": "Admin@12345"
+    tok_a = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
+        "email": "admin@battwheels.in", "password": "DevTest@123"
     }).json()["token"]
-    tok_b = requests.post(f"{BASE_URL}/api/auth/login", json={
+    tok_b = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ORG_B_EMAIL, "password": ORG_B_PASSWORD
     }).json()["token"]
 

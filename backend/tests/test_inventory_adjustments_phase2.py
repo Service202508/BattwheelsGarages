@@ -10,7 +10,7 @@ import io
 import uuid
 import tempfile
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test item details from credentials
 TEST_ITEM_ID = "1837096000000446195"  # 12V Battery replacement
@@ -21,8 +21,8 @@ class TestExportCSV:
     """Test CSV export functionality"""
     
     def test_export_csv_returns_csv_content(self):
-        """GET /api/inv-adjustments/export/csv should return 200 with text/csv"""
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments/export/csv")
+        """GET /api/v1/inv-adjustments/export/csv should return 200 with text/csv"""
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/export/csv")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         # Check content-type header
@@ -49,14 +49,14 @@ class TestExportCSV:
     
     def test_export_csv_with_filters(self):
         """Export with status filter should work"""
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments/export/csv?status=adjusted")
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/export/csv?status=adjusted")
         assert response.status_code == 200
         print("✓ Export CSV with status filter works")
     
     def test_export_csv_with_date_range(self):
         """Export with date range filter should work"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/export/csv?date_from=2025-01-01&date_to=2026-12-31"
+            f"{BASE_URL}/api/v1/inv-adjustments/export/csv?date_from=2025-01-01&date_to=2026-12-31"
         )
         assert response.status_code == 200
         print("✓ Export CSV with date range works")
@@ -66,7 +66,7 @@ class TestImportValidate:
     """Test CSV import validation endpoint"""
     
     def test_validate_import_with_valid_csv(self):
-        """POST /api/inv-adjustments/import/validate with valid CSV"""
+        """POST /api/v1/inv-adjustments/import/validate with valid CSV"""
         # Create test CSV content
         csv_content = f"""Item Name,New Quantity,Reason,Type,Date
 {TEST_ITEM_NAME},100,Stocktaking Variance,quantity,2026-01-18
@@ -75,7 +75,7 @@ class TestImportValidate:
         files = {'file': ('test_import.csv', csv_content, 'text/csv')}
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/import/validate",
+            f"{BASE_URL}/api/v1/inv-adjustments/import/validate",
             files=files
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -102,7 +102,7 @@ NonExistentItem12345,50,Other,quantity,2026-01-18
         files = {'file': ('test_missing.csv', csv_content, 'text/csv')}
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/import/validate",
+            f"{BASE_URL}/api/v1/inv-adjustments/import/validate",
             files=files
         )
         assert response.status_code == 200
@@ -118,7 +118,7 @@ class TestImportProcess:
     """Test CSV import processing endpoint"""
     
     def test_process_import_creates_draft_adjustments(self):
-        """POST /api/inv-adjustments/import/process creates drafts"""
+        """POST /api/v1/inv-adjustments/import/process creates drafts"""
         # Create CSV with valid item - use item_id for better matching
         csv_content = f"""Item ID,Item Name,New Quantity,Reason,Type,Date,Description
 {ALT_ITEM_ID},2 WHEELER SEATCOVER-25,100,Stocktaking Variance,quantity,2026-01-18,TEST_Import draft
@@ -126,7 +126,7 @@ class TestImportProcess:
         files = {'file': ('test_process.csv', csv_content, 'text/csv')}
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/import/process",
+            f"{BASE_URL}/api/v1/inv-adjustments/import/process",
             files=files
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -153,7 +153,7 @@ class TestPDFGeneration:
     def setup(self):
         """Get an existing adjustment ID for PDF test"""
         # List adjustments to get a valid ID
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments?per_page=1")
         if response.status_code == 200:
             data = response.json()
             if data.get("adjustments") and len(data["adjustments"]) > 0:
@@ -164,12 +164,12 @@ class TestPDFGeneration:
             self.test_adjustment_id = None
     
     def test_pdf_generation_returns_pdf(self):
-        """GET /api/inv-adjustments/{id}/pdf should return PDF"""
+        """GET /api/v1/inv-adjustments/{id}/pdf should return PDF"""
         if not self.test_adjustment_id:
             pytest.skip("No adjustment available for PDF test")
         
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/{self.test_adjustment_id}/pdf"
+            f"{BASE_URL}/api/v1/inv-adjustments/{self.test_adjustment_id}/pdf"
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -192,7 +192,7 @@ class TestPDFGeneration:
     def test_pdf_for_invalid_id_returns_404(self):
         """PDF for non-existent adjustment should return 404"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/INVALID-ID-12345/pdf"
+            f"{BASE_URL}/api/v1/inv-adjustments/INVALID-ID-12345/pdf"
         )
         assert response.status_code == 404
         print("✓ PDF for invalid ID returns 404")
@@ -202,9 +202,9 @@ class TestABCClassificationReport:
     """Test ABC Classification report with drill-down"""
     
     def test_abc_report_returns_classification(self):
-        """GET /api/inv-adjustments/reports/abc-classification"""
+        """GET /api/v1/inv-adjustments/reports/abc-classification"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/abc-classification"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/abc-classification"
         )
         assert response.status_code == 200
         
@@ -233,10 +233,10 @@ class TestABCClassificationReport:
         return report
     
     def test_abc_drill_down_for_item(self):
-        """GET /api/inv-adjustments/reports/abc-classification/{item_id}"""
+        """GET /api/v1/inv-adjustments/reports/abc-classification/{item_id}"""
         # First get ABC report to get an item_id
         abc_response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/abc-classification"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/abc-classification"
         )
         abc_data = abc_response.json()
         
@@ -248,7 +248,7 @@ class TestABCClassificationReport:
         
         # Call drill-down endpoint
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/abc-classification/{item_id}"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/abc-classification/{item_id}"
         )
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -275,7 +275,7 @@ class TestABCClassificationReport:
     def test_abc_drill_down_invalid_item(self):
         """Drill-down for non-existent item should still return 200 with empty data"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/abc-classification/INVALID-ITEM-12345"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/abc-classification/INVALID-ITEM-12345"
         )
         # Should return 200 with empty adjustments (not 404)
         assert response.status_code == 200
@@ -289,9 +289,9 @@ class TestTicketLinking:
     """Test ticket_id field in adjustments"""
     
     def test_create_adjustment_with_ticket_id(self):
-        """POST /api/inv-adjustments with ticket_id"""
+        """POST /api/v1/inv-adjustments with ticket_id"""
         # Get a reason first
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         ticket_id = "TKT-TEST-001"
@@ -309,7 +309,7 @@ class TestTicketLinking:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments",
+            f"{BASE_URL}/api/v1/inv-adjustments",
             json=payload
         )
         assert response.status_code == 200
@@ -320,20 +320,20 @@ class TestTicketLinking:
         print(f"✓ Created adjustment with ticket_id: {adj_id}")
         
         # Verify ticket_id is stored and returned in GET
-        detail_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        detail_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
         detail = detail_resp.json()["adjustment"]
         
         assert detail.get("ticket_id") == ticket_id, f"ticket_id not stored! Got: {detail.get('ticket_id')}"
         print(f"✓ ticket_id '{ticket_id}' stored and returned correctly")
         
         # Cleanup - delete draft
-        requests.delete(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        requests.delete(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
         
         return adj_id
     
     def test_ticket_id_in_export(self):
         """Exported CSV should include ticket_id column"""
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments/export/csv")
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/export/csv")
         assert response.status_code == 200
         
         csv_content = response.text
@@ -348,7 +348,7 @@ class TestAdjustStockFromItemsPage:
     
     def test_items_endpoint_exists(self):
         """Verify items endpoint works for getting item data"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
@@ -375,7 +375,7 @@ class TestIntegrationScenario:
         
         # Step 2: Validate
         validate_resp = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/import/validate",
+            f"{BASE_URL}/api/v1/inv-adjustments/import/validate",
             files=files
         )
         assert validate_resp.status_code == 200
@@ -386,7 +386,7 @@ class TestIntegrationScenario:
         # Step 3: Process (need to send file again)
         files = {'file': ('import_test.csv', csv_content, 'text/csv')}
         process_resp = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/import/process",
+            f"{BASE_URL}/api/v1/inv-adjustments/import/process",
             files=files
         )
         assert process_resp.status_code == 200
@@ -395,7 +395,7 @@ class TestIntegrationScenario:
         print(f"✓ Step 2: Processed - {created_count} drafts created")
         
         # Step 4: Verify draft exists
-        list_resp = requests.get(f"{BASE_URL}/api/inv-adjustments?status=draft&search=TEST_Full")
+        list_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments?status=draft&search=TEST_Full")
         list_data = list_resp.json()
         # May or may not find by description search, so just verify list works
         print(f"✓ Step 3: Draft adjustments listed: {list_data['total']} total drafts")

@@ -7,7 +7,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # ========================= FIXTURES =========================
 
@@ -32,17 +32,17 @@ def test_item_id(api_client):
         "stock_on_hand": 100
     }
     
-    response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+    response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
     if response.status_code == 200:
         data = response.json()
         if data.get("code") == 0 and data.get("item"):
             return data["item"]["item_id"]
     
     # If creation fails, get an existing inventory item
-    response = api_client.get(f"{BASE_URL}/api/items-enhanced/summary")
+    response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/summary")
     if response.status_code == 200:
         # Get list of items
-        list_response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10&item_type=inventory")
+        list_response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10&item_type=inventory")
         if list_response.status_code == 200:
             data = list_response.json()
             items = data.get("items", [])
@@ -58,7 +58,7 @@ class TestSerialBatchSummaryReports:
     
     def test_serial_summary_report(self, api_client):
         """Test serial tracking summary endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/reports/serial-summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/reports/serial-summary")
         assert response.status_code == 200
         
         data = response.json()
@@ -80,7 +80,7 @@ class TestSerialBatchSummaryReports:
     
     def test_batch_summary_report(self, api_client):
         """Test batch tracking summary endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/reports/batch-summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/reports/batch-summary")
         assert response.status_code == 200
         
         data = response.json()
@@ -96,7 +96,7 @@ class TestSerialBatchSummaryReports:
     
     def test_expiring_batches_report(self, api_client):
         """Test expiring batches endpoint"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/batches/expiring?days=30")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/batches/expiring?days=30")
         assert response.status_code == 200
         
         data = response.json()
@@ -107,7 +107,7 @@ class TestSerialBatchSummaryReports:
     
     def test_tracking_enabled_items(self, api_client):
         """Test list of items with tracking enabled"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/items/tracking-enabled")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/items/tracking-enabled")
         assert response.status_code == 200
         
         data = response.json()
@@ -122,7 +122,7 @@ class TestSerialNumberCRUD:
     
     def test_list_serial_numbers(self, api_client):
         """Test listing serial numbers"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/serials?per_page=50")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/serials?per_page=50")
         assert response.status_code == 200
         
         data = response.json()
@@ -133,7 +133,7 @@ class TestSerialNumberCRUD:
     
     def test_list_serials_with_status_filter(self, api_client):
         """Test listing serials with status filter"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/serials?status=available")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/serials?status=available")
         assert response.status_code == 200
         
         data = response.json()
@@ -153,7 +153,7 @@ class TestSerialNumberCRUD:
             "notes": "Test serial number"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/serial-batch/serials", json=serial_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials", json=serial_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -165,7 +165,7 @@ class TestSerialNumberCRUD:
         
         # Verify by GET
         serial_id = data["serial"]["serial_id"]
-        get_response = api_client.get(f"{BASE_URL}/api/serial-batch/serials/{serial_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/serials/{serial_id}")
         assert get_response.status_code == 200
         get_data = get_response.json()
         assert get_data["code"] == 0
@@ -181,11 +181,11 @@ class TestSerialNumberCRUD:
         }
         
         # Create first serial
-        response1 = api_client.post(f"{BASE_URL}/api/serial-batch/serials", json=serial_data)
+        response1 = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials", json=serial_data)
         assert response1.status_code == 200
         
         # Try to create duplicate
-        response2 = api_client.post(f"{BASE_URL}/api/serial-batch/serials", json=serial_data)
+        response2 = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials", json=serial_data)
         assert response2.status_code == 400
         assert "already exists" in response2.json().get("detail", "").lower()
     
@@ -200,7 +200,7 @@ class TestSerialNumberCRUD:
             "cost_price": 250
         }
         
-        response = api_client.post(f"{BASE_URL}/api/serial-batch/serials/bulk", json=bulk_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials/bulk", json=bulk_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -222,11 +222,11 @@ class TestSerialNumberCRUD:
             "serial_number": serial_number
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/serial-batch/serials", json=serial_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials", json=serial_data)
         assert create_response.status_code == 200
         
         # Lookup by serial number
-        lookup_response = api_client.get(f"{BASE_URL}/api/serial-batch/serials/lookup/{serial_number}")
+        lookup_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/serials/lookup/{serial_number}")
         assert lookup_response.status_code == 200
         
         data = lookup_response.json()
@@ -241,18 +241,18 @@ class TestSerialNumberCRUD:
             "serial_number": f"STATUS-{uuid.uuid4().hex[:8].upper()}"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/serial-batch/serials", json=serial_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/serials", json=serial_data)
         assert create_response.status_code == 200
         serial_id = create_response.json()["serial"]["serial_id"]
         
         # Update status to damaged
         update_response = api_client.put(
-            f"{BASE_URL}/api/serial-batch/serials/{serial_id}/status?status=damaged&reason=Testing"
+            f"{BASE_URL}/api/v1/serial-batch/serials/{serial_id}/status?status=damaged&reason=Testing"
         )
         assert update_response.status_code == 200
         
         # Verify status changed
-        get_response = api_client.get(f"{BASE_URL}/api/serial-batch/serials/{serial_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/serials/{serial_id}")
         assert get_response.status_code == 200
         assert get_response.json()["serial"]["status"] == "damaged"
 
@@ -262,7 +262,7 @@ class TestBatchNumberCRUD:
     
     def test_list_batch_numbers(self, api_client):
         """Test listing batch numbers"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/batches?per_page=50")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/batches?per_page=50")
         assert response.status_code == 200
         
         data = response.json()
@@ -285,7 +285,7 @@ class TestBatchNumberCRUD:
             "notes": "Test batch"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/serial-batch/batches", json=batch_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/batches", json=batch_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -298,7 +298,7 @@ class TestBatchNumberCRUD:
         
         # Verify by GET
         batch_id = data["batch"]["batch_id"]
-        get_response = api_client.get(f"{BASE_URL}/api/serial-batch/batches/{batch_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/batches/{batch_id}")
         assert get_response.status_code == 200
         get_data = get_response.json()
         assert get_data["code"] == 0
@@ -314,11 +314,11 @@ class TestBatchNumberCRUD:
         }
         
         # Create first batch
-        response1 = api_client.post(f"{BASE_URL}/api/serial-batch/batches", json=batch_data)
+        response1 = api_client.post(f"{BASE_URL}/api/v1/serial-batch/batches", json=batch_data)
         assert response1.status_code == 200
         
         # Try to create duplicate
-        response2 = api_client.post(f"{BASE_URL}/api/serial-batch/batches", json=batch_data)
+        response2 = api_client.post(f"{BASE_URL}/api/v1/serial-batch/batches", json=batch_data)
         assert response2.status_code == 400
         assert "already exists" in response2.json().get("detail", "").lower()
     
@@ -332,19 +332,19 @@ class TestBatchNumberCRUD:
             "available_quantity": 100
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/serial-batch/batches", json=batch_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/batches", json=batch_data)
         assert create_response.status_code == 200
         batch_id = create_response.json()["batch"]["batch_id"]
         
         # Deduct quantity
         adjust_response = api_client.put(
-            f"{BASE_URL}/api/serial-batch/batches/{batch_id}/quantity?quantity_change=-30&reason=Testing"
+            f"{BASE_URL}/api/v1/serial-batch/batches/{batch_id}/quantity?quantity_change=-30&reason=Testing"
         )
         assert adjust_response.status_code == 200
         assert adjust_response.json()["new_quantity"] == 70
         
         # Verify quantity changed
-        get_response = api_client.get(f"{BASE_URL}/api/serial-batch/batches/{batch_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/batches/{batch_id}")
         assert get_response.status_code == 200
         assert get_response.json()["batch"]["available_quantity"] == 70
     
@@ -358,19 +358,19 @@ class TestBatchNumberCRUD:
             "available_quantity": 10
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/serial-batch/batches", json=batch_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/serial-batch/batches", json=batch_data)
         assert create_response.status_code == 200
         batch_id = create_response.json()["batch"]["batch_id"]
         
         # Deduct all quantity
         adjust_response = api_client.put(
-            f"{BASE_URL}/api/serial-batch/batches/{batch_id}/quantity?quantity_change=-10"
+            f"{BASE_URL}/api/v1/serial-batch/batches/{batch_id}/quantity?quantity_change=-10"
         )
         assert adjust_response.status_code == 200
         assert adjust_response.json()["new_quantity"] == 0
         
         # Verify status is depleted
-        get_response = api_client.get(f"{BASE_URL}/api/serial-batch/batches/{batch_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/batches/{batch_id}")
         assert get_response.status_code == 200
         assert get_response.json()["batch"]["status"] == "depleted"
 
@@ -392,7 +392,7 @@ class TestItemTrackingConfig:
         }
         
         response = api_client.post(
-            f"{BASE_URL}/api/serial-batch/items/{test_item_id}/configure",
+            f"{BASE_URL}/api/v1/serial-batch/items/{test_item_id}/configure",
             json=config_data
         )
         assert response.status_code == 200
@@ -405,7 +405,7 @@ class TestItemTrackingConfig:
     
     def test_get_item_tracking_config(self, api_client, test_item_id):
         """Test getting tracking configuration for an item"""
-        response = api_client.get(f"{BASE_URL}/api/serial-batch/items/{test_item_id}/config")
+        response = api_client.get(f"{BASE_URL}/api/v1/serial-batch/items/{test_item_id}/config")
         assert response.status_code == 200
         
         data = response.json()
@@ -423,7 +423,7 @@ class TestPDFTemplatesList:
     
     def test_list_all_templates(self, api_client):
         """Test listing all PDF templates"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/")
         assert response.status_code == 200
         
         data = response.json()
@@ -441,7 +441,7 @@ class TestPDFTemplatesList:
     
     def test_list_templates_by_type(self, api_client):
         """Test filtering templates by type"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/?template_type=invoice")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/?template_type=invoice")
         assert response.status_code == 200
         
         data = response.json()
@@ -452,7 +452,7 @@ class TestPDFTemplatesList:
     
     def test_list_available_styles(self, api_client):
         """Test listing available template styles"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/styles")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/styles")
         assert response.status_code == 200
         
         data = response.json()
@@ -467,7 +467,7 @@ class TestPDFTemplatesList:
     
     def test_get_template_by_id(self, api_client):
         """Test getting a specific template by ID"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/TPL-DEFAULT-MODERN")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/TPL-DEFAULT-MODERN")
         assert response.status_code == 200
         
         data = response.json()
@@ -479,12 +479,12 @@ class TestPDFTemplatesList:
     
     def test_get_nonexistent_template_returns_404(self, api_client):
         """Test that getting a non-existent template returns 404"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/TPL-NONEXISTENT")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/TPL-NONEXISTENT")
         assert response.status_code == 404
     
     def test_get_default_template_for_type(self, api_client):
         """Test getting the default template for a document type"""
-        response = api_client.get(f"{BASE_URL}/api/pdf-templates/default/invoice")
+        response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/default/invoice")
         assert response.status_code == 200
         
         data = response.json()
@@ -514,7 +514,7 @@ class TestPDFTemplatesCRUD:
             "is_default": False
         }
         
-        response = api_client.post(f"{BASE_URL}/api/pdf-templates/", json=template_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/pdf-templates/", json=template_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -526,7 +526,7 @@ class TestPDFTemplatesCRUD:
         
         # Verify by GET
         template_id = data["template"]["template_id"]
-        get_response = api_client.get(f"{BASE_URL}/api/pdf-templates/{template_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/{template_id}")
         assert get_response.status_code == 200
         assert get_response.json()["template"]["name"] == template_data["name"]
     
@@ -534,7 +534,7 @@ class TestPDFTemplatesCRUD:
         """Test duplicating a template"""
         # Duplicate the Modern Green template
         response = api_client.post(
-            f"{BASE_URL}/api/pdf-templates/TPL-DEFAULT-MODERN/duplicate?new_name=TEST_Duplicated_Template"
+            f"{BASE_URL}/api/v1/pdf-templates/TPL-DEFAULT-MODERN/duplicate?new_name=TEST_Duplicated_Template"
         )
         assert response.status_code == 200
         
@@ -554,7 +554,7 @@ class TestPDFTemplatesCRUD:
             "style": "modern"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/pdf-templates/", json=create_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/pdf-templates/", json=create_data)
         assert create_response.status_code == 200
         template_id = create_response.json()["template"]["template_id"]
         
@@ -565,13 +565,13 @@ class TestPDFTemplatesCRUD:
         }
         
         update_response = api_client.put(
-            f"{BASE_URL}/api/pdf-templates/{template_id}",
+            f"{BASE_URL}/api/v1/pdf-templates/{template_id}",
             json=update_data
         )
         assert update_response.status_code == 200
         
         # Verify update
-        get_response = api_client.get(f"{BASE_URL}/api/pdf-templates/{template_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/{template_id}")
         assert get_response.status_code == 200
         assert get_response.json()["template"]["name"] == "TEST_Updated_Name"
         assert get_response.json()["template"]["style"] == "classic"
@@ -581,7 +581,7 @@ class TestPDFTemplatesCRUD:
         update_data = {"name": "Modified Name"}
         
         response = api_client.put(
-            f"{BASE_URL}/api/pdf-templates/TPL-DEFAULT-MODERN",
+            f"{BASE_URL}/api/v1/pdf-templates/TPL-DEFAULT-MODERN",
             json=update_data
         )
         assert response.status_code == 400
@@ -596,21 +596,21 @@ class TestPDFTemplatesCRUD:
             "style": "minimal"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/pdf-templates/", json=create_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/pdf-templates/", json=create_data)
         assert create_response.status_code == 200
         template_id = create_response.json()["template"]["template_id"]
         
         # Delete the template
-        delete_response = api_client.delete(f"{BASE_URL}/api/pdf-templates/{template_id}")
+        delete_response = api_client.delete(f"{BASE_URL}/api/v1/pdf-templates/{template_id}")
         assert delete_response.status_code == 200
         
         # Verify deletion
-        get_response = api_client.get(f"{BASE_URL}/api/pdf-templates/{template_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/{template_id}")
         assert get_response.status_code == 404
     
     def test_cannot_delete_system_template(self, api_client):
         """Test that system templates cannot be deleted"""
-        response = api_client.delete(f"{BASE_URL}/api/pdf-templates/TPL-DEFAULT-MODERN")
+        response = api_client.delete(f"{BASE_URL}/api/v1/pdf-templates/TPL-DEFAULT-MODERN")
         assert response.status_code == 400
         assert "system templates" in response.json().get("detail", "").lower()
     
@@ -623,18 +623,18 @@ class TestPDFTemplatesCRUD:
             "style": "modern"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/pdf-templates/", json=create_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/pdf-templates/", json=create_data)
         assert create_response.status_code == 200
         template_id = create_response.json()["template"]["template_id"]
         
         # Set as default
         set_default_response = api_client.post(
-            f"{BASE_URL}/api/pdf-templates/{template_id}/set-default"
+            f"{BASE_URL}/api/v1/pdf-templates/{template_id}/set-default"
         )
         assert set_default_response.status_code == 200
         
         # Verify it's now default
-        get_response = api_client.get(f"{BASE_URL}/api/pdf-templates/{template_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/pdf-templates/{template_id}")
         assert get_response.status_code == 200
         assert get_response.json()["template"]["is_default"] == True
 
@@ -645,7 +645,7 @@ class TestPDFTemplatePreview:
     def test_preview_template(self, api_client):
         """Test generating a template preview"""
         response = api_client.post(
-            f"{BASE_URL}/api/pdf-templates/preview?template_id=TPL-DEFAULT-MODERN"
+            f"{BASE_URL}/api/v1/pdf-templates/preview?template_id=TPL-DEFAULT-MODERN"
         )
         assert response.status_code == 200
         
@@ -675,7 +675,7 @@ class TestPDFTemplatePreview:
         }
         
         response = api_client.post(
-            f"{BASE_URL}/api/pdf-templates/preview?template_id=TPL-DEFAULT-CLASSIC",
+            f"{BASE_URL}/api/v1/pdf-templates/preview?template_id=TPL-DEFAULT-CLASSIC",
             json=sample_data
         )
         assert response.status_code == 200

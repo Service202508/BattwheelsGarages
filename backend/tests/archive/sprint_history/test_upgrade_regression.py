@@ -3,14 +3,14 @@ Regression test suite: FastAPI 0.110.1→0.132.0, starlette 0.37.2→0.52.1,
 motor 3.3.1→3.7.1, pymongo 4.5.0→4.16.0
 
 Tests 10 scenarios from upgrade regression checklist:
-1.  Smoke test: GET /api/health → 200 + status=ok
-2.  Auth DB reads: POST /api/auth/login → token + organizations[]
+1.  Smoke test: GET /api/v1/health → 200 + status=ok
+2.  Auth DB reads: POST /api/v1/auth/login → token + organizations[]
 3.  Security headers regression on every /api response
 4.  CORS regression at application level (localhost:8001)
-5.  Tenant isolation: GET /api/tickets scoped to org
+5.  Tenant isolation: GET /api/v1/tickets scoped to org
 6.  Trial balance MongoDB aggregation: is_balanced=true
 7.  Startup index migration hook: log contains expected message
-8.  Form16 HR motor query: GET /api/hr/payroll/form16/emp_7e79d8916b6b/2025-26 → 200
+8.  Form16 HR motor query: GET /api/v1/hr/payroll/form16/emp_7e79d8916b6b/2025-26 → 200
 9.  Webhook idempotency: duplicate razorpay webhook → already_processed
 10. XSS sanitization: <script> title stored clean
 """
@@ -26,11 +26,11 @@ import subprocess
 # ──────────────────────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────────────────────
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 INTERNAL_URL = "http://localhost:8001"  # used only for CORS app-level test
 
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "admin"
+ADMIN_PASSWORD = "DevTest@123"
 ADMIN_ORG_ID = "dev-internal-testing-001"  # Battwheels Garages
 
 # Security headers required on every /api response
@@ -55,7 +55,7 @@ def admin_token():
     # Try internal URL first to avoid rate limiting from previous test runs
     for url in [INTERNAL_URL, BASE_URL]:
         try:
-            resp = requests.post(f"{url}/api/auth/login", json={
+            resp = requests.post(f"{url}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD,
             }, timeout=10)
@@ -91,19 +91,19 @@ class TestHealthSmoke:
     """FastAPI 0.132.0 + starlette 0.52.1 startup confirmation"""
 
     def test_health_returns_200(self):
-        resp = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        resp = requests.get(f"{BASE_URL}/api/v1/health", timeout=10)
         assert resp.status_code == 200, f"Health check failed: {resp.status_code} {resp.text}"
-        print(f"PASS: GET /api/health → {resp.status_code}")
+        print(f"PASS: GET /api/v1/health → {resp.status_code}")
 
     def test_health_status_ok(self):
-        resp = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        resp = requests.get(f"{BASE_URL}/api/v1/health", timeout=10)
         data = resp.json()
         assert data.get("status") == "ok", f"Unexpected status: {data}"
         print(f"PASS: health status=ok confirmed: {data}")
 
     def test_health_response_has_expected_fields(self):
         """Health response should have status field at minimum"""
-        resp = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        resp = requests.get(f"{BASE_URL}/api/v1/health", timeout=10)
         data = resp.json()
         assert "status" in data, f"Missing 'status' in health response: {data}"
         print(f"PASS: health response fields: {list(data.keys())}")
@@ -118,7 +118,7 @@ class TestAuthDBReads:
 
     def _login(self, email=ADMIN_EMAIL, password=ADMIN_PASSWORD):
         """Login via internal URL to avoid rate limiting on external URL in rapid test succession"""
-        resp = requests.post(f"{INTERNAL_URL}/api/auth/login", json={
+        resp = requests.post(f"{INTERNAL_URL}/api/v1/auth/login", json={
             "email": email, "password": password,
         }, timeout=10)
         return resp
@@ -149,7 +149,7 @@ class TestAuthDBReads:
         print(f"PASS: organizations array has {len(orgs)} entry/entries: {[o.get('name') for o in orgs]}")
 
     def test_login_invalid_credentials_rejected(self):
-        resp = requests.post(f"{INTERNAL_URL}/api/auth/login", json={
+        resp = requests.post(f"{INTERNAL_URL}/api/v1/auth/login", json={
             "email": "bad@bad.com",
             "password": "wrong",
         }, timeout=10)
@@ -166,8 +166,8 @@ class TestSecurityHeadersRegression:
 
     # Endpoints to check headers on
     TEST_ENDPOINTS = [
-        "/api/health",
-        "/api/auth/login",
+        "/api/v1/health",
+        "/api/v1/auth/login",
     ]
 
     def _get_response_headers(self, endpoint: str) -> dict:
@@ -212,15 +212,15 @@ class TestSecurityHeadersRegression:
             print(f"PASS: Content-Security-Policy present on {ep}")
 
     def test_all_required_headers_present_on_health(self):
-        """Single test confirming all 4 headers on /api/health"""
-        headers = self._get_response_headers("/api/health")
+        """Single test confirming all 4 headers on /api/v1/health"""
+        headers = self._get_response_headers("/api/v1/health")
         header_keys_lower = set(headers.keys())
         missing = []
         for required in REQUIRED_SECURITY_HEADERS:
             if required.lower() not in header_keys_lower:
                 missing.append(required)
-        assert not missing, f"Missing security headers on /api/health: {missing}. Got: {sorted(header_keys_lower)}"
-        print(f"PASS: All 4 required security headers present on /api/health")
+        assert not missing, f"Missing security headers on /api/v1/health: {missing}. Got: {sorted(header_keys_lower)}"
+        print(f"PASS: All 4 required security headers present on /api/v1/health")
 
 
 # ──────────────────────────────────────────────────────────
@@ -236,7 +236,7 @@ class TestCORSRegression:
         Arbitrary origin 'https://evil.example.com' must be rejected.
         """
         resp = requests.options(
-            f"{INTERNAL_URL}/api/health",
+            f"{INTERNAL_URL}/api/v1/health",
             headers={
                 "Origin": "https://evil.example.com",
                 "Access-Control-Request-Method": "GET",
@@ -254,9 +254,9 @@ class TestCORSRegression:
 
     def test_cors_allows_configured_origin(self):
         """Allowed origin should be echoed back"""
-        allowed_origin = "https://org-hub-redesign.preview.emergentagent.com"
+        allowed_origin = "https://zero-tolerance-check.preview.emergentagent.com"
         resp = requests.options(
-            f"{INTERNAL_URL}/api/health",
+            f"{INTERNAL_URL}/api/v1/health",
             headers={
                 "Origin": allowed_origin,
                 "Access-Control-Request-Method": "GET",
@@ -271,9 +271,9 @@ class TestCORSRegression:
         print(f"PASS: Configured origin accepted. ACAO: '{acao}'")
 
     def test_cors_no_wildcard_in_cors_config(self):
-        """App-level /api/health on internal must not expose wildcard ACAO for a random origin"""
+        """App-level /api/v1/health on internal must not expose wildcard ACAO for a random origin"""
         resp = requests.get(
-            f"{INTERNAL_URL}/api/health",
+            f"{INTERNAL_URL}/api/v1/health",
             headers={"Origin": "https://attacker.example.com"},
             timeout=10,
         )
@@ -293,12 +293,12 @@ class TestTenantIsolation:
     """Confirms BaseHTTPMiddleware (TenantGuardMiddleware) still works after starlette upgrade"""
 
     def test_get_tickets_with_admin_token_returns_200(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/tickets", headers=admin_headers, timeout=10)
-        assert resp.status_code == 200, f"GET /api/tickets failed: {resp.status_code} {resp.text}"
-        print(f"PASS: GET /api/tickets → 200")
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", headers=admin_headers, timeout=10)
+        assert resp.status_code == 200, f"GET /api/v1/tickets failed: {resp.status_code} {resp.text}"
+        print(f"PASS: GET /api/v1/tickets → 200")
 
     def test_get_tickets_returns_list(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/tickets", headers=admin_headers, timeout=10)
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", headers=admin_headers, timeout=10)
         data = resp.json()
         # Response could be list directly or {tickets: [...]} dict
         if isinstance(data, list):
@@ -308,7 +308,7 @@ class TestTenantIsolation:
         else:
             ticket_list = []
         assert isinstance(ticket_list, list), f"Expected list in tickets response, got: {type(data)}"
-        print(f"PASS: GET /api/tickets returns list with {len(ticket_list)} tickets")
+        print(f"PASS: GET /api/v1/tickets returns list with {len(ticket_list)} tickets")
 
     def test_get_tickets_without_org_id_returns_400(self, admin_token):
         """
@@ -324,7 +324,7 @@ class TestTenantIsolation:
             "Authorization": f"Bearer {admin_token}",
             "Content-Type": "application/json",
         }
-        resp = requests.get(f"{BASE_URL}/api/tickets", headers=headers, timeout=10)
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", headers=headers, timeout=10)
         # Admin JWT may embed org_id → 200 OK (org resolved from JWT)
         # OR strict enforcement → 400
         assert resp.status_code in (200, 400, 403), (
@@ -336,7 +336,7 @@ class TestTenantIsolation:
     def test_get_tickets_without_auth_returns_401(self):
         """Must require auth"""
         resp = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers={"X-Organization-ID": ADMIN_ORG_ID},
             timeout=10,
         )
@@ -354,18 +354,18 @@ class TestTrialBalanceRegression:
     """Confirms MongoDB aggregation works on pymongo 4.16.0 / motor 3.7.1"""
 
     def test_trial_balance_returns_200(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance", headers=admin_headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"Trial balance failed: {resp.status_code} {resp.text}"
-        print(f"PASS: GET /api/reports/trial-balance → 200")
+        print(f"PASS: GET /api/v1/reports/trial-balance → 200")
 
     def test_trial_balance_has_is_balanced_field(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance", headers=admin_headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", headers=admin_headers, timeout=15)
         data = resp.json()
         assert "is_balanced" in data, f"'is_balanced' missing. Got keys: {list(data.keys())}"
         print(f"PASS: is_balanced field present: {data['is_balanced']}")
 
     def test_trial_balance_is_balanced_true(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance", headers=admin_headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", headers=admin_headers, timeout=15)
         data = resp.json()
         assert data.get("is_balanced") is True, (
             f"Trial balance is NOT balanced. Data: {data.get('summary', data)}"
@@ -373,7 +373,7 @@ class TestTrialBalanceRegression:
         print(f"PASS: is_balanced=true confirmed")
 
     def test_trial_balance_has_summary(self, admin_headers):
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance", headers=admin_headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", headers=admin_headers, timeout=15)
         data = resp.json()
         summary = data.get("summary")
         assert summary, f"Missing 'summary' in trial balance response: {list(data.keys())}"
@@ -455,13 +455,13 @@ class TestForm16HRMotorRegression:
     FISCAL_YEAR = "2025-26"
 
     def test_form16_json_returns_200(self, admin_headers):
-        url = f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
+        url = f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
         resp = requests.get(url, headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"Form16 JSON failed: {resp.status_code} {resp.text}"
-        print(f"PASS: GET /api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR} → 200")
+        print(f"PASS: GET /api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR} → 200")
 
     def test_form16_response_structure(self, admin_headers):
-        url = f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
+        url = f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
         resp = requests.get(url, headers=admin_headers, timeout=15)
         data = resp.json()
         # Should have code=0 (success) or similar success indicator
@@ -474,7 +474,7 @@ class TestForm16HRMotorRegression:
 
     def test_form16_employee_name_present(self, admin_headers):
         """motor 3.7.1 query returns employee data"""
-        url = f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
+        url = f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FISCAL_YEAR}"
         resp = requests.get(url, headers=admin_headers, timeout=15)
         data = resp.json()
         employee = data.get("employee") or {}
@@ -525,7 +525,7 @@ class TestWebhookIdempotencyRegression:
         body = json.dumps(payload, separators=(",", ":")).encode()
         sig = self._sign_payload(body)
         return requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body,
             headers={
                 "Content-Type": "application/json",
@@ -609,7 +609,7 @@ class TestXSSSanitizationRegression:
             "service_type": "Battery Check",
             "priority": "medium",
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers, timeout=15)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"Ticket creation failed: {resp.status_code} {resp.text}"
 
         data = resp.json()
@@ -635,7 +635,7 @@ class TestXSSSanitizationRegression:
             "service_type": "General",
             "priority": "low",
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers, timeout=15)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"Ticket creation failed: {resp.status_code} {resp.text}"
 
         data = resp.json()
@@ -659,7 +659,7 @@ class TestXSSSanitizationRegression:
             "service_type": "Battery",
             "priority": "high",
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers, timeout=15)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"Ticket creation failed: {resp.status_code} {resp.text}"
 
         data = resp.json()

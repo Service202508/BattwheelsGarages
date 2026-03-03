@@ -7,14 +7,14 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestAuthentication:
     """Authentication tests for HR module access"""
     
     def test_admin_login(self):
         """Test admin login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -32,7 +32,7 @@ class TestAttendanceModule:
     @pytest.fixture
     def auth_token(self):
         """Get admin auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -41,7 +41,7 @@ class TestAttendanceModule:
     def test_get_today_attendance(self, auth_token):
         """Test getting today's attendance status"""
         response = requests.get(
-            f"{BASE_URL}/api/attendance/today",
+            f"{BASE_URL}/api/v1/attendance/today",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -64,7 +64,7 @@ class TestAttendanceModule:
         year = datetime.now().year
         
         response = requests.get(
-            f"{BASE_URL}/api/attendance/my-records?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/attendance/my-records?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -96,7 +96,7 @@ class TestAttendanceModule:
         year = datetime.now().year
         
         response = requests.get(
-            f"{BASE_URL}/api/attendance/team-summary?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/attendance/team-summary?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -124,7 +124,7 @@ class TestLeaveManagement:
     @pytest.fixture
     def auth_token(self):
         """Get admin auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -133,7 +133,7 @@ class TestLeaveManagement:
     def test_get_leave_types(self, auth_token):
         """Test getting all leave types"""
         response = requests.get(
-            f"{BASE_URL}/api/leave/types",
+            f"{BASE_URL}/api/v1/leave/types",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -161,7 +161,7 @@ class TestLeaveManagement:
     def test_get_leave_balance(self, auth_token):
         """Test getting user's leave balance"""
         response = requests.get(
-            f"{BASE_URL}/api/leave/balance",
+            f"{BASE_URL}/api/v1/leave/balance",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -191,7 +191,7 @@ class TestLeaveManagement:
     def test_get_my_leave_requests(self, auth_token):
         """Test getting user's leave requests"""
         response = requests.get(
-            f"{BASE_URL}/api/leave/my-requests",
+            f"{BASE_URL}/api/v1/leave/my-requests",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -215,7 +215,7 @@ class TestLeaveManagement:
     def test_get_pending_approvals_admin(self, auth_token):
         """Test getting pending leave approvals (admin only)"""
         response = requests.get(
-            f"{BASE_URL}/api/leave/pending-approvals",
+            f"{BASE_URL}/api/v1/leave/pending-approvals",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class TestPayrollModule:
     @pytest.fixture
     def auth_token(self):
         """Get admin auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -243,7 +243,7 @@ class TestPayrollModule:
         year = datetime.now().year
         
         response = requests.get(
-            f"{BASE_URL}/api/payroll/records?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/payroll/records?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -276,7 +276,7 @@ class TestPayrollModule:
     def test_get_my_payroll_records(self, auth_token):
         """Test getting user's own payroll records"""
         response = requests.get(
-            f"{BASE_URL}/api/payroll/my-records",
+            f"{BASE_URL}/api/v1/payroll/my-records",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -301,7 +301,7 @@ class TestPayrollModule:
         year = datetime.now().year
         
         response = requests.post(
-            f"{BASE_URL}/api/payroll/generate?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/payroll/generate?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -331,7 +331,7 @@ class TestHRIntegration:
     @pytest.fixture
     def auth_token(self):
         """Get admin auth token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -344,7 +344,7 @@ class TestHRIntegration:
         
         # Get attendance records
         attendance_response = requests.get(
-            f"{BASE_URL}/api/attendance/my-records?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/attendance/my-records?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert attendance_response.status_code == 200
@@ -352,14 +352,14 @@ class TestHRIntegration:
         
         # Generate payroll
         payroll_response = requests.post(
-            f"{BASE_URL}/api/payroll/generate?month={month}&year={year}",
+            f"{BASE_URL}/api/v1/payroll/generate?month={month}&year={year}",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert payroll_response.status_code == 200
         
         # Get my payroll
         my_payroll_response = requests.get(
-            f"{BASE_URL}/api/payroll/my-records",
+            f"{BASE_URL}/api/v1/payroll/my-records",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert my_payroll_response.status_code == 200
@@ -384,7 +384,7 @@ class TestHRIntegration:
         """Test that leave balance updates when request is made"""
         # Get initial balance
         initial_balance_response = requests.get(
-            f"{BASE_URL}/api/leave/balance",
+            f"{BASE_URL}/api/v1/leave/balance",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert initial_balance_response.status_code == 200
@@ -399,7 +399,7 @@ class TestHRIntegration:
         
         # Get my requests to verify
         requests_response = requests.get(
-            f"{BASE_URL}/api/leave/my-requests",
+            f"{BASE_URL}/api/v1/leave/my-requests",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert requests_response.status_code == 200
@@ -410,17 +410,17 @@ class TestUnauthorizedAccess:
     
     def test_attendance_without_auth(self):
         """Test that attendance endpoints require authentication"""
-        response = requests.get(f"{BASE_URL}/api/attendance/today")
+        response = requests.get(f"{BASE_URL}/api/v1/attendance/today")
         assert response.status_code == 401
     
     def test_leave_without_auth(self):
         """Test that leave endpoints require authentication"""
-        response = requests.get(f"{BASE_URL}/api/leave/types")
+        response = requests.get(f"{BASE_URL}/api/v1/leave/types")
         assert response.status_code == 401
     
     def test_payroll_without_auth(self):
         """Test that payroll endpoints require authentication"""
-        response = requests.get(f"{BASE_URL}/api/payroll/my-records")
+        response = requests.get(f"{BASE_URL}/api/v1/payroll/my-records")
         assert response.status_code == 401
 
 

@@ -8,9 +8,9 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 if not BASE_URL:
-    BASE_URL = ""
+    BASE_URL = "http://localhost:8001"
 
 # Test credentials
 TEST_EMAIL = "dev@battwheels.internal"
@@ -20,7 +20,7 @@ TEST_PASSWORD = "DevTest@123"
 @pytest.fixture(scope="module")
 def auth_token():
     """Get authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TEST_EMAIL,
         "password": TEST_PASSWORD
     })
@@ -43,7 +43,7 @@ class TestSeedUtility:
     
     def test_seed_all_data(self, headers):
         """Test seed all endpoint seeds data correctly"""
-        response = requests.post(f"{BASE_URL}/api/seed/all", headers=headers)
+        response = requests.post(f"{BASE_URL}/api/v1/seed/all", headers=headers)
         assert response.status_code == 200, f"Seed all failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -62,7 +62,7 @@ class TestBankingAccounts:
     
     def test_list_bank_accounts(self, headers):
         """Test listing bank accounts"""
-        response = requests.get(f"{BASE_URL}/api/banking/accounts", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/accounts", headers=headers)
         assert response.status_code == 200, f"List accounts failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -82,13 +82,13 @@ class TestBankingAccounts:
     def test_get_single_bank_account(self, headers):
         """Test getting a single bank account"""
         # First get list
-        list_res = requests.get(f"{BASE_URL}/api/banking/accounts", headers=headers)
+        list_res = requests.get(f"{BASE_URL}/api/v1/banking/accounts", headers=headers)
         accounts = list_res.json().get("bank_accounts", [])
         if not accounts:
             pytest.skip("No bank accounts to test")
         
         account_id = accounts[0]["bank_account_id"]
-        response = requests.get(f"{BASE_URL}/api/banking/accounts/{account_id}", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/accounts/{account_id}", headers=headers)
         assert response.status_code == 200, f"Get account failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -101,7 +101,7 @@ class TestBankingDashboard:
     
     def test_dashboard_stats(self, headers):
         """Test dashboard stats endpoint"""
-        response = requests.get(f"{BASE_URL}/api/banking/dashboard/stats", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/dashboard/stats", headers=headers)
         assert response.status_code == 200, f"Dashboard stats failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -120,7 +120,7 @@ class TestChartOfAccounts:
     
     def test_list_chart_of_accounts(self, headers):
         """Test listing chart of accounts"""
-        response = requests.get(f"{BASE_URL}/api/banking/chart-of-accounts", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/chart-of-accounts", headers=headers)
         assert response.status_code == 200, f"List CoA failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -144,7 +144,7 @@ class TestChartOfAccounts:
             "account_sub_type": "operating_expense",
             "description": "Test account for testing"
         }
-        response = requests.post(f"{BASE_URL}/api/banking/chart-of-accounts", headers=headers, json=test_account)
+        response = requests.post(f"{BASE_URL}/api/v1/banking/chart-of-accounts", headers=headers, json=test_account)
         assert response.status_code == 200, f"Create CoA failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -157,7 +157,7 @@ class TestTrialBalance:
     
     def test_trial_balance_report(self, headers):
         """Test getting trial balance report"""
-        response = requests.get(f"{BASE_URL}/api/banking/reports/trial-balance", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/reports/trial-balance", headers=headers)
         assert response.status_code == 200, f"Trial balance failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -174,7 +174,7 @@ class TestFinancialReports:
     
     def test_profit_loss_report(self, headers):
         """Test profit and loss report"""
-        response = requests.get(f"{BASE_URL}/api/banking/reports/profit-loss", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/reports/profit-loss", headers=headers)
         assert response.status_code == 200, f"P&L report failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -185,7 +185,7 @@ class TestFinancialReports:
     
     def test_balance_sheet_report(self, headers):
         """Test balance sheet report"""
-        response = requests.get(f"{BASE_URL}/api/banking/reports/balance-sheet", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/reports/balance-sheet", headers=headers)
         assert response.status_code == 200, f"Balance sheet failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -196,7 +196,7 @@ class TestFinancialReports:
     
     def test_cash_flow_report(self, headers):
         """Test cash flow report"""
-        response = requests.get(f"{BASE_URL}/api/banking/reports/cash-flow", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/reports/cash-flow", headers=headers)
         assert response.status_code == 200, f"Cash flow failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -211,7 +211,7 @@ class TestJournalEntries:
     
     def test_list_journal_entries(self, headers):
         """Test listing journal entries"""
-        response = requests.get(f"{BASE_URL}/api/banking/journal-entries", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/journal-entries", headers=headers)
         assert response.status_code == 200, f"List JE failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -221,7 +221,7 @@ class TestJournalEntries:
     def test_create_journal_entry_balanced(self, headers):
         """Test creating a balanced journal entry"""
         # First get chart of accounts
-        coa_res = requests.get(f"{BASE_URL}/api/banking/chart-of-accounts", headers=headers)
+        coa_res = requests.get(f"{BASE_URL}/api/v1/banking/chart-of-accounts", headers=headers)
         accounts = coa_res.json().get("chart_of_accounts", [])
         if len(accounts) < 2:
             pytest.skip("Need at least 2 accounts for journal entry")
@@ -238,7 +238,7 @@ class TestJournalEntries:
                 {"account_id": acc2["account_id"], "account_name": acc2["account_name"], "debit": 0, "credit": 1000}
             ]
         }
-        response = requests.post(f"{BASE_URL}/api/banking/journal-entries", headers=headers, json=entry)
+        response = requests.post(f"{BASE_URL}/api/v1/banking/journal-entries", headers=headers, json=entry)
         assert response.status_code == 200, f"Create JE failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -247,7 +247,7 @@ class TestJournalEntries:
     
     def test_create_journal_entry_unbalanced_fails(self, headers):
         """Test that unbalanced journal entry fails"""
-        coa_res = requests.get(f"{BASE_URL}/api/banking/chart-of-accounts", headers=headers)
+        coa_res = requests.get(f"{BASE_URL}/api/v1/banking/chart-of-accounts", headers=headers)
         accounts = coa_res.json().get("chart_of_accounts", [])
         if len(accounts) < 2:
             pytest.skip("Need at least 2 accounts for journal entry")
@@ -264,7 +264,7 @@ class TestJournalEntries:
                 {"account_id": acc2["account_id"], "debit": 0, "credit": 500}  # Unbalanced
             ]
         }
-        response = requests.post(f"{BASE_URL}/api/banking/journal-entries", headers=headers, json=entry)
+        response = requests.post(f"{BASE_URL}/api/v1/banking/journal-entries", headers=headers, json=entry)
         assert response.status_code == 400, f"Expected 400 for unbalanced JE, got {response.status_code}"
         print(f"PASS: Unbalanced journal entry rejected correctly")
 
@@ -274,7 +274,7 @@ class TestReconciliation:
     
     def test_reconciliation_history(self, headers):
         """Test getting reconciliation history"""
-        response = requests.get(f"{BASE_URL}/api/banking/reconciliation/history", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/banking/reconciliation/history", headers=headers)
         assert response.status_code == 200, f"Reconciliation history failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -284,7 +284,7 @@ class TestReconciliation:
     def test_start_reconciliation(self, headers):
         """Test starting a reconciliation session"""
         # Get bank accounts
-        acc_res = requests.get(f"{BASE_URL}/api/banking/accounts", headers=headers)
+        acc_res = requests.get(f"{BASE_URL}/api/v1/banking/accounts", headers=headers)
         accounts = acc_res.json().get("bank_accounts", [])
         if not accounts:
             pytest.skip("No bank accounts for reconciliation")
@@ -294,7 +294,7 @@ class TestReconciliation:
             "statement_date": datetime.now().strftime("%Y-%m-%d"),
             "statement_balance": accounts[0].get("current_balance", 0)
         }
-        response = requests.post(f"{BASE_URL}/api/banking/reconciliation/start", headers=headers, json=recon_data)
+        response = requests.post(f"{BASE_URL}/api/v1/banking/reconciliation/start", headers=headers, json=recon_data)
         assert response.status_code == 200, f"Start reconciliation failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -307,7 +307,7 @@ class TestStockTransfers:
     
     def test_list_stock_transfers(self, headers):
         """Test listing stock transfers"""
-        response = requests.get(f"{BASE_URL}/api/stock-transfers/", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/stock-transfers/", headers=headers)
         assert response.status_code == 200, f"List transfers failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -321,7 +321,7 @@ class TestStockTransfers:
     
     def test_stock_transfers_stats(self, headers):
         """Test stock transfers statistics"""
-        response = requests.get(f"{BASE_URL}/api/stock-transfers/stats/summary", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/stock-transfers/stats/summary", headers=headers)
         assert response.status_code == 200, f"Stats failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -333,7 +333,7 @@ class TestStockTransfers:
     
     def test_stock_transfers_filter_by_status(self, headers):
         """Test filtering transfers by status"""
-        response = requests.get(f"{BASE_URL}/api/stock-transfers/?status=received", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/stock-transfers/?status=received", headers=headers)
         assert response.status_code == 200, f"Filter transfers failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -349,7 +349,7 @@ class TestInventoryEnhanced:
     
     def test_list_warehouses(self, headers):
         """Test listing warehouses"""
-        response = requests.get(f"{BASE_URL}/api/inventory-enhanced/warehouses", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses", headers=headers)
         assert response.status_code == 200, f"List warehouses failed: {response.text}"
         data = response.json()
         assert "warehouses" in data
@@ -362,7 +362,7 @@ class TestInventoryEnhanced:
     
     def test_list_stock(self, headers):
         """Test listing stock across warehouses"""
-        response = requests.get(f"{BASE_URL}/api/inventory-enhanced/stock", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/inventory-enhanced/stock", headers=headers)
         assert response.status_code == 200, f"List stock failed: {response.text}"
         data = response.json()
         assert "stock" in data
@@ -376,15 +376,15 @@ class TestNavigationIntegration:
     def test_stock_transfers_page_data(self, headers):
         """Test data required for /stock-transfers page"""
         # Stock transfers list
-        res1 = requests.get(f"{BASE_URL}/api/stock-transfers/", headers=headers)
+        res1 = requests.get(f"{BASE_URL}/api/v1/stock-transfers/", headers=headers)
         assert res1.status_code == 200, "Stock transfers list failed"
         
         # Stock transfers stats
-        res2 = requests.get(f"{BASE_URL}/api/stock-transfers/stats/summary", headers=headers)
+        res2 = requests.get(f"{BASE_URL}/api/v1/stock-transfers/stats/summary", headers=headers)
         assert res2.status_code == 200, "Stock transfers stats failed"
         
         # Warehouses for dropdown
-        res3 = requests.get(f"{BASE_URL}/api/inventory-enhanced/warehouses", headers=headers)
+        res3 = requests.get(f"{BASE_URL}/api/v1/inventory-enhanced/warehouses", headers=headers)
         assert res3.status_code == 200, "Warehouses list failed"
         
         print(f"PASS: Stock transfers page data - All APIs working")
@@ -392,27 +392,27 @@ class TestNavigationIntegration:
     def test_accountant_page_data(self, headers):
         """Test data required for /accountant page"""
         # Banking dashboard stats
-        res1 = requests.get(f"{BASE_URL}/api/banking/dashboard/stats", headers=headers)
+        res1 = requests.get(f"{BASE_URL}/api/v1/banking/dashboard/stats", headers=headers)
         assert res1.status_code == 200, "Dashboard stats failed"
         
         # Bank accounts
-        res2 = requests.get(f"{BASE_URL}/api/banking/accounts", headers=headers)
+        res2 = requests.get(f"{BASE_URL}/api/v1/banking/accounts", headers=headers)
         assert res2.status_code == 200, "Bank accounts failed"
         
         # Chart of accounts
-        res3 = requests.get(f"{BASE_URL}/api/banking/chart-of-accounts", headers=headers)
+        res3 = requests.get(f"{BASE_URL}/api/v1/banking/chart-of-accounts", headers=headers)
         assert res3.status_code == 200, "Chart of accounts failed"
         
         # Trial balance
-        res4 = requests.get(f"{BASE_URL}/api/banking/reports/trial-balance", headers=headers)
+        res4 = requests.get(f"{BASE_URL}/api/v1/banking/reports/trial-balance", headers=headers)
         assert res4.status_code == 200, "Trial balance failed"
         
         # P&L
-        res5 = requests.get(f"{BASE_URL}/api/banking/reports/profit-loss", headers=headers)
+        res5 = requests.get(f"{BASE_URL}/api/v1/banking/reports/profit-loss", headers=headers)
         assert res5.status_code == 200, "P&L report failed"
         
         # Balance sheet
-        res6 = requests.get(f"{BASE_URL}/api/banking/reports/balance-sheet", headers=headers)
+        res6 = requests.get(f"{BASE_URL}/api/v1/banking/reports/balance-sheet", headers=headers)
         assert res6.status_code == 200, "Balance sheet failed"
         
         print(f"PASS: Accountant page data - All APIs working")

@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test data storage
 test_data = {}
@@ -46,12 +46,12 @@ class TestFinanceCalculatorService:
             "gstin": "07AAAAA0000A1Z5",
             "place_of_supply": "DL"
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/", json=contact_data)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/", json=contact_data)
         if response.status_code == 201 or response.status_code == 200:
             test_data['finance_calc_contact_id'] = response.json().get('contact', {}).get('contact_id')
         else:
             # Try to find existing contact
-            response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?search=TEST_FinanceCalc")
+            response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?search=TEST_FinanceCalc")
             if response.status_code == 200 and response.json().get('contacts'):
                 test_data['finance_calc_contact_id'] = response.json()['contacts'][0]['contact_id']
             else:
@@ -84,7 +84,7 @@ class TestFinanceCalculatorService:
             "adjustment": -10
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=estimate_data)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=estimate_data)
         print(f"Estimate creation response: {response.status_code}")
         
         if response.status_code in [200, 201]:
@@ -144,7 +144,7 @@ class TestEstimateActivityEndpoint:
     def test_estimate_activity_endpoint_exists(self):
         """Test that estimate activity endpoint exists"""
         # First get an estimate
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=1")
         assert response.status_code == 200, f"Failed to list estimates: {response.status_code}"
         
         estimates = response.json().get('estimates', [])
@@ -155,7 +155,7 @@ class TestEstimateActivityEndpoint:
         test_data['activity_test_estimate_id'] = estimate_id
         
         # Test activity endpoint
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/activity")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/activity")
         print(f"Estimate activity response: {response.status_code}")
         
         assert response.status_code == 200, f"Activity endpoint failed: {response.status_code}"
@@ -172,7 +172,7 @@ class TestEstimateActivityEndpoint:
         if not estimate_id:
             pytest.skip("No estimate ID available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/activity")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/activity")
         assert response.status_code == 200
         
         activities = response.json().get('activities', [])
@@ -191,7 +191,7 @@ class TestInvoiceHistoryEndpoint:
     def test_invoice_history_endpoint_exists(self):
         """Test that invoice history endpoint exists"""
         # First get an invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=1")
         assert response.status_code == 200, f"Failed to list invoices: {response.status_code}"
         
         invoices = response.json().get('invoices', [])
@@ -202,7 +202,7 @@ class TestInvoiceHistoryEndpoint:
         test_data['history_test_invoice_id'] = invoice_id
         
         # Test history endpoint
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/history")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/history")
         print(f"Invoice history response: {response.status_code}")
         
         assert response.status_code == 200, f"History endpoint failed: {response.status_code}"
@@ -220,7 +220,7 @@ class TestPaymentActivityEndpoint:
     def test_payment_activity_endpoint_exists(self):
         """Test that payment activity endpoint exists"""
         # First get a payment
-        response = requests.get(f"{BASE_URL}/api/payments-received/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?per_page=1")
         assert response.status_code == 200, f"Failed to list payments: {response.status_code}"
         
         payments = response.json().get('payments', [])
@@ -231,7 +231,7 @@ class TestPaymentActivityEndpoint:
         test_data['activity_test_payment_id'] = payment_id
         
         # Test activity endpoint
-        response = requests.get(f"{BASE_URL}/api/payments-received/{payment_id}/activity")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/{payment_id}/activity")
         print(f"Payment activity response: {response.status_code}")
         
         assert response.status_code == 200, f"Activity endpoint failed: {response.status_code}"
@@ -249,7 +249,7 @@ class TestPaymentReceiptPDF:
     def test_payment_receipt_pdf_endpoint_exists(self):
         """Test that payment receipt PDF endpoint exists"""
         # First get a payment
-        response = requests.get(f"{BASE_URL}/api/payments-received/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?per_page=1")
         assert response.status_code == 200, f"Failed to list payments: {response.status_code}"
         
         payments = response.json().get('payments', [])
@@ -260,7 +260,7 @@ class TestPaymentReceiptPDF:
         test_data['pdf_test_payment_id'] = payment_id
         
         # Test receipt PDF endpoint
-        response = requests.get(f"{BASE_URL}/api/payments-received/{payment_id}/receipt-pdf")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/{payment_id}/receipt-pdf")
         print(f"Payment receipt PDF response: {response.status_code}, Content-Type: {response.headers.get('Content-Type')}")
         
         assert response.status_code == 200, f"Receipt PDF endpoint failed: {response.status_code}"
@@ -285,7 +285,7 @@ class TestSalesOrderActivityEndpoint:
     def test_sales_order_activity_endpoint_exists(self):
         """Test that sales order activity endpoint exists"""
         # First get a sales order
-        response = requests.get(f"{BASE_URL}/api/sales-orders-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/sales-orders-enhanced/?per_page=1")
         assert response.status_code == 200, f"Failed to list sales orders: {response.status_code}"
         
         salesorders = response.json().get('salesorders', [])
@@ -296,7 +296,7 @@ class TestSalesOrderActivityEndpoint:
         test_data['activity_test_salesorder_id'] = salesorder_id
         
         # Test activity endpoint
-        response = requests.get(f"{BASE_URL}/api/sales-orders-enhanced/{salesorder_id}/activity")
+        response = requests.get(f"{BASE_URL}/api/v1/sales-orders-enhanced/{salesorder_id}/activity")
         print(f"Sales order activity response: {response.status_code}")
         
         assert response.status_code == 200, f"Activity endpoint failed: {response.status_code}"
@@ -314,7 +314,7 @@ class TestSalesOrderPDF:
     def test_sales_order_pdf_endpoint_exists(self):
         """Test that sales order PDF endpoint exists"""
         # First get a sales order
-        response = requests.get(f"{BASE_URL}/api/sales-orders-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/sales-orders-enhanced/?per_page=1")
         assert response.status_code == 200, f"Failed to list sales orders: {response.status_code}"
         
         salesorders = response.json().get('salesorders', [])
@@ -325,7 +325,7 @@ class TestSalesOrderPDF:
         test_data['pdf_test_salesorder_id'] = salesorder_id
         
         # Test PDF endpoint
-        response = requests.get(f"{BASE_URL}/api/sales-orders-enhanced/{salesorder_id}/pdf")
+        response = requests.get(f"{BASE_URL}/api/v1/sales-orders-enhanced/{salesorder_id}/pdf")
         print(f"Sales order PDF response: {response.status_code}, Content-Type: {response.headers.get('Content-Type')}")
         
         assert response.status_code == 200, f"PDF endpoint failed: {response.status_code}"
@@ -350,7 +350,7 @@ class TestContactActivityEndpoint:
     def test_contact_activity_endpoint_exists(self):
         """Test that contact activity endpoint exists"""
         # First get a contact
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?per_page=1")
         assert response.status_code == 200, f"Failed to list contacts: {response.status_code}"
         
         contacts = response.json().get('contacts', [])
@@ -361,12 +361,12 @@ class TestContactActivityEndpoint:
         test_data['activity_test_contact_id'] = contact_id
         
         # Try contacts-enhanced activity endpoint first
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/activity")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/activity")
         print(f"Contact activity response (contacts-enhanced): {response.status_code}")
         
         if response.status_code == 404:
             # Try contacts-v2 endpoint
-            response = requests.get(f"{BASE_URL}/api/contacts-v2/{contact_id}/activity")
+            response = requests.get(f"{BASE_URL}/api/v1/contacts-v2/{contact_id}/activity")
             print(f"Contact activity response (contacts-v2): {response.status_code}")
         
         if response.status_code == 200:
@@ -375,7 +375,7 @@ class TestContactActivityEndpoint:
             print(f"✓ Contact activity endpoint working - Found {len(activities)} activities")
         elif response.status_code == 404:
             # Activity endpoint may not exist yet - check if contact detail has history
-            response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}")
+            response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}")
             if response.status_code == 200:
                 contact = response.json().get('contact', {})
                 history = contact.get('history', [])
@@ -392,7 +392,7 @@ class TestInvoiceAttachmentsWorkflow:
     def test_invoice_attachments_list(self):
         """Test listing invoice attachments"""
         # Get an invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=1")
         assert response.status_code == 200
         
         invoices = response.json().get('invoices', [])
@@ -402,7 +402,7 @@ class TestInvoiceAttachmentsWorkflow:
         invoice_id = invoices[0].get('invoice_id')
         
         # List attachments
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/attachments")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/attachments")
         print(f"Invoice attachments list response: {response.status_code}")
         
         assert response.status_code == 200, f"Failed to list attachments: {response.status_code}"
@@ -418,7 +418,7 @@ class TestInvoiceCommentsWorkflow:
     def test_invoice_comments_list(self):
         """Test listing invoice comments"""
         # Get an invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=1")
         assert response.status_code == 200
         
         invoices = response.json().get('invoices', [])
@@ -428,7 +428,7 @@ class TestInvoiceCommentsWorkflow:
         invoice_id = invoices[0].get('invoice_id')
         
         # List comments
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/comments")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/comments")
         print(f"Invoice comments list response: {response.status_code}")
         
         assert response.status_code == 200, f"Failed to list comments: {response.status_code}"
@@ -444,9 +444,9 @@ class TestInvoiceShareLinkWorkflow:
     def test_invoice_share_link_creation(self):
         """Test creating invoice share link"""
         # Get a non-draft invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?status=sent&per_page=1")
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?status=sent&per_page=1")
         if response.status_code != 200 or not response.json().get('invoices'):
-            response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=5")
+            response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=5")
         
         assert response.status_code == 200
         
@@ -468,7 +468,7 @@ class TestInvoiceShareLinkWorkflow:
             "expiry_days": 30,
             "allow_payment": True
         }
-        response = requests.post(f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/share", json=share_data)
+        response = requests.post(f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/share", json=share_data)
         print(f"Invoice share link creation response: {response.status_code}")
         
         if response.status_code == 200:
@@ -490,12 +490,12 @@ class TestCleanup:
         """Clean up test data created during tests"""
         # Delete test estimate
         if test_data.get('finance_calc_estimate_id'):
-            response = requests.delete(f"{BASE_URL}/api/estimates-enhanced/{test_data['finance_calc_estimate_id']}")
+            response = requests.delete(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['finance_calc_estimate_id']}")
             print(f"Cleanup estimate: {response.status_code}")
         
         # Delete test contact
         if test_data.get('finance_calc_contact_id'):
-            response = requests.delete(f"{BASE_URL}/api/contacts-enhanced/{test_data['finance_calc_contact_id']}?force=true")
+            response = requests.delete(f"{BASE_URL}/api/v1/contacts-enhanced/{test_data['finance_calc_contact_id']}?force=true")
             print(f"Cleanup contact: {response.status_code}")
         
         print("✓ Test cleanup completed")

@@ -5,7 +5,7 @@ Tests:
   P2: WhatsApp settings CRUD + test endpoint
   P2: Invoice send with channel=email (regression)
   P3: Tally XML export (valid XML, structure, headers, empty range 404)
-  P4: Public signup flow (/api/organizations/signup)
+  P4: Public signup flow (/api/v1/organizations/signup)
   PWA: manifest.json, sw.js, icon-192.png, icon-512.png
 """
 
@@ -20,7 +20,7 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstr
 
 # Org admin credentials
 ORG_ADMIN_EMAIL = "dev@battwheels.internal"
-ORG_ADMIN_PASS = "admin"
+ORG_ADMIN_PASS = "DevTest@123"
 ORG_ID = "dev-internal-testing-001"
 
 
@@ -29,7 +29,7 @@ ORG_ID = "dev-internal-testing-001"
 @pytest.fixture(scope="module")
 def auth_token():
     """Get auth token for org admin"""
-    res = requests.post(f"{BASE_URL}/api/auth/login", json={
+    res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ORG_ADMIN_EMAIL,
         "password": ORG_ADMIN_PASS,
         "organization_id": ORG_ID,
@@ -56,9 +56,9 @@ class TestWhatsAppSettings:
     """P2: WhatsApp Business API settings endpoints"""
 
     def test_get_whatsapp_settings_returns_200(self, auth_headers):
-        """GET /api/organizations/me/whatsapp-settings returns 200"""
+        """GET /api/v1/organizations/me/whatsapp-settings returns 200"""
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
@@ -66,7 +66,7 @@ class TestWhatsAppSettings:
     def test_get_whatsapp_settings_has_configured_field(self, auth_headers):
         """GET returns 'configured' boolean field"""
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200
@@ -77,7 +77,7 @@ class TestWhatsAppSettings:
     def test_get_whatsapp_settings_has_phone_number_id_field(self, auth_headers):
         """GET returns 'phone_number_id' field"""
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200
@@ -85,9 +85,9 @@ class TestWhatsAppSettings:
         assert "phone_number_id" in data, f"Missing 'phone_number_id' field: {data}"
 
     def test_post_whatsapp_settings_saves_credentials(self, auth_headers):
-        """POST /api/organizations/me/whatsapp-settings saves credentials"""
+        """POST /api/v1/organizations/me/whatsapp-settings saves credentials"""
         res = requests.post(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
             json={
                 "phone_number_id": "test123",
@@ -102,13 +102,13 @@ class TestWhatsAppSettings:
         """After saving, GET should show configured=True and correct phone_number_id"""
         # Save first
         requests.post(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
             json={"phone_number_id": "test123", "access_token": "testtoken123456789"},
         )
         # Get and verify
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200
@@ -117,16 +117,16 @@ class TestWhatsAppSettings:
         assert data.get("phone_number_id") == "test123", f"phone_number_id mismatch: {data}"
 
     def test_delete_whatsapp_settings_removes_credentials(self, auth_headers):
-        """DELETE /api/organizations/me/whatsapp-settings removes credentials"""
+        """DELETE /api/v1/organizations/me/whatsapp-settings removes credentials"""
         # Save first
         requests.post(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
             json={"phone_number_id": "test123", "access_token": "testtoken123456789"},
         )
         # Delete
         res = requests.delete(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200, f"Delete failed: {res.text}"
@@ -137,12 +137,12 @@ class TestWhatsAppSettings:
         """After DELETE, GET should show configured=False"""
         # Delete first
         requests.delete(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         # Get and verify
         res = requests.get(
-            f"{BASE_URL}/api/organizations/me/whatsapp-settings",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-settings",
             headers=auth_headers,
         )
         assert res.status_code == 200
@@ -150,11 +150,11 @@ class TestWhatsAppSettings:
         assert data.get("configured") is False, f"Expected configured=False after delete: {data}"
 
     def test_whatsapp_test_returns_400_no_phone(self, auth_headers):
-        """POST /api/organizations/me/whatsapp-test returns 400 if no phone on user profile"""
+        """POST /api/v1/organizations/me/whatsapp-test returns 400 if no phone on user profile"""
         # Note: admin user has no phone in profile for test org
         # This is expected behavior per review request
         res = requests.post(
-            f"{BASE_URL}/api/organizations/me/whatsapp-test",
+            f"{BASE_URL}/api/v1/organizations/me/whatsapp-test",
             headers=auth_headers,
         )
         # Either 400 (no phone) or 400 (WhatsApp not configured) - both are valid expected responses
@@ -170,13 +170,13 @@ class TestWhatsAppSettings:
 # ==================== P2: INVOICE SEND REGRESSION ====================
 
 class TestInvoiceSendRegression:
-    """P2: Regression - POST /api/invoices-enhanced/{id}/send?channel=email still works"""
+    """P2: Regression - POST /api/v1/invoices-enhanced/{id}/send?channel=email still works"""
 
     def test_send_invoice_email_channel_works(self, auth_headers):
-        """POST /api/invoices-enhanced/{id}/send?channel=email returns 200"""
+        """POST /api/v1/invoices-enhanced/{id}/send?channel=email returns 200"""
         # First, get a list of invoices to find an ID
         res = requests.get(
-            f"{BASE_URL}/api/invoices-enhanced/?per_page=5",
+            f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=5",
             headers=auth_headers,
         )
         assert res.status_code == 200, f"Failed to list invoices: {res.text}"
@@ -191,7 +191,7 @@ class TestInvoiceSendRegression:
         
         # Send via email channel
         send_res = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/send?channel=email",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/send?channel=email",
             headers=auth_headers,
         )
         # Should be 200 (success or graceful error, not 500)
@@ -210,9 +210,9 @@ class TestTallyXMLExport:
     DATE_TO = "2026-02-28"
 
     def test_tally_xml_returns_200_for_valid_range(self, auth_headers):
-        """GET /api/finance/export/tally-xml returns 200 for Feb 2026"""
+        """GET /api/v1/finance/export/tally-xml returns 200 for Feb 2026"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -221,7 +221,7 @@ class TestTallyXMLExport:
     def test_tally_xml_response_has_content_disposition(self, auth_headers):
         """Response has Content-Disposition: attachment header"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -233,7 +233,7 @@ class TestTallyXMLExport:
     def test_tally_xml_content_type_is_xml(self, auth_headers):
         """Response content type is application/xml"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -244,7 +244,7 @@ class TestTallyXMLExport:
     def test_tally_xml_starts_with_xml_declaration(self, auth_headers):
         """XML response starts with <?xml version"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -257,7 +257,7 @@ class TestTallyXMLExport:
     def test_tally_xml_is_valid_xml(self, auth_headers):
         """XML response is parseable / valid XML"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -271,7 +271,7 @@ class TestTallyXMLExport:
     def test_tally_xml_contains_envelope_structure(self, auth_headers):
         """XML contains ENVELOPE > BODY > IMPORTDATA structure"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": self.DATE_FROM, "date_to": self.DATE_TO},
         )
@@ -292,7 +292,7 @@ class TestTallyXMLExport:
         """GET with date range with no entries returns 404"""
         # Use a far-future date range with no entries
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": "2030-01-01", "date_to": "2030-01-31"},
         )
@@ -303,7 +303,7 @@ class TestTallyXMLExport:
     def test_tally_xml_invalid_date_returns_400(self, auth_headers):
         """GET with invalid date format returns 400"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": "invalid-date", "date_to": "2026-02-28"},
         )
@@ -312,7 +312,7 @@ class TestTallyXMLExport:
     def test_tally_xml_date_from_after_to_returns_400(self, auth_headers):
         """GET with date_from > date_to returns 400"""
         res = requests.get(
-            f"{BASE_URL}/api/finance/export/tally-xml",
+            f"{BASE_URL}/api/v1/finance/export/tally-xml",
             headers=auth_headers,
             params={"date_from": "2026-03-01", "date_to": "2026-02-01"},
         )
@@ -327,11 +327,11 @@ class TestPublicSignup:
     TIMESTAMP = int(time.time())
 
     def test_signup_is_public_route_no_auth_needed(self):
-        """POST /api/organizations/signup accessible without auth"""
+        """POST /api/v1/organizations/signup accessible without auth"""
         # Try with a unique email - no auth headers
         unique_email = f"test_signup_{self.TIMESTAMP}@teststudio.com"
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "name": f"TEST Garage {self.TIMESTAMP}",
                 "city": "Mumbai",
@@ -348,10 +348,10 @@ class TestPublicSignup:
         assert data.get("success") is True, f"Expected success=True: {data}"
 
     def test_signup_returns_token(self):
-        """POST /api/organizations/signup returns JWT token"""
+        """POST /api/v1/organizations/signup returns JWT token"""
         unique_email = f"test_token_{self.TIMESTAMP + 1}@teststudio.com"
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "name": f"TEST Token Garage",
                 "city": "Delhi",
@@ -372,7 +372,7 @@ class TestPublicSignup:
         """New org has trial_ends_at ~14 days from creation"""
         unique_email = f"test_trial_{self.TIMESTAMP + 2}@teststudio.com"
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "name": "TEST Trial Garage",
                 "city": "Pune",
@@ -399,10 +399,10 @@ class TestPublicSignup:
         print(f"Trial ends in {days_diff} days - OK")
 
     def test_signup_with_city_phone_vehicle_types(self):
-        """POST /api/organizations/signup accepts city, phone, vehicle_types"""
+        """POST /api/v1/organizations/signup accepts city, phone, vehicle_types"""
         unique_email = f"test_fields_{self.TIMESTAMP + 3}@teststudio.com"
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "name": "TEST Fields Garage",
                 "city": "Bangalore",
@@ -432,11 +432,11 @@ class TestPublicSignup:
             "industry_type": "ev_garage",
         }
         # First signup
-        res1 = requests.post(f"{BASE_URL}/api/organizations/signup", json=payload)
+        res1 = requests.post(f"{BASE_URL}/api/v1/organizations/signup", json=payload)
         assert res1.status_code == 200
         
         # Duplicate
-        res2 = requests.post(f"{BASE_URL}/api/organizations/signup", json=payload)
+        res2 = requests.post(f"{BASE_URL}/api/v1/organizations/signup", json=payload)
         assert res2.status_code == 400, f"Expected 400 for duplicate, got {res2.status_code}"
         data = res2.json()
         assert "already registered" in data.get("detail", "").lower() or "exists" in data.get("detail", "").lower(), (
@@ -447,7 +447,7 @@ class TestPublicSignup:
         """New org has plan_type 'free_trial'"""
         unique_email = f"test_plan_{self.TIMESTAMP + 5}@teststudio.com"
         res = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json={
                 "name": "TEST Plan Garage",
                 "city": "Hyderabad",

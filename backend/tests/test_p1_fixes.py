@@ -24,7 +24,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstr
 @pytest.fixture(scope="module")
 def admin_token():
     """Get admin JWT token"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -45,7 +45,7 @@ def admin_headers(admin_token):
 @pytest.fixture(scope="module")
 def tech_token():
     """Get technician JWT token"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "tech.a@battwheels.internal",
         "password": "TechA@123"
     })
@@ -160,7 +160,7 @@ class TestDB204OrgIdIndexes:
 
 @pytest.mark.skip(reason="Razorpay webhook blocked by CSRF middleware — needs CSRF exemption for webhook routes")
 class TestPY903WebhookIdempotency:
-    """Verify POST /api/payments/webhook is idempotent"""
+    """Verify POST /api/v1/payments/webhook is idempotent"""
 
     WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "test-webhook-secret")
 
@@ -200,7 +200,7 @@ class TestPY903WebhookIdempotency:
         sig = self._sign_payload(body)
 
         resp = requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body,
             headers={
                 "Content-Type": "application/json",
@@ -226,7 +226,7 @@ class TestPY903WebhookIdempotency:
         sig = self._sign_payload(body)
 
         resp = requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body,
             headers={
                 "Content-Type": "application/json",
@@ -272,7 +272,7 @@ class TestPY903WebhookIdempotency:
         sig1 = self._sign_payload(body1)
         
         resp1 = requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body1,
             headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig1}
         )
@@ -285,7 +285,7 @@ class TestPY903WebhookIdempotency:
         sig2 = self._sign_payload(body2)
         
         resp2 = requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body2,
             headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig2}
         )
@@ -381,7 +381,7 @@ class TestSE404RBACTechnician:
 
     def test_tech_login_returns_200(self):
         """Login as technician must return HTTP 200"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "tech.a@battwheels.internal",
             "password": "TechA@123"
         })
@@ -397,7 +397,7 @@ class TestSE404RBACTechnician:
             "Authorization": f"Bearer {tech_token}",
             "Content-Type": "application/json"
         }
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"Tech payroll access: {resp.status_code}, {resp.text[:200]}")
         # Should be denied - either 403 (feature not available) or 401 (no org context)
         # Both indicate access is blocked
@@ -411,7 +411,7 @@ class TestSE404RBACTechnician:
             "Authorization": f"Bearer {tech_token}",
             "Content-Type": "application/json"
         }
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"Tech payroll access: {resp.status_code}")
         # NOTE: Currently returns 400 (no org context) instead of 403 (forbidden)
         # SE4.04 requires 403, but the tech user has no org membership
@@ -437,9 +437,9 @@ class TestFN1110Form16:
     FY = "2025-26"
 
     def test_form16_json_returns_200(self, admin_headers):
-        """GET /api/hr/payroll/form16/{emp}/{fy} returns HTTP 200 with code=0"""
+        """GET /api/v1/hr/payroll/form16/{emp}/{fy} returns HTTP 200 with code=0"""
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
             headers=admin_headers
         )
         print(f"Form16 JSON: {resp.status_code}")
@@ -449,7 +449,7 @@ class TestFN1110Form16:
     def test_form16_json_has_code_0(self, admin_headers):
         """Form16 JSON response has code=0"""
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
             headers=admin_headers
         )
         data = resp.json()
@@ -458,7 +458,7 @@ class TestFN1110Form16:
     def test_form16_json_employee_name_populated(self, admin_headers):
         """Form16 JSON has employee.name populated"""
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
             headers=admin_headers
         )
         assert resp.status_code == 200
@@ -473,7 +473,7 @@ class TestFN1110Form16:
     def test_form16_json_not_404(self, admin_headers):
         """Form16 JSON does NOT return 404 'No payroll data found'"""
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}",
             headers=admin_headers
         )
         print(f"Form16 status: {resp.status_code}")
@@ -481,9 +481,9 @@ class TestFN1110Form16:
             f"Form16 returned 404 — 'generated' status fix may not be applied: {resp.text}"
 
     def test_form16_pdf_content_type(self, admin_headers):
-        """GET /api/hr/payroll/form16/{emp}/{fy}/pdf returns content-type application/pdf"""
+        """GET /api/v1/hr/payroll/form16/{emp}/{fy}/pdf returns content-type application/pdf"""
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}/pdf",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{self.EMPLOYEE_ID}/{self.FY}/pdf",
             headers=admin_headers,
             stream=True
         )

@@ -20,7 +20,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
-    BASE_URL = ""
+    BASE_URL = "http://localhost:8001"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -36,7 +36,7 @@ created_activities = []
 def auth_token():
     """Login and get auth token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
     )
     if response.status_code == 200:
@@ -61,7 +61,7 @@ def api_client(auth_token):
 def test_ticket(api_client):
     """Find a ticket in estimate_approved status or create workflow to get there"""
     # First, try to find an existing ticket with estimate_approved status
-    response = api_client.get(f"{BASE_URL}/api/tickets?status=estimate_approved&limit=1")
+    response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=estimate_approved&limit=1")
     
     if response.status_code == 200:
         data = response.json()
@@ -71,7 +71,7 @@ def test_ticket(api_client):
             return tickets[0]
     
     # Try to find work_in_progress ticket (test start_work already done)
-    response = api_client.get(f"{BASE_URL}/api/tickets?status=work_in_progress&limit=1")
+    response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=work_in_progress&limit=1")
     if response.status_code == 200:
         data = response.json()
         tickets = data.get("tickets", [])
@@ -80,7 +80,7 @@ def test_ticket(api_client):
             return tickets[0]
     
     # Try work_completed
-    response = api_client.get(f"{BASE_URL}/api/tickets?status=work_completed&limit=1")
+    response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=work_completed&limit=1")
     if response.status_code == 200:
         data = response.json()
         tickets = data.get("tickets", [])
@@ -89,7 +89,7 @@ def test_ticket(api_client):
             return tickets[0]
     
     # Try technician_assigned (can be used for some tests)
-    response = api_client.get(f"{BASE_URL}/api/tickets?status=technician_assigned&limit=1")
+    response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=technician_assigned&limit=1")
     if response.status_code == 200:
         data = response.json()
         tickets = data.get("tickets", [])
@@ -101,7 +101,7 @@ def test_ticket(api_client):
 
 
 class TestStartWorkEndpoint:
-    """Test POST /api/tickets/{id}/start-work"""
+    """Test POST /api/v1/tickets/{id}/start-work"""
     
     def test_start_work_on_estimate_approved(self, api_client, test_ticket):
         """Test starting work on a ticket with approved estimate"""
@@ -115,7 +115,7 @@ class TestStartWorkEndpoint:
                 pytest.skip(f"Ticket already past start-work stage: {status}")
         
         response = api_client.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/start-work",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/start-work",
             json={"notes": "TEST_Starting work via pytest"}
         )
         
@@ -144,7 +144,7 @@ class TestStartWorkEndpoint:
 
 
 class TestCompleteWorkEndpoint:
-    """Test POST /api/tickets/{id}/complete-work"""
+    """Test POST /api/v1/tickets/{id}/complete-work"""
     
     def test_complete_work_requires_work_summary(self, api_client, test_ticket):
         """Test that complete-work requires a work summary"""
@@ -158,7 +158,7 @@ class TestCompleteWorkEndpoint:
         # First, try to start work if not already
         if status != "work_in_progress":
             start_resp = api_client.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/start-work",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/start-work",
                 json={"notes": "TEST_Starting before complete"}
             )
             if start_resp.status_code != 200:
@@ -167,7 +167,7 @@ class TestCompleteWorkEndpoint:
         
         # Now complete work
         response = api_client.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/complete-work",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/complete-work",
             json={
                 "work_summary": "TEST_Completed battery replacement and calibration",
                 "labor_hours": 2.5,
@@ -195,12 +195,12 @@ class TestCompleteWorkEndpoint:
 
 
 class TestCloseTicketEndpoint:
-    """Test POST /api/tickets/{id}/close"""
+    """Test POST /api/v1/tickets/{id}/close"""
     
     def test_close_ticket_after_work_completed(self, api_client):
         """Test closing a ticket after work is completed"""
         # Find a work_completed ticket
-        response = api_client.get(f"{BASE_URL}/api/tickets?status=work_completed&limit=1")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=work_completed&limit=1")
         
         if response.status_code != 200:
             pytest.skip("Could not fetch tickets")
@@ -216,7 +216,7 @@ class TestCloseTicketEndpoint:
         
         # Close the ticket
         response = api_client.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
             json={
                 "resolution": "TEST_Battery replaced successfully. Vehicle tested and functioning normally.",
                 "resolution_outcome": "success",
@@ -246,7 +246,7 @@ class TestActivityLog:
         """Test getting activities for a ticket"""
         ticket_id = test_ticket.get("ticket_id")
         
-        response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}/activities")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -277,7 +277,7 @@ class TestActivityLog:
             pytest.skip("Cannot add notes to closed ticket")
         
         response = api_client.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/activities",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities",
             json={
                 "action": "note",
                 "description": "TEST_Added diagnostic note during testing"
@@ -299,7 +299,7 @@ class TestActivityLog:
         ticket_id = test_ticket.get("ticket_id")
         
         # First get activities
-        get_response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}/activities")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities")
         if get_response.status_code != 200:
             pytest.skip("Could not get activities")
         
@@ -311,7 +311,7 @@ class TestActivityLog:
         if not editable:
             # Create one to edit
             add_response = api_client.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/activities",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities",
                 json={
                     "action": "note",
                     "description": "TEST_Activity to be edited"
@@ -326,7 +326,7 @@ class TestActivityLog:
         
         # Update the activity
         response = api_client.put(
-            f"{BASE_URL}/api/tickets/{ticket_id}/activities/{activity_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities/{activity_id}",
             json={"description": "TEST_Updated activity description by admin"}
         )
         
@@ -345,7 +345,7 @@ class TestActivityLog:
         
         # Create an activity to delete
         add_response = api_client.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/activities",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities",
             json={
                 "action": "note",
                 "description": "TEST_Activity to be deleted"
@@ -359,7 +359,7 @@ class TestActivityLog:
         
         # Delete it
         response = api_client.delete(
-            f"{BASE_URL}/api/tickets/{ticket_id}/activities/{activity_id}"
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities/{activity_id}"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -368,7 +368,7 @@ class TestActivityLog:
         assert data.get("message") == "Activity deleted", "Should confirm deletion"
         
         # Verify it's gone
-        verify_response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}/activities")
+        verify_response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}/activities")
         activities = verify_response.json().get("activities", [])
         deleted = [a for a in activities if a.get("activity_id") == activity_id]
         assert len(deleted) == 0, "Deleted activity should not be present"
@@ -383,7 +383,7 @@ class TestStatusHistory:
         """Test that status history shows all transitions"""
         ticket_id = test_ticket.get("ticket_id")
         
-        response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -416,7 +416,7 @@ class TestEstimateApprovalTriggersWorkInProgress:
     def test_approve_estimate_updates_ticket_status(self, api_client):
         """Test that estimate approval triggers work_in_progress status"""
         # Find a ticket with sent estimate status
-        response = api_client.get(f"{BASE_URL}/api/tickets?status=estimate_shared&limit=1")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets?status=estimate_shared&limit=1")
         
         if response.status_code != 200:
             pytest.skip("Could not fetch tickets")
@@ -426,7 +426,7 @@ class TestEstimateApprovalTriggersWorkInProgress:
         
         if not tickets:
             # Try estimate_approved (already done)
-            response2 = api_client.get(f"{BASE_URL}/api/tickets?status=estimate_approved&limit=1")
+            response2 = api_client.get(f"{BASE_URL}/api/v1/tickets?status=estimate_approved&limit=1")
             if response2.status_code == 200:
                 tickets2 = response2.json().get("tickets", [])
                 if tickets2:
@@ -438,7 +438,7 @@ class TestEstimateApprovalTriggersWorkInProgress:
         ticket_id = ticket.get("ticket_id")
         
         # Get the estimate for this ticket
-        est_response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}/estimate")
+        est_response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}/estimate")
         
         if est_response.status_code != 200:
             pytest.skip("Could not get estimate for ticket")
@@ -448,7 +448,7 @@ class TestEstimateApprovalTriggersWorkInProgress:
         
         # Approve the estimate
         approve_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{estimate_id}/approve"
+            f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/approve"
         )
         
         if approve_response.status_code == 400:
@@ -459,7 +459,7 @@ class TestEstimateApprovalTriggersWorkInProgress:
         assert approve_response.status_code == 200, f"Expected 200, got {approve_response.status_code}: {approve_response.text}"
         
         # Verify ticket status changed
-        verify_response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}")
+        verify_response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}")
         ticket_data = verify_response.json()
         
         assert ticket_data.get("status") == "work_in_progress", \
@@ -474,7 +474,7 @@ class TestWorkflowEndToEnd:
     def test_full_workflow_transitions(self, api_client):
         """Test full workflow from estimate_approved to closed"""
         # Find a ticket that's not closed and has enough status to demonstrate
-        response = api_client.get(f"{BASE_URL}/api/tickets?limit=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets?limit=10")
         
         if response.status_code != 200:
             pytest.skip("Could not fetch tickets")
@@ -501,7 +501,7 @@ class TestWorkflowEndToEnd:
         # Step 1: If estimate_approved, start work
         if current_status == "estimate_approved":
             start_response = api_client.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/start-work",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/start-work",
                 json={"notes": "TEST_E2E workflow - starting work"}
             )
             if start_response.status_code == 200:
@@ -511,7 +511,7 @@ class TestWorkflowEndToEnd:
         # Step 2: If work_in_progress, complete work
         if current_status == "work_in_progress":
             complete_response = api_client.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/complete-work",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/complete-work",
                 json={
                     "work_summary": "TEST_E2E workflow - work completed",
                     "labor_hours": 1.5
@@ -524,7 +524,7 @@ class TestWorkflowEndToEnd:
         # Step 3: If work_completed, close ticket
         if current_status == "work_completed":
             close_response = api_client.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/close",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
                 json={
                     "resolution": "TEST_E2E workflow - ticket resolved",
                     "resolution_outcome": "success"
@@ -535,7 +535,7 @@ class TestWorkflowEndToEnd:
                 print(f"  Closed ticket: {current_status}")
         
         # Verify final status
-        verify_response = api_client.get(f"{BASE_URL}/api/tickets/{ticket_id}")
+        verify_response = api_client.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}")
         final_status = verify_response.json().get("status")
         
         print(f"  Final status: {final_status}")

@@ -7,14 +7,14 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestItemGroups:
     """Test Item Groups CRUD operations"""
     
     def test_list_item_groups(self):
         """Test listing item groups"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/groups")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/groups")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -30,7 +30,7 @@ class TestItemGroups:
             "description": "Test group for automated testing",
             "is_active": True
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/groups", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/groups", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -43,14 +43,14 @@ class TestItemGroups:
         """Test getting a specific item group"""
         # First create a group
         unique_name = f"TEST_GetGroup_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/groups", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/groups", json={
             "name": unique_name,
             "description": "Test group"
         })
         group_id = create_response.json()["group"]["group_id"]
         
         # Then get it
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/groups/{group_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/groups/{group_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -63,7 +63,7 @@ class TestWarehouses:
     
     def test_list_warehouses(self):
         """Test listing warehouses"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/warehouses")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -80,7 +80,7 @@ class TestWarehouses:
             "is_primary": False,
             "is_active": True
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/warehouses", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/warehouses", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -93,14 +93,14 @@ class TestWarehouses:
         """Test getting a specific warehouse"""
         # First create a warehouse
         unique_name = f"TEST_GetWH_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/warehouses", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/warehouses", json={
             "name": unique_name,
             "location": "Test Location"
         })
         warehouse_id = create_response.json()["warehouse"]["warehouse_id"]
         
         # Then get it
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/warehouses/{warehouse_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses/{warehouse_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -113,7 +113,7 @@ class TestPriceLists:
     
     def test_list_price_lists(self):
         """Test listing price lists"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/price-lists")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -131,7 +131,7 @@ class TestPriceLists:
             "markup_percentage": 0,
             "is_active": True
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/price-lists", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/price-lists", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -144,14 +144,14 @@ class TestPriceLists:
         """Test getting a specific price list"""
         # First create a price list
         unique_name = f"TEST_GetPL_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/price-lists", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/price-lists", json={
             "name": unique_name,
             "description": "Test"
         })
         pricelist_id = create_response.json()["price_list"]["pricelist_id"]
         
         # Then get it
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/price-lists/{pricelist_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists/{pricelist_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -164,7 +164,7 @@ class TestEnhancedItems:
     
     def test_list_items(self):
         """Test listing items"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -189,7 +189,7 @@ class TestEnhancedItems:
             "reorder_level": 10,
             "is_active": True
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -203,7 +203,7 @@ class TestEnhancedItems:
         """Test getting a specific item"""
         # First create an item
         unique_name = f"TEST_GetItem_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0
@@ -211,7 +211,7 @@ class TestEnhancedItems:
         item_id = create_response.json()["item"]["item_id"]
         
         # Then get it
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -220,7 +220,7 @@ class TestEnhancedItems:
     
     def test_low_stock_items(self):
         """Test getting low stock items"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/low-stock")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/low-stock")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -233,7 +233,7 @@ class TestInventoryAdjustments:
     
     def test_list_adjustments(self):
         """Test listing adjustments"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/adjustments")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/adjustments")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -245,7 +245,7 @@ class TestInventoryAdjustments:
         """Test creating an inventory adjustment"""
         # First create an inventory item
         unique_name = f"TEST_AdjItem_{uuid.uuid4().hex[:6]}"
-        item_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        item_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0,
@@ -254,11 +254,11 @@ class TestInventoryAdjustments:
         item_id = item_response.json()["item"]["item_id"]
         
         # Get a warehouse
-        wh_response = requests.get(f"{BASE_URL}/api/items-enhanced/warehouses")
+        wh_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         warehouses = wh_response.json()["warehouses"]
         if not warehouses:
             # Create one if none exists
-            wh_create = requests.post(f"{BASE_URL}/api/items-enhanced/warehouses", json={
+            wh_create = requests.post(f"{BASE_URL}/api/v1/items-enhanced/warehouses", json={
                 "name": f"TEST_WH_{uuid.uuid4().hex[:6]}",
                 "location": "Test"
             })
@@ -275,7 +275,7 @@ class TestInventoryAdjustments:
             "reason": "purchase",
             "notes": "Test adjustment"
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/adjustments", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/adjustments", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -289,7 +289,7 @@ class TestInventoryReports:
     
     def test_stock_summary(self):
         """Test stock summary report"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/reports/stock-summary")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/reports/stock-summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -303,7 +303,7 @@ class TestInventoryReports:
     
     def test_inventory_valuation(self):
         """Test inventory valuation report"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/reports/valuation")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/reports/valuation")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -322,7 +322,7 @@ class TestStockLocations:
         """Test creating a stock location"""
         # First create an item
         unique_name = f"TEST_SLItem_{uuid.uuid4().hex[:6]}"
-        item_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        item_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0
@@ -330,7 +330,7 @@ class TestStockLocations:
         item_id = item_response.json()["item"]["item_id"]
         
         # Get a warehouse
-        wh_response = requests.get(f"{BASE_URL}/api/items-enhanced/warehouses")
+        wh_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         warehouses = wh_response.json()["warehouses"]
         warehouse_id = warehouses[0]["warehouse_id"] if warehouses else None
         
@@ -340,7 +340,7 @@ class TestStockLocations:
                 "warehouse_id": warehouse_id,
                 "stock": 100
             }
-            response = requests.post(f"{BASE_URL}/api/items-enhanced/stock-locations", json=payload)
+            response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/stock-locations", json=payload)
             assert response.status_code == 200
             data = response.json()
             assert data["code"] == 0
@@ -350,7 +350,7 @@ class TestStockLocations:
         """Test getting stock locations for an item"""
         # First create an item
         unique_name = f"TEST_GetSL_{uuid.uuid4().hex[:6]}"
-        item_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        item_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0,
@@ -359,7 +359,7 @@ class TestStockLocations:
         item_id = item_response.json()["item"]["item_id"]
         
         # Get stock locations
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/{item_id}/stock-locations")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}/stock-locations")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0

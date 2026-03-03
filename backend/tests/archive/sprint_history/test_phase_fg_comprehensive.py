@@ -19,7 +19,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Use the production URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
@@ -37,7 +37,7 @@ class TestAuthentication:
     
     def test_admin_login_returns_token(self, session):
         """Admin login should return JWT token"""
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -52,7 +52,7 @@ class TestAuthentication:
     
     def test_technician_login_returns_token(self, session):
         """Technician login should return JWT token"""
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECH_EMAIL,
             "password": TECH_PASSWORD
         })
@@ -65,7 +65,7 @@ class TestAuthentication:
     
     def test_invalid_credentials_rejected(self, session):
         """Invalid credentials should be rejected"""
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "invalid@test.com",
             "password": "wrong_pwd_placeholder"
         })
@@ -82,7 +82,7 @@ class TestTicketsCRUD:
     
     @pytest.fixture
     def admin_token(self, session):
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -90,14 +90,14 @@ class TestTicketsCRUD:
     
     def test_list_tickets_requires_auth(self, session):
         """Listing tickets should require authentication"""
-        response = session.get(f"{BASE_URL}/api/tickets")
+        response = session.get(f"{BASE_URL}/api/v1/tickets")
         assert response.status_code == 401, f"Should require auth: {response.status_code}"
         print("PASS: List tickets requires authentication")
     
     def test_list_tickets_with_auth(self, session, admin_token):
         """Authenticated user can list tickets scoped to their org"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/tickets", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/tickets", headers=headers)
         assert response.status_code == 200, f"Failed to list tickets: {response.text}"
         
         data = response.json()
@@ -117,7 +117,7 @@ class TestTicketsCRUD:
             "priority": "medium"
         }
         
-        response = session.post(f"{BASE_URL}/api/tickets", json=ticket_data, headers=headers)
+        response = session.post(f"{BASE_URL}/api/v1/tickets", json=ticket_data, headers=headers)
         assert response.status_code == 200, f"Failed to create ticket: {response.text}"
         
         ticket = response.json()
@@ -125,7 +125,7 @@ class TestTicketsCRUD:
         
         # Verify ticket has organization_id
         ticket_id = ticket["ticket_id"]
-        response = session.get(f"{BASE_URL}/api/tickets/{ticket_id}", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/tickets/{ticket_id}", headers=headers)
         assert response.status_code == 200, f"Failed to get ticket: {response.text}"
         
         fetched = response.json()
@@ -143,7 +143,7 @@ class TestTenantIsolation:
     
     @pytest.fixture
     def admin_token(self, session):
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -156,7 +156,7 @@ class TestTenantIsolation:
             "X-Organization-ID": f"org_{uuid.uuid4().hex[:12]}"  # Random invalid org
         }
         
-        response = session.get(f"{BASE_URL}/api/tickets", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/tickets", headers=headers)
         assert response.status_code == 403, f"Should return 403, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -171,7 +171,7 @@ class TestTenantIsolation:
             "X-Organization-ID": f"org_{uuid.uuid4().hex[:12]}"
         }
         
-        response = session.get(f"{BASE_URL}/api/vehicles", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/vehicles", headers=headers)
         assert response.status_code == 403, f"Should return 403, got {response.status_code}"
         print("PASS: Invalid X-Organization-ID returns 403 for vehicles")
     
@@ -182,7 +182,7 @@ class TestTenantIsolation:
             "X-Organization-ID": f"org_{uuid.uuid4().hex[:12]}"
         }
         
-        response = session.get(f"{BASE_URL}/api/inventory", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/inventory", headers=headers)
         assert response.status_code == 403, f"Should return 403, got {response.status_code}"
         print("PASS: Invalid X-Organization-ID returns 403 for inventory")
 
@@ -470,7 +470,7 @@ class TestEnhancedRoutes:
     
     @pytest.fixture
     def admin_token(self, session):
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -479,7 +479,7 @@ class TestEnhancedRoutes:
     def test_invoices_enhanced_endpoint(self, session, admin_token):
         """invoices-enhanced endpoint should work"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/invoices-enhanced/", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/invoices-enhanced/", headers=headers)
         assert response.status_code == 200, f"Invoices enhanced failed: {response.text}"
         
         data = response.json()
@@ -489,7 +489,7 @@ class TestEnhancedRoutes:
     def test_estimates_enhanced_endpoint(self, session, admin_token):
         """estimates-enhanced endpoint should work"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/estimates-enhanced/", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/estimates-enhanced/", headers=headers)
         assert response.status_code == 200, f"Estimates enhanced failed: {response.text}"
         
         data = response.json()
@@ -499,7 +499,7 @@ class TestEnhancedRoutes:
     def test_contacts_enhanced_endpoint(self, session, admin_token):
         """contacts-enhanced endpoint should work"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/contacts-enhanced/", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/contacts-enhanced/", headers=headers)
         assert response.status_code == 200, f"Contacts enhanced failed: {response.text}"
         
         data = response.json()
@@ -509,7 +509,7 @@ class TestEnhancedRoutes:
     def test_items_enhanced_endpoint(self, session, admin_token):
         """items-enhanced endpoint should work"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/items-enhanced/", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/items-enhanced/", headers=headers)
         assert response.status_code == 200, f"Items enhanced failed: {response.text}"
         
         data = response.json()
@@ -519,7 +519,7 @@ class TestEnhancedRoutes:
     def test_sales_orders_enhanced_endpoint(self, session, admin_token):
         """sales-orders-enhanced endpoint should work"""
         headers = {"Authorization": f"Bearer {admin_token}"}
-        response = session.get(f"{BASE_URL}/api/sales-orders-enhanced/", headers=headers)
+        response = session.get(f"{BASE_URL}/api/v1/sales-orders-enhanced/", headers=headers)
         assert response.status_code == 200, f"Sales orders enhanced failed: {response.text}"
         
         data = response.json()

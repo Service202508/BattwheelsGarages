@@ -9,7 +9,7 @@ import uuid
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 
 class TestSearchSortFilter:
@@ -17,7 +17,7 @@ class TestSearchSortFilter:
     
     def test_search_items_by_name(self):
         """Test searching items by name"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?search=Battery")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?search=Battery")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -26,7 +26,7 @@ class TestSearchSortFilter:
     
     def test_search_items_by_sku(self):
         """Test searching items by SKU"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?search=SKU")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?search=SKU")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -34,7 +34,7 @@ class TestSearchSortFilter:
     
     def test_sort_by_name_asc(self):
         """Test sorting items by name ascending"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?sort_by=name&sort_order=asc")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?sort_by=name&sort_order=asc")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -45,7 +45,7 @@ class TestSearchSortFilter:
     
     def test_sort_by_sales_rate_desc(self):
         """Test sorting items by sales rate descending"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?sort_by=sales_rate&sort_order=desc")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?sort_by=sales_rate&sort_order=desc")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -56,7 +56,7 @@ class TestSearchSortFilter:
     
     def test_sort_by_stock(self):
         """Test sorting items by stock"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?sort_by=stock_on_hand&sort_order=desc")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?sort_by=stock_on_hand&sort_order=desc")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -64,7 +64,7 @@ class TestSearchSortFilter:
     
     def test_filter_by_inventory_type(self):
         """Test filtering items by inventory type"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?item_type=inventory")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?item_type=inventory")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -74,7 +74,7 @@ class TestSearchSortFilter:
     
     def test_filter_by_service_type(self):
         """Test filtering items by service type"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?item_type=service")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?item_type=service")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -84,7 +84,7 @@ class TestSearchSortFilter:
     
     def test_filter_by_active_status(self):
         """Test filtering items by active status"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?is_active=true")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?is_active=true")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -98,7 +98,7 @@ class TestBulkActions:
     def test_item_id(self):
         """Create a test item for bulk actions"""
         unique_name = f"TEST_BulkItem_{uuid.uuid4().hex[:6]}"
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0,
@@ -108,7 +108,7 @@ class TestBulkActions:
     
     def test_bulk_clone(self, test_item_id):
         """Test bulk clone action"""
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [test_item_id],
             "action": "clone"
         })
@@ -120,7 +120,7 @@ class TestBulkActions:
     
     def test_bulk_deactivate(self, test_item_id):
         """Test bulk deactivate action"""
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [test_item_id],
             "action": "deactivate"
         })
@@ -133,12 +133,12 @@ class TestBulkActions:
     def test_bulk_activate(self, test_item_id):
         """Test bulk activate action"""
         # First deactivate
-        requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [test_item_id],
             "action": "deactivate"
         })
         # Then activate
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [test_item_id],
             "action": "activate"
         })
@@ -152,14 +152,14 @@ class TestBulkActions:
         """Test bulk delete action (creates new item to delete)"""
         # Create item specifically for deletion
         unique_name = f"TEST_DeleteItem_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 100.0
         })
         item_id = create_response.json()["item"]["item_id"]
         
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [item_id],
             "action": "delete"
         })
@@ -170,7 +170,7 @@ class TestBulkActions:
     
     def test_bulk_action_empty_list(self):
         """Test bulk action with empty item list"""
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/bulk-action", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/bulk-action", json={
             "item_ids": [],
             "action": "activate"
         })
@@ -183,7 +183,7 @@ class TestExportImport:
     
     def test_export_csv(self):
         """Test exporting items to CSV"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/export")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/export")
         assert response.status_code == 200
         assert "text/csv" in response.headers.get("content-type", "")
         content = response.text
@@ -194,7 +194,7 @@ class TestExportImport:
     
     def test_import_template_download(self):
         """Test downloading import template"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/export/template")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/export/template")
         assert response.status_code == 200
         assert "text/csv" in response.headers.get("content-type", "")
         content = response.text
@@ -211,7 +211,7 @@ class TestCustomFields:
     
     def test_list_custom_fields(self):
         """Test listing custom fields"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/custom-fields")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/custom-fields")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -221,7 +221,7 @@ class TestCustomFields:
     def test_create_text_custom_field(self):
         """Test creating a text custom field"""
         unique_name = f"TEST_Field_{uuid.uuid4().hex[:6]}"
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/custom-fields", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/custom-fields", json={
             "field_name": unique_name,
             "field_type": "text",
             "is_required": False,
@@ -236,7 +236,7 @@ class TestCustomFields:
     def test_create_dropdown_custom_field(self):
         """Test creating a dropdown custom field"""
         unique_name = f"TEST_Dropdown_{uuid.uuid4().hex[:6]}"
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/custom-fields", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/custom-fields", json={
             "field_name": unique_name,
             "field_type": "dropdown",
             "is_required": False,
@@ -255,7 +255,7 @@ class TestPriceListsEnhanced:
     def test_create_sales_price_list(self):
         """Test creating a sales price list"""
         unique_name = f"TEST_SalesPL_{uuid.uuid4().hex[:6]}"
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/price-lists", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/price-lists", json={
             "name": unique_name,
             "description": "Sales price list",
             "discount_percentage": 10,
@@ -271,7 +271,7 @@ class TestPriceListsEnhanced:
     def test_create_purchase_price_list(self):
         """Test creating a purchase price list"""
         unique_name = f"TEST_PurchasePL_{uuid.uuid4().hex[:6]}"
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/price-lists", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/price-lists", json={
             "name": unique_name,
             "description": "Purchase price list",
             "discount_percentage": 5,
@@ -289,7 +289,7 @@ class TestItemHistory:
     
     def test_get_all_history(self):
         """Test getting all item history"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/history")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/history")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -300,7 +300,7 @@ class TestItemHistory:
         """Test getting history for a specific item"""
         # Create an item first
         unique_name = f"TEST_HistItem_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0
@@ -308,7 +308,7 @@ class TestItemHistory:
         item_id = create_response.json()["item"]["item_id"]
         
         # Get history for this item
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/history?item_id={item_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/history?item_id={item_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -325,7 +325,7 @@ class TestInventoryAdjustmentsEnhanced:
         """Create test item and get warehouse"""
         # Create item
         unique_name = f"TEST_AdjEnhItem_{uuid.uuid4().hex[:6]}"
-        item_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        item_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0,
@@ -334,7 +334,7 @@ class TestInventoryAdjustmentsEnhanced:
         item_id = item_response.json()["item"]["item_id"]
         
         # Get warehouse
-        wh_response = requests.get(f"{BASE_URL}/api/items-enhanced/warehouses")
+        wh_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         warehouse_id = wh_response.json()["warehouses"][0]["warehouse_id"]
         
         return item_id, warehouse_id
@@ -342,7 +342,7 @@ class TestInventoryAdjustmentsEnhanced:
     def test_add_stock_adjustment(self, inventory_item_and_warehouse):
         """Test adding stock via adjustment"""
         item_id, warehouse_id = inventory_item_and_warehouse
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/adjustments", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/adjustments", json={
             "item_id": item_id,
             "warehouse_id": warehouse_id,
             "adjustment_type": "add",
@@ -360,7 +360,7 @@ class TestInventoryAdjustmentsEnhanced:
     def test_subtract_stock_adjustment(self, inventory_item_and_warehouse):
         """Test subtracting stock via adjustment"""
         item_id, warehouse_id = inventory_item_and_warehouse
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/adjustments", json={
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/adjustments", json={
             "item_id": item_id,
             "warehouse_id": warehouse_id,
             "adjustment_type": "subtract",
@@ -401,7 +401,7 @@ class TestItemCRUDEnhanced:
             "track_inventory": True,
             "is_active": True
         }
-        response = requests.post(f"{BASE_URL}/api/items-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -415,7 +415,7 @@ class TestItemCRUDEnhanced:
         """Test updating an item"""
         # Create item first
         unique_name = f"TEST_UpdateItem_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 500.0
@@ -423,7 +423,7 @@ class TestItemCRUDEnhanced:
         item_id = create_response.json()["item"]["item_id"]
         
         # Update it
-        response = requests.put(f"{BASE_URL}/api/items-enhanced/{item_id}", json={
+        response = requests.put(f"{BASE_URL}/api/v1/items-enhanced/{item_id}", json={
             "name": f"{unique_name}_Updated",
             "sales_rate": 600.0,
             "hsn_code": "12345678"
@@ -433,7 +433,7 @@ class TestItemCRUDEnhanced:
         assert data["code"] == 0
         
         # Verify update
-        get_response = requests.get(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        get_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         updated_item = get_response.json()["item"]
         assert updated_item["sales_rate"] == 600.0
         print(f"✓ Updated item: {item_id}")
@@ -442,7 +442,7 @@ class TestItemCRUDEnhanced:
         """Test deleting item with no transactions"""
         # Create item
         unique_name = f"TEST_DeleteItem_{uuid.uuid4().hex[:6]}"
-        create_response = requests.post(f"{BASE_URL}/api/items-enhanced/", json={
+        create_response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json={
             "name": unique_name,
             "item_type": "inventory",
             "sales_rate": 100.0
@@ -450,13 +450,13 @@ class TestItemCRUDEnhanced:
         item_id = create_response.json()["item"]["item_id"]
         
         # Delete it
-        response = requests.delete(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        response = requests.delete(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deletion
-        get_response = requests.get(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        get_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         assert get_response.status_code == 404
         print(f"✓ Deleted item: {item_id}")
 

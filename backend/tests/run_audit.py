@@ -10,12 +10,12 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://org-hub-redesign.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://zero-tolerance-check.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "admin"
+ADMIN_PASSWORD = "DevTest@123"
 
 class AuditResults:
     total = 0

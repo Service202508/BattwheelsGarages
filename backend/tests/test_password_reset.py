@@ -12,7 +12,7 @@ import asyncio
 import hashlib
 
 API_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001")
-AUTH = f"{API_URL}/api/auth"
+AUTH = f"{API_URL}/api/v1/auth"
 V1 = f"{API_URL}/api/v1"
 
 # Test credentials

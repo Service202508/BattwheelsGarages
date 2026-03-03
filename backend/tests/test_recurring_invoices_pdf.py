@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestRecurringInvoicesCRUD:
     """Test Recurring Invoices CRUD operations"""
@@ -17,7 +17,7 @@ class TestRecurringInvoicesCRUD:
         """Setup test data"""
         self.headers = {"Content-Type": "application/json"}
         # Get a customer for testing
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?contact_type=customer&per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?contact_type=customer&per_page=1", headers=self.headers)
         if response.status_code == 200:
             data = response.json()
             if data.get("contacts"):
@@ -30,7 +30,7 @@ class TestRecurringInvoicesCRUD:
     
     def test_01_list_recurring_invoices(self):
         """Test listing recurring invoices"""
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -40,7 +40,7 @@ class TestRecurringInvoicesCRUD:
     
     def test_02_get_recurring_summary(self):
         """Test getting recurring invoices summary"""
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/summary", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/summary", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -73,7 +73,7 @@ class TestRecurringInvoicesCRUD:
             "send_email_on_generation": False
         }
         
-        response = requests.post(f"{BASE_URL}/api/recurring-invoices", json=payload, headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/recurring-invoices", json=payload, headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -90,7 +90,7 @@ class TestRecurringInvoicesCRUD:
         if not recurring_id:
             pytest.skip("No recurring invoice created")
         
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -110,13 +110,13 @@ class TestRecurringInvoicesCRUD:
             "payment_terms_days": 30
         }
         
-        response = requests.put(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", json=payload, headers=self.headers)
+        response = requests.put(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", json=payload, headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify update
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         data = response.json()
         assert data["recurring_invoice"]["profile_name"] == "TEST_Updated_Monthly_Service"
         assert data["recurring_invoice"]["payment_terms_days"] == 30
@@ -128,13 +128,13 @@ class TestRecurringInvoicesCRUD:
         if not recurring_id:
             pytest.skip("No recurring invoice created")
         
-        response = requests.post(f"{BASE_URL}/api/recurring-invoices/{recurring_id}/stop", headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}/stop", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         data = response.json()
         assert data["recurring_invoice"]["status"] == "stopped"
         print("Stopped recurring invoice successfully")
@@ -145,14 +145,14 @@ class TestRecurringInvoicesCRUD:
         if not recurring_id:
             pytest.skip("No recurring invoice created")
         
-        response = requests.post(f"{BASE_URL}/api/recurring-invoices/{recurring_id}/resume", headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}/resume", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         assert "next_invoice_date" in data
         
         # Verify status
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         data = response.json()
         assert data["recurring_invoice"]["status"] == "active"
         print(f"Resumed recurring invoice, next date: {data['recurring_invoice']['next_invoice_date']}")
@@ -163,7 +163,7 @@ class TestRecurringInvoicesCRUD:
         if not recurring_id:
             pytest.skip("No recurring invoice created")
         
-        response = requests.post(f"{BASE_URL}/api/recurring-invoices/{recurring_id}/generate-now", headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}/generate-now", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -180,13 +180,13 @@ class TestRecurringInvoicesCRUD:
         if not recurring_id:
             pytest.skip("No recurring invoice created")
         
-        response = requests.delete(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.delete(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deletion
-        response = requests.get(f"{BASE_URL}/api/recurring-invoices/{recurring_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/recurring-invoices/{recurring_id}", headers=self.headers)
         assert response.status_code == 404
         print("Deleted recurring invoice successfully")
 
@@ -200,7 +200,7 @@ class TestInvoiceAutomationSettings:
     
     def test_01_get_aging_report(self):
         """Test getting aging report"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/aging-report", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/aging-report", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -212,7 +212,7 @@ class TestInvoiceAutomationSettings:
     
     def test_02_get_overdue_invoices(self):
         """Test getting overdue invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -223,7 +223,7 @@ class TestInvoiceAutomationSettings:
     
     def test_03_get_due_soon_invoices(self):
         """Test getting due soon invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/due-soon-invoices?days=7", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/due-soon-invoices?days=7", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -233,7 +233,7 @@ class TestInvoiceAutomationSettings:
     
     def test_04_get_reminder_settings(self):
         """Test getting reminder settings"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/reminder-settings", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/reminder-settings", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -254,13 +254,13 @@ class TestInvoiceAutomationSettings:
             "include_payment_link": True
         }
         
-        response = requests.put(f"{BASE_URL}/api/invoice-automation/reminder-settings", json=payload, headers=self.headers)
+        response = requests.put(f"{BASE_URL}/api/v1/invoice-automation/reminder-settings", json=payload, headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify save
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/reminder-settings", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/reminder-settings", headers=self.headers)
         data = response.json()
         assert data["settings"]["enabled"] == True
         assert data["settings"]["include_payment_link"] == True
@@ -268,7 +268,7 @@ class TestInvoiceAutomationSettings:
     
     def test_06_get_late_fee_settings(self):
         """Test getting late fee settings"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/late-fee-settings", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -290,13 +290,13 @@ class TestInvoiceAutomationSettings:
             "apply_automatically": False
         }
         
-        response = requests.put(f"{BASE_URL}/api/invoice-automation/late-fee-settings", json=payload, headers=self.headers)
+        response = requests.put(f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings", json=payload, headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify save
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/late-fee-settings", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/late-fee-settings", headers=self.headers)
         data = response.json()
         assert data["settings"]["enabled"] == True
         assert data["settings"]["fee_type"] == "percentage"
@@ -314,7 +314,7 @@ class TestPDFGeneration:
     def test_01_generate_invoice_pdf(self):
         """Test generating PDF for an invoice"""
         # Get an invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=1", headers=self.headers)
         if response.status_code != 200:
             pytest.skip("Could not fetch invoices")
         
@@ -325,7 +325,7 @@ class TestPDFGeneration:
         invoice_id = data["invoices"][0]["invoice_id"]
         
         # Generate PDF
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{invoice_id}/pdf", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{invoice_id}/pdf", headers=self.headers)
         
         # Check if PDF generation is working
         if response.status_code == 200:
@@ -344,7 +344,7 @@ class TestPDFGeneration:
     def test_02_generate_estimate_pdf(self):
         """Test generating PDF for an estimate"""
         # Get an estimate
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=1", headers=self.headers)
         if response.status_code != 200:
             pytest.skip("Could not fetch estimates")
         
@@ -355,7 +355,7 @@ class TestPDFGeneration:
         estimate_id = data["estimates"][0]["estimate_id"]
         
         # Generate PDF
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/pdf", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/pdf", headers=self.headers)
         
         if response.status_code == 200:
             assert response.headers.get("content-type") == "application/pdf"
@@ -377,7 +377,7 @@ class TestReminderActions:
     def test_01_send_reminder(self):
         """Test sending a payment reminder"""
         # Get an overdue invoice
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices", headers=self.headers)
         if response.status_code != 200:
             pytest.skip("Could not fetch overdue invoices")
         
@@ -388,7 +388,7 @@ class TestReminderActions:
         invoice_id = data["overdue_invoices"][0]["invoice_id"]
         
         # Send reminder
-        response = requests.post(f"{BASE_URL}/api/invoice-automation/send-reminder/{invoice_id}", headers=self.headers)
+        response = requests.post(f"{BASE_URL}/api/v1/invoice-automation/send-reminder/{invoice_id}", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -398,7 +398,7 @@ class TestReminderActions:
     def test_02_calculate_late_fee(self):
         """Test calculating late fee for an invoice"""
         # Get an overdue invoice
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/overdue-invoices", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/overdue-invoices", headers=self.headers)
         if response.status_code != 200:
             pytest.skip("Could not fetch overdue invoices")
         
@@ -409,7 +409,7 @@ class TestReminderActions:
         invoice_id = data["overdue_invoices"][0]["invoice_id"]
         
         # Calculate late fee
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/calculate-late-fee/{invoice_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/calculate-late-fee/{invoice_id}", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -418,7 +418,7 @@ class TestReminderActions:
     
     def test_03_get_reminder_history(self):
         """Test getting reminder history"""
-        response = requests.get(f"{BASE_URL}/api/invoice-automation/reminder-history?limit=10", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoice-automation/reminder-history?limit=10", headers=self.headers)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0

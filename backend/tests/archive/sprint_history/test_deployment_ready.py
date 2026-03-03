@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com')
 ORG_ID = "org_71f0df814d6d"
 HEADERS = {
     "Content-Type": "application/json",
@@ -21,7 +21,7 @@ class TestLoginAPI:
     
     def test_login_success(self):
         """Login with admin credentials should succeed"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "admin@battwheels.in",
             "password": "DevTest@123"
         }, headers={"Content-Type": "application/json"})
@@ -38,7 +38,7 @@ class TestLoginAPI:
     
     def test_login_invalid_credentials(self):
         """Login with wrong credentials should fail"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "wrong@email.com",
             "password": "wrong_pwd_placeholder"
         }, headers={"Content-Type": "application/json"})
@@ -48,11 +48,11 @@ class TestLoginAPI:
 
 
 class TestContactsEnhancedAPI:
-    """Test Contacts Enhanced API - GET /api/contacts-enhanced/"""
+    """Test Contacts Enhanced API - GET /api/v1/contacts-enhanced/"""
     
     def test_get_contacts_returns_337_contacts(self):
         """Should return 337 contacts for org_71f0df814d6d"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -67,7 +67,7 @@ class TestContactsEnhancedAPI:
     
     def test_contacts_have_required_fields(self):
         """Contacts should have contact_id field"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?per_page=5", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?per_page=5", headers=HEADERS)
         
         assert response.status_code == 200
         data = response.json()
@@ -79,11 +79,11 @@ class TestContactsEnhancedAPI:
 
 
 class TestInvoicesEnhancedAPI:
-    """Test Invoices Enhanced API - GET /api/invoices-enhanced/"""
+    """Test Invoices Enhanced API - GET /api/v1/invoices-enhanced/"""
     
     def test_get_invoices_returns_8000_plus(self):
         """Should return 8000+ invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -98,7 +98,7 @@ class TestInvoicesEnhancedAPI:
     
     def test_invoices_have_amounts(self):
         """Invoices should have balance and total fields"""
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=5", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=5", headers=HEADERS)
         
         assert response.status_code == 200
         data = response.json()
@@ -111,11 +111,11 @@ class TestInvoicesEnhancedAPI:
 
 
 class TestEstimatesEnhancedAPI:
-    """Test Estimates Enhanced API - GET /api/estimates-enhanced/"""
+    """Test Estimates Enhanced API - GET /api/v1/estimates-enhanced/"""
     
     def test_get_estimates_returns_3400_plus(self):
         """Should return 3400+ estimates"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -133,8 +133,8 @@ class TestDataManagementAPI:
     """Test Data Management API endpoints"""
     
     def test_data_counts(self):
-        """GET /api/data-management/counts should return record counts"""
-        response = requests.get(f"{BASE_URL}/api/data-management/counts", headers=HEADERS)
+        """GET /api/v1/data-management/counts should return record counts"""
+        response = requests.get(f"{BASE_URL}/api/v1/data-management/counts", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -156,8 +156,8 @@ class TestDataManagementAPI:
         print(f"  - Items: {counts.get('items', {}).get('total', 0)}")
     
     def test_sync_status_shows_synced(self):
-        """GET /api/data-management/sync/status should show synced status"""
-        response = requests.get(f"{BASE_URL}/api/data-management/sync/status", headers=HEADERS)
+        """GET /api/v1/data-management/sync/status should show synced status"""
+        response = requests.get(f"{BASE_URL}/api/v1/data-management/sync/status", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -178,11 +178,11 @@ class TestDataManagementAPI:
 
 
 class TestItemsEnhancedAPI:
-    """Test Items Enhanced API - GET /api/items-enhanced/"""
+    """Test Items Enhanced API - GET /api/v1/items-enhanced/"""
     
     def test_get_items_returns_1300_plus(self):
         """Should return 1300+ items"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -197,7 +197,7 @@ class TestItemsEnhancedAPI:
     
     def test_items_have_required_fields(self):
         """Items should have item_id and name fields"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/?per_page=5", headers=HEADERS)
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=5", headers=HEADERS)
         
         assert response.status_code == 200
         data = response.json()
@@ -209,12 +209,12 @@ class TestItemsEnhancedAPI:
 
 
 class TestTicketsAPI:
-    """Test Tickets API - GET /api/tickets"""
+    """Test Tickets API - GET /api/v1/tickets"""
     
     @pytest.fixture(autouse=True)
     def get_auth_token(self):
         """Get auth token for authenticated requests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "admin@battwheels.in",
             "password": "DevTest@123"
         })
@@ -228,7 +228,7 @@ class TestTicketsAPI:
     
     def test_get_tickets(self):
         """Should return tickets"""
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=self.auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=self.auth_headers)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -242,8 +242,8 @@ class TestInvoiceSummary:
     """Test Invoice Summary API"""
     
     def test_invoices_summary(self):
-        """GET /api/invoices-enhanced/summary should return summary statistics"""
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/summary", headers=HEADERS)
+        """GET /api/v1/invoices-enhanced/summary should return summary statistics"""
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/summary", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -260,8 +260,8 @@ class TestEstimatesSummary:
     """Test Estimates Summary API"""
     
     def test_estimates_summary(self):
-        """GET /api/estimates-enhanced/summary should return summary statistics"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/summary", headers=HEADERS)
+        """GET /api/v1/estimates-enhanced/summary should return summary statistics"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/summary", headers=HEADERS)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()

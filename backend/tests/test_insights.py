@@ -1,20 +1,17 @@
 """
 Data Insights API Endpoints Tests
-Tests for: /api/insights/revenue, /api/insights/operations,
-           /api/insights/technicians, /api/insights/efi,
-           /api/insights/customers, /api/insights/inventory
+Tests for: /api/v1/insights/revenue, /api/v1/insights/operations,
+           /api/v1/insights/technicians, /api/v1/insights/efi,
+           /api/v1/insights/customers, /api/v1/insights/inventory
 """
 import pytest
 import requests
 import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
-SESSION_TOKEN = "REDACTED_JWT_TOKEN"
+# Token auto-injected by conftest
 
-HEADERS = {
-    "Authorization": f"Bearer {SESSION_TOKEN}",
-    "Content-Type": "application/json",
-}
+HEADERS = {"Content-Type": "application/json"}
 
 PARAMS = {
     "date_from": "2025-01-01",
@@ -25,7 +22,7 @@ PARAMS = {
 # ── Helpers ──────────────────────────────────────────────────────────────────
 def get(path, params=None):
     return requests.get(
-        f"{BASE_URL}/api/insights/{path}",
+        f"{BASE_URL}/api/v1/insights/{path}",
         headers=HEADERS,
         params=params or PARAMS,
         timeout=15,
@@ -67,7 +64,7 @@ class TestRevenueInsights:
     def test_revenue_with_current_month_params(self):
         """Test with This Month params (default scenario)"""
         resp = requests.get(
-            f"{BASE_URL}/api/insights/revenue",
+            f"{BASE_URL}/api/v1/insights/revenue",
             headers=HEADERS,
             params={"date_from": "2026-02-01", "date_to": "2026-02-28"},
             timeout=15,

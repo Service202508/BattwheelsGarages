@@ -19,9 +19,9 @@ def test_admin_headers_fixture(admin_headers):
     assert admin_headers["Authorization"].startswith("Bearer ")
 
 def test_admin_can_access_health(base_url, admin_headers):
-    resp = requests.get(f"{base_url}/api/health", headers=admin_headers)
+    resp = requests.get(f"{base_url}/api/v1/health", headers=admin_headers)
     assert resp.status_code == 200
 
 def test_demo_can_access_health(base_url, auth_headers):
-    resp = requests.get(f"{base_url}/api/health", headers=auth_headers)
+    resp = requests.get(f"{base_url}/api/v1/health", headers=auth_headers)
     assert resp.status_code == 200

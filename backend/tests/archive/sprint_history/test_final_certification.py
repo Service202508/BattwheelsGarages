@@ -25,13 +25,13 @@ import asyncio
 # ──────────────────────────────────────────────────────────
 # Configuration
 # ──────────────────────────────────────────────────────────
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 INTERNAL_URL = "http://localhost:8001"   # used for auth fixture to bypass external rate limit
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("DB_NAME", "test_database")
 
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "admin"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "tech@battwheels.in"
 TECH_PASSWORD = "DevTest@123"
 ADMIN_ORG_ID = "dev-internal-testing-001"
@@ -57,7 +57,7 @@ def admin_token():
     """Login as admin and return JWT token. Uses internal URL to avoid rate limit."""
     for url in [INTERNAL_URL, BASE_URL]:
         try:
-            resp = requests.post(f"{url}/api/auth/login", json={
+            resp = requests.post(f"{url}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             }, timeout=15)
             if resp.status_code == 200:
@@ -75,7 +75,7 @@ def tech_token():
     """Login as tech@battwheels.in and return JWT token."""
     for url in [INTERNAL_URL, BASE_URL]:
         try:
-            resp = requests.post(f"{url}/api/auth/login", json={
+            resp = requests.post(f"{url}/api/v1/auth/login", json={
                 "email": TECH_EMAIL, "password": TECH_PASSWORD
             }, timeout=15)
             if resp.status_code == 200:
@@ -122,7 +122,7 @@ def platform_admin_token():
     token = None
     for url in [INTERNAL_URL, BASE_URL]:
         try:
-            resp = requests.post(f"{url}/api/auth/login", json={
+            resp = requests.post(f"{url}/api/v1/auth/login", json={
                 "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
             }, timeout=15)
             if resp.status_code == 200:
@@ -147,8 +147,8 @@ class TestINFRA:
     """INFRA-01..04: Health, security headers, public/protected routes"""
 
     def test_INFRA01_health_check(self):
-        """INFRA-01: GET /api/health → 200, status=ok, db=ok"""
-        resp = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        """INFRA-01: GET /api/v1/health → 200, status=ok, db=ok"""
+        resp = requests.get(f"{BASE_URL}/api/v1/health", timeout=10)
         assert resp.status_code == 200, f"Health returned {resp.status_code}: {resp.text}"
         data = resp.json()
         assert data.get("status") == "ok", f"status not ok: {data}"
@@ -156,95 +156,95 @@ class TestINFRA:
         print(f"PASS INFRA-01: health={data}")
 
     def test_INFRA02_security_headers_on_health(self):
-        """INFRA-02: Security headers on /api/health"""
-        resp = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        """INFRA-02: Security headers on /api/v1/health"""
+        resp = requests.get(f"{BASE_URL}/api/v1/health", timeout=10)
         assert resp.status_code == 200
         missing = [h for h in REQUIRED_SECURITY_HEADERS if h not in resp.headers]
-        assert not missing, f"Missing security headers on /api/health: {missing}"
-        print(f"PASS INFRA-02 (/api/health): all 6 headers present")
+        assert not missing, f"Missing security headers on /api/v1/health: {missing}"
+        print(f"PASS INFRA-02 (/api/v1/health): all 6 headers present")
 
     def test_INFRA02_security_headers_on_login(self):
-        """INFRA-02: Security headers on /api/auth/login"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        """INFRA-02: Security headers on /api/v1/auth/login"""
+        resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "x@x.com", "password": "x"
         }, timeout=10)
         # Could be 401 but headers must be present
         missing = [h for h in REQUIRED_SECURITY_HEADERS if h not in resp.headers]
-        assert not missing, f"Missing security headers on /api/auth/login: {missing}"
-        print(f"PASS INFRA-02 (/api/auth/login): all 6 headers present")
+        assert not missing, f"Missing security headers on /api/v1/auth/login: {missing}"
+        print(f"PASS INFRA-02 (/api/v1/auth/login): all 6 headers present")
 
     def test_INFRA02_security_headers_on_contact(self):
-        """INFRA-02: Security headers on POST /api/contact"""
-        resp = requests.post(f"{BASE_URL}/api/contact", json={
+        """INFRA-02: Security headers on POST /api/v1/contact"""
+        resp = requests.post(f"{BASE_URL}/api/v1/contact", json={
             "name": "Test", "email": "test@example.com",
             "message": "INFRA-02 header check", "type": "general"
         }, timeout=15)
         missing = [h for h in REQUIRED_SECURITY_HEADERS if h not in resp.headers]
-        assert not missing, f"Missing security headers on /api/contact: {missing}"
-        print(f"PASS INFRA-02 (/api/contact): all 6 headers present")
+        assert not missing, f"Missing security headers on /api/v1/contact: {missing}"
+        print(f"PASS INFRA-02 (/api/v1/contact): all 6 headers present")
 
     def test_INFRA03_public_contact_is_non_401(self):
-        """INFRA-03: POST /api/contact returns non-401/403"""
-        resp = requests.post(f"{BASE_URL}/api/contact", json={
+        """INFRA-03: POST /api/v1/contact returns non-401/403"""
+        resp = requests.post(f"{BASE_URL}/api/v1/contact", json={
             "name": "Public Test", "email": "public@test.com",
             "message": "INFRA-03 public check", "type": "general"
         }, timeout=15)
         assert resp.status_code not in (401, 403), (
-            f"INFRA-03: /api/contact returned {resp.status_code} (expected public access)"
+            f"INFRA-03: /api/v1/contact returned {resp.status_code} (expected public access)"
         )
-        print(f"PASS INFRA-03 (/api/contact): status={resp.status_code}")
+        print(f"PASS INFRA-03 (/api/v1/contact): status={resp.status_code}")
 
     def test_INFRA03_public_org_register_is_non_401(self):
-        """INFRA-03: POST /api/organizations/register returns non-401/403"""
-        resp = requests.post(f"{BASE_URL}/api/organizations/register", json={
+        """INFRA-03: POST /api/v1/organizations/register returns non-401/403"""
+        resp = requests.post(f"{BASE_URL}/api/v1/organizations/register", json={
             "name": "TEST_Public Org", "email": f"test_{uuid.uuid4().hex[:6]}@public.com",
             "password": "test_pwd_placeholder"
         }, timeout=15)
         assert resp.status_code not in (401, 403), (
-            f"INFRA-03: /api/organizations/register returned {resp.status_code}"
+            f"INFRA-03: /api/v1/organizations/register returned {resp.status_code}"
         )
-        print(f"PASS INFRA-03 (/api/organizations/register): status={resp.status_code}")
+        print(f"PASS INFRA-03 (/api/v1/organizations/register): status={resp.status_code}")
 
     def test_INFRA03_public_org_signup_is_non_401(self):
-        """INFRA-03: POST /api/organizations/signup returns non-401/403"""
-        resp = requests.post(f"{BASE_URL}/api/organizations/signup", json={
+        """INFRA-03: POST /api/v1/organizations/signup returns non-401/403"""
+        resp = requests.post(f"{BASE_URL}/api/v1/organizations/signup", json={
             "name": "TEST_Signup Org", "email": f"test_{uuid.uuid4().hex[:6]}@signup.com",
             "password": "test_pwd_placeholder"
         }, timeout=15)
         assert resp.status_code not in (401, 403), (
-            f"INFRA-03: /api/organizations/signup returned {resp.status_code}"
+            f"INFRA-03: /api/v1/organizations/signup returned {resp.status_code}"
         )
-        print(f"PASS INFRA-03 (/api/organizations/signup): status={resp.status_code}")
+        print(f"PASS INFRA-03 (/api/v1/organizations/signup): status={resp.status_code}")
 
     def test_INFRA04_protected_tickets_returns_401(self):
-        """INFRA-04: GET /api/tickets without auth → 401"""
-        resp = requests.get(f"{BASE_URL}/api/tickets", timeout=10)
-        assert resp.status_code == 401, f"INFRA-04: /api/tickets expected 401, got {resp.status_code}"
-        print(f"PASS INFRA-04 (/api/tickets): 401 confirmed")
+        """INFRA-04: GET /api/v1/tickets without auth → 401"""
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", timeout=10)
+        assert resp.status_code == 401, f"INFRA-04: /api/v1/tickets expected 401, got {resp.status_code}"
+        print(f"PASS INFRA-04 (/api/v1/tickets): 401 confirmed")
 
     def test_INFRA04_protected_invoices_enhanced_returns_401(self):
-        """INFRA-04: GET /api/invoices-enhanced without auth → 401"""
-        resp = requests.get(f"{BASE_URL}/api/invoices-enhanced", timeout=10, allow_redirects=True)
+        """INFRA-04: GET /api/v1/invoices-enhanced without auth → 401"""
+        resp = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced", timeout=10, allow_redirects=True)
         assert resp.status_code == 401, (
-            f"INFRA-04: /api/invoices-enhanced expected 401, got {resp.status_code}"
+            f"INFRA-04: /api/v1/invoices-enhanced expected 401, got {resp.status_code}"
         )
-        print(f"PASS INFRA-04 (/api/invoices-enhanced): 401 confirmed")
+        print(f"PASS INFRA-04 (/api/v1/invoices-enhanced): 401 confirmed")
 
     def test_INFRA04_protected_hr_employees_returns_401(self):
-        """INFRA-04: GET /api/hr/employees without auth → 401"""
-        resp = requests.get(f"{BASE_URL}/api/hr/employees", timeout=10)
+        """INFRA-04: GET /api/v1/hr/employees without auth → 401"""
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/employees", timeout=10)
         assert resp.status_code == 401, (
-            f"INFRA-04: /api/hr/employees expected 401, got {resp.status_code}"
+            f"INFRA-04: /api/v1/hr/employees expected 401, got {resp.status_code}"
         )
-        print(f"PASS INFRA-04 (/api/hr/employees): 401 confirmed")
+        print(f"PASS INFRA-04 (/api/v1/hr/employees): 401 confirmed")
 
     def test_INFRA04_protected_trial_balance_returns_401(self):
-        """INFRA-04: GET /api/reports/trial-balance without auth → 401"""
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance", timeout=10)
+        """INFRA-04: GET /api/v1/reports/trial-balance without auth → 401"""
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", timeout=10)
         assert resp.status_code == 401, (
-            f"INFRA-04: /api/reports/trial-balance expected 401, got {resp.status_code}"
+            f"INFRA-04: /api/v1/reports/trial-balance expected 401, got {resp.status_code}"
         )
-        print(f"PASS INFRA-04 (/api/reports/trial-balance): 401 confirmed")
+        print(f"PASS INFRA-04 (/api/v1/reports/trial-balance): 401 confirmed")
 
 
 # ──────────────────────────────────────────────────────────
@@ -256,7 +256,7 @@ class TestAUTH:
 
     def test_AUTH01_admin_login_full_response(self):
         """AUTH-01: Admin login returns token, user object, organizations array"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
         }, timeout=15)
         assert resp.status_code == 200, f"AUTH-01: login failed {resp.status_code}: {resp.text}"
@@ -273,7 +273,7 @@ class TestAUTH:
 
     def test_AUTH01_invalid_credentials_rejected(self):
         """AUTH-01: Invalid credentials → 401"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL, "password": "wrong_pwd_placeholder"
         }, timeout=15)
         assert resp.status_code == 401, f"AUTH-01: invalid creds should return 401, got {resp.status_code}"
@@ -281,7 +281,7 @@ class TestAUTH:
 
     def test_AUTH02_tech_login_succeeds(self):
         """AUTH-02: Tech user login → 200"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECH_EMAIL, "password": TECH_PASSWORD
         }, timeout=15)
         assert resp.status_code == 200, f"AUTH-02: tech login failed {resp.status_code}: {resp.text}"
@@ -290,9 +290,9 @@ class TestAUTH:
         print(f"PASS AUTH-02: tech login succeeded")
 
     def test_AUTH02_tech_cannot_access_payroll(self, tech_headers):
-        """AUTH-02: Tech user → GET /api/hr/payroll/records → 403 (access denied)
+        """AUTH-02: Tech user → GET /api/v1/hr/payroll/records → 403 (access denied)
         Note: 400 is also accepted — tenant guard may reject before entitlement check."""
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=tech_headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=tech_headers, timeout=15)
         assert resp.status_code in (403, 400), (
             f"AUTH-02: expected 403/400 for tech payroll access, got {resp.status_code}: {resp.text}"
         )
@@ -305,7 +305,7 @@ class TestAUTH:
             "Authorization": f"Bearer {admin_token}",
             "X-Organization-ID": wrong_org,
         }
-        resp = requests.get(f"{BASE_URL}/api/tickets", headers=headers, timeout=15)
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", headers=headers, timeout=15)
         assert resp.status_code == 403, (
             f"AUTH-03: cross-tenant should return 403, got {resp.status_code}: {resp.text}"
         )
@@ -320,8 +320,8 @@ class TestFINANCE:
     """FINANCE-01..03: Trial balance, P&L, Balance sheet"""
 
     def test_FINANCE01_trial_balance_is_balanced(self, admin_headers):
-        """FINANCE-01: GET /api/reports/trial-balance → is_balanced=true, debit==credit"""
-        resp = requests.get(f"{BASE_URL}/api/reports/trial-balance",
+        """FINANCE-01: GET /api/v1/reports/trial-balance → is_balanced=true, debit==credit"""
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance",
                             headers=admin_headers, timeout=20)
         assert resp.status_code == 200, f"FINANCE-01: {resp.status_code}: {resp.text}"
         data = resp.json()
@@ -335,15 +335,15 @@ class TestFINANCE:
         print(f"PASS FINANCE-01: is_balanced=True, debit={debit}, credit={credit}")
 
     def test_FINANCE02_profit_loss_returns_200(self, admin_headers):
-        """FINANCE-02: GET /api/reports/profit-loss → 200"""
-        resp = requests.get(f"{BASE_URL}/api/reports/profit-loss",
+        """FINANCE-02: GET /api/v1/reports/profit-loss → 200"""
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/profit-loss",
                             headers=admin_headers, timeout=20)
         assert resp.status_code == 200, f"FINANCE-02: profit-loss returned {resp.status_code}: {resp.text}"
         print(f"PASS FINANCE-02: profit-loss 200")
 
     def test_FINANCE03_balance_sheet_returns_200(self, admin_headers):
-        """FINANCE-03: GET /api/reports/balance-sheet → 200"""
-        resp = requests.get(f"{BASE_URL}/api/reports/balance-sheet",
+        """FINANCE-03: GET /api/v1/reports/balance-sheet → 200"""
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/balance-sheet",
                             headers=admin_headers, timeout=20)
         assert resp.status_code == 200, f"FINANCE-03: balance-sheet returned {resp.status_code}: {resp.text}"
         print(f"PASS FINANCE-03: balance-sheet 200")
@@ -357,8 +357,8 @@ class TestOPERATIONS:
     """OPERATIONS-01..04: Tickets, invoices, inventory, contacts"""
 
     def test_OPERATIONS01_tickets_paginated(self, admin_headers):
-        """OPERATIONS-01: GET /api/tickets → 200, data + pagination keys"""
-        resp = requests.get(f"{BASE_URL}/api/tickets", headers=admin_headers, timeout=15)
+        """OPERATIONS-01: GET /api/v1/tickets → 200, data + pagination keys"""
+        resp = requests.get(f"{BASE_URL}/api/v1/tickets", headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"OPERATIONS-01: {resp.status_code}: {resp.text}"
         data = resp.json()
         # Accept either {data:[], pagination:{}} or {tickets:[], total:N} or list
@@ -377,17 +377,17 @@ class TestOPERATIONS:
         print(f"PASS OPERATIONS-01: tickets paginated, keys={list(data.keys()) if isinstance(data, dict) else 'list'}")
 
     def test_OPERATIONS02_invoices_enhanced_returns_200(self, admin_headers):
-        """OPERATIONS-02: GET /api/invoices-enhanced → 200 (trailing slash avoids redirect header drop)
-        Note: FastAPI emits 307 redirect to /api/invoices-enhanced/; HTTPS→HTTP redirect drops
+        """OPERATIONS-02: GET /api/v1/invoices-enhanced → 200 (trailing slash avoids redirect header drop)
+        Note: FastAPI emits 307 redirect to /api/v1/invoices-enhanced/; HTTPS→HTTP redirect drops
         Authorization header in requests lib. Testing with trailing slash directly."""
-        resp = requests.get(f"{BASE_URL}/api/invoices-enhanced/",
+        resp = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/",
                             headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"OPERATIONS-02: {resp.status_code}: {resp.text}"
         print(f"PASS OPERATIONS-02: invoices-enhanced 200")
 
     def test_OPERATIONS03_inventory_paginated(self, admin_headers):
-        """OPERATIONS-03: GET /api/inventory → 200, paginated"""
-        resp = requests.get(f"{BASE_URL}/api/inventory", headers=admin_headers, timeout=15)
+        """OPERATIONS-03: GET /api/v1/inventory → 200, paginated"""
+        resp = requests.get(f"{BASE_URL}/api/v1/inventory", headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"OPERATIONS-03: {resp.status_code}: {resp.text}"
         data = resp.json()
         has_data = (
@@ -399,8 +399,8 @@ class TestOPERATIONS:
         print(f"PASS OPERATIONS-03: inventory 200 paginated")
 
     def test_OPERATIONS04_contacts_enhanced_returns_200(self, admin_headers):
-        """OPERATIONS-04: GET /api/contacts-enhanced → 200 (trailing slash avoids redirect)"""
-        resp = requests.get(f"{BASE_URL}/api/contacts-enhanced/",
+        """OPERATIONS-04: GET /api/v1/contacts-enhanced → 200 (trailing slash avoids redirect)"""
+        resp = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/",
                             headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"OPERATIONS-04: {resp.status_code}: {resp.text}"
         print(f"PASS OPERATIONS-04: contacts-enhanced 200")
@@ -414,17 +414,17 @@ class TestHR:
     """HR-01..02: Employees, Form16"""
 
     def test_HR01_employees_returns_200(self, admin_headers):
-        """HR-01: GET /api/hr/employees → 200"""
-        resp = requests.get(f"{BASE_URL}/api/hr/employees", headers=admin_headers, timeout=15)
+        """HR-01: GET /api/v1/hr/employees → 200"""
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/employees", headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"HR-01: {resp.status_code}: {resp.text}"
         print(f"PASS HR-01: employees 200")
 
     def test_HR02_form16_returns_200(self, admin_headers):
-        """HR-02: GET /api/hr/payroll/form16/emp_7e79d8916b6b/2025-26 → 200"""
+        """HR-02: GET /api/v1/hr/payroll/form16/emp_7e79d8916b6b/2025-26 → 200"""
         emp_id = "emp_7e79d8916b6b"
         fy = "2025-26"
         resp = requests.get(
-            f"{BASE_URL}/api/hr/payroll/form16/{emp_id}/{fy}",
+            f"{BASE_URL}/api/v1/hr/payroll/form16/{emp_id}/{fy}",
             headers=admin_headers, timeout=20
         )
         assert resp.status_code == 200, f"HR-02: Form16 returned {resp.status_code}: {resp.text}"
@@ -445,7 +445,7 @@ class TestSECURITY:
     def test_SECURITY01_xss_title_sanitized(self, admin_headers):
         """SECURITY-01: XSS in ticket title stripped on storage"""
         xss_title = "<script>alert(1)</script>XSS_CERT_TEST"
-        resp = requests.post(f"{BASE_URL}/api/tickets", headers=admin_headers, json={
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", headers=admin_headers, json={
             "title": xss_title,
             "description": "Certification XSS test",
             "priority": "low",
@@ -490,7 +490,7 @@ class TestSECURITY:
         body = json.dumps(payload, separators=(",", ":")).encode()
         sig = self._sign_payload(body)
         return requests.post(
-            f"{BASE_URL}/api/payments/webhook",
+            f"{BASE_URL}/api/v1/payments/webhook",
             data=body,
             headers={"Content-Type": "application/json", "X-Razorpay-Signature": sig},
             timeout=15,
@@ -528,9 +528,9 @@ class TestCONTACT:
     """CONTACT-01..02: Contact form submission and validation"""
 
     def test_CONTACT01_submit_returns_200_and_stores(self):
-        """CONTACT-01: POST /api/contact → 200, status=ok, stored in contact_submissions"""
+        """CONTACT-01: POST /api/v1/contact → 200, status=ok, stored in contact_submissions"""
         unique_msg = f"CERT_TEST_{uuid.uuid4().hex[:8]} production readiness check"
-        resp = requests.post(f"{BASE_URL}/api/contact", json={
+        resp = requests.post(f"{BASE_URL}/api/v1/contact", json={
             "name": "Certification Tester",
             "email": "cert-test@battwheels.in",
             "company": "Battwheels QA",
@@ -555,8 +555,8 @@ class TestCONTACT:
         print(f"PASS CONTACT-01: 200 ok, stored in DB (id={doc.get('_id')})")
 
     def test_CONTACT02_missing_message_returns_422(self):
-        """CONTACT-02: POST /api/contact without required field → 422"""
-        resp = requests.post(f"{BASE_URL}/api/contact", json={
+        """CONTACT-02: POST /api/v1/contact without required field → 422"""
+        resp = requests.post(f"{BASE_URL}/api/v1/contact", json={
             "name": "Missing Message",
             "email": "missing@test.com",
             # message intentionally omitted
@@ -575,9 +575,9 @@ class TestEFI:
     """EFI-01: EFI engine responding"""
 
     def test_EFI01_failure_cards_returns_200(self, admin_headers):
-        """EFI-01: GET /api/efi/failure-cards → 200 (EFI engine responding)
-        Note: Review spec says GET /api/efi/match-failures; correct path is /api/efi/failure-cards"""
-        resp = requests.get(f"{BASE_URL}/api/efi/failure-cards",
+        """EFI-01: GET /api/v1/efi/failure-cards → 200 (EFI engine responding)
+        Note: Review spec says GET /api/v1/efi/match-failures; correct path is /api/v1/efi/failure-cards"""
+        resp = requests.get(f"{BASE_URL}/api/v1/efi/failure-cards",
                             headers=admin_headers, timeout=20)
         assert resp.status_code == 200, f"EFI-01: {resp.status_code}: {resp.text}"
         print(f"PASS EFI-01: EFI engine responding (failure-cards 200)")
@@ -591,10 +591,10 @@ class TestPLATFORM:
     """PLATFORM-01: Platform admin can list all organizations"""
 
     def test_PLATFORM01_list_organizations(self, platform_admin_token):
-        """PLATFORM-01: GET /api/platform/organizations → 200"""
+        """PLATFORM-01: GET /api/v1/platform/organizations → 200"""
         if not platform_admin_token:
             pytest.skip("Platform admin token not available")
-        resp = requests.get(f"{BASE_URL}/api/platform/organizations", headers={
+        resp = requests.get(f"{BASE_URL}/api/v1/platform/organizations", headers={
             "Authorization": f"Bearer {platform_admin_token}",
         }, timeout=15)
         assert resp.status_code == 200, (

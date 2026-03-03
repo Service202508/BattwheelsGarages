@@ -9,7 +9,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test data storage
 test_data = {
@@ -24,8 +24,8 @@ class TestEstimatesSettings:
     """Test estimate settings endpoints"""
     
     def test_get_settings(self):
-        """GET /api/estimates-enhanced/settings - Returns module settings"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/settings")
+        """GET /api/v1/estimates-enhanced/settings - Returns module settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/settings")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -43,8 +43,8 @@ class TestEstimatesSummary:
     """Test summary and reporting endpoints"""
     
     def test_get_summary(self):
-        """GET /api/estimates-enhanced/summary - Returns summary statistics"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/summary")
+        """GET /api/v1/estimates-enhanced/summary - Returns summary statistics"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -56,8 +56,8 @@ class TestEstimatesSummary:
         print(f"✓ Summary: total={summary['total']}, total_value=₹{summary['total_value']}")
     
     def test_conversion_funnel_report(self):
-        """GET /api/estimates-enhanced/reports/conversion-funnel - Conversion funnel report"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/reports/conversion-funnel")
+        """GET /api/v1/estimates-enhanced/reports/conversion-funnel - Conversion funnel report"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/reports/conversion-funnel")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -70,8 +70,8 @@ class TestEstimatesSummary:
         print(f"✓ Funnel: created={funnel['total_created']}, sent={funnel['sent_to_customer']}, accepted={funnel['accepted']}, converted={funnel['converted']}")
     
     def test_report_by_status(self):
-        """GET /api/estimates-enhanced/reports/by-status - Report by status"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/reports/by-status")
+        """GET /api/v1/estimates-enhanced/reports/by-status - Report by status"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/reports/by-status")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -79,8 +79,8 @@ class TestEstimatesSummary:
         print(f"✓ Status report: {len(data['report'])} status groups")
     
     def test_report_by_customer(self):
-        """GET /api/estimates-enhanced/reports/by-customer - Report by customer"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/reports/by-customer?limit=10")
+        """GET /api/v1/estimates-enhanced/reports/by-customer - Report by customer"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/reports/by-customer?limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -94,7 +94,7 @@ class TestEstimatesCRUD:
     @pytest.fixture(autouse=True)
     def setup_customer(self):
         """Get a customer for testing"""
-        response = requests.get(f"{BASE_URL}/api/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
+        response = requests.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
         if response.status_code == 200:
             data = response.json()
             if data.get("contacts") and len(data["contacts"]) > 0:
@@ -102,7 +102,7 @@ class TestEstimatesCRUD:
                 print(f"Using customer: {data['contacts'][0].get('contact_name', data['contacts'][0].get('name'))}")
     
     def test_01_create_estimate(self):
-        """POST /api/estimates-enhanced/ - Create estimate with customer and line items"""
+        """POST /api/v1/estimates-enhanced/ - Create estimate with customer and line items"""
         if not test_data["customer_id"]:
             pytest.skip("No customer available for testing")
         
@@ -142,7 +142,7 @@ class TestEstimatesCRUD:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -172,8 +172,8 @@ class TestEstimatesCRUD:
         print(f"✓ Created estimate: {estimate['estimate_number']}, grand_total=₹{estimate['grand_total']}")
     
     def test_02_list_estimates(self):
-        """GET /api/estimates-enhanced/ - List estimates with filters"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?per_page=10")
+        """GET /api/v1/estimates-enhanced/ - List estimates with filters"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -182,8 +182,8 @@ class TestEstimatesCRUD:
         print(f"✓ Listed {len(data['estimates'])} estimates, total={data['page_context']['total']}")
     
     def test_03_list_estimates_with_status_filter(self):
-        """GET /api/estimates-enhanced/?status=draft - Filter by status"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?status=draft")
+        """GET /api/v1/estimates-enhanced/?status=draft - Filter by status"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?status=draft")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -192,22 +192,22 @@ class TestEstimatesCRUD:
         print(f"✓ Filtered by status=draft: {len(data['estimates'])} estimates")
     
     def test_04_list_estimates_with_search(self):
-        """GET /api/estimates-enhanced/?search=TEST - Search estimates"""
+        """GET /api/v1/estimates-enhanced/?search=TEST - Search estimates"""
         if not test_data["estimate_number"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?search=TEST")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?search=TEST")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         print(f"✓ Search results: {len(data['estimates'])} estimates")
     
     def test_05_get_estimate_detail(self):
-        """GET /api/estimates-enhanced/{id} - Get estimate details with line items and history"""
+        """GET /api/v1/estimates-enhanced/{id} - Get estimate details with line items and history"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -227,7 +227,7 @@ class TestEstimatesCRUD:
         print(f"✓ Got estimate detail: {estimate['estimate_number']}, {len(estimate['line_items'])} line items, {len(estimate['history'])} history entries")
     
     def test_06_update_estimate(self):
-        """PUT /api/estimates-enhanced/{id} - Update draft estimate"""
+        """PUT /api/v1/estimates-enhanced/{id} - Update draft estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
@@ -237,7 +237,7 @@ class TestEstimatesCRUD:
             "shipping_charge": 150
         }
         
-        response = requests.put(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -246,8 +246,8 @@ class TestEstimatesCRUD:
         print(f"✓ Updated estimate: subject='{data['estimate']['subject']}'")
     
     def test_07_get_estimate_not_found(self):
-        """GET /api/estimates-enhanced/{id} - 404 for non-existent estimate"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/EST-NONEXISTENT123")
+        """GET /api/v1/estimates-enhanced/{id} - 404 for non-existent estimate"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/EST-NONEXISTENT123")
         assert response.status_code == 404
         print("✓ Correctly returns 404 for non-existent estimate")
 
@@ -256,7 +256,7 @@ class TestLineItems:
     """Test line items management"""
     
     def test_01_add_line_item(self):
-        """POST /api/estimates-enhanced/{id}/line-items - Add line item to estimate"""
+        """POST /api/v1/estimates-enhanced/{id}/line-items - Add line item to estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
@@ -271,7 +271,7 @@ class TestLineItems:
             "hsn_code": "8542"
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/line-items", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/line-items", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -286,7 +286,7 @@ class TestLineItems:
         print(f"✓ Added line item: {line_item['name']}, total=₹{line_item['total']}")
     
     def test_02_update_line_item(self):
-        """PUT /api/estimates-enhanced/{id}/line-items/{line_id} - Update line item"""
+        """PUT /api/v1/estimates-enhanced/{id}/line-items/{line_id} - Update line item"""
         if not test_data["estimate_id"] or not test_data.get("new_line_item_id"):
             pytest.skip("No line item available")
         
@@ -296,7 +296,7 @@ class TestLineItems:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/line-items/{test_data['new_line_item_id']}", 
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/line-items/{test_data['new_line_item_id']}", 
             json=payload
         )
         assert response.status_code == 200
@@ -307,12 +307,12 @@ class TestLineItems:
         print(f"✓ Updated line item: qty={data['line_item']['quantity']}, rate=₹{data['line_item']['rate']}")
     
     def test_03_delete_line_item(self):
-        """DELETE /api/estimates-enhanced/{id}/line-items/{line_id} - Delete line item"""
+        """DELETE /api/v1/estimates-enhanced/{id}/line-items/{line_id} - Delete line item"""
         if not test_data["estimate_id"] or not test_data.get("new_line_item_id"):
             pytest.skip("No line item available")
         
         response = requests.delete(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/line-items/{test_data['new_line_item_id']}"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/line-items/{test_data['new_line_item_id']}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -324,12 +324,12 @@ class TestStatusWorkflow:
     """Test status workflow: draft → sent → accepted/declined → converted"""
     
     def test_01_send_estimate(self):
-        """POST /api/estimates-enhanced/{id}/send - Send estimate email (mocked)"""
+        """POST /api/v1/estimates-enhanced/{id}/send - Send estimate email (mocked)"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/send?email_to=test@example.com&message=Test%20message"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/send?email_to=test@example.com&message=Test%20message"
         )
         assert response.status_code == 200
         data = response.json()
@@ -342,18 +342,18 @@ class TestStatusWorkflow:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["estimate"]["status"] == "sent"
         print("✓ Estimate status is now 'sent'")
     
     def test_03_mark_accepted(self):
-        """POST /api/estimates-enhanced/{id}/mark-accepted - Accept estimate"""
+        """POST /api/v1/estimates-enhanced/{id}/mark-accepted - Accept estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/mark-accepted")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/mark-accepted")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -364,7 +364,7 @@ class TestStatusWorkflow:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["estimate"]["status"] == "accepted"
@@ -376,11 +376,11 @@ class TestConversions:
     """Test conversion to Invoice and Sales Order"""
     
     def test_01_convert_to_invoice(self):
-        """POST /api/estimates-enhanced/{id}/convert-to-invoice - Convert accepted estimate to invoice"""
+        """POST /api/v1/estimates-enhanced/{id}/convert-to-invoice - Convert accepted estimate to invoice"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/convert-to-invoice")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/convert-to-invoice")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -393,7 +393,7 @@ class TestConversions:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["estimate"]["status"] == "converted"
@@ -406,11 +406,11 @@ class TestCloneAndDelete:
     """Test clone and delete operations"""
     
     def test_01_clone_estimate(self):
-        """POST /api/estimates-enhanced/{id}/clone - Clone estimate"""
+        """POST /api/v1/estimates-enhanced/{id}/clone - Clone estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/clone")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/clone")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -421,23 +421,23 @@ class TestCloneAndDelete:
         print(f"✓ Cloned estimate: {data['estimate_number']}")
     
     def test_02_delete_cloned_estimate(self):
-        """DELETE /api/estimates-enhanced/{id} - Delete draft estimate only"""
+        """DELETE /api/v1/estimates-enhanced/{id} - Delete draft estimate only"""
         if not test_data.get("cloned_estimate_id"):
             pytest.skip("No cloned estimate available")
         
-        response = requests.delete(f"{BASE_URL}/api/estimates-enhanced/{test_data['cloned_estimate_id']}")
+        response = requests.delete(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['cloned_estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         print("✓ Deleted cloned estimate successfully")
     
     def test_03_cannot_delete_non_draft(self):
-        """DELETE /api/estimates-enhanced/{id} - Cannot delete non-draft estimate"""
+        """DELETE /api/v1/estimates-enhanced/{id} - Cannot delete non-draft estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate created yet")
         
         # The original estimate is now 'converted', should not be deletable
-        response = requests.delete(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.delete(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 400
         print("✓ Correctly prevents deletion of non-draft estimate")
 
@@ -448,7 +448,7 @@ class TestSalesOrderConversion:
     def test_01_create_and_accept_for_so(self):
         """Create a new estimate and accept it for SO conversion"""
         # Get customer
-        response = requests.get(f"{BASE_URL}/api/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
+        response = requests.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
         if response.status_code != 200 or not response.json().get("contacts"):
             pytest.skip("No customer available")
         
@@ -463,27 +463,27 @@ class TestSalesOrderConversion:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         estimate_id = response.json()["estimate"]["estimate_id"]
         
         # Send
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
         assert response.status_code == 200
         
         # Accept
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/mark-accepted")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/mark-accepted")
         assert response.status_code == 200
         
         test_data["so_estimate_id"] = estimate_id
         print(f"✓ Created and accepted estimate for SO conversion")
     
     def test_02_convert_to_sales_order(self):
-        """POST /api/estimates-enhanced/{id}/convert-to-sales-order - Convert to sales order"""
+        """POST /api/v1/estimates-enhanced/{id}/convert-to-sales-order - Convert to sales order"""
         if not test_data.get("so_estimate_id"):
             pytest.skip("No estimate available for SO conversion")
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{test_data['so_estimate_id']}/convert-to-sales-order")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['so_estimate_id']}/convert-to-sales-order")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -497,7 +497,7 @@ class TestDeclineFlow:
     
     def test_01_create_and_send_for_decline(self):
         """Create and send estimate for decline test"""
-        response = requests.get(f"{BASE_URL}/api/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
+        response = requests.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
         if response.status_code != 200 or not response.json().get("contacts"):
             pytest.skip("No customer available")
         
@@ -511,24 +511,24 @@ class TestDeclineFlow:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         estimate_id = response.json()["estimate"]["estimate_id"]
         
         # Send
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
         assert response.status_code == 200
         
         test_data["decline_estimate_id"] = estimate_id
         print("✓ Created and sent estimate for decline test")
     
     def test_02_mark_declined(self):
-        """POST /api/estimates-enhanced/{id}/mark-declined - Decline estimate"""
+        """POST /api/v1/estimates-enhanced/{id}/mark-declined - Decline estimate"""
         if not test_data.get("decline_estimate_id"):
             pytest.skip("No estimate available for decline")
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}/mark-declined?reason=Price%20too%20high"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}/mark-declined?reason=Price%20too%20high"
         )
         assert response.status_code == 200
         data = response.json()
@@ -540,19 +540,19 @@ class TestDeclineFlow:
         if not test_data.get("decline_estimate_id"):
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         assert data["estimate"]["status"] == "declined"
         print("✓ Estimate status is 'declined'")
     
     def test_04_resend_declined_estimate(self):
-        """POST /api/estimates-enhanced/{id}/send - Resend declined estimate"""
+        """POST /api/v1/estimates-enhanced/{id}/send - Resend declined estimate"""
         if not test_data.get("decline_estimate_id"):
             pytest.skip("No estimate available")
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}/send?email_to=test@example.com"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}/send?email_to=test@example.com"
         )
         assert response.status_code == 200
         data = response.json()
@@ -564,14 +564,14 @@ class TestStatusValidation:
     """Test status transition validation"""
     
     def test_invalid_status_transition(self):
-        """PUT /api/estimates-enhanced/{id}/status - Invalid transition should fail"""
+        """PUT /api/v1/estimates-enhanced/{id}/status - Invalid transition should fail"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
         # Try to change converted estimate to draft (invalid)
         payload = {"status": "draft"}
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/status",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/status",
             json=payload
         )
         assert response.status_code == 400
@@ -582,46 +582,46 @@ class TestEdgeCases:
     """Test edge cases and error handling"""
     
     def test_create_without_customer(self):
-        """POST /api/estimates-enhanced/ - Should fail without customer"""
+        """POST /api/v1/estimates-enhanced/ - Should fail without customer"""
         payload = {
             "subject": "No Customer Test",
             "line_items": [{"name": "Test", "quantity": 1, "rate": 100}]
         }
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 422  # Validation error
         print("✓ Correctly rejects estimate without customer")
     
     def test_create_with_invalid_customer(self):
-        """POST /api/estimates-enhanced/ - Should fail with invalid customer"""
+        """POST /api/v1/estimates-enhanced/ - Should fail with invalid customer"""
         payload = {
             "customer_id": "INVALID-CUSTOMER-ID",
             "line_items": [{"name": "Test", "quantity": 1, "rate": 100}]
         }
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 404
         print("✓ Correctly rejects estimate with invalid customer")
     
     def test_update_non_draft_estimate(self):
-        """PUT /api/estimates-enhanced/{id} - Should fail for non-draft"""
+        """PUT /api/v1/estimates-enhanced/{id} - Should fail for non-draft"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
         payload = {"subject": "Try to update converted"}
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}",
             json=payload
         )
         assert response.status_code == 400
         print("✓ Correctly rejects update of non-draft estimate")
     
     def test_add_line_item_to_non_draft(self):
-        """POST /api/estimates-enhanced/{id}/line-items - Should fail for non-draft"""
+        """POST /api/v1/estimates-enhanced/{id}/line-items - Should fail for non-draft"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
         payload = {"name": "New Item", "quantity": 1, "rate": 100}
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/line-items",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/line-items",
             json=payload
         )
         assert response.status_code == 400

@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test data
 TEST_CUSTOMER_ID = "CUST-93AE14BE3618"  # Full Zoho Test Co
@@ -17,11 +17,11 @@ TEST_CUSTOMER_NAME = "Full Zoho Test Co"
 
 
 class TestPaymentsReceivedSummary:
-    """Test GET /api/payments-received/summary - Summary statistics"""
+    """Test GET /api/v1/payments-received/summary - Summary statistics"""
     
     def test_summary_default_period(self):
         """Test summary with default period (this_month)"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/summary")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/summary")
         assert response.status_code == 200
         
         data = response.json()
@@ -46,7 +46,7 @@ class TestPaymentsReceivedSummary:
         periods = ["today", "this_week", "this_month", "this_quarter", "this_year"]
         
         for period in periods:
-            response = requests.get(f"{BASE_URL}/api/payments-received/summary?period={period}")
+            response = requests.get(f"{BASE_URL}/api/v1/payments-received/summary?period={period}")
             assert response.status_code == 200
             
             data = response.json()
@@ -55,11 +55,11 @@ class TestPaymentsReceivedSummary:
 
 
 class TestPaymentsReceivedList:
-    """Test GET /api/payments-received/ - List payments with filters"""
+    """Test GET /api/v1/payments-received/ - List payments with filters"""
     
     def test_list_all_payments(self):
         """Test listing all payments"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/")
         assert response.status_code == 200
         
         data = response.json()
@@ -83,7 +83,7 @@ class TestPaymentsReceivedList:
     
     def test_list_payments_by_customer(self):
         """Test filtering payments by customer"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/?customer_id={TEST_CUSTOMER_ID}")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?customer_id={TEST_CUSTOMER_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -95,7 +95,7 @@ class TestPaymentsReceivedList:
     
     def test_list_payments_by_mode(self):
         """Test filtering payments by payment mode"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/?payment_mode=bank_transfer")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?payment_mode=bank_transfer")
         assert response.status_code == 200
         
         data = response.json()
@@ -106,7 +106,7 @@ class TestPaymentsReceivedList:
     
     def test_list_payments_search(self):
         """Test searching payments"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/?search=PMT")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?search=PMT")
         assert response.status_code == 200
         
         data = response.json()
@@ -114,7 +114,7 @@ class TestPaymentsReceivedList:
     
     def test_list_payments_pagination(self):
         """Test pagination"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/?page=1&per_page=10")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?page=1&per_page=10")
         assert response.status_code == 200
         
         data = response.json()
@@ -124,12 +124,12 @@ class TestPaymentsReceivedList:
 
 
 class TestPaymentDetails:
-    """Test GET /api/payments-received/{id} - Get payment details"""
+    """Test GET /api/v1/payments-received/{id} - Get payment details"""
     
     def test_get_existing_payment(self):
         """Test getting details of an existing payment"""
         # First get a payment ID from the list
-        list_response = requests.get(f"{BASE_URL}/api/payments-received/")
+        list_response = requests.get(f"{BASE_URL}/api/v1/payments-received/")
         assert list_response.status_code == 200
         
         payments = list_response.json()["payments"]
@@ -139,7 +139,7 @@ class TestPaymentDetails:
         payment_id = payments[0]["payment_id"]
         
         # Get payment details
-        response = requests.get(f"{BASE_URL}/api/payments-received/{payment_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/{payment_id}")
         assert response.status_code == 200
         
         data = response.json()
@@ -155,16 +155,16 @@ class TestPaymentDetails:
     
     def test_get_nonexistent_payment(self):
         """Test getting a non-existent payment returns 404"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/PAY-NONEXISTENT")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/PAY-NONEXISTENT")
         assert response.status_code == 404
 
 
 class TestCustomerOpenInvoices:
-    """Test GET /api/payments-received/customer/{id}/open-invoices"""
+    """Test GET /api/v1/payments-received/customer/{id}/open-invoices"""
     
     def test_get_customer_open_invoices(self):
         """Test getting open invoices for a customer"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/customer/{TEST_CUSTOMER_ID}/open-invoices")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/customer/{TEST_CUSTOMER_ID}/open-invoices")
         assert response.status_code == 200
         
         data = response.json()
@@ -184,8 +184,8 @@ class TestCreditsEndpoints:
     """Test credits management endpoints"""
     
     def test_list_all_credits(self):
-        """Test GET /api/payments-received/credits - List all credits"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/credits")
+        """Test GET /api/v1/payments-received/credits - List all credits"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/credits")
         assert response.status_code == 200
         
         data = response.json()
@@ -197,7 +197,7 @@ class TestCreditsEndpoints:
     
     def test_list_credits_by_status(self):
         """Test filtering credits by status"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/credits?status=available")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/credits?status=available")
         assert response.status_code == 200
         
         data = response.json()
@@ -207,8 +207,8 @@ class TestCreditsEndpoints:
             assert credit["status"] == "available"
     
     def test_get_customer_credits(self):
-        """Test GET /api/payments-received/credits/{customer_id}"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/credits/{TEST_CUSTOMER_ID}")
+        """Test GET /api/v1/payments-received/credits/{customer_id}"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/credits/{TEST_CUSTOMER_ID}")
         assert response.status_code == 200
         
         data = response.json()
@@ -227,7 +227,7 @@ class TestCreditsEndpoints:
 
 
 class TestRecordPayment:
-    """Test POST /api/payments-received/ - Record new payment"""
+    """Test POST /api/v1/payments-received/ - Record new payment"""
     
     def test_record_retainer_payment(self):
         """Test recording a retainer/advance payment"""
@@ -243,7 +243,7 @@ class TestRecordPayment:
             "is_retainer": True
         }
         
-        response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+        response = requests.post(f"{BASE_URL}/api/v1/payments-received/", json=payment_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -268,7 +268,7 @@ class TestRecordPayment:
             "payment_mode": "cash"
         }
         
-        response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+        response = requests.post(f"{BASE_URL}/api/v1/payments-received/", json=payment_data)
         assert response.status_code == 404
     
     def test_record_payment_with_bank_charges(self):
@@ -285,7 +285,7 @@ class TestRecordPayment:
             "is_retainer": True
         }
         
-        response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+        response = requests.post(f"{BASE_URL}/api/v1/payments-received/", json=payment_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -299,7 +299,7 @@ class TestRecordPayment:
 
 
 class TestDeletePayment:
-    """Test DELETE /api/payments-received/{id} - Delete payment"""
+    """Test DELETE /api/v1/payments-received/{id} - Delete payment"""
     
     def test_delete_payment(self):
         """Test deleting a payment"""
@@ -312,13 +312,13 @@ class TestDeletePayment:
             "reference_number": f"TEST-DEL-{uuid.uuid4().hex[:8].upper()}"
         }
         
-        create_response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+        create_response = requests.post(f"{BASE_URL}/api/v1/payments-received/", json=payment_data)
         assert create_response.status_code == 200
         
         payment_id = create_response.json()["payment"]["payment_id"]
         
         # Delete the payment
-        delete_response = requests.delete(f"{BASE_URL}/api/payments-received/{payment_id}")
+        delete_response = requests.delete(f"{BASE_URL}/api/v1/payments-received/{payment_id}")
         assert delete_response.status_code == 200
         
         data = delete_response.json()
@@ -326,12 +326,12 @@ class TestDeletePayment:
         assert data["message"] == "Payment deleted successfully"
         
         # Verify payment is deleted
-        get_response = requests.get(f"{BASE_URL}/api/payments-received/{payment_id}")
+        get_response = requests.get(f"{BASE_URL}/api/v1/payments-received/{payment_id}")
         assert get_response.status_code == 404
     
     def test_delete_nonexistent_payment(self):
         """Test deleting a non-existent payment returns 404"""
-        response = requests.delete(f"{BASE_URL}/api/payments-received/PAY-NONEXISTENT")
+        response = requests.delete(f"{BASE_URL}/api/v1/payments-received/PAY-NONEXISTENT")
         assert response.status_code == 404
 
 
@@ -339,8 +339,8 @@ class TestPaymentSettings:
     """Test payment settings endpoints"""
     
     def test_get_settings(self):
-        """Test GET /api/payments-received/settings"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/settings")
+        """Test GET /api/v1/payments-received/settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/settings")
         assert response.status_code == 200
         
         data = response.json()
@@ -357,8 +357,8 @@ class TestPaymentReports:
     """Test payment reports endpoints"""
     
     def test_report_by_customer(self):
-        """Test GET /api/payments-received/reports/by-customer"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/reports/by-customer")
+        """Test GET /api/v1/payments-received/reports/by-customer"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/reports/by-customer")
         assert response.status_code == 200
         
         data = response.json()
@@ -366,8 +366,8 @@ class TestPaymentReports:
         assert "report" in data
     
     def test_report_by_mode(self):
-        """Test GET /api/payments-received/reports/by-mode"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/reports/by-mode")
+        """Test GET /api/v1/payments-received/reports/by-mode"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/reports/by-mode")
         assert response.status_code == 200
         
         data = response.json()
@@ -379,8 +379,8 @@ class TestExportImport:
     """Test export/import functionality"""
     
     def test_export_payments(self):
-        """Test GET /api/payments-received/export"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/export")
+        """Test GET /api/v1/payments-received/export"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/export")
         assert response.status_code == 200
         
         data = response.json()
@@ -389,8 +389,8 @@ class TestExportImport:
         assert "filename" in data
     
     def test_get_import_template(self):
-        """Test GET /api/payments-received/import/template"""
-        response = requests.get(f"{BASE_URL}/api/payments-received/import/template")
+        """Test GET /api/v1/payments-received/import/template"""
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/import/template")
         assert response.status_code == 200
         
         data = response.json()
@@ -414,7 +414,7 @@ class TestRefundEndpoint:
             "reference_number": f"TEST-REF-{uuid.uuid4().hex[:8].upper()}"
         }
         
-        create_response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+        create_response = requests.post(f"{BASE_URL}/api/v1/payments-received/", json=payment_data)
         assert create_response.status_code == 200
         
         payment_id = create_response.json()["payment"]["payment_id"]
@@ -425,11 +425,11 @@ class TestRefundEndpoint:
             "payment_mode": "bank_transfer"
         }
         
-        refund_response = requests.post(f"{BASE_URL}/api/payments-received/{payment_id}/refund", json=refund_data)
+        refund_response = requests.post(f"{BASE_URL}/api/v1/payments-received/{payment_id}/refund", json=refund_data)
         assert refund_response.status_code == 400
         
         # Cleanup
-        requests.delete(f"{BASE_URL}/api/payments-received/{payment_id}")
+        requests.delete(f"{BASE_URL}/api/v1/payments-received/{payment_id}")
 
 
 class TestCleanup:
@@ -438,18 +438,18 @@ class TestCleanup:
     def test_cleanup_test_payments(self):
         """Clean up test payments created during tests"""
         # Get all payments
-        response = requests.get(f"{BASE_URL}/api/payments-received/?search=TEST-")
+        response = requests.get(f"{BASE_URL}/api/v1/payments-received/?search=TEST-")
         if response.status_code == 200:
             payments = response.json().get("payments", [])
             for payment in payments:
                 if "TEST-" in payment.get("reference_number", ""):
-                    requests.delete(f"{BASE_URL}/api/payments-received/{payment['payment_id']}")
+                    requests.delete(f"{BASE_URL}/api/v1/payments-received/{payment['payment_id']}")
         
         # Also cleanup specific IDs if stored
         if hasattr(TestRecordPayment, 'created_payment_id'):
-            requests.delete(f"{BASE_URL}/api/payments-received/{TestRecordPayment.created_payment_id}")
+            requests.delete(f"{BASE_URL}/api/v1/payments-received/{TestRecordPayment.created_payment_id}")
         if hasattr(TestRecordPayment, 'created_payment_with_charges_id'):
-            requests.delete(f"{BASE_URL}/api/payments-received/{TestRecordPayment.created_payment_with_charges_id}")
+            requests.delete(f"{BASE_URL}/api/v1/payments-received/{TestRecordPayment.created_payment_with_charges_id}")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 Password Management Module Tests
 ================================
 Tests for 3 password features:
-1. Admin Reset Password (POST /api/employees/{id}/reset-password)
+1. Admin Reset Password (POST /api/v1/employees/{id}/reset-password)
 2. Self-Service Password Change (POST /api/v1/auth/change-password)
 3. Forgot Password Flow (POST /api/v1/auth/forgot-password, POST /api/v1/auth/reset-password)
 

@@ -8,14 +8,14 @@ import os
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestAuthentication:
     """Authentication endpoint tests"""
     
     def test_admin_login_success(self):
         """Test admin login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -28,7 +28,7 @@ class TestAuthentication:
     
     def test_login_invalid_credentials(self):
         """Test login with invalid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "wrong@example.com",
             "password": "wrong_pwd_placeholder"
         })
@@ -41,7 +41,7 @@ class TestCustomers:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -50,7 +50,7 @@ class TestCustomers:
     def test_list_customers(self, auth_token):
         """Test listing customers - should have at least 50 imported from Zoho Books"""
         response = requests.get(
-            f"{BASE_URL}/api/books/customers?limit=100",
+            f"{BASE_URL}/api/v1/books/customers?limit=100",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -63,7 +63,7 @@ class TestCustomers:
     def test_customer_search(self, auth_token):
         """Test customer search functionality"""
         response = requests.get(
-            f"{BASE_URL}/api/books/customers?search=Bluwheelz&limit=100",
+            f"{BASE_URL}/api/v1/books/customers?search=Bluwheelz&limit=100",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -76,7 +76,7 @@ class TestCustomers:
     def test_customer_has_required_fields(self, auth_token):
         """Test that customers have all required fields"""
         response = requests.get(
-            f"{BASE_URL}/api/books/customers?limit=1",
+            f"{BASE_URL}/api/v1/books/customers?limit=1",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -101,7 +101,7 @@ class TestCustomers:
             "payment_terms": 30
         }
         response = requests.post(
-            f"{BASE_URL}/api/books/customers",
+            f"{BASE_URL}/api/v1/books/customers",
             json=new_customer,
             headers={"Authorization": f"Bearer {auth_token}"}
         )
@@ -118,7 +118,7 @@ class TestServices:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -127,7 +127,7 @@ class TestServices:
     def test_list_services(self, auth_token):
         """Test listing services - should have 100 imported from Zoho Books"""
         response = requests.get(
-            f"{BASE_URL}/api/books/services?limit=200",
+            f"{BASE_URL}/api/v1/books/services?limit=200",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -139,7 +139,7 @@ class TestServices:
     def test_service_has_hsn_code(self, auth_token):
         """Test that services have HSN/SAC codes"""
         response = requests.get(
-            f"{BASE_URL}/api/books/services?limit=10",
+            f"{BASE_URL}/api/v1/books/services?limit=10",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -154,7 +154,7 @@ class TestServices:
     def test_service_search(self, auth_token):
         """Test service search functionality"""
         response = requests.get(
-            f"{BASE_URL}/api/books/services?search=REPAIR&limit=100",
+            f"{BASE_URL}/api/v1/books/services?search=REPAIR&limit=100",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -171,7 +171,7 @@ class TestParts:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -180,7 +180,7 @@ class TestParts:
     def test_list_parts(self, auth_token):
         """Test listing parts - should have 200 imported from Zoho Books"""
         response = requests.get(
-            f"{BASE_URL}/api/books/parts?limit=300",
+            f"{BASE_URL}/api/v1/books/parts?limit=300",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -192,7 +192,7 @@ class TestParts:
     def test_part_has_stock_info(self, auth_token):
         """Test that parts have stock information"""
         response = requests.get(
-            f"{BASE_URL}/api/books/parts?limit=10",
+            f"{BASE_URL}/api/v1/books/parts?limit=10",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -211,7 +211,7 @@ class TestInvoices:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -220,7 +220,7 @@ class TestInvoices:
     def test_list_invoices(self, auth_token):
         """Test listing invoices"""
         response = requests.get(
-            f"{BASE_URL}/api/books/invoices?limit=50",
+            f"{BASE_URL}/api/v1/books/invoices?limit=50",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class TestInvoices:
     def test_invoice_has_gst_calculation(self, auth_token):
         """Test that invoices have proper GST calculation"""
         response = requests.get(
-            f"{BASE_URL}/api/books/invoices?limit=10",
+            f"{BASE_URL}/api/v1/books/invoices?limit=10",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -249,14 +249,14 @@ class TestInvoices:
         """Test creating an invoice with GST calculation"""
         # First get a customer
         cust_response = requests.get(
-            f"{BASE_URL}/api/books/customers?limit=1",
+            f"{BASE_URL}/api/v1/books/customers?limit=1",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         customer = cust_response.json()["customers"][0]
         
         # Get a service
         svc_response = requests.get(
-            f"{BASE_URL}/api/books/services?limit=1",
+            f"{BASE_URL}/api/v1/books/services?limit=1",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         service = svc_response.json()["items"][0]
@@ -278,7 +278,7 @@ class TestInvoices:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/books/invoices",
+            f"{BASE_URL}/api/v1/books/invoices",
             json=invoice_data,
             headers={"Authorization": f"Bearer {auth_token}"}
         )
@@ -302,7 +302,7 @@ class TestAnalytics:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -311,7 +311,7 @@ class TestAnalytics:
     def test_analytics_summary(self, auth_token):
         """Test analytics summary endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/books/analytics/summary",
+            f"{BASE_URL}/api/v1/books/analytics/summary",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -344,7 +344,7 @@ class TestVendors:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -353,7 +353,7 @@ class TestVendors:
     def test_list_vendors(self, auth_token):
         """Test listing vendors - should have 50 imported from Zoho Books"""
         response = requests.get(
-            f"{BASE_URL}/api/books/vendors?limit=100",
+            f"{BASE_URL}/api/v1/books/vendors?limit=100",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
@@ -369,7 +369,7 @@ class TestChartOfAccounts:
     @pytest.fixture
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -378,7 +378,7 @@ class TestChartOfAccounts:
     def test_list_accounts(self, auth_token):
         """Test listing chart of accounts"""
         response = requests.get(
-            f"{BASE_URL}/api/books/accounts",
+            f"{BASE_URL}/api/v1/books/accounts",
             headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200

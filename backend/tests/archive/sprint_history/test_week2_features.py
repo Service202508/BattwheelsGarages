@@ -18,13 +18,13 @@ import secrets
 from datetime import datetime, timezone, timedelta
 
 # Environment
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://org-hub-redesign.preview.emergentagent.com").rstrip("/")
-AUTH_API = f"{BASE_URL}/api/auth"
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://zero-tolerance-check.preview.emergentagent.com").rstrip("/")
+AUTH_API = f"{BASE_URL}/api/v1/auth"
 V1_API = f"{BASE_URL}/api/v1"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_PASSWORD = "DevTest@123"
 ORG_ID = "dev-internal-testing-001"
 STRONG_PASSWORD = "NewSecure@123"
 
@@ -176,7 +176,7 @@ class TestPasswordChange:
     """Test 3: Self-service password change (change-password endpoint)."""
 
     def test_change_password_wrong_current_returns_401(self):
-        """POST /api/auth/change-password with wrong current_password → 401."""
+        """POST /api/v1/auth/change-password with wrong current_password → 401."""
         token = login_admin()
         assert token, "Failed to login"
         time.sleep(1)  # Rate limit buffer
@@ -192,7 +192,7 @@ class TestPasswordChange:
         print("✓ Wrong current password returns 401")
 
     def test_change_password_success_and_revert(self):
-        """POST /api/auth/change-password with correct → 200, then revert."""
+        """POST /api/v1/auth/change-password with correct → 200, then revert."""
         token = login_admin()
         assert token, "Failed to login"
         time.sleep(1)
@@ -237,7 +237,7 @@ class TestForgotPassword:
     """Test 4: Forgot password flow endpoints."""
 
     def test_forgot_password_valid_email_returns_200(self):
-        """POST /api/auth/forgot-password with valid email → 200."""
+        """POST /api/v1/auth/forgot-password with valid email → 200."""
         resp = requests.post(
             f"{AUTH_API}/forgot-password",
             json={"email": ADMIN_EMAIL},
@@ -248,7 +248,7 @@ class TestForgotPassword:
         print("✓ Forgot password returns 200 for valid email")
 
     def test_forgot_password_unknown_email_returns_200_no_leak(self):
-        """POST /api/auth/forgot-password with unknown email → 200 (no info leak)."""
+        """POST /api/v1/auth/forgot-password with unknown email → 200 (no info leak)."""
         resp = requests.post(
             f"{AUTH_API}/forgot-password",
             json={"email": "nonexistent@nowhere.com"},
@@ -263,7 +263,7 @@ class TestResetPassword:
     """Test 5: Reset password endpoint validation."""
 
     def test_reset_password_invalid_token_returns_400(self):
-        """POST /api/auth/reset-password with invalid token → 400."""
+        """POST /api/v1/auth/reset-password with invalid token → 400."""
         resp = requests.post(
             f"{AUTH_API}/reset-password",
             json={"token": "totally_invalid_token", "new_password": STRONG_PASSWORD},
@@ -275,7 +275,7 @@ class TestResetPassword:
         print("✓ Invalid token returns 400")
 
     def test_reset_password_weak_password_returns_422(self):
-        """POST /api/auth/reset-password with weak password → 422."""
+        """POST /api/v1/auth/reset-password with weak password → 422."""
         # Generate a valid-looking token format
         test_token = secrets.token_urlsafe(48)
         resp = requests.post(
@@ -293,11 +293,11 @@ class TestEnvironmentBadge:
     """Test 9: Platform Admin environment endpoint."""
 
     def test_platform_environment_endpoint(self):
-        """GET /api/platform/environment returns environment."""
+        """GET /api/v1/platform/environment returns environment."""
         token = login_admin()
         assert token, "Failed to login"
 
-        # Check if user is platform admin first by checking /api/auth/me
+        # Check if user is platform admin first by checking /api/v1/auth/me
         resp = requests.get(f"{AUTH_API}/me", headers={"Authorization": f"Bearer {token}"}, timeout=15)
         user_data = resp.json()
         is_platform_admin = user_data.get("is_platform_admin", False)

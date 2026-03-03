@@ -10,14 +10,14 @@ from datetime import datetime, timedelta
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestDeliveryChallans:
     """Delivery Challans API tests"""
     
     def test_list_delivery_challans(self):
         """Test listing delivery challans"""
-        response = requests.get(f"{BASE_URL}/api/zoho/delivery-challans")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/delivery-challans")
         assert response.status_code == 200
         data = response.json()
         assert "delivery_challans" in data
@@ -27,7 +27,7 @@ class TestDeliveryChallans:
     def test_create_delivery_challan(self):
         """Test creating a delivery challan"""
         # First get a customer
-        customers_res = requests.get(f"{BASE_URL}/api/zoho/contacts?contact_type=customer&per_page=10")
+        customers_res = requests.get(f"{BASE_URL}/api/v1/zoho/contacts?contact_type=customer&per_page=10")
         customers = customers_res.json().get("contacts", [])
         
         if not customers:
@@ -46,7 +46,7 @@ class TestDeliveryChallans:
             "notes": "Test delivery challan"
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/delivery-challans", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/delivery-challans", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -60,7 +60,7 @@ class TestProjects:
     
     def test_list_projects(self):
         """Test listing projects"""
-        response = requests.get(f"{BASE_URL}/api/zoho/projects")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/projects")
         assert response.status_code == 200
         data = response.json()
         assert "projects" in data
@@ -70,7 +70,7 @@ class TestProjects:
     def test_create_project(self):
         """Test creating a project"""
         # First get a customer
-        customers_res = requests.get(f"{BASE_URL}/api/zoho/contacts?contact_type=customer&per_page=10")
+        customers_res = requests.get(f"{BASE_URL}/api/v1/zoho/contacts?contact_type=customer&per_page=10")
         customers = customers_res.json().get("contacts", [])
         
         if not customers:
@@ -88,7 +88,7 @@ class TestProjects:
             "budget_hours": 100
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/projects", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/projects", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -99,7 +99,7 @@ class TestProjects:
     
     def test_list_time_entries(self):
         """Test listing time entries"""
-        response = requests.get(f"{BASE_URL}/api/zoho/time-entries")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/time-entries")
         assert response.status_code == 200
         data = response.json()
         assert "time_entries" in data
@@ -112,7 +112,7 @@ class TestRecurringInvoices:
     
     def test_list_recurring_invoices(self):
         """Test listing recurring invoices"""
-        response = requests.get(f"{BASE_URL}/api/zoho/recurring-invoices")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/recurring-invoices")
         assert response.status_code == 200
         data = response.json()
         assert "recurring_invoices" in data
@@ -122,7 +122,7 @@ class TestRecurringInvoices:
     def test_create_recurring_invoice(self):
         """Test creating a recurring invoice"""
         # First get a customer
-        customers_res = requests.get(f"{BASE_URL}/api/zoho/contacts?contact_type=customer&per_page=10")
+        customers_res = requests.get(f"{BASE_URL}/api/v1/zoho/contacts?contact_type=customer&per_page=10")
         customers = customers_res.json().get("contacts", [])
         
         if not customers:
@@ -145,7 +145,7 @@ class TestRecurringInvoices:
             "payment_terms": 15
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/recurring-invoices", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/recurring-invoices", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -159,7 +159,7 @@ class TestTaxes:
     
     def test_list_taxes(self):
         """Test listing taxes"""
-        response = requests.get(f"{BASE_URL}/api/zoho/taxes")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/taxes")
         assert response.status_code == 200
         data = response.json()
         assert "taxes" in data
@@ -176,7 +176,7 @@ class TestTaxes:
             "description": "Test GST 5%"
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/taxes", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/taxes", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -187,7 +187,7 @@ class TestTaxes:
     
     def test_list_tax_groups(self):
         """Test listing tax groups"""
-        response = requests.get(f"{BASE_URL}/api/zoho/tax-groups")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/tax-groups")
         assert response.status_code == 200
         data = response.json()
         assert "tax_groups" in data
@@ -200,7 +200,7 @@ class TestChartOfAccounts:
     
     def test_list_chart_of_accounts(self):
         """Test listing chart of accounts"""
-        response = requests.get(f"{BASE_URL}/api/zoho/chartofaccounts")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/chartofaccounts")
         assert response.status_code == 200
         data = response.json()
         assert "chartofaccounts" in data
@@ -216,7 +216,7 @@ class TestChartOfAccounts:
             "description": "Test cash account"
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/chartofaccounts", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/chartofaccounts", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -230,7 +230,7 @@ class TestJournalEntries:
     
     def test_list_journal_entries(self):
         """Test listing journal entries"""
-        response = requests.get(f"{BASE_URL}/api/zoho/journals")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/journals")
         assert response.status_code == 200
         data = response.json()
         assert "journals" in data
@@ -248,7 +248,7 @@ class TestJournalEntries:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/journals", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/journals", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -262,7 +262,7 @@ class TestVendorCredits:
     
     def test_list_vendor_credits(self):
         """Test listing vendor credits"""
-        response = requests.get(f"{BASE_URL}/api/zoho/vendorcredits")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/vendorcredits")
         assert response.status_code == 200
         data = response.json()
         assert "vendorcredits" in data
@@ -272,7 +272,7 @@ class TestVendorCredits:
     def test_create_vendor_credit(self):
         """Test creating a vendor credit"""
         # First get a vendor
-        vendors_res = requests.get(f"{BASE_URL}/api/zoho/contacts?contact_type=vendor&per_page=10")
+        vendors_res = requests.get(f"{BASE_URL}/api/v1/zoho/contacts?contact_type=vendor&per_page=10")
         vendors = vendors_res.json().get("contacts", [])
         
         if not vendors:
@@ -290,7 +290,7 @@ class TestVendorCredits:
             "notes": "Test vendor credit"
         }
         
-        response = requests.post(f"{BASE_URL}/api/zoho/vendorcredits", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/vendorcredits", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0

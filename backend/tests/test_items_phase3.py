@@ -6,14 +6,14 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestItemPreferences:
     """Test module preferences endpoints"""
     
     def test_get_preferences(self):
-        """GET /api/items-enhanced/preferences - Get module preferences"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/preferences")
+        """GET /api/v1/items-enhanced/preferences - Get module preferences"""
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/preferences")
         assert response.status_code == 200
         
         data = response.json()
@@ -41,9 +41,9 @@ class TestItemPreferences:
         print(f"✓ Preferences retrieved successfully with {len(prefs)} settings")
     
     def test_update_preferences(self):
-        """PUT /api/items-enhanced/preferences - Update preferences"""
+        """PUT /api/v1/items-enhanced/preferences - Update preferences"""
         # First get current preferences
-        get_response = requests.get(f"{BASE_URL}/api/items-enhanced/preferences")
+        get_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/preferences")
         original_prefs = get_response.json()["preferences"]
         
         # Update preferences
@@ -71,7 +71,7 @@ class TestItemPreferences:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/items-enhanced/preferences",
+            f"{BASE_URL}/api/v1/items-enhanced/preferences",
             json=updated_prefs
         )
         assert response.status_code == 200
@@ -81,7 +81,7 @@ class TestItemPreferences:
         assert data["message"] == "Preferences updated"
         
         # Verify update persisted
-        verify_response = requests.get(f"{BASE_URL}/api/items-enhanced/preferences")
+        verify_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/preferences")
         verify_data = verify_response.json()["preferences"]
         assert verify_data["sku_prefix"] == "TEST-SKU-"
         assert verify_data["sku_sequence_start"] == 100
@@ -111,15 +111,15 @@ class TestItemPreferences:
             "track_serial_numbers": original_prefs.get("track_serial_numbers", False),
             "track_batch_numbers": original_prefs.get("track_batch_numbers", False)
         }
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=restore_prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=restore_prefs)
 
 
 class TestFieldConfiguration:
     """Test field configuration endpoints"""
     
     def test_get_field_config(self):
-        """GET /api/items-enhanced/field-config - Get field configuration"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/field-config")
+        """GET /api/v1/items-enhanced/field-config - Get field configuration"""
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/field-config")
         assert response.status_code == 200
         
         data = response.json()
@@ -151,9 +151,9 @@ class TestFieldConfiguration:
         print(f"✓ Field configuration retrieved with {len(fields)} fields")
     
     def test_update_field_config(self):
-        """PUT /api/items-enhanced/field-config - Update field configuration"""
+        """PUT /api/v1/items-enhanced/field-config - Update field configuration"""
         # Get current config
-        get_response = requests.get(f"{BASE_URL}/api/items-enhanced/field-config")
+        get_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/field-config")
         original_config = get_response.json()["field_config"]
         
         # Update a single field
@@ -172,7 +172,7 @@ class TestFieldConfiguration:
         ]
         
         response = requests.put(
-            f"{BASE_URL}/api/items-enhanced/field-config",
+            f"{BASE_URL}/api/v1/items-enhanced/field-config",
             json=updated_fields
         )
         assert response.status_code == 200
@@ -182,7 +182,7 @@ class TestFieldConfiguration:
         assert data["message"] == "Field configuration updated"
         
         # Verify update persisted
-        verify_response = requests.get(f"{BASE_URL}/api/items-enhanced/field-config")
+        verify_response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/field-config")
         verify_data = verify_response.json()["field_config"]
         desc_field = next((f for f in verify_data if f["field_name"] == "description"), None)
         assert desc_field is not None
@@ -203,10 +203,10 @@ class TestFieldConfiguration:
                 "allowed_roles": original_desc.get("allowed_roles", ["admin", "manager", "user"]),
                 "field_order": original_desc.get("field_order", 4)
             }
-            requests.put(f"{BASE_URL}/api/items-enhanced/field-config", json=[restore_field])
+            requests.put(f"{BASE_URL}/api/v1/items-enhanced/field-config", json=[restore_field])
     
     def test_update_single_field_config(self):
-        """PUT /api/items-enhanced/field-config/{field_name} - Update single field"""
+        """PUT /api/v1/items-enhanced/field-config/{field_name} - Update single field"""
         field_config = {
             "field_name": "barcode_value",
             "display_name": "Barcode",
@@ -220,7 +220,7 @@ class TestFieldConfiguration:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/items-enhanced/field-config/barcode_value",
+            f"{BASE_URL}/api/v1/items-enhanced/field-config/barcode_value",
             json=field_config
         )
         assert response.status_code == 200
@@ -231,8 +231,8 @@ class TestFieldConfiguration:
         print("✓ Single field configuration updated")
     
     def test_get_fields_for_role(self):
-        """GET /api/items-enhanced/field-config/for-role/{role} - Get fields for role"""
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/field-config/for-role/admin")
+        """GET /api/v1/items-enhanced/field-config/for-role/{role} - Get fields for role"""
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/field-config/for-role/admin")
         assert response.status_code == 200
         
         data = response.json()
@@ -249,7 +249,7 @@ class TestAutoSKUGeneration:
     """Test auto SKU generation endpoint"""
     
     def test_generate_sku_disabled(self):
-        """GET /api/items-enhanced/generate-sku - When auto SKU is disabled"""
+        """GET /api/v1/items-enhanced/generate-sku - When auto SKU is disabled"""
         # First ensure auto SKU is disabled
         prefs = {
             "enable_sku": True,
@@ -273,9 +273,9 @@ class TestAutoSKUGeneration:
             "track_serial_numbers": False,
             "track_batch_numbers": False
         }
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=prefs)
         
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/generate-sku")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/generate-sku")
         assert response.status_code == 200
         
         data = response.json()
@@ -284,7 +284,7 @@ class TestAutoSKUGeneration:
         print("✓ Generate SKU correctly returns disabled message")
     
     def test_generate_sku_enabled(self):
-        """GET /api/items-enhanced/generate-sku - When auto SKU is enabled"""
+        """GET /api/v1/items-enhanced/generate-sku - When auto SKU is enabled"""
         # Enable auto SKU
         prefs = {
             "enable_sku": True,
@@ -308,9 +308,9 @@ class TestAutoSKUGeneration:
             "track_serial_numbers": False,
             "track_batch_numbers": False
         }
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=prefs)
         
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/generate-sku")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/generate-sku")
         assert response.status_code == 200
         
         data = response.json()
@@ -343,7 +343,7 @@ class TestAutoSKUGeneration:
             "track_serial_numbers": False,
             "track_batch_numbers": False
         }
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=restore_prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=restore_prefs)
 
 
 class TestPhase3Integration:
@@ -374,10 +374,10 @@ class TestPhase3Integration:
             "track_serial_numbers": False,
             "track_batch_numbers": False
         }
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=prefs)
         
         # Generate SKU
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/generate-sku")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/generate-sku")
         data = response.json()
         
         assert data["code"] == 0
@@ -389,12 +389,12 @@ class TestPhase3Integration:
         restore_prefs["auto_generate_sku"] = False
         restore_prefs["sku_prefix"] = "SKU-"
         restore_prefs["sku_sequence_start"] = 1
-        requests.put(f"{BASE_URL}/api/items-enhanced/preferences", json=restore_prefs)
+        requests.put(f"{BASE_URL}/api/v1/items-enhanced/preferences", json=restore_prefs)
     
     def test_field_config_mandatory_fields(self):
         """Test that mandatory fields cannot be deactivated"""
         # Get field config
-        response = requests.get(f"{BASE_URL}/api/items-enhanced/field-config")
+        response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/field-config")
         fields = response.json()["field_config"]
         
         # Find mandatory fields

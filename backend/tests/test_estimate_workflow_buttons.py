@@ -8,19 +8,19 @@ Tests the estimate status workflow and button visibility requirements:
 - Locked status → Shows 'Unlock Estimate' (admin only)
 
 API Endpoints tested:
-- POST /api/tickets/{id}/estimate/ensure
-- POST /api/ticket-estimates/{id}/send
-- POST /api/ticket-estimates/{id}/approve
-- POST /api/ticket-estimates/{id}/lock
-- POST /api/ticket-estimates/{id}/unlock
+- POST /api/v1/tickets/{id}/estimate/ensure
+- POST /api/v1/ticket-estimates/{id}/send
+- POST /api/v1/ticket-estimates/{id}/approve
+- POST /api/v1/ticket-estimates/{id}/lock
+- POST /api/v1/ticket-estimates/{id}/unlock
 """
 
 import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
-ORG_ID = "org_battwheels"
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
+ORG_ID = "dev-internal-testing-001"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -30,7 +30,7 @@ ADMIN_PASSWORD = "DevTest@123"
 @pytest.fixture(scope="module")
 def auth_token():
     """Get admin authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -56,7 +56,7 @@ class TestEstimateWorkflow:
         """Test getting a draft estimate - should exist"""
         # Use a ticket with draft estimate or ensure one
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers,
             params={"status": "draft"}
         )
@@ -68,7 +68,7 @@ class TestEstimateWorkflow:
         """Test getting sent status estimate"""
         # Ticket mentioned in context: tkt_c86867066be6 (sent status)
         response = requests.post(
-            f"{BASE_URL}/api/tickets/tkt_c86867066be6/estimate/ensure",
+            f"{BASE_URL}/api/v1/tickets/tkt_c86867066be6/estimate/ensure",
             headers=auth_headers
         )
         if response.status_code == 200:
@@ -84,7 +84,7 @@ class TestEstimateWorkflow:
         """Test getting approved status estimate"""
         # Ticket mentioned in context: TKT-000054 (approved status)
         response = requests.post(
-            f"{BASE_URL}/api/tickets/TKT-000054/estimate/ensure",
+            f"{BASE_URL}/api/v1/tickets/TKT-000054/estimate/ensure",
             headers=auth_headers
         )
         if response.status_code == 200:
@@ -100,7 +100,7 @@ class TestEstimateWorkflow:
         """Test that send estimate API works"""
         # Get an estimate first
         list_response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers
         )
         assert list_response.status_code == 200
@@ -116,7 +116,7 @@ class TestEstimateWorkflow:
         if test_estimate:
             estimate_id = test_estimate["estimate_id"]
             response = requests.post(
-                f"{BASE_URL}/api/ticket-estimates/{estimate_id}/send",
+                f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/send",
                 headers=auth_headers
             )
             # Should succeed or return 400 if validation fails
@@ -133,7 +133,7 @@ class TestEstimateWorkflow:
         """Test that approve estimate API works"""
         # Get estimates
         list_response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers
         )
         estimates = list_response.json().get("estimates", [])
@@ -148,7 +148,7 @@ class TestEstimateWorkflow:
         if test_estimate:
             estimate_id = test_estimate["estimate_id"]
             response = requests.post(
-                f"{BASE_URL}/api/ticket-estimates/{estimate_id}/approve",
+                f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/approve",
                 headers=auth_headers
             )
             # Should succeed
@@ -164,7 +164,7 @@ class TestEstimateWorkflow:
         """Test that lock estimate works for admin"""
         # Get an approved estimate
         list_response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers,
             params={"status": "approved"}
         )
@@ -180,7 +180,7 @@ class TestEstimateWorkflow:
         if test_estimate:
             estimate_id = test_estimate["estimate_id"]
             response = requests.post(
-                f"{BASE_URL}/api/ticket-estimates/{estimate_id}/lock",
+                f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/lock",
                 headers=auth_headers,
                 json={"reason": "Testing lock functionality"}
             )
@@ -193,7 +193,7 @@ class TestEstimateWorkflow:
                 
                 # Now unlock it for other tests
                 unlock_response = requests.post(
-                    f"{BASE_URL}/api/ticket-estimates/{estimate_id}/unlock",
+                    f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}/unlock",
                     headers=auth_headers
                 )
                 print(f"Unlock response: {unlock_response.status_code}")
@@ -204,7 +204,7 @@ class TestEstimateWorkflow:
         """Test that unlock estimate works for admin only"""
         # This was already tested in test_6, but let's verify the API exists
         response = requests.post(
-            f"{BASE_URL}/api/ticket-estimates/fake_id/unlock",
+            f"{BASE_URL}/api/v1/ticket-estimates/fake_id/unlock",
             headers=auth_headers
         )
         # Should return 404 for fake ID, but API route exists
@@ -222,7 +222,7 @@ class TestEstimateWorkflow:
         
         # Get all estimates and check their statuses
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers
         )
         estimates = response.json().get("estimates", [])
@@ -257,7 +257,7 @@ class TestEstimateButtonVisibility:
         """Draft should show: Send Estimate + Approve Estimate"""
         # Get a draft estimate
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers,
             params={"status": "draft"}
         )
@@ -282,7 +282,7 @@ class TestEstimateButtonVisibility:
     def test_2_sent_buttons(self, auth_headers):
         """Sent should show: Resend Estimate + Approve Estimate"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers,
             params={"status": "sent"}
         )
@@ -307,7 +307,7 @@ class TestEstimateButtonVisibility:
     def test_3_approved_buttons(self, auth_headers):
         """Approved should show: Resend Estimate + Lock Estimate"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers,
             params={"status": "approved"}
         )
@@ -332,7 +332,7 @@ class TestEstimateButtonVisibility:
     def test_4_locked_buttons(self, auth_headers):
         """Locked should show: Unlock Estimate (admin only)"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates",
+            f"{BASE_URL}/api/v1/ticket-estimates",
             headers=auth_headers
         )
         estimates = response.json().get("estimates", [])

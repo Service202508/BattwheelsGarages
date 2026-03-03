@@ -9,7 +9,7 @@ import os
 import time
 import io
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test data storage
 test_data = {
@@ -26,8 +26,8 @@ class TestPreferencesAPI:
     """Test estimate preferences endpoints"""
     
     def test_get_preferences(self):
-        """GET /api/estimates-enhanced/preferences - Returns automation preferences"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/preferences")
+        """GET /api/v1/estimates-enhanced/preferences - Returns automation preferences"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/preferences")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -43,7 +43,7 @@ class TestPreferencesAPI:
         print(f"✓ Preferences retrieved: auto_convert={prefs.get('auto_convert_on_accept')}, allow_accept={prefs.get('allow_public_accept')}")
     
     def test_update_preferences(self):
-        """PUT /api/estimates-enhanced/preferences - Update preferences"""
+        """PUT /api/v1/estimates-enhanced/preferences - Update preferences"""
         payload = {
             "auto_convert_on_accept": False,
             "auto_convert_to": "draft_invoice",
@@ -66,7 +66,7 @@ class TestPreferencesAPI:
             "default_terms": "This estimate is valid for 30 days from the date of issue.",
             "default_notes": ""
         }
-        response = requests.put(f"{BASE_URL}/api/estimates-enhanced/preferences", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/estimates-enhanced/preferences", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -78,8 +78,8 @@ class TestSummaryWithViewedStatus:
     """Test summary endpoint includes customer_viewed count"""
     
     def test_summary_includes_customer_viewed(self):
-        """GET /api/estimates-enhanced/summary - Should include customer_viewed count"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/summary")
+        """GET /api/v1/estimates-enhanced/summary - Should include customer_viewed count"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -97,7 +97,7 @@ class TestEstimateSetup:
     
     def test_01_get_customer(self):
         """Get a customer for testing"""
-        response = requests.get(f"{BASE_URL}/api/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
+        response = requests.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?q=test&contact_type=customer&limit=1")
         if response.status_code == 200:
             data = response.json()
             if data.get("contacts") and len(data["contacts"]) > 0:
@@ -105,7 +105,7 @@ class TestEstimateSetup:
                 print(f"✓ Using customer: {data['contacts'][0].get('contact_name', data['contacts'][0].get('name'))}")
             else:
                 # Try to get any customer
-                response2 = requests.get(f"{BASE_URL}/api/contacts-enhanced/?contact_type=customer&per_page=1")
+                response2 = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?contact_type=customer&per_page=1")
                 if response2.status_code == 200:
                     data2 = response2.json()
                     if data2.get("contacts") and len(data2["contacts"]) > 0:
@@ -148,7 +148,7 @@ class TestEstimateSetup:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -164,7 +164,7 @@ class TestShareLinkAPI:
     """Test share link creation and management"""
     
     def test_01_create_share_link(self):
-        """POST /api/estimates-enhanced/{id}/share - Create public share link"""
+        """POST /api/v1/estimates-enhanced/{id}/share - Create public share link"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
@@ -176,7 +176,7 @@ class TestShareLinkAPI:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/share",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/share",
             json=payload
         )
         assert response.status_code == 200
@@ -197,11 +197,11 @@ class TestShareLinkAPI:
         print(f"✓ Created share link: token={share_link['share_token'][:16]}..., expires={share_link['expires_at']}")
     
     def test_02_get_share_links(self):
-        """GET /api/estimates-enhanced/{id}/share-links - List share links for estimate"""
+        """GET /api/v1/estimates-enhanced/{id}/share-links - List share links for estimate"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/share-links")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/share-links")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -210,7 +210,7 @@ class TestShareLinkAPI:
         print(f"✓ Found {len(data['share_links'])} share link(s) for estimate")
     
     def test_03_create_password_protected_link(self):
-        """POST /api/estimates-enhanced/{id}/share - Create password-protected link"""
+        """POST /api/v1/estimates-enhanced/{id}/share - Create password-protected link"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
@@ -223,7 +223,7 @@ class TestShareLinkAPI:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/share",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/share",
             json=payload
         )
         assert response.status_code == 200
@@ -237,11 +237,11 @@ class TestPublicQuoteView:
     """Test public quote view endpoint"""
     
     def test_01_access_public_quote(self):
-        """GET /api/estimates-enhanced/public/{shareToken} - Access public quote"""
+        """GET /api/v1/estimates-enhanced/public/{shareToken} - Access public quote"""
         if not test_data["share_token"]:
             pytest.skip("No share token available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/public/{test_data['share_token']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/public/{test_data['share_token']}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -263,7 +263,7 @@ class TestPublicQuoteView:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -273,8 +273,8 @@ class TestPublicQuoteView:
         print(f"✓ Estimate status after public view: {status}")
     
     def test_03_invalid_share_token(self):
-        """GET /api/estimates-enhanced/public/{shareToken} - Invalid token returns 404"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/public/invalid_token_12345")
+        """GET /api/v1/estimates-enhanced/public/{shareToken} - Invalid token returns 404"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/public/invalid_token_12345")
         assert response.status_code == 404
         print("✓ Invalid share token correctly returns 404")
 
@@ -288,7 +288,7 @@ class TestCustomerActions:
             pytest.skip("No estimate available")
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/send?email_to=test@example.com"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/send?email_to=test@example.com"
         )
         assert response.status_code == 200
         print("✓ Estimate sent (mocked email)")
@@ -298,7 +298,7 @@ class TestCustomerActions:
         if not test_data["share_token"]:
             pytest.skip("No share token available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/public/{test_data['share_token']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/public/{test_data['share_token']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -311,7 +311,7 @@ class TestCustomerActions:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -321,7 +321,7 @@ class TestCustomerActions:
         print(f"✓ Estimate status: {status}")
     
     def test_04_customer_accept_action(self):
-        """POST /api/estimates-enhanced/public/{shareToken}/action - Customer accepts"""
+        """POST /api/v1/estimates-enhanced/public/{shareToken}/action - Customer accepts"""
         if not test_data["share_token"]:
             pytest.skip("No share token available")
         
@@ -331,7 +331,7 @@ class TestCustomerActions:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/public/{test_data['share_token']}/action",
+            f"{BASE_URL}/api/v1/estimates-enhanced/public/{test_data['share_token']}/action",
             json=payload
         )
         assert response.status_code == 200
@@ -345,7 +345,7 @@ class TestCustomerActions:
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -370,7 +370,7 @@ class TestDeclineAction:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         test_data["decline_estimate_id"] = response.json()["estimate"]["estimate_id"]
         print(f"✓ Created estimate for decline test")
@@ -382,14 +382,14 @@ class TestDeclineAction:
         
         # Send
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}/send?email_to=test@example.com"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}/send?email_to=test@example.com"
         )
         assert response.status_code == 200
         
         # Create share link
         payload = {"expiry_days": 30, "allow_accept": True, "allow_decline": True}
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}/share",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}/share",
             json=payload
         )
         assert response.status_code == 200
@@ -397,7 +397,7 @@ class TestDeclineAction:
         print("✓ Sent estimate and created share link")
     
     def test_03_customer_decline_action(self):
-        """POST /api/estimates-enhanced/public/{shareToken}/action - Customer declines"""
+        """POST /api/v1/estimates-enhanced/public/{shareToken}/action - Customer declines"""
         if not test_data.get("decline_share_token"):
             pytest.skip("No share token available")
         
@@ -407,7 +407,7 @@ class TestDeclineAction:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/public/{test_data['decline_share_token']}/action",
+            f"{BASE_URL}/api/v1/estimates-enhanced/public/{test_data['decline_share_token']}/action",
             json=payload
         )
         assert response.status_code == 200
@@ -420,7 +420,7 @@ class TestDeclineAction:
         if not test_data.get("decline_estimate_id"):
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['decline_estimate_id']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['decline_estimate_id']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -444,13 +444,13 @@ class TestAttachmentsAPI:
             ]
         }
         
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         test_data["attachment_estimate_id"] = response.json()["estimate"]["estimate_id"]
         print(f"✓ Created estimate for attachment test")
     
     def test_02_upload_attachment(self):
-        """POST /api/estimates-enhanced/{id}/attachments - Upload file attachment"""
+        """POST /api/v1/estimates-enhanced/{id}/attachments - Upload file attachment"""
         if not test_data.get("attachment_estimate_id"):
             pytest.skip("No estimate available")
         
@@ -461,7 +461,7 @@ class TestAttachmentsAPI:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
             files=files
         )
         assert response.status_code == 200
@@ -478,12 +478,12 @@ class TestAttachmentsAPI:
         print(f"✓ Uploaded attachment: {attachment['filename']}, size={attachment['file_size']} bytes")
     
     def test_03_list_attachments(self):
-        """GET /api/estimates-enhanced/{id}/attachments - List attachments"""
+        """GET /api/v1/estimates-enhanced/{id}/attachments - List attachments"""
         if not test_data.get("attachment_estimate_id"):
             pytest.skip("No estimate available")
         
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments"
         )
         assert response.status_code == 200
         data = response.json()
@@ -493,25 +493,25 @@ class TestAttachmentsAPI:
         print(f"✓ Found {len(data['attachments'])} attachment(s)")
     
     def test_04_download_attachment(self):
-        """GET /api/estimates-enhanced/{id}/attachments/{attachment_id} - Download attachment"""
+        """GET /api/v1/estimates-enhanced/{id}/attachments/{attachment_id} - Download attachment"""
         if not test_data.get("attachment_estimate_id") or not test_data.get("attachment_id"):
             pytest.skip("No attachment available")
         
         # Correct endpoint without /download suffix
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}"
         )
         assert response.status_code == 200
         assert len(response.content) > 0
         print(f"✓ Downloaded attachment: {len(response.content)} bytes")
     
     def test_05_delete_attachment(self):
-        """DELETE /api/estimates-enhanced/{id}/attachments/{attachment_id} - Delete attachment"""
+        """DELETE /api/v1/estimates-enhanced/{id}/attachments/{attachment_id} - Delete attachment"""
         if not test_data.get("attachment_estimate_id") or not test_data.get("attachment_id"):
             pytest.skip("No attachment available")
         
         response = requests.delete(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -530,7 +530,7 @@ class TestAttachmentsAPI:
                 'file': (f'test_file_{i+1}.txt', io.BytesIO(file_content), 'text/plain')
             }
             response = requests.post(
-                f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
+                f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
                 files=files
             )
             assert response.status_code == 200
@@ -541,7 +541,7 @@ class TestAttachmentsAPI:
             'file': ('test_file_4.txt', io.BytesIO(file_content), 'text/plain')
         }
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments",
             files=files
         )
         assert response.status_code == 400
@@ -552,11 +552,11 @@ class TestPDFGeneration:
     """Test PDF generation endpoint"""
     
     def test_01_generate_pdf(self):
-        """GET /api/estimates-enhanced/{id}/pdf - Generate PDF (or HTML fallback)"""
+        """GET /api/v1/estimates-enhanced/{id}/pdf - Generate PDF (or HTML fallback)"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/pdf")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/pdf")
         assert response.status_code == 200
         
         # Check content type - could be PDF or JSON with HTML fallback (WeasyPrint not installed)
@@ -575,8 +575,8 @@ class TestPDFGeneration:
             print(f"✓ Generated PDF: {len(response.content)} bytes")
     
     def test_02_pdf_for_nonexistent_estimate(self):
-        """GET /api/estimates-enhanced/{id}/pdf - 404 for non-existent estimate"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/EST-NONEXISTENT/pdf")
+        """GET /api/v1/estimates-enhanced/{id}/pdf - 404 for non-existent estimate"""
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/EST-NONEXISTENT/pdf")
         assert response.status_code == 404
         print("✓ PDF endpoint correctly returns 404 for non-existent estimate")
 
@@ -585,12 +585,12 @@ class TestShareLinkExpiry:
     """Test share link expiry and revocation"""
     
     def test_01_revoke_share_link(self):
-        """DELETE /api/estimates-enhanced/{id}/share-links/{link_id} - Revoke share link"""
+        """DELETE /api/v1/estimates-enhanced/{id}/share-links/{link_id} - Revoke share link"""
         if not test_data["estimate_id"] or not test_data.get("share_link_id"):
             pytest.skip("No share link available")
         
         response = requests.delete(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/share-links/{test_data['share_link_id']}"
+            f"{BASE_URL}/api/v1/estimates-enhanced/{test_data['estimate_id']}/share-links/{test_data['share_link_id']}"
         )
         # May return 200 or 404 if already used/expired
         assert response.status_code in [200, 404]
@@ -613,23 +613,23 @@ class TestPublicAttachments:
                 {"name": "Service", "quantity": 1, "rate": 1000, "tax_percentage": 18}
             ]
         }
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         assert response.status_code == 200
         estimate_id = response.json()["estimate"]["estimate_id"]
         
         # Upload attachment
         file_content = b"Public attachment test content"
         files = {'file': ('public_doc.txt', io.BytesIO(file_content), 'text/plain')}
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/attachments", files=files)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/attachments", files=files)
         assert response.status_code == 200
         
         # Send estimate
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/send?email_to=test@example.com")
         assert response.status_code == 200
         
         # Create share link
         payload = {"expiry_days": 30, "allow_accept": True, "allow_decline": True}
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/{estimate_id}/share", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}/share", json=payload)
         assert response.status_code == 200
         share_token = response.json()["share_link"]["share_token"]
         
@@ -642,7 +642,7 @@ class TestPublicAttachments:
         if not test_data.get("public_attachment_token"):
             pytest.skip("No share token available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/public/{test_data['public_attachment_token']}")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/public/{test_data['public_attachment_token']}")
         assert response.status_code == 200
         data = response.json()
         
@@ -657,11 +657,11 @@ class TestCleanup:
     def test_cleanup_test_estimates(self):
         """Delete test estimates that are still in draft status"""
         # Get list of test estimates
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?search=PHASE1&status=draft")
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?search=PHASE1&status=draft")
         if response.status_code == 200:
             data = response.json()
             for est in data.get("estimates", []):
-                requests.delete(f"{BASE_URL}/api/estimates-enhanced/{est['estimate_id']}")
+                requests.delete(f"{BASE_URL}/api/v1/estimates-enhanced/{est['estimate_id']}")
         print("✓ Cleanup completed")
 
 

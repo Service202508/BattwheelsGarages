@@ -11,7 +11,7 @@ import time
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestZohoContacts:
     """Test Contacts (Customers/Vendors) Module"""
@@ -20,7 +20,7 @@ class TestZohoContacts:
     
     def test_01_create_customer(self):
         """Create a new customer contact"""
-        response = requests.post(f"{BASE_URL}/api/zoho/contacts", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/contacts", json={
             "contact_name": "TEST_Customer_ABC Corp",
             "company_name": "ABC Corporation",
             "contact_type": "customer",
@@ -43,7 +43,7 @@ class TestZohoContacts:
     
     def test_02_create_vendor(self):
         """Create a new vendor contact"""
-        response = requests.post(f"{BASE_URL}/api/zoho/contacts", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/contacts", json={
             "contact_name": "TEST_Vendor_XYZ Supplies",
             "company_name": "XYZ Supplies Ltd",
             "contact_type": "vendor",
@@ -61,7 +61,7 @@ class TestZohoContacts:
     
     def test_03_list_contacts(self):
         """List contacts with filters"""
-        response = requests.get(f"{BASE_URL}/api/zoho/contacts", params={
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/contacts", params={
             "contact_type": "customer",
             "status": "active",
             "per_page": 10
@@ -75,7 +75,7 @@ class TestZohoContacts:
     
     def test_04_get_contact_details(self):
         """Get specific contact details"""
-        response = requests.get(f"{BASE_URL}/api/zoho/contacts/{TestZohoContacts.contact_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/contacts/{TestZohoContacts.contact_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -84,7 +84,7 @@ class TestZohoContacts:
     
     def test_05_update_contact(self):
         """Update contact details"""
-        response = requests.put(f"{BASE_URL}/api/zoho/contacts/{TestZohoContacts.contact_id}", json={
+        response = requests.put(f"{BASE_URL}/api/v1/zoho/contacts/{TestZohoContacts.contact_id}", json={
             "contact_name": "TEST_Customer_ABC Corp Updated",
             "company_name": "ABC Corporation Updated",
             "contact_type": "customer",
@@ -98,7 +98,7 @@ class TestZohoContacts:
     
     def test_06_mark_contact_inactive(self):
         """Mark contact as inactive"""
-        response = requests.post(f"{BASE_URL}/api/zoho/contacts/{TestZohoContacts.contact_id}/inactive")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/contacts/{TestZohoContacts.contact_id}/inactive")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -106,7 +106,7 @@ class TestZohoContacts:
     
     def test_07_mark_contact_active(self):
         """Mark contact as active"""
-        response = requests.post(f"{BASE_URL}/api/zoho/contacts/{TestZohoContacts.contact_id}/active")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/contacts/{TestZohoContacts.contact_id}/active")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -120,7 +120,7 @@ class TestZohoItems:
     
     def test_01_create_service_item(self):
         """Create a service item"""
-        response = requests.post(f"{BASE_URL}/api/zoho/items", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/items", json={
             "name": "TEST_Battery Diagnostic Service",
             "description": "Complete battery health check",
             "rate": 500.00,
@@ -140,7 +140,7 @@ class TestZohoItems:
     
     def test_02_create_goods_item(self):
         """Create a goods/inventory item"""
-        response = requests.post(f"{BASE_URL}/api/zoho/items", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/items", json={
             "name": "TEST_EV Battery Pack 48V",
             "description": "48V Lithium-ion battery pack",
             "sku": "BAT-48V-001",
@@ -163,7 +163,7 @@ class TestZohoItems:
     
     def test_03_list_items(self):
         """List items with filters"""
-        response = requests.get(f"{BASE_URL}/api/zoho/items", params={
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/items", params={
             "status": "active",
             "per_page": 10
         })
@@ -181,7 +181,7 @@ class TestZohoEstimates:
     
     def test_01_create_estimate(self):
         """Create a new estimate"""
-        response = requests.post(f"{BASE_URL}/api/zoho/estimates", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -221,7 +221,7 @@ class TestZohoEstimates:
     
     def test_02_list_estimates(self):
         """List estimates"""
-        response = requests.get(f"{BASE_URL}/api/zoho/estimates")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/estimates")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -229,7 +229,7 @@ class TestZohoEstimates:
     
     def test_03_mark_estimate_sent(self):
         """Mark estimate as sent"""
-        response = requests.post(f"{BASE_URL}/api/zoho/estimates/{TestZohoEstimates.estimate_id}/status/sent")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates/{TestZohoEstimates.estimate_id}/status/sent")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -237,7 +237,7 @@ class TestZohoEstimates:
     
     def test_04_mark_estimate_accepted(self):
         """Mark estimate as accepted"""
-        response = requests.post(f"{BASE_URL}/api/zoho/estimates/{TestZohoEstimates.estimate_id}/status/accepted")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates/{TestZohoEstimates.estimate_id}/status/accepted")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -251,7 +251,7 @@ class TestZohoInvoices:
     
     def test_01_create_invoice(self):
         """Create a new invoice"""
-        response = requests.post(f"{BASE_URL}/api/zoho/invoices", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/invoices", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "payment_terms": 15,
@@ -288,7 +288,7 @@ class TestZohoInvoices:
     
     def test_02_list_invoices(self):
         """List invoices"""
-        response = requests.get(f"{BASE_URL}/api/zoho/invoices")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/invoices")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -296,7 +296,7 @@ class TestZohoInvoices:
     
     def test_03_mark_invoice_sent(self):
         """Mark invoice as sent"""
-        response = requests.post(f"{BASE_URL}/api/zoho/invoices/{TestZohoInvoices.invoice_id}/status/sent")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/invoices/{TestZohoInvoices.invoice_id}/status/sent")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -305,7 +305,7 @@ class TestZohoInvoices:
     def test_04_convert_estimate_to_invoice(self):
         """Convert estimate to invoice"""
         # Create a new estimate first
-        est_response = requests.post(f"{BASE_URL}/api/zoho/estimates", json={
+        est_response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -316,7 +316,7 @@ class TestZohoInvoices:
         est_id = est_data["estimate"]["estimate_id"]
         
         # Convert to invoice
-        response = requests.post(f"{BASE_URL}/api/zoho/estimates/{est_id}/lineitems/invoices")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates/{est_id}/lineitems/invoices")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -332,7 +332,7 @@ class TestZohoSalesOrders:
     
     def test_01_create_salesorder(self):
         """Create a new sales order"""
-        response = requests.post(f"{BASE_URL}/api/zoho/salesorders", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/salesorders", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -355,7 +355,7 @@ class TestZohoSalesOrders:
     
     def test_02_convert_salesorder_to_invoice(self):
         """Convert sales order to invoice"""
-        response = requests.post(f"{BASE_URL}/api/zoho/salesorders/{TestZohoSalesOrders.salesorder_id}/invoices")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/salesorders/{TestZohoSalesOrders.salesorder_id}/invoices")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -365,7 +365,7 @@ class TestZohoSalesOrders:
     def test_03_convert_estimate_to_salesorder(self):
         """Convert estimate to sales order"""
         # Create a new estimate
-        est_response = requests.post(f"{BASE_URL}/api/zoho/estimates", json={
+        est_response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -375,7 +375,7 @@ class TestZohoSalesOrders:
         est_id = est_response.json()["estimate"]["estimate_id"]
         
         # Convert to sales order
-        response = requests.post(f"{BASE_URL}/api/zoho/estimates/{est_id}/lineitems/salesorders")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/estimates/{est_id}/lineitems/salesorders")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -390,7 +390,7 @@ class TestZohoPurchaseOrders:
     
     def test_01_create_purchaseorder(self):
         """Create a new purchase order"""
-        response = requests.post(f"{BASE_URL}/api/zoho/purchaseorders", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/purchaseorders", json={
             "vendor_id": TestZohoContacts.vendor_id,
             "vendor_name": "TEST_Vendor_XYZ Supplies",
             "line_items": [
@@ -419,7 +419,7 @@ class TestZohoPurchaseOrders:
     
     def test_02_list_purchaseorders(self):
         """List purchase orders"""
-        response = requests.get(f"{BASE_URL}/api/zoho/purchaseorders")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/purchaseorders")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -427,7 +427,7 @@ class TestZohoPurchaseOrders:
     
     def test_03_convert_purchaseorder_to_bill(self):
         """Convert purchase order to bill"""
-        response = requests.post(f"{BASE_URL}/api/zoho/purchaseorders/{TestZohoPurchaseOrders.purchaseorder_id}/bills")
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/purchaseorders/{TestZohoPurchaseOrders.purchaseorder_id}/bills")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -443,7 +443,7 @@ class TestZohoBills:
     
     def test_01_create_bill(self):
         """Create a new bill"""
-        response = requests.post(f"{BASE_URL}/api/zoho/bills", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/bills", json={
             "vendor_id": TestZohoContacts.vendor_id,
             "vendor_name": "TEST_Vendor_XYZ Supplies",
             "bill_number": "BILL-TEST-001",
@@ -467,7 +467,7 @@ class TestZohoBills:
     
     def test_02_list_bills(self):
         """List bills"""
-        response = requests.get(f"{BASE_URL}/api/zoho/bills")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/bills")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -481,7 +481,7 @@ class TestZohoCreditNotes:
     
     def test_01_create_creditnote(self):
         """Create a credit note"""
-        response = requests.post(f"{BASE_URL}/api/zoho/creditnotes", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/creditnotes", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "reason": "Returned goods",
@@ -505,7 +505,7 @@ class TestZohoCreditNotes:
     def test_02_apply_creditnote_to_invoice(self):
         """Apply credit note to invoice"""
         # First create an invoice to apply credit to
-        inv_response = requests.post(f"{BASE_URL}/api/zoho/invoices", json={
+        inv_response = requests.post(f"{BASE_URL}/api/v1/zoho/invoices", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -516,7 +516,7 @@ class TestZohoCreditNotes:
         
         # Apply credit
         response = requests.post(
-            f"{BASE_URL}/api/zoho/creditnotes/{TestZohoCreditNotes.creditnote_id}/invoices/{inv_id}/apply",
+            f"{BASE_URL}/api/v1/zoho/creditnotes/{TestZohoCreditNotes.creditnote_id}/invoices/{inv_id}/apply",
             params={"amount": 1000}
         )
         assert response.status_code == 200
@@ -532,7 +532,7 @@ class TestZohoVendorCredits:
     
     def test_01_create_vendorcredit(self):
         """Create a vendor credit"""
-        response = requests.post(f"{BASE_URL}/api/zoho/vendorcredits", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/vendorcredits", json={
             "vendor_id": TestZohoContacts.vendor_id,
             "vendor_name": "TEST_Vendor_XYZ Supplies",
             "reason": "Defective goods returned",
@@ -560,7 +560,7 @@ class TestZohoCustomerPayments:
     def test_01_record_customer_payment(self):
         """Record a customer payment"""
         # Create an invoice first
-        inv_response = requests.post(f"{BASE_URL}/api/zoho/invoices", json={
+        inv_response = requests.post(f"{BASE_URL}/api/v1/zoho/invoices", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "line_items": [
@@ -572,7 +572,7 @@ class TestZohoCustomerPayments:
         inv_total = inv_data["invoice"]["total"]
         
         # Record payment - using invoice_ids as list of strings
-        response = requests.post(f"{BASE_URL}/api/zoho/customerpayments", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/customerpayments", json={
             "customer_id": TestZohoContacts.contact_id,
             "customer_name": "TEST_Customer_ABC Corp",
             "amount": inv_total,
@@ -588,7 +588,7 @@ class TestZohoCustomerPayments:
     
     def test_02_list_customer_payments(self):
         """List customer payments"""
-        response = requests.get(f"{BASE_URL}/api/zoho/customerpayments")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/customerpayments")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -600,7 +600,7 @@ class TestZohoVendorPayments:
     
     def test_01_record_vendor_payment(self):
         """Record a vendor payment"""
-        response = requests.post(f"{BASE_URL}/api/zoho/vendorpayments", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/vendorpayments", json={
             "vendor_id": TestZohoContacts.vendor_id,
             "vendor_name": "TEST_Vendor_XYZ Supplies",
             "amount": 5000.00,
@@ -621,7 +621,7 @@ class TestZohoExpenses:
     
     def test_01_create_expense(self):
         """Create an expense"""
-        response = requests.post(f"{BASE_URL}/api/zoho/expenses", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/expenses", json={
             "expense_account_id": "ACC-001",
             "expense_account_name": "Office Supplies",
             "amount": 2500.00,
@@ -640,7 +640,7 @@ class TestZohoExpenses:
     
     def test_02_list_expenses(self):
         """List expenses with totals"""
-        response = requests.get(f"{BASE_URL}/api/zoho/expenses")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/expenses")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -657,7 +657,7 @@ class TestZohoBanking:
     
     def test_01_create_bank_account(self):
         """Create a bank account"""
-        response = requests.post(f"{BASE_URL}/api/zoho/bankaccounts", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/bankaccounts", json={
             "account_name": "TEST_Business Current Account",
             "account_number": "1234567890",
             "bank_name": "HDFC Bank",
@@ -673,7 +673,7 @@ class TestZohoBanking:
     
     def test_02_list_bank_accounts(self):
         """List bank accounts"""
-        response = requests.get(f"{BASE_URL}/api/zoho/bankaccounts")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/bankaccounts")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -681,7 +681,7 @@ class TestZohoBanking:
     
     def test_03_create_bank_transaction(self):
         """Create a bank transaction"""
-        response = requests.post(f"{BASE_URL}/api/zoho/banktransactions", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/banktransactions", json={
             "account_id": TestZohoBanking.account_id,
             "transaction_type": "deposit",
             "amount": 50000.00,
@@ -697,7 +697,7 @@ class TestZohoBanking:
     
     def test_04_list_bank_transactions(self):
         """List bank transactions"""
-        response = requests.get(f"{BASE_URL}/api/zoho/banktransactions", params={
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/banktransactions", params={
             "account_id": TestZohoBanking.account_id
         })
         assert response.status_code == 200
@@ -713,7 +713,7 @@ class TestZohoChartOfAccounts:
     
     def test_01_create_account(self):
         """Create a chart of accounts entry"""
-        response = requests.post(f"{BASE_URL}/api/zoho/chartofaccounts", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/chartofaccounts", json={
             "account_name": "TEST_EV Parts Inventory",
             "account_type": "asset",
             "account_code": "1500",
@@ -727,7 +727,7 @@ class TestZohoChartOfAccounts:
     
     def test_02_list_accounts(self):
         """List chart of accounts"""
-        response = requests.get(f"{BASE_URL}/api/zoho/chartofaccounts")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/chartofaccounts")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -743,7 +743,7 @@ class TestZohoJournals:
     
     def test_01_create_journal_entry(self):
         """Create a journal entry (debit must equal credit)"""
-        response = requests.post(f"{BASE_URL}/api/zoho/journals", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/journals", json={
             "date": "2026-01-15",
             "reference_number": "JE-001",
             "notes": "Test journal entry",
@@ -772,7 +772,7 @@ class TestZohoJournals:
     
     def test_02_journal_validation_debit_credit_mismatch(self):
         """Test journal validation - debit must equal credit"""
-        response = requests.post(f"{BASE_URL}/api/zoho/journals", json={
+        response = requests.post(f"{BASE_URL}/api/v1/zoho/journals", json={
             "date": "2026-01-15",
             "line_items": [
                 {"account_id": "ACC-1", "account_name": "Cash", "debit": 10000.00, "credit": 0},
@@ -785,7 +785,7 @@ class TestZohoJournals:
     
     def test_03_list_journals(self):
         """List journal entries"""
-        response = requests.get(f"{BASE_URL}/api/zoho/journals")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/journals")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -797,7 +797,7 @@ class TestZohoReports:
     
     def test_01_dashboard_report(self):
         """Get dashboard summary report"""
-        response = requests.get(f"{BASE_URL}/api/zoho/reports/dashboard")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/reports/dashboard")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -810,7 +810,7 @@ class TestZohoReports:
     
     def test_02_profit_and_loss_report(self):
         """Get P&L report"""
-        response = requests.get(f"{BASE_URL}/api/zoho/reports/profitandloss")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/reports/profitandloss")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -820,7 +820,7 @@ class TestZohoReports:
     
     def test_03_receivables_report(self):
         """Get receivables aging report"""
-        response = requests.get(f"{BASE_URL}/api/zoho/reports/receivables")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/reports/receivables")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -830,7 +830,7 @@ class TestZohoReports:
     
     def test_04_payables_report(self):
         """Get payables aging report"""
-        response = requests.get(f"{BASE_URL}/api/zoho/reports/payables")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/reports/payables")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -838,7 +838,7 @@ class TestZohoReports:
     
     def test_05_gst_report(self):
         """Get GST summary report"""
-        response = requests.get(f"{BASE_URL}/api/zoho/reports/gst")
+        response = requests.get(f"{BASE_URL}/api/v1/zoho/reports/gst")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -856,7 +856,7 @@ class TestZohoWorkflows:
         print("\n=== Testing Sales Workflow ===")
         
         # 1. Create customer
-        cust_resp = requests.post(f"{BASE_URL}/api/zoho/contacts", json={
+        cust_resp = requests.post(f"{BASE_URL}/api/v1/zoho/contacts", json={
             "contact_name": "TEST_Workflow_Customer",
             "contact_type": "customer",
             "email": "workflow@test.com"
@@ -866,7 +866,7 @@ class TestZohoWorkflows:
         print(f"1. Created customer: {customer_id}")
         
         # 2. Create item
-        item_resp = requests.post(f"{BASE_URL}/api/zoho/items", json={
+        item_resp = requests.post(f"{BASE_URL}/api/v1/zoho/items", json={
             "name": "TEST_Workflow_Service",
             "rate": 10000.00,
             "product_type": "service",
@@ -877,7 +877,7 @@ class TestZohoWorkflows:
         print(f"2. Created item: {item_id}")
         
         # 3. Create estimate
-        est_resp = requests.post(f"{BASE_URL}/api/zoho/estimates", json={
+        est_resp = requests.post(f"{BASE_URL}/api/v1/zoho/estimates", json={
             "customer_id": customer_id,
             "customer_name": "TEST_Workflow_Customer",
             "line_items": [
@@ -889,14 +889,14 @@ class TestZohoWorkflows:
         print(f"3. Created estimate: {estimate_id}")
         
         # 4. Convert estimate to invoice
-        inv_resp = requests.post(f"{BASE_URL}/api/zoho/estimates/{estimate_id}/lineitems/invoices")
+        inv_resp = requests.post(f"{BASE_URL}/api/v1/zoho/estimates/{estimate_id}/lineitems/invoices")
         assert inv_resp.status_code == 200
         invoice_id = inv_resp.json()["invoice"]["invoice_id"]
         invoice_total = inv_resp.json()["invoice"]["total"]
         print(f"4. Converted to invoice: {invoice_id}, Total: {invoice_total}")
         
         # 5. Record payment using invoice_ids
-        pay_resp = requests.post(f"{BASE_URL}/api/zoho/customerpayments", json={
+        pay_resp = requests.post(f"{BASE_URL}/api/v1/zoho/customerpayments", json={
             "customer_id": customer_id,
             "customer_name": "TEST_Workflow_Customer",
             "amount": invoice_total,
@@ -908,7 +908,7 @@ class TestZohoWorkflows:
         print(f"5. Recorded payment: {payment_id}")
         
         # 6. Verify invoice is paid
-        inv_check = requests.get(f"{BASE_URL}/api/zoho/invoices/{invoice_id}")
+        inv_check = requests.get(f"{BASE_URL}/api/v1/zoho/invoices/{invoice_id}")
         assert inv_check.status_code == 200
         inv_data = inv_check.json()["invoice"]
         assert inv_data["status"] == "paid", f"Expected 'paid', got '{inv_data['status']}'"
@@ -922,7 +922,7 @@ class TestZohoWorkflows:
         print("\n=== Testing Purchase Workflow ===")
         
         # 1. Create vendor
-        vendor_resp = requests.post(f"{BASE_URL}/api/zoho/contacts", json={
+        vendor_resp = requests.post(f"{BASE_URL}/api/v1/zoho/contacts", json={
             "contact_name": "TEST_Workflow_Vendor",
             "contact_type": "vendor",
             "email": "vendor_workflow@test.com"
@@ -932,7 +932,7 @@ class TestZohoWorkflows:
         print(f"1. Created vendor: {vendor_id}")
         
         # 2. Create purchase order
-        po_resp = requests.post(f"{BASE_URL}/api/zoho/purchaseorders", json={
+        po_resp = requests.post(f"{BASE_URL}/api/v1/zoho/purchaseorders", json={
             "vendor_id": vendor_id,
             "vendor_name": "TEST_Workflow_Vendor",
             "line_items": [
@@ -944,14 +944,14 @@ class TestZohoWorkflows:
         print(f"2. Created PO: {po_id}")
         
         # 3. Convert PO to bill
-        bill_resp = requests.post(f"{BASE_URL}/api/zoho/purchaseorders/{po_id}/bills")
+        bill_resp = requests.post(f"{BASE_URL}/api/v1/zoho/purchaseorders/{po_id}/bills")
         assert bill_resp.status_code == 200
         bill_id = bill_resp.json()["bill"]["bill_id"]
         bill_total = bill_resp.json()["bill"]["total"]
         print(f"3. Converted to bill: {bill_id}, Total: {bill_total}")
         
         # 4. Record vendor payment using bill_ids
-        pay_resp = requests.post(f"{BASE_URL}/api/zoho/vendorpayments", json={
+        pay_resp = requests.post(f"{BASE_URL}/api/v1/zoho/vendorpayments", json={
             "vendor_id": vendor_id,
             "vendor_name": "TEST_Workflow_Vendor",
             "amount": bill_total,
@@ -963,7 +963,7 @@ class TestZohoWorkflows:
         print(f"4. Recorded payment: {payment_id}")
         
         # 5. Verify bill is paid
-        bill_check = requests.get(f"{BASE_URL}/api/zoho/bills/{bill_id}")
+        bill_check = requests.get(f"{BASE_URL}/api/v1/zoho/bills/{bill_id}")
         assert bill_check.status_code == 200
         bill_data = bill_check.json()["bill"]
         assert bill_data["status"] == "paid", f"Expected 'paid', got '{bill_data['status']}'"
@@ -979,18 +979,18 @@ class TestCleanup:
     def test_cleanup_test_data(self):
         """Delete all TEST_ prefixed data"""
         # List and delete test contacts
-        contacts_resp = requests.get(f"{BASE_URL}/api/zoho/contacts", params={"per_page": 100})
+        contacts_resp = requests.get(f"{BASE_URL}/api/v1/zoho/contacts", params={"per_page": 100})
         if contacts_resp.status_code == 200:
             for contact in contacts_resp.json().get("contacts", []):
                 if contact["contact_name"].startswith("TEST_"):
-                    requests.delete(f"{BASE_URL}/api/zoho/contacts/{contact['contact_id']}")
+                    requests.delete(f"{BASE_URL}/api/v1/zoho/contacts/{contact['contact_id']}")
         
         # List and delete test items
-        items_resp = requests.get(f"{BASE_URL}/api/zoho/items", params={"per_page": 100})
+        items_resp = requests.get(f"{BASE_URL}/api/v1/zoho/items", params={"per_page": 100})
         if items_resp.status_code == 200:
             for item in items_resp.json().get("items", []):
                 if item["name"].startswith("TEST_"):
-                    requests.delete(f"{BASE_URL}/api/zoho/items/{item['item_id']}")
+                    requests.delete(f"{BASE_URL}/api/v1/zoho/items/{item['item_id']}")
         
         print("✓ Test data cleanup completed")
 

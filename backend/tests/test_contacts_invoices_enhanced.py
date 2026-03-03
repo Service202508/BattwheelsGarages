@@ -10,7 +10,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 API_URL = f"{BASE_URL}/api"
 
 # Test data prefix for cleanup
@@ -21,7 +21,7 @@ class TestContactsEnhancedV2Summary:
     """Test Unified Contacts v2 API - Summary endpoint"""
     
     def test_summary_returns_correct_counts(self):
-        """GET /api/contacts-enhanced/summary returns correct counts"""
+        """GET /api/v1/contacts-enhanced/summary returns correct counts"""
         response = requests.get(f"{API_URL}/contacts-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
@@ -46,7 +46,7 @@ class TestContactsEnhancedV2Summary:
         assert summary["vendors"] >= 0
     
     def test_summary_with_contact_type_filter(self):
-        """GET /api/contacts-enhanced/summary with contact_type filter"""
+        """GET /api/v1/contacts-enhanced/summary with contact_type filter"""
         # Test customer filter
         response = requests.get(f"{API_URL}/contacts-enhanced/summary?contact_type=customer")
         assert response.status_code == 200
@@ -64,7 +64,7 @@ class TestContactsEnhancedV2List:
     """Test Unified Contacts v2 API - List endpoint with filters"""
     
     def test_list_all_contacts(self):
-        """GET /api/contacts-enhanced/ returns list of contacts"""
+        """GET /api/v1/contacts-enhanced/ returns list of contacts"""
         response = requests.get(f"{API_URL}/contacts-enhanced/")
         assert response.status_code == 200
         data = response.json()
@@ -74,7 +74,7 @@ class TestContactsEnhancedV2List:
         assert isinstance(data["contacts"], list)
     
     def test_list_filter_by_customer_type(self):
-        """GET /api/contacts-enhanced/?contact_type=customer filters correctly"""
+        """GET /api/v1/contacts-enhanced/?contact_type=customer filters correctly"""
         response = requests.get(f"{API_URL}/contacts-enhanced/?contact_type=customer")
         assert response.status_code == 200
         data = response.json()
@@ -84,7 +84,7 @@ class TestContactsEnhancedV2List:
             assert contact["contact_type"] in ["customer", "both"]
     
     def test_list_filter_by_vendor_type(self):
-        """GET /api/contacts-enhanced/?contact_type=vendor filters correctly"""
+        """GET /api/v1/contacts-enhanced/?contact_type=vendor filters correctly"""
         response = requests.get(f"{API_URL}/contacts-enhanced/?contact_type=vendor")
         assert response.status_code == 200
         data = response.json()
@@ -94,14 +94,14 @@ class TestContactsEnhancedV2List:
             assert contact["contact_type"] in ["vendor", "both"]
     
     def test_list_with_search(self):
-        """GET /api/contacts-enhanced/?search=test filters by search term"""
+        """GET /api/v1/contacts-enhanced/?search=test filters by search term"""
         response = requests.get(f"{API_URL}/contacts-enhanced/?search=test")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
     
     def test_list_pagination(self):
-        """GET /api/contacts-enhanced/ supports pagination"""
+        """GET /api/v1/contacts-enhanced/ supports pagination"""
         response = requests.get(f"{API_URL}/contacts-enhanced/?page=1&per_page=10")
         assert response.status_code == 200
         data = response.json()
@@ -123,7 +123,7 @@ class TestContactsEnhancedV2CRUD:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_create_customer_contact(self):
-        """POST /api/contacts-enhanced/ creates customer contact"""
+        """POST /api/v1/contacts-enhanced/ creates customer contact"""
         payload = {
             "name": f"{TEST_PREFIX}_Customer",
             "contact_type": "customer",
@@ -150,7 +150,7 @@ class TestContactsEnhancedV2CRUD:
         assert get_data["contact"]["name"] == payload["name"]
     
     def test_create_vendor_contact(self):
-        """POST /api/contacts-enhanced/ creates vendor contact"""
+        """POST /api/v1/contacts-enhanced/ creates vendor contact"""
         payload = {
             "name": f"{TEST_PREFIX}_Vendor",
             "contact_type": "vendor",
@@ -167,7 +167,7 @@ class TestContactsEnhancedV2CRUD:
         self.test_contact_id = contact["contact_id"]
     
     def test_create_both_type_contact(self):
-        """POST /api/contacts-enhanced/ creates contact with type 'both'"""
+        """POST /api/v1/contacts-enhanced/ creates contact with type 'both'"""
         payload = {
             "name": f"{TEST_PREFIX}_Both",
             "contact_type": "both",
@@ -186,7 +186,7 @@ class TestContactsEnhancedV2Detail:
     """Test Unified Contacts v2 API - Contact detail endpoint"""
     
     def test_contact_detail_returns_persons_addresses_balance_aging(self):
-        """GET /api/contacts-enhanced/{id} returns persons, addresses, balance, aging"""
+        """GET /api/v1/contacts-enhanced/{id} returns persons, addresses, balance, aging"""
         # First get a contact
         list_response = requests.get(f"{API_URL}/contacts-enhanced/?per_page=1")
         if list_response.status_code == 200 and list_response.json()["contacts"]:
@@ -212,7 +212,7 @@ class TestContactsEnhancedV2Detail:
             assert "total_payable" in balance
     
     def test_contact_detail_not_found(self):
-        """GET /api/contacts-enhanced/{id} returns 404 for non-existent contact"""
+        """GET /api/v1/contacts-enhanced/{id} returns 404 for non-existent contact"""
         response = requests.get(f"{API_URL}/contacts-enhanced/non_existent_id")
         assert response.status_code == 404
 
@@ -238,7 +238,7 @@ class TestContactsEnhancedV2Portal:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_enable_portal(self):
-        """POST /api/contacts-enhanced/{id}/enable-portal enables portal access"""
+        """POST /api/v1/contacts-enhanced/{id}/enable-portal enables portal access"""
         if not self.test_contact_id:
             pytest.skip("Test contact not created")
         
@@ -253,7 +253,7 @@ class TestContactsEnhancedV2Portal:
         assert get_response.json()["contact"]["portal_enabled"] == True
     
     def test_disable_portal(self):
-        """POST /api/contacts-enhanced/{id}/disable-portal disables portal access"""
+        """POST /api/v1/contacts-enhanced/{id}/disable-portal disables portal access"""
         if not self.test_contact_id:
             pytest.skip("Test contact not created")
         
@@ -273,7 +273,7 @@ class TestContactsEnhancedV2Statement:
     """Test Unified Contacts v2 API - Email statement"""
     
     def test_email_statement(self):
-        """POST /api/contacts-enhanced/{id}/email-statement sends statement (MOCKED)"""
+        """POST /api/v1/contacts-enhanced/{id}/email-statement sends statement (MOCKED)"""
         # Get a contact with email
         list_response = requests.get(f"{API_URL}/contacts-enhanced/?per_page=1")
         if list_response.status_code == 200 and list_response.json()["contacts"]:
@@ -292,7 +292,7 @@ class TestInvoicesEnhancedSummary:
     """Test Invoices Enhanced API - Summary endpoint"""
     
     def test_summary_returns_statistics(self):
-        """GET /api/invoices-enhanced/summary returns invoice statistics"""
+        """GET /api/v1/invoices-enhanced/summary returns invoice statistics"""
         response = requests.get(f"{API_URL}/invoices-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
@@ -312,7 +312,7 @@ class TestInvoicesEnhancedSummary:
         assert "total_collected" in summary
     
     def test_summary_with_period_filter(self):
-        """GET /api/invoices-enhanced/summary with period filter"""
+        """GET /api/v1/invoices-enhanced/summary with period filter"""
         response = requests.get(f"{API_URL}/invoices-enhanced/summary?period=this_month")
         assert response.status_code == 200
         data = response.json()
@@ -348,7 +348,7 @@ class TestInvoicesEnhancedCRUD:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_create_invoice_with_line_items(self):
-        """POST /api/invoices-enhanced/ creates invoice with line items and tax calculations"""
+        """POST /api/v1/invoices-enhanced/ creates invoice with line items and tax calculations"""
         if not self.test_contact_id:
             pytest.skip("Test contact not created")
         
@@ -408,7 +408,7 @@ class TestInvoicesEnhancedCRUD:
         assert get_data["invoice"]["invoice_number"] == invoice["invoice_number"]
     
     def test_list_invoices(self):
-        """GET /api/invoices-enhanced/ returns list of invoices"""
+        """GET /api/v1/invoices-enhanced/ returns list of invoices"""
         response = requests.get(f"{API_URL}/invoices-enhanced/")
         assert response.status_code == 200
         data = response.json()
@@ -417,7 +417,7 @@ class TestInvoicesEnhancedCRUD:
         assert "page_context" in data
     
     def test_list_invoices_with_filters(self):
-        """GET /api/invoices-enhanced/ with status filter"""
+        """GET /api/v1/invoices-enhanced/ with status filter"""
         response = requests.get(f"{API_URL}/invoices-enhanced/?status=draft")
         assert response.status_code == 200
         data = response.json()
@@ -465,7 +465,7 @@ class TestInvoicesEnhancedPayments:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_record_payment(self):
-        """POST /api/invoices-enhanced/{id}/payments records payment"""
+        """POST /api/v1/invoices-enhanced/{id}/payments records payment"""
         if not self.test_invoice_id:
             pytest.skip("Test invoice not created")
         
@@ -495,7 +495,7 @@ class TestInvoicesEnhancedPayments:
         assert get_response.json()["invoice"]["status"] == "partially_paid"
     
     def test_record_full_payment(self):
-        """POST /api/invoices-enhanced/{id}/payments with full amount marks as paid"""
+        """POST /api/v1/invoices-enhanced/{id}/payments with full amount marks as paid"""
         if not self.test_invoice_id:
             pytest.skip("Test invoice not created")
         
@@ -569,7 +569,7 @@ class TestInvoicesEnhancedStatusTransitions:
         assert response.json()["invoice"]["status"] == "sent"
     
     def test_send_invoice_email(self):
-        """POST /api/invoices-enhanced/{id}/send sends invoice email (MOCKED)"""
+        """POST /api/v1/invoices-enhanced/{id}/send sends invoice email (MOCKED)"""
         if not self.test_invoice_id:
             pytest.skip("Test invoice not created")
         
@@ -618,7 +618,7 @@ class TestInvoicesEnhancedClone:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_clone_invoice(self):
-        """POST /api/invoices-enhanced/{id}/clone creates new draft invoice"""
+        """POST /api/v1/invoices-enhanced/{id}/clone creates new draft invoice"""
         if not self.test_invoice_id:
             pytest.skip("Test invoice not created")
         
@@ -675,7 +675,7 @@ class TestInvoicesEnhancedVoid:
             requests.delete(f"{API_URL}/contacts-enhanced/{self.test_contact_id}?force=true")
     
     def test_void_invoice(self):
-        """POST /api/invoices-enhanced/{id}/void voids the invoice"""
+        """POST /api/v1/invoices-enhanced/{id}/void voids the invoice"""
         if not self.test_invoice_id:
             pytest.skip("Test invoice not created")
         
@@ -696,7 +696,7 @@ class TestInvoicesEnhancedReports:
     """Test Invoices Enhanced API - Reports"""
     
     def test_aging_report(self):
-        """GET /api/invoices-enhanced/reports/aging returns aging report"""
+        """GET /api/v1/invoices-enhanced/reports/aging returns aging report"""
         response = requests.get(f"{API_URL}/invoices-enhanced/reports/aging")
         assert response.status_code == 200
         data = response.json()
@@ -711,7 +711,7 @@ class TestInvoicesEnhancedReports:
         assert "over_90" in report["totals"]
     
     def test_customer_wise_report(self):
-        """GET /api/invoices-enhanced/reports/customer-wise returns customer report"""
+        """GET /api/v1/invoices-enhanced/reports/customer-wise returns customer report"""
         response = requests.get(f"{API_URL}/invoices-enhanced/reports/customer-wise")
         assert response.status_code == 200
         data = response.json()
@@ -719,7 +719,7 @@ class TestInvoicesEnhancedReports:
         assert "report" in data
     
     def test_monthly_report(self):
-        """GET /api/invoices-enhanced/reports/monthly returns monthly report"""
+        """GET /api/v1/invoices-enhanced/reports/monthly returns monthly report"""
         response = requests.get(f"{API_URL}/invoices-enhanced/reports/monthly")
         assert response.status_code == 200
         data = response.json()
@@ -742,7 +742,7 @@ class TestContactsEnhancedV2Tags:
             requests.delete(f"{API_URL}/contacts-enhanced/tags/{self.test_tag_id}")
     
     def test_list_tags(self):
-        """GET /api/contacts-enhanced/tags returns list of tags"""
+        """GET /api/v1/contacts-enhanced/tags returns list of tags"""
         response = requests.get(f"{API_URL}/contacts-enhanced/tags")
         assert response.status_code == 200
         data = response.json()
@@ -750,7 +750,7 @@ class TestContactsEnhancedV2Tags:
         assert "tags" in data
     
     def test_create_tag(self):
-        """POST /api/contacts-enhanced/tags creates new tag"""
+        """POST /api/v1/contacts-enhanced/tags creates new tag"""
         payload = {
             "name": f"{TEST_PREFIX}_Tag",
             "description": "Test tag description",
@@ -768,7 +768,7 @@ class TestContactsEnhancedV2States:
     """Test Unified Contacts v2 API - States endpoint"""
     
     def test_get_indian_states(self):
-        """GET /api/contacts-enhanced/states returns Indian states"""
+        """GET /api/v1/contacts-enhanced/states returns Indian states"""
         response = requests.get(f"{API_URL}/contacts-enhanced/states")
         assert response.status_code == 200
         data = response.json()
@@ -785,7 +785,7 @@ class TestContactsEnhancedV2GSTINValidation:
     """Test Unified Contacts v2 API - GSTIN validation"""
     
     def test_validate_valid_gstin(self):
-        """GET /api/contacts-enhanced/validate-gstin/{gstin} validates correct GSTIN"""
+        """GET /api/v1/contacts-enhanced/validate-gstin/{gstin} validates correct GSTIN"""
         valid_gstin = "27AABCU9603R1ZN"
         response = requests.get(f"{API_URL}/contacts-enhanced/validate-gstin/{valid_gstin}")
         assert response.status_code == 200
@@ -795,7 +795,7 @@ class TestContactsEnhancedV2GSTINValidation:
         assert data["details"]["state_code"] == "MH"  # Maharashtra
     
     def test_validate_invalid_gstin(self):
-        """GET /api/contacts-enhanced/validate-gstin/{gstin} rejects invalid GSTIN"""
+        """GET /api/v1/contacts-enhanced/validate-gstin/{gstin} rejects invalid GSTIN"""
         invalid_gstin = "INVALID123"
         response = requests.get(f"{API_URL}/contacts-enhanced/validate-gstin/{invalid_gstin}")
         assert response.status_code == 200

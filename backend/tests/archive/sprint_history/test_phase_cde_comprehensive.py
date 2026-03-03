@@ -17,7 +17,7 @@ import pytest
 import httpx
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com').rstrip('/')
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
@@ -33,7 +33,7 @@ class TestAuthenticationReturnsToken:
     
     def test_admin_login_returns_token(self, client):
         """Admin login should return JWT token"""
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -53,7 +53,7 @@ class TestAuthenticationReturnsToken:
     
     def test_technician_login_returns_token(self, client):
         """Technician login should return JWT token"""
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": TECH_EMAIL,
             "password": TECH_PASSWORD
         })
@@ -75,7 +75,7 @@ class TestTicketsCRUDOrgScoped:
     
     @pytest.fixture
     def admin_token(self, client):
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -85,7 +85,7 @@ class TestTicketsCRUDOrgScoped:
         """Ticket list should be scoped to organization"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        response = client.get("/api/tickets", headers=headers)
+        response = client.get("/api/v1/tickets", headers=headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -96,7 +96,7 @@ class TestTicketsCRUDOrgScoped:
         """Created ticket should inherit organization_id"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        response = client.post("/api/tickets", json={
+        response = client.post("/api/v1/tickets", json={
             "title": "TEST_Phase_CDE_Ticket",
             "description": "Test ticket for Phase C/D/E validation",
             "category": "battery",
@@ -114,7 +114,7 @@ class TestTicketsCRUDOrgScoped:
         """Ticket stats should be scoped to organization"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        response = client.get("/api/tickets/stats", headers=headers)
+        response = client.get("/api/v1/tickets/stats", headers=headers)
         assert response.status_code == 200
         
         stats = response.json()
@@ -130,7 +130,7 @@ class TestVehiclesCRUDOrgScoped:
     
     @pytest.fixture
     def admin_token(self, client):
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -140,7 +140,7 @@ class TestVehiclesCRUDOrgScoped:
         """Vehicle list should be scoped to organization"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        response = client.get("/api/vehicles", headers=headers)
+        response = client.get("/api/v1/vehicles", headers=headers)
         assert response.status_code == 200
         
         vehicles = response.json()
@@ -151,7 +151,7 @@ class TestVehiclesCRUDOrgScoped:
         headers = {"Authorization": f"Bearer {admin_token}"}
         import uuid
         
-        response = client.post("/api/vehicles", json={
+        response = client.post("/api/v1/vehicles", json={
             "owner_name": "TEST_Phase_CDE_Owner",
             "make": "TestMake",
             "model": "TestModel",
@@ -176,7 +176,7 @@ class TestInventoryCRUDOrgScoped:
     
     @pytest.fixture
     def admin_token(self, client):
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -186,7 +186,7 @@ class TestInventoryCRUDOrgScoped:
         """Inventory list should be scoped to organization"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         
-        response = client.get("/api/inventory", headers=headers)
+        response = client.get("/api/v1/inventory", headers=headers)
         assert response.status_code == 200
         
         items = response.json()
@@ -197,7 +197,7 @@ class TestInventoryCRUDOrgScoped:
         headers = {"Authorization": f"Bearer {admin_token}"}
         import uuid
         
-        response = client.post("/api/inventory", json={
+        response = client.post("/api/v1/inventory", json={
             "name": f"TEST_Phase_CDE_Item_{uuid.uuid4().hex[:6]}",
             "category": "parts",
             "quantity": 100,
@@ -220,7 +220,7 @@ class TestInvalidOrgIdReturns403:
     
     @pytest.fixture
     def admin_token(self, client):
-        response = client.post("/api/auth/login", json={
+        response = client.post("/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -233,7 +233,7 @@ class TestInvalidOrgIdReturns403:
             "X-Organization-ID": "org_nonexistent_invalid_12345"
         }
         
-        response = client.get("/api/tickets", headers=headers)
+        response = client.get("/api/v1/tickets", headers=headers)
         
         # Should return 403 (access denied) not 500 (server error)
         # Also accepts 400 (bad request) or 200 (legacy fallback during migration)
@@ -251,7 +251,7 @@ class TestInvalidOrgIdReturns403:
             "X-Organization-ID": "org_fake_org_abc123"
         }
         
-        response = client.get("/api/vehicles", headers=headers)
+        response = client.get("/api/v1/vehicles", headers=headers)
         
         assert response.status_code in [200, 400, 403], \
             f"Expected 403, 400, or 200 but got {response.status_code}"
@@ -264,7 +264,7 @@ class TestInvalidOrgIdReturns403:
             "X-Organization-ID": "org_invalid_xyz_999"
         }
         
-        response = client.get("/api/inventory", headers=headers)
+        response = client.get("/api/v1/inventory", headers=headers)
         
         assert response.status_code in [200, 400, 403], \
             f"Expected 403, 400, or 200 but got {response.status_code}"

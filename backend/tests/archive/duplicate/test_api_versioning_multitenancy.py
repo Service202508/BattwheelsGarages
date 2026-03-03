@@ -1,21 +1,21 @@
 """
 Test suite for API v1 Versioning and Multi-Tenancy enforcement.
 Tests:
-1. Auth routes at /api/auth/ (login, register, logout, me, etc.)
+1. Auth routes at /api/v1/auth/ (login, register, logout, me, etc.)
 2. Auth routes NOT at /api/v1/auth/ (should return 404/error)
 3. Business routes at /api/v1/ (tickets, inventory, suppliers, etc.)
-4. Health endpoint at /api/health
+4. Health endpoint at /api/v1/health
 5. Multi-tenancy: API responses scoped to organization
 """
 import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_PASSWORD = "DevTest@123"
 ORG_ID = "dev-internal-testing-001"
 
 
@@ -24,7 +24,7 @@ class TestHealthEndpoint:
     
     def test_health_endpoint_accessible(self):
         """Health endpoint should be accessible without auth"""
-        response = requests.get(f"{BASE_URL}/api/health")
+        response = requests.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert data.get("status") == "ok"
@@ -33,7 +33,7 @@ class TestHealthEndpoint:
 
 
 class TestAuthRoutesAtApiAuth:
-    """Auth routes should work at /api/auth/"""
+    """Auth routes should work at /api/v1/auth/"""
     
     @pytest.fixture
     def auth_session(self):
@@ -43,9 +43,9 @@ class TestAuthRoutesAtApiAuth:
         return session
     
     def test_login_at_api_auth(self, auth_session):
-        """POST /api/auth/login should work"""
+        """POST /api/v1/auth/login should work"""
         response = auth_session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -56,17 +56,17 @@ class TestAuthRoutesAtApiAuth:
         print(f"Login successful: user={data['user']['email']}")
     
     def test_me_at_api_auth(self, auth_session):
-        """GET /api/auth/me should return current user"""
+        """GET /api/v1/auth/me should return current user"""
         # First login
         login_response = auth_session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         token = login_response.json().get("token")
         
         # Then check /me
         response = auth_session.get(
-            f"{BASE_URL}/api/auth/me",
+            f"{BASE_URL}/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
@@ -75,17 +75,17 @@ class TestAuthRoutesAtApiAuth:
         print(f"Me endpoint returned: {data.get('email')}")
     
     def test_logout_at_api_auth(self, auth_session):
-        """POST /api/auth/logout should work"""
+        """POST /api/v1/auth/logout should work"""
         # First login
         login_response = auth_session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         token = login_response.json().get("token")
         
         # Then logout
         response = auth_session.post(
-            f"{BASE_URL}/api/auth/logout",
+            f"{BASE_URL}/api/v1/auth/logout",
             headers={"Authorization": f"Bearer {token}"}
         )
         # Logout can return 200 or 204
@@ -93,20 +93,20 @@ class TestAuthRoutesAtApiAuth:
         print("Logout successful")
     
     def test_session_at_api_auth(self, auth_session):
-        """POST /api/auth/session should work (for OAuth callbacks)"""
+        """POST /api/v1/auth/session should work (for OAuth callbacks)"""
         # Test that endpoint exists - it may require valid session_token
         response = auth_session.post(
-            f"{BASE_URL}/api/auth/session",
+            f"{BASE_URL}/api/v1/auth/session",
             json={"session_token": "invalid_test_token"}
         )
         # Should return 4xx for invalid token, but NOT 404
-        assert response.status_code != 404, "Session endpoint should exist at /api/auth/session"
+        assert response.status_code != 404, "Session endpoint should exist at /api/v1/auth/session"
         print(f"Session endpoint exists, returned: {response.status_code}")
     
     def test_forgot_password_at_api_auth(self, auth_session):
-        """POST /api/auth/forgot-password should work"""
+        """POST /api/v1/auth/forgot-password should work"""
         response = auth_session.post(
-            f"{BASE_URL}/api/auth/forgot-password",
+            f"{BASE_URL}/api/v1/auth/forgot-password",
             json={"email": "test@example.com"}
         )
         # Should return 200 (success or user-not-found silently handled)
@@ -150,7 +150,7 @@ class TestBusinessRoutesAtApiV1:
         
         # Login
         response = session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code != 200:
@@ -233,7 +233,7 @@ class TestMultiTenancyEnforcement:
         session.headers.update({"Content-Type": "application/json"})
         
         response = session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code != 200:
@@ -318,7 +318,7 @@ class TestTicketCloseEndpoint:
         session.headers.update({"Content-Type": "application/json"})
         
         response = session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code != 200:

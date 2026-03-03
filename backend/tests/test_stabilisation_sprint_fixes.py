@@ -34,7 +34,7 @@ class TestAuth:
     def setup(self):
         """Login once for all tests in this class"""
         if TestAuth.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })
@@ -82,7 +82,7 @@ class TestPlatformAdminRBAC:
     def test_feature_flags_requires_platform_admin(self):
         """FIX 2: GET /api/v1/platform/feature-flags returns 403 for non-platform-admin"""
         # First get a regular user token
-        login_resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
@@ -116,7 +116,7 @@ class TestServerDecomposition:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestServerDecomposition.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })
@@ -133,7 +133,7 @@ class TestServerDecomposition:
 
     def test_health_returns_version_2_5_0(self):
         """FIX 3: Health endpoint returns version 2.5.0"""
-        response = requests.get(f"{BASE_URL}/api/health")
+        response = requests.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert data.get("version") == "2.5.0", f"Expected version 2.5.0, got {data.get('version')}"
@@ -173,7 +173,7 @@ class TestTrialBalance:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestTrialBalance.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })
@@ -219,7 +219,7 @@ class TestFailureCards:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestFailureCards.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })
@@ -287,7 +287,7 @@ class TestBankingModule:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestBankingModule.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })
@@ -326,7 +326,7 @@ class TestNotificationsOrgId:
     @pytest.fixture(autouse=True)
     def setup(self):
         if TestNotificationsOrgId.token is None:
-            response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
                 "email": TEST_EMAIL,
                 "password": TEST_PASSWORD
             })

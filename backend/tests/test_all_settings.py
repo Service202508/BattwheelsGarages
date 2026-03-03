@@ -8,20 +8,20 @@ import pytest
 import requests
 from typing import Optional
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 if not BASE_URL:
-    BASE_URL = ''
+    BASE_URL = 'http://localhost:8001'
 
 # Test organization ID
-ORG_ID = "org_71f0df814d6d"
+ORG_ID = "dev-internal-testing-001"
 
 
 class TestSettingsCategories:
     """Test settings categories endpoint - no auth required"""
     
     def test_get_categories_returns_8(self):
-        """GET /api/settings/categories - Should return exactly 8 categories"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        """GET /api/v1/settings/categories - Should return exactly 8 categories"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         assert res.status_code == 200
         
         data = res.json()
@@ -30,7 +30,7 @@ class TestSettingsCategories:
     
     def test_categories_have_required_structure(self):
         """Each category should have id, name, icon, color, items"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         assert res.status_code == 200
         
         categories = res.json().get("categories", [])
@@ -44,7 +44,7 @@ class TestSettingsCategories:
     
     def test_expected_category_ids_present(self):
         """All expected category IDs should be present"""
-        res = requests.get(f"{BASE_URL}/api/settings/categories")
+        res = requests.get(f"{BASE_URL}/api/v1/settings/categories")
         assert res.status_code == 200
         
         categories = res.json().get("categories", [])
@@ -61,7 +61,7 @@ class TestSettingsAuth:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -77,8 +77,8 @@ class TestSettingsAuth:
         }
     
     def test_get_all_settings(self):
-        """GET /api/settings - Returns all settings for organization"""
-        res = requests.get(f"{BASE_URL}/api/settings", headers=self.headers)
+        """GET /api/v1/settings - Returns all settings for organization"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -86,8 +86,8 @@ class TestSettingsAuth:
         assert "gst" in data or "vehicles" in data or "billing" in data, f"Missing expected settings keys: {list(data.keys())[:5]}"
     
     def test_get_gst_settings(self):
-        """GET /api/settings/taxes/gst - Returns GST settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/taxes/gst", headers=self.headers)
+        """GET /api/v1/settings/taxes/gst - Returns GST settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/taxes/gst", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -95,7 +95,7 @@ class TestSettingsAuth:
         assert "is_gst_registered" in data or "gstin" in data or "gst_treatment" in data, f"Missing GST fields: {list(data.keys())}"
     
     def test_update_gst_settings(self):
-        """PATCH /api/settings/taxes/gst - Updates GST settings"""
+        """PATCH /api/v1/settings/taxes/gst - Updates GST settings"""
         update_data = {
             "is_gst_registered": True,
             "gstin": "22AAAAA0000A1Z5",
@@ -104,23 +104,23 @@ class TestSettingsAuth:
             "eway_bill_enabled": False
         }
         
-        res = requests.patch(f"{BASE_URL}/api/settings/taxes/gst", headers=self.headers, json=update_data)
+        res = requests.patch(f"{BASE_URL}/api/v1/settings/taxes/gst", headers=self.headers, json=update_data)
         assert res.status_code == 200
         
         data = res.json()
         assert data.get("is_gst_registered") == True, "GST registered setting not updated"
     
     def test_get_tds_settings(self):
-        """GET /api/settings/taxes/tds - Returns TDS settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/taxes/tds", headers=self.headers)
+        """GET /api/v1/settings/taxes/tds - Returns TDS settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/taxes/tds", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
         assert "is_tds_applicable" in data or "tan" in data, f"Missing TDS fields: {list(data.keys())}"
     
     def test_get_msme_settings(self):
-        """GET /api/settings/taxes/msme - Returns MSME settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/taxes/msme", headers=self.headers)
+        """GET /api/v1/settings/taxes/msme - Returns MSME settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/taxes/msme", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -133,7 +133,7 @@ class TestModuleSettings:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -147,8 +147,8 @@ class TestModuleSettings:
         }
     
     def test_get_vehicle_settings(self):
-        """GET /api/settings/modules/vehicles - Returns vehicle module settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/vehicles", headers=self.headers)
+        """GET /api/v1/settings/modules/vehicles - Returns vehicle module settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/vehicles", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -158,8 +158,8 @@ class TestModuleSettings:
         assert len(found) >= 1, f"Missing vehicle settings keys. Found: {list(data.keys())}"
     
     def test_get_ticket_settings(self):
-        """GET /api/settings/modules/tickets - Returns ticket module settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/tickets", headers=self.headers)
+        """GET /api/v1/settings/modules/tickets - Returns ticket module settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/tickets", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -168,8 +168,8 @@ class TestModuleSettings:
         assert len(found) >= 1, f"Missing ticket settings keys. Found: {list(data.keys())}"
     
     def test_get_billing_settings(self):
-        """GET /api/settings/modules/billing - Returns billing module settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/billing", headers=self.headers)
+        """GET /api/v1/settings/modules/billing - Returns billing module settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/billing", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -178,8 +178,8 @@ class TestModuleSettings:
         assert len(found) >= 1, f"Missing billing settings keys. Found: {list(data.keys())}"
     
     def test_get_inventory_settings(self):
-        """GET /api/settings/modules/inventory - Returns inventory module settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/inventory", headers=self.headers)
+        """GET /api/v1/settings/modules/inventory - Returns inventory module settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/inventory", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -188,8 +188,8 @@ class TestModuleSettings:
         assert len(found) >= 1, f"Missing inventory settings keys. Found: {list(data.keys())}"
     
     def test_get_efi_settings(self):
-        """GET /api/settings/modules/efi - Returns EFI/Failure Intelligence settings"""
-        res = requests.get(f"{BASE_URL}/api/settings/modules/efi", headers=self.headers)
+        """GET /api/v1/settings/modules/efi - Returns EFI/Failure Intelligence settings"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/modules/efi", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -203,7 +203,7 @@ class TestCustomizationSettings:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Login and get auth token"""
-        login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -217,16 +217,16 @@ class TestCustomizationSettings:
         }
     
     def test_get_custom_fields(self):
-        """GET /api/settings/custom-fields - Returns custom fields list"""
-        res = requests.get(f"{BASE_URL}/api/settings/custom-fields", headers=self.headers)
+        """GET /api/v1/settings/custom-fields - Returns custom fields list"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/custom-fields", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
         assert isinstance(data, list), "Custom fields should return a list"
     
     def test_get_workflows(self):
-        """GET /api/settings/workflows - Returns workflow rules list"""
-        res = requests.get(f"{BASE_URL}/api/settings/workflows", headers=self.headers)
+        """GET /api/v1/settings/workflows - Returns workflow rules list"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings/workflows", headers=self.headers)
         assert res.status_code == 200
         
         data = res.json()
@@ -237,14 +237,14 @@ class TestPermissions:
     """Test permission requirements"""
     
     def test_settings_require_auth(self):
-        """GET /api/settings - Should return 401 without auth"""
-        res = requests.get(f"{BASE_URL}/api/settings")
+        """GET /api/v1/settings - Should return 401 without auth"""
+        res = requests.get(f"{BASE_URL}/api/v1/settings")
         assert res.status_code in [401, 403], f"Expected 401/403 without auth, got {res.status_code}"
     
     def test_settings_require_org(self):
-        """GET /api/settings - Should require organization context"""
+        """GET /api/v1/settings - Should require organization context"""
         # Login first
-        login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -252,7 +252,7 @@ class TestPermissions:
         
         # Try without org header
         headers = {"Authorization": f"Bearer {token}"}
-        res = requests.get(f"{BASE_URL}/api/settings", headers=headers)
+        res = requests.get(f"{BASE_URL}/api/v1/settings", headers=headers)
         # Should either fail or return empty/default settings
         assert res.status_code in [200, 401, 403], f"Unexpected status: {res.status_code}"
 

@@ -16,8 +16,8 @@ MONTH = date.today().month
 # ─── Auth ─────────────────────────────────────────────────────────────────────
 def login():
     for attempt in range(3):
-        r = requests.post(f"{BASE}/api/auth/login",
-                          json={"email":"admin@battwheels.in","password":"admin"}, timeout=15)
+        r = requests.post(f"{BASE}/api/v1/auth/login",
+                          json={"email":"admin@battwheels.in","password":"DevTest@123"}, timeout=15)
         if r.status_code == 200 and r.json().get("token"):
             return r.json()["token"]
         time.sleep(15)
@@ -94,7 +94,7 @@ def find(tid):
 
 # ─── One-time setup: discover correct account IDs ─────────────────────────────
 print("=== SETUP: Discovering account IDs from existing JEs ===")
-jes = safe_get("/api/journal-entries", {"limit":100})
+jes = safe_get("/api/v1/journal-entries", {"limit":100})
 JE_ACCOUNTS = {}
 if jes and jes.status_code == 200:
     for je in jes.json().get("data",[]):
@@ -111,14 +111,14 @@ EXP_ACC_ID  = next((k for k,(n,t) in JE_ACCOUNTS.items() if "purchases" in n.low
 print(f"Bank={BANK_ACC_ID} AR={AR_ACC_ID} AP={AP_ACC_ID} Rev={REV_ACC_ID} COGS={COGS_ACC_ID}")
 
 # Get expense category
-cats_r = safe_get("/api/expenses/categories")
+cats_r = safe_get("/api/v1/expenses/categories")
 EXP_CAT_ID = None
 if cats_r and cats_r.status_code == 200:
     cats = cats_r.json().get("categories",[])
     if cats: EXP_CAT_ID = cats[0].get("category_id")
 
 # Get existing customer contact
-existing_contacts = safe_get("/api/contacts-enhanced", {"limit":1})
+existing_contacts = safe_get("/api/v1/contacts-enhanced", {"limit":1})
 EXISTING_CONTACT_ID = None
 if existing_contacts and existing_contacts.status_code == 200:
     d0 = existing_contacts.json()
@@ -139,7 +139,7 @@ print("SECTION 1 — CHART OF ACCOUNTS INTEGRITY")
 print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
-coa_r = safe_get("/api/chart-of-accounts")
+coa_r = safe_get("/api/v1/chart-of-accounts")
 COA = []
 if coa_r and coa_r.status_code == 200:
     raw = coa_r.json()
@@ -173,7 +173,7 @@ rec("S1","T1.3","Key accounts present",
     len(missing)<=2, f"Found: {found}  Missing: {missing}")
 
 # T1.4 — Create custom account
-ca_r = safe_post("/api/chart-of-accounts", {
+ca_r = safe_post("/api/v1/chart-of-accounts", {
     "account_name":"Audit Test Account","account_type":"Expense","account_code":"9999"
 })
 CUSTOM_ACC_ID = None
@@ -182,7 +182,7 @@ if ca_r and ca_r.status_code in [200,201]:
     CUSTOM_ACC_ID = d0.get("account_id") or (d0.get("account") or {}).get("account_id")
     IDS["custom_account"] = CUSTOM_ACC_ID
     time.sleep(0.5)
-    coa2 = safe_get("/api/chart-of-accounts")
+    coa2 = safe_get("/api/v1/chart-of-accounts")
     found_c = False
     if coa2 and coa2.status_code==200:
         found_c = any("Audit Test Account" in (a.get("account_name",""))
@@ -205,7 +205,7 @@ JOURNAL_ID = None
 
 # T2.1 — Manual JE (correct format: debit_amount/credit_amount)
 if BANK_ACC_ID and REV_ACC_ID:
-    je_r = safe_post("/api/journal-entries", {
+    je_r = safe_post("/api/v1/journal-entries", {
         "entry_date": TODAY,
         "description": "Audit test entry — manual",
         "lines": [
@@ -228,7 +228,7 @@ else:
 
 # T2.2 — Verify balanced
 if JOURNAL_ID:
-    je_get = safe_get(f"/api/journal-entries/{JOURNAL_ID}")
+    je_get = safe_get(f"/api/v1/journal-entries/{JOURNAL_ID}")
     if je_get and je_get.status_code == 200:
         d0 = je_get.json()
         entry = d0.get("entry", d0) if isinstance(d0,dict) else d0
@@ -246,7 +246,7 @@ else:
     rec("S2","T2.2","Entry balanced", False, "No JE from T2.1")
 
 # T2.3 — Unbalanced entry MUST fail (CRITICAL)
-ub_r = safe_post("/api/journal-entries", {
+ub_r = safe_post("/api/v1/journal-entries", {
     "entry_date": TODAY,
     "description": "Unbalanced MUST FAIL",
     "lines": [
@@ -264,7 +264,7 @@ else:
     rec("S2","T2.3","Unbalanced entry rejected", False, "No response", critical=True)
 
 # T2.4 — Trial balance (endpoint does NOT exist — this is an audit finding)
-tb_r = safe_get("/api/reports/trial-balance")
+tb_r = safe_get("/api/v1/reports/trial-balance")
 TB_EXISTS = tb_r and tb_r.status_code == 200
 TB_DR = TB_CR = 0.0
 if TB_EXISTS:
@@ -279,7 +279,7 @@ if TB_EXISTS:
 else:
     rec("S2","T2.4","Trial balance endpoint",
         False,
-        f"/api/reports/trial-balance returns {tb_r.status_code if tb_r else 'NONE'}. "
+        f"/api/v1/reports/trial-balance returns {tb_r.status_code if tb_r else 'NONE'}. "
         f"Accounting equation verified via balance sheet instead.",
         critical=True)
 
@@ -290,7 +290,7 @@ rec("S2","T2.5","CoA account balances populated",
     f"Non-zero balances in CoA: {coa_has_balances}")
 
 # T2.6 — JE listing paginated
-jl_r = safe_get("/api/journal-entries", {"page":1,"limit":10})
+jl_r = safe_get("/api/v1/journal-entries", {"page":1,"limit":10})
 if jl_r and jl_r.status_code == 200:
     d0 = jl_r.json()
     has_pag = "pagination" in d0
@@ -302,7 +302,7 @@ else:
         f"Status={jl_r.status_code if jl_r else 'NONE'}")
 
 # T2.7 — Filter by source_type
-jf_r = safe_get("/api/journal-entries", {"source_type":"INVOICE"})
+jf_r = safe_get("/api/v1/journal-entries", {"source_type":"INVOICE"})
 if jf_r and jf_r.status_code == 200:
     entries = jf_r.json().get("data",[])
     rec("S2","T2.7","Filter JEs by source_type", True,
@@ -323,7 +323,7 @@ CONTACT_ID = INVOICE_ID = None
 time.sleep(1)
 
 # Create fresh contact
-ct_r = safe_post("/api/contacts-enhanced", {
+ct_r = safe_post("/api/v1/contacts-enhanced", {
     "name": "Audit Customer",
     "contact_type": "customer",
     "email": "audit_customer@test.com",
@@ -341,7 +341,7 @@ elif EXISTING_CONTACT_ID:
 
 # T3.1 — Create invoice (correct line_items schema: requires 'name')
 if CONTACT_ID:
-    inv_r = safe_post("/api/invoices-enhanced", {
+    inv_r = safe_post("/api/v1/invoices-enhanced", {
         "customer_id": CONTACT_ID,
         "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
@@ -377,7 +377,7 @@ else:
 time.sleep(1.5)
 JE_INV_ENTRIES = []
 if INVOICE_ID:
-    je_inv = safe_get("/api/journal-entries", {"source_document_id": INVOICE_ID})
+    je_inv = safe_get("/api/v1/journal-entries", {"source_document_id": INVOICE_ID})
     if je_inv and je_inv.status_code == 200:
         JE_INV_ENTRIES = je_inv.json().get("data",[])
         if JE_INV_ENTRIES:
@@ -403,7 +403,7 @@ else:
 
 # T3.3 — GST split
 if INVOICE_ID:
-    inv_det = safe_get(f"/api/invoices-enhanced/{INVOICE_ID}")
+    inv_det = safe_get(f"/api/v1/invoices-enhanced/{INVOICE_ID}")
     if inv_det and inv_det.status_code == 200:
         raw = inv_det.json()
         inv_data = raw.get("invoice", raw) if isinstance(raw,dict) else raw
@@ -435,7 +435,7 @@ else:
 
 # T3.4 — Full payment
 if INVOICE_ID:
-    pay_r = safe_post(f"/api/invoices-enhanced/{INVOICE_ID}/payment", {
+    pay_r = safe_post(f"/api/v1/invoices-enhanced/{INVOICE_ID}/payment", {
         "amount": 11800,
         "payment_mode": "BANK_TRANSFER",
         "payment_date": TODAY
@@ -454,7 +454,7 @@ else:
 # T3.5 — Payment JE (Bank DR / AR CR)
 if INVOICE_ID:
     time.sleep(1.5)
-    je_pay = safe_get("/api/journal-entries", {"source_document_id": INVOICE_ID})
+    je_pay = safe_get("/api/v1/journal-entries", {"source_document_id": INVOICE_ID})
     if je_pay and je_pay.status_code == 200:
         all_entries = je_pay.json().get("data",[])
         rec("S3","T3.5","Payment creates additional JE",
@@ -468,7 +468,7 @@ else:
 # T3.6 — Partial payment
 INVOICE_ID2 = None
 if CONTACT_ID:
-    inv2_r = safe_post("/api/invoices-enhanced", {
+    inv2_r = safe_post("/api/v1/invoices-enhanced", {
         "customer_id": CONTACT_ID,
         "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
@@ -479,7 +479,7 @@ if CONTACT_ID:
         inv2 = raw.get("invoice", raw)
         INVOICE_ID2 = (inv2.get("invoice_id") if isinstance(inv2,dict) else None) or raw.get("invoice_id")
         IDS["invoice2"] = INVOICE_ID2
-        pay2_r = safe_post(f"/api/invoices-enhanced/{INVOICE_ID2}/payment",
+        pay2_r = safe_post(f"/api/v1/invoices-enhanced/{INVOICE_ID2}/payment",
                            {"amount":2000,"payment_mode":"CASH","payment_date":TODAY})
         if pay2_r and pay2_r.status_code in [200,201]:
             d2 = pay2_r.json()
@@ -498,7 +498,7 @@ else:
 
 # T3.7 — Invoice PDF
 if INVOICE_ID:
-    pdf_r = requests.get(f"{BASE}/api/invoices-enhanced/{INVOICE_ID}/pdf", headers=H, timeout=45)
+    pdf_r = requests.get(f"{BASE}/api/v1/invoices-enhanced/{INVOICE_ID}/pdf", headers=H, timeout=45)
     ct = pdf_r.headers.get("content-type","") if pdf_r else ""
     sz = len(pdf_r.content) if pdf_r else 0
     is_pdf = ("pdf" in ct.lower() or (pdf_r and pdf_r.content[:4]==b'%PDF'))
@@ -509,7 +509,7 @@ else:
     rec("S3","T3.7","Invoice PDF", False, "No invoice")
 
 # T3.8 — AR aging
-ar_r = safe_get("/api/reports/ar-aging")
+ar_r = safe_get("/api/v1/reports/ar-aging")
 if ar_r and ar_r.status_code == 200:
     d0 = ar_r.json()
     txt = json.dumps(d0).lower()
@@ -529,7 +529,7 @@ print("="*60)
 VENDOR_ID = BILL_ID = None
 time.sleep(1)
 
-vend_r = safe_post("/api/contacts-enhanced", {
+vend_r = safe_post("/api/v1/contacts-enhanced", {
     "name": "Audit Vendor Co",
     "contact_type": "vendor",
     "email": "audit_vendor@test.com",
@@ -544,14 +544,14 @@ if vend_r and vend_r.status_code in [200,201]:
 
 # T4.1 — Create bill
 if VENDOR_ID:
-    bill_r = safe_post("/api/bills", {
+    bill_r = safe_post("/api/v1/bills", {
         "vendor_id": VENDOR_ID,
         "bill_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
         "line_items": [{"name":"Audit Parts","quantity":10,"rate":500,"tax_rate":18}]
     })
     if bill_r is None or bill_r.status_code not in [200,201]:
-        bill_r = safe_post("/api/bills-enhanced", {
+        bill_r = safe_post("/api/v1/bills-enhanced", {
             "vendor_id": VENDOR_ID,
             "bill_date": TODAY,
             "due_date": (date.today()+timedelta(30)).isoformat(),
@@ -577,7 +577,7 @@ else:
 # T4.2 — Bill AP JE
 if BILL_ID:
     time.sleep(1.5)
-    je_bill = safe_get("/api/journal-entries", {"source_document_id": BILL_ID})
+    je_bill = safe_get("/api/v1/journal-entries", {"source_document_id": BILL_ID})
     if je_bill and je_bill.status_code == 200:
         entries = je_bill.json().get("data",[])
         if entries:
@@ -603,9 +603,9 @@ else:
 
 # T4.3 — Approve bill
 if BILL_ID:
-    ap_r = safe_post(f"/api/bills/{BILL_ID}/approve", {})
+    ap_r = safe_post(f"/api/v1/bills/{BILL_ID}/approve", {})
     if ap_r is None or ap_r.status_code not in [200,201]:
-        ap_r = safe_put(f"/api/bills/{BILL_ID}", {"status":"APPROVED"})
+        ap_r = safe_put(f"/api/v1/bills/{BILL_ID}", {"status":"APPROVED"})
     rec("S4","T4.3","Approve bill",
         ap_r and ap_r.status_code in [200,201],
         f"Status={ap_r.status_code if ap_r else 'NONE'}: {ap_r.text[:100] if ap_r else ''}")
@@ -614,10 +614,10 @@ else:
 
 # T4.4 — Bill payment
 if BILL_ID:
-    bp_r = safe_post(f"/api/bills/{BILL_ID}/payment",
+    bp_r = safe_post(f"/api/v1/bills/{BILL_ID}/payment",
                      {"amount":5900,"payment_mode":"BANK_TRANSFER","payment_date":TODAY})
     if bp_r is None or bp_r.status_code not in [200,201]:
-        bp_r = safe_post(f"/api/bills-enhanced/{BILL_ID}/payment",
+        bp_r = safe_post(f"/api/v1/bills-enhanced/{BILL_ID}/payment",
                          {"amount":5900,"payment_mode":"BANK_TRANSFER","payment_date":TODAY})
     rec("S4","T4.4","Bill payment",
         bp_r and bp_r.status_code in [200,201],
@@ -626,7 +626,7 @@ else:
     rec("S4","T4.4","Bill payment", False, "No bill")
 
 # T4.5 — AP aging
-ap_ag = safe_get("/api/reports/ap-aging")
+ap_ag = safe_get("/api/v1/reports/ap-aging")
 rec("S4","T4.5","AP aging report",
     ap_ag and ap_ag.status_code==200,
     f"Status={ap_ag.status_code if ap_ag else 'NONE'}")
@@ -643,7 +643,7 @@ EXP_ID = None
 time.sleep(1)
 
 if EXP_CAT_ID:
-    exp_r = safe_post("/api/expenses", {
+    exp_r = safe_post("/api/v1/expenses", {
         "description": "Audit test expense",
         "amount": 2500,
         "expense_date": TODAY,
@@ -664,9 +664,9 @@ else:
     rec("S5","T5.1","Create expense", False, f"No expense category (cat_id={EXP_CAT_ID})")
 
 if EXP_ID:
-    ap_e = safe_post(f"/api/expenses/{EXP_ID}/approve", {})
+    ap_e = safe_post(f"/api/v1/expenses/{EXP_ID}/approve", {})
     if ap_e is None or ap_e.status_code not in [200,201]:
-        ap_e = safe_put(f"/api/expenses/{EXP_ID}/approve")
+        ap_e = safe_put(f"/api/v1/expenses/{EXP_ID}/approve")
     rec("S5","T5.2","Approve expense",
         ap_e and ap_e.status_code in [200,201],
         f"Status={ap_e.status_code if ap_e else 'NONE'}: {ap_e.text[:100] if ap_e else ''}")
@@ -675,7 +675,7 @@ else:
 
 if EXP_ID:
     time.sleep(1.5)
-    je_exp = safe_get("/api/journal-entries", {"source_document_id": EXP_ID})
+    je_exp = safe_get("/api/v1/journal-entries", {"source_document_id": EXP_ID})
     if je_exp and je_exp.status_code == 200:
         entries = je_exp.json().get("data",[])
         if entries:
@@ -696,7 +696,7 @@ if EXP_ID:
 else:
     rec("S5","T5.3","Expense JE", False, "No expense")
 
-pl_r = safe_get("/api/reports/profit-loss")
+pl_r = safe_get("/api/v1/reports/profit-loss")
 if pl_r and pl_r.status_code == 200:
     txt = json.dumps(pl_r.json()).lower()
     rec("S5","T5.4","Expense in P&L",
@@ -718,7 +718,7 @@ ITEM_ID = TICKET_ID = None
 time.sleep(1)
 
 # T6.1 — Create item (correct schema: unit_price not purchase_price)
-item_r = safe_post("/api/inventory", {
+item_r = safe_post("/api/v1/inventory", {
     "name": "Audit Battery Cell",
     "sku": "AUDIT-BATT-001",
     "category": "Parts",
@@ -738,7 +738,7 @@ else:
 
 # T6.2 — Stock level
 if ITEM_ID:
-    item_get = safe_get(f"/api/inventory/{ITEM_ID}")
+    item_get = safe_get(f"/api/v1/inventory/{ITEM_ID}")
     if item_get and item_get.status_code == 200:
         d0 = item_get.json()
         qty = d0.get("quantity", d0.get("current_stock_qty",-1))
@@ -752,7 +752,7 @@ else:
 
 # T6.3 — Job card deducts stock
 if CONTACT_ID:
-    tick_r = safe_post("/api/tickets", {
+    tick_r = safe_post("/api/v1/tickets", {
         "title": "Audit Test Ticket",
         "description": "Battery issue",
         "customer_id": CONTACT_ID,
@@ -767,13 +767,13 @@ if CONTACT_ID:
 
 if TICKET_ID and ITEM_ID:
     for parts_path in [
-        f"/api/tickets/{TICKET_ID}/job-card/parts",
-        f"/api/tickets/{TICKET_ID}/parts"
+        f"/api/v1/tickets/{TICKET_ID}/job-card/parts",
+        f"/api/v1/tickets/{TICKET_ID}/parts"
     ]:
         jc_r = safe_post(parts_path, {"item_id":ITEM_ID,"quantity":2,"unit_cost":800})
         if jc_r and jc_r.status_code in [200,201]:
             time.sleep(1)
-            after = safe_get(f"/api/inventory/{ITEM_ID}")
+            after = safe_get(f"/api/v1/inventory/{ITEM_ID}")
             if after and after.status_code == 200:
                 new_qty = float(after.json().get("quantity", 50))
                 rec("S6","T6.3","Job card deducts stock",
@@ -790,7 +790,7 @@ else:
 
 # T6.4 — COGS JE
 time.sleep(1)
-je_jc = safe_get("/api/journal-entries", {"source_type":"JOB_CARD"})
+je_jc = safe_get("/api/v1/journal-entries", {"source_type":"JOB_CARD"})
 if je_jc and je_jc.status_code == 200:
     entries = je_jc.json().get("data",[])
     if entries:
@@ -806,13 +806,13 @@ else:
         f"Status={je_jc.status_code if je_jc else 'NONE'}", critical=True)
 
 # T6.5 — Stock valuation
-val_r = safe_get("/api/reports/inventory-valuation")
+val_r = safe_get("/api/v1/reports/inventory-valuation")
 rec("S6","T6.5","Inventory valuation report",
     val_r and val_r.status_code==200,
     f"Status={val_r.status_code if val_r else 'NONE'}")
 
 # T6.6 — Reorder suggestions
-ro_r = safe_get("/api/inventory/reorder-suggestions")
+ro_r = safe_get("/api/v1/inventory/reorder-suggestions")
 rec("S6","T6.6","Reorder suggestions",
     ro_r and ro_r.status_code==200,
     f"Status={ro_r.status_code if ro_r else 'NONE'}")
@@ -827,7 +827,7 @@ print("="*60)
 time.sleep(1)
 
 # T7.1 — GST summary
-gst_r = safe_get("/api/gst/summary", {"month":MONTH,"year":YEAR})
+gst_r = safe_get("/api/v1/gst/summary", {"month":MONTH,"year":YEAR})
 if gst_r and gst_r.status_code == 200:
     d0 = gst_r.json()
     summary = d0.get("summary", d0)
@@ -841,7 +841,7 @@ else:
         f"Status={gst_r.status_code if gst_r else 'NONE'}: {gst_r.text[:200] if gst_r else ''}")
 
 # T7.2 — GSTR-1
-gstr1_r = safe_get("/api/gst/gstr1", {"month":MONTH,"year":YEAR})
+gstr1_r = safe_get("/api/v1/gst/gstr1", {"month":MONTH,"year":YEAR})
 if gstr1_r and gstr1_r.status_code == 200:
     d0 = gstr1_r.json()
     txt = json.dumps(d0).lower()
@@ -854,7 +854,7 @@ else:
 # T7.3 — Multiple GST rates
 MULTI_GST_ID = None
 if CONTACT_ID:
-    mg_r = safe_post("/api/invoices-enhanced", {
+    mg_r = safe_post("/api/v1/invoices-enhanced", {
         "customer_id": CONTACT_ID,
         "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
@@ -912,7 +912,7 @@ print("="*60)
 year_start = f"{YEAR}-01-01"
 
 # T8.1 — P&L
-pl2 = safe_get("/api/reports/profit-loss", {"date_from":year_start,"date_to":TODAY})
+pl2 = safe_get("/api/v1/reports/profit-loss", {"date_from":year_start,"date_to":TODAY})
 if pl2 and pl2.status_code == 200:
     d0 = pl2.json()
     txt = json.dumps(d0).lower()
@@ -927,7 +927,7 @@ else:
         f"Status={pl2.status_code if pl2 else 'NONE'}: {pl2.text[:200] if pl2 else ''}")
 
 # T8.2 — Balance Sheet A = L + E
-bs_r = safe_get("/api/reports/balance-sheet")
+bs_r = safe_get("/api/v1/reports/balance-sheet")
 ASSETS = LIABS = EQUITY_V = 0.0
 if bs_r and bs_r.status_code == 200:
     d0 = bs_r.json()
@@ -953,7 +953,7 @@ else:
         f"Status={bs_r.status_code if bs_r else 'NONE'}: {bs_r.text[:200] if bs_r else ''}")
 
 # T8.3 — Trial balance (already confirmed MISSING)
-tb_final = safe_get("/api/reports/trial-balance")
+tb_final = safe_get("/api/v1/reports/trial-balance")
 FINAL_TB_DR = FINAL_TB_CR = 0.0
 if tb_final and tb_final.status_code == 200:
     d0 = tb_final.json()
@@ -967,11 +967,11 @@ if tb_final and tb_final.status_code == 200:
 else:
     rec("S8","T8.3","Trial balance endpoint MISSING",
         False,
-        "/api/reports/trial-balance returns 404. Gap: Accountants cannot run trial balance via API. Must be added.",
+        "/api/v1/reports/trial-balance returns 404. Gap: Accountants cannot run trial balance via API. Must be added.",
         critical=True)
 
 # T8.4 — Finance dashboard
-fd_r = safe_get("/api/finance/dashboard")
+fd_r = safe_get("/api/v1/finance/dashboard")
 if fd_r and fd_r.status_code == 200:
     d0 = fd_r.json()
     txt = json.dumps(d0).lower()
@@ -985,8 +985,8 @@ else:
 # T8.5 — Period comparison
 last_m = MONTH-1 if MONTH>1 else 12
 last_y = YEAR if MONTH>1 else YEAR-1
-pl_this = safe_get("/api/reports/profit-loss", {"period":"this_month"})
-pl_last = safe_get("/api/reports/profit-loss", {
+pl_this = safe_get("/api/v1/reports/profit-loss", {"period":"this_month"})
+pl_last = safe_get("/api/v1/reports/profit-loss", {
     "date_from":f"{last_y}-{last_m:02d}-01",
     "date_to":f"{last_y}-{last_m:02d}-{calendar.monthrange(last_y,last_m)[1]}"
 })
@@ -1006,7 +1006,7 @@ EMP_ID = PAYROLL_REC = None
 time.sleep(1)
 
 # T9.1 — Create employee (correct schema: first_name/last_name not name)
-emp_r = safe_post("/api/hr/employees", {
+emp_r = safe_post("/api/v1/hr/employees", {
     "first_name": "Audit",
     "last_name": "Tech",
     "designation": "Senior Technician",
@@ -1030,7 +1030,7 @@ else:
 
 # T9.2 — Employee salary components
 if EMP_ID:
-    emp_g = safe_get(f"/api/hr/employees/{EMP_ID}")
+    emp_g = safe_get(f"/api/v1/hr/employees/{EMP_ID}")
     if emp_g and emp_g.status_code == 200:
         d0 = emp_g.json()
         basic = float(d0.get("basic_salary", d0.get("salary",0)))
@@ -1045,9 +1045,9 @@ if EMP_ID:
 else:
     rec("S9","T9.2","Employee salary components", False, "No employee")
 
-# T9.3 — Run payroll (correct endpoint: /api/hr/payroll/generate)
+# T9.3 — Run payroll (correct endpoint: /api/v1/hr/payroll/generate)
 if EMP_ID:
-    pr_r = safe_post("/api/hr/payroll/generate", {
+    pr_r = safe_post("/api/v1/hr/payroll/generate", {
         "month": MONTH,
         "year": YEAR,
         "employee_ids": [EMP_ID]
@@ -1066,7 +1066,7 @@ else:
 
 # T9.4 — Payroll calculations
 if EMP_ID:
-    pr_recs = safe_get("/api/hr/payroll/records", {"month":MONTH,"year":YEAR,"employee_id":EMP_ID})
+    pr_recs = safe_get("/api/v1/hr/payroll/records", {"month":MONTH,"year":YEAR,"employee_id":EMP_ID})
     PAYROLL_REC = None
     if pr_recs and pr_recs.status_code == 200:
         d0 = pr_recs.json()
@@ -1092,7 +1092,7 @@ else:
 
 # T9.5 — Payroll JE balanced
 time.sleep(1)
-je_pr = safe_get("/api/journal-entries", {"source_type":"PAYROLL"})
+je_pr = safe_get("/api/v1/journal-entries", {"source_type":"PAYROLL"})
 if je_pr and je_pr.status_code == 200:
     entries = je_pr.json().get("data",[])
     if entries:
@@ -1113,7 +1113,7 @@ else:
 
 # T9.6 — TDS calculation
 if EMP_ID:
-    tds_r = safe_get(f"/api/hr/tds/calculate/{EMP_ID}")
+    tds_r = safe_get(f"/api/v1/hr/tds/calculate/{EMP_ID}")
     if tds_r and tds_r.status_code == 200:
         d0 = tds_r.json()
         tds = float(d0.get("tds_amount", d0.get("tds", d0.get("monthly_tds",0))))
@@ -1129,7 +1129,7 @@ else:
 
 # T9.7 — Form 16 / Payslip PDF
 if EMP_ID:
-    f16_r = requests.get(f"{BASE}/api/hr/payroll/form16/{EMP_ID}/2024-25/pdf",
+    f16_r = requests.get(f"{BASE}/api/v1/hr/payroll/form16/{EMP_ID}/2024-25/pdf",
                          headers=H, timeout=45)
     ct = f16_r.headers.get("content-type","") if f16_r else ""
     is_pdf = ("pdf" in ct.lower() or (f16_r.content[:4]==b'%PDF' if f16_r else False))
@@ -1142,7 +1142,7 @@ else:
 # T9.8 — Leave management
 if EMP_ID:
     nw = (date.today()+timedelta(7)).isoformat()
-    lv_r = safe_post("/api/hr/leave/request", {
+    lv_r = safe_post("/api/v1/hr/leave/request", {
         "employee_id": EMP_ID,
         "leave_type": "SICK",
         "from_date": nw,
@@ -1162,7 +1162,7 @@ else:
 
 # T9.9 — Attendance
 if EMP_ID:
-    att_r = safe_post("/api/hr/attendance/clock-in", {
+    att_r = safe_post("/api/v1/hr/attendance/clock-in", {
         "employee_id": EMP_ID,
         "clock_in_time": f"{TODAY}T09:00:00",
         "notes": "Audit test"
@@ -1175,7 +1175,7 @@ else:
 
 # T9.10 — Form 16 (data, not PDF)
 if EMP_ID:
-    f16_data = safe_get(f"/api/hr/payroll/form16/{EMP_ID}/2024-25")
+    f16_data = safe_get(f"/api/v1/hr/payroll/form16/{EMP_ID}/2024-25")
     if f16_data and f16_data.status_code == 200:
         ct = f16_data.headers.get("content-type","")
         is_pdf = "pdf" in ct.lower() or f16_data.content[:4]==b'%PDF'
@@ -1198,7 +1198,7 @@ print("="*60)
 BANK_ID = None
 time.sleep(1)
 
-bl_r = safe_get("/api/banking/accounts")
+bl_r = safe_get("/api/v1/banking/accounts")
 if bl_r and bl_r.status_code == 200:
     d0 = bl_r.json()
     accs = d0.get("data", d0 if isinstance(d0,list) else [])
@@ -1208,7 +1208,7 @@ else:
     rec("S10","T10.1","Fetch bank accounts", False,
         f"Status={bl_r.status_code if bl_r else 'NONE'}: {bl_r.text[:200] if bl_r else ''}")
 
-bk_r = safe_post("/api/banking/accounts", {
+bk_r = safe_post("/api/v1/banking/accounts", {
     "account_name": "Audit Test Bank",
     "account_number": "9999000099990001",
     "bank_name": "HDFC Bank",
@@ -1227,11 +1227,11 @@ else:
         f"Status={bk_r.status_code if bk_r else 'NONE'}: {bk_r.text[:300] if bk_r else ''}")
 
 if BANK_ID:
-    tx_r = safe_get("/api/banking/transactions", {"account_id": BANK_ID})
+    tx_r = safe_get("/api/v1/banking/transactions", {"account_id": BANK_ID})
     rec("S10","T10.3","Bank transactions list",
         tx_r and tx_r.status_code==200,
         f"Status={tx_r.status_code if tx_r else 'NONE'}")
-    rc_r = safe_get("/api/banking/reconciliation", {"account_id": BANK_ID})
+    rc_r = safe_get("/api/v1/banking/reconciliation", {"account_id": BANK_ID})
     if rc_r and rc_r.status_code == 200:
         rec("S10","T10.4","Bank reconciliation",
             True, f"keys={list(rc_r.json().keys())[:6]}")
@@ -1254,7 +1254,7 @@ time.sleep(1)
 EFI_R1 = None
 
 # T11.1 — EFI symptom match (correct: symptom_text field)
-efi_r1 = safe_post("/api/efi/match", {
+efi_r1 = safe_post("/api/v1/efi/match", {
     "symptom_text": "battery not charging, reduced range by 40%, BMS warning light on",
     "vehicle_type": "2W",
     "make": "Ola Electric",
@@ -1272,7 +1272,7 @@ else:
         f"Status={efi_r1.status_code if efi_r1 else 'NONE'}: {efi_r1.text[:300] if efi_r1 else ''}")
 
 # T11.2 — Failure card database
-fc_r = safe_get("/api/efi/failure-cards")
+fc_r = safe_get("/api/v1/efi/failure-cards")
 if fc_r and fc_r.status_code == 200:
     d0 = fc_r.json()
     cnt = len(d0) if isinstance(d0,list) else d0.get("total",d0.get("count","?"))
@@ -1284,7 +1284,7 @@ else:
 
 # T11.3 — Second call latency
 t1 = time.time()
-efi_r2 = safe_post("/api/efi/match", {
+efi_r2 = safe_post("/api/v1/efi/match", {
     "symptom_text": "battery not charging, reduced range by 40%, BMS warning light on",
     "vehicle_type": "2W"
 })
@@ -1294,7 +1294,7 @@ rec("S11","T11.3","EFI second call performance",
     f"Status={efi_r2.status_code if efi_r2 else 'NONE'} in {elapsed:.2f}s")
 
 # T11.4 — 3W specificity
-efi_3w = safe_post("/api/efi/match", {
+efi_3w = safe_post("/api/v1/efi/match", {
     "symptom_text": "motor overheating on incline, power cut during heavy load",
     "vehicle_type": "3W",
     "make": "Mahindra",
@@ -1315,7 +1315,7 @@ else:
         f"Status={efi_3w.status_code if efi_3w else 'NONE'}")
 
 # T11.5 — Pattern detection
-efi_pd = safe_post("/api/efi/patterns/detect", {
+efi_pd = safe_post("/api/v1/efi/patterns/detect", {
     "symptom_text": "battery not charging, reduced range",
     "vehicle_type": "2W"
 })
@@ -1336,7 +1336,7 @@ print("="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # T12.1
-tb3 = safe_get("/api/reports/trial-balance")
+tb3 = safe_get("/api/v1/reports/trial-balance")
 if tb3 and tb3.status_code == 200:
     d0 = tb3.json()
     FINAL_TB_DR = float(d0.get("total_debits",d0.get("total_dr",0)))
@@ -1347,12 +1347,12 @@ if tb3 and tb3.status_code == 200:
 else:
     rec("S12","T12.1","Trial balance endpoint MISSING",
         False,
-        "AUDIT FINDING: /api/reports/trial-balance does not exist. "
+        "AUDIT FINDING: /api/v1/reports/trial-balance does not exist. "
         "Balance verified via balance sheet A=L+E instead.",
         critical=True)
 
 # T12.2 — Orphaned JEs
-je_all = safe_get("/api/journal-entries", {"limit":100})
+je_all = safe_get("/api/v1/journal-entries", {"limit":100})
 orphans = 0
 total_je = 0
 if je_all and je_all.status_code == 200:
@@ -1378,7 +1378,7 @@ else:
         "Balance sheet structured totals not available", critical=True)
 
 # T12.4 — GST reconciliation
-gst_fin = safe_get("/api/gst/summary", {"month":MONTH,"year":YEAR})
+gst_fin = safe_get("/api/v1/gst/summary", {"month":MONTH,"year":YEAR})
 if gst_fin and gst_fin.status_code == 200:
     summary = gst_fin.json().get("summary", gst_fin.json())
     out = float(summary.get("output_gst",summary.get("output_tax",summary.get("total_output_tax",0))) if isinstance(summary,dict) else 0)
@@ -1395,7 +1395,7 @@ else:
 # T12.5 — Accrual: JE date = invoice date
 if INVOICE_ID and JE_INV_ENTRIES:
     je_date = (JE_INV_ENTRIES[0].get("entry_date",""))[:10]
-    inv_chk = safe_get(f"/api/invoices-enhanced/{INVOICE_ID}")
+    inv_chk = safe_get(f"/api/v1/invoices-enhanced/{INVOICE_ID}")
     if inv_chk and inv_chk.status_code == 200:
         raw = inv_chk.json()
         inv = raw.get("invoice", raw)
@@ -1427,27 +1427,27 @@ def cleanup(name, paths):
     print(f"  ⚠ Could not delete {name}")
 
 if IDS.get("custom_account"):
-    cleanup("custom_account", [f"/api/chart-of-accounts/{IDS['custom_account']}"])
+    cleanup("custom_account", [f"/api/v1/chart-of-accounts/{IDS['custom_account']}"])
 for k in ["invoice","invoice2","invoice_multigst"]:
-    if IDS.get(k): cleanup(k, [f"/api/invoices-enhanced/{IDS[k]}"])
+    if IDS.get(k): cleanup(k, [f"/api/v1/invoices-enhanced/{IDS[k]}"])
 if IDS.get("bill"):
-    cleanup("bill", [f"/api/bills/{IDS['bill']}", f"/api/bills-enhanced/{IDS['bill']}"])
+    cleanup("bill", [f"/api/v1/bills/{IDS['bill']}", f"/api/v1/bills-enhanced/{IDS['bill']}"])
 if IDS.get("expense"):
-    cleanup("expense", [f"/api/expenses/{IDS['expense']}"])
+    cleanup("expense", [f"/api/v1/expenses/{IDS['expense']}"])
 if IDS.get("ticket"):
-    cleanup("ticket", [f"/api/tickets/{IDS['ticket']}"])
+    cleanup("ticket", [f"/api/v1/tickets/{IDS['ticket']}"])
 if IDS.get("inventory_item"):
-    cleanup("inventory_item", [f"/api/inventory/{IDS['inventory_item']}"])
+    cleanup("inventory_item", [f"/api/v1/inventory/{IDS['inventory_item']}"])
 if IDS.get("employee"):
-    cleanup("employee", [f"/api/hr/employees/{IDS['employee']}"])
+    cleanup("employee", [f"/api/v1/hr/employees/{IDS['employee']}"])
 if IDS.get("bank_account"):
-    cleanup("bank_account", [f"/api/banking/accounts/{IDS['bank_account']}"])
+    cleanup("bank_account", [f"/api/v1/banking/accounts/{IDS['bank_account']}"])
 if IDS.get("contact"):
-    cleanup("contact", [f"/api/contacts-enhanced/{IDS['contact']}"])
+    cleanup("contact", [f"/api/v1/contacts-enhanced/{IDS['contact']}"])
 if IDS.get("vendor"):
-    cleanup("vendor", [f"/api/contacts-enhanced/{IDS['vendor']}"])
+    cleanup("vendor", [f"/api/v1/contacts-enhanced/{IDS['vendor']}"])
 if IDS.get("journal_entry"):
-    cleanup("journal_entry", [f"/api/journal-entries/{IDS['journal_entry']}"])
+    cleanup("journal_entry", [f"/api/v1/journal-entries/{IDS['journal_entry']}"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # GENERATE FINAL REPORT
@@ -1539,7 +1539,7 @@ report += f"""---
 
 | Check | Result | Detail |
 |-------|--------|--------|
-| Trial Balance endpoint exists | {'YES ✅' if TB_BAL else 'MISSING ❌'} | `/api/reports/trial-balance` returns 404 |
+| Trial Balance endpoint exists | {'YES ✅' if TB_BAL else 'MISSING ❌'} | `/api/v1/reports/trial-balance` returns 404 |
 | Accounting equation A = L + E | {'YES ✅' if EQ_HOLDS else 'NOT VERIFIED ⚠️'} | Assets = Liab + Equity from balance sheet |
 | Unbalanced entry rejected | {'YES ✅' if UB_REJ else '**NO 🔴 CRITICAL**'} | T2.3 |
 | GST reconciliation output-input | {'YES ✅' if GST_REC else 'NO ❌'} | T12.4 |
@@ -1553,7 +1553,7 @@ report += f"""---
 |-------|--------|-------|
 | EFI symptom matching works | {'YES ✅' if EFI_REAL else 'NO ❌'} | Knowledge-base driven, 107 failure cards |
 | Vehicle-type specific results | {'YES ✅' if EFI_VT else 'PARTIAL ⚠️'} | 2W vs 3W different matches |
-| Pattern detection endpoint | {'YES ✅' if find('T11.5')['ok'] else 'NO ❌'} | `/api/efi/patterns/detect` |
+| Pattern detection endpoint | {'YES ✅' if find('T11.5')['ok'] else 'NO ❌'} | `/api/v1/efi/patterns/detect` |
 | Failure card database | {'YES ✅' if find('T11.2')['ok'] else 'NO ❌'} | 107 cards found |
 
 ---
@@ -1584,7 +1584,7 @@ The Battwheels OS accounting engine is built on a **395-account Zoho-style chart
     "The platform **ACCEPTS unbalanced journal entries**. This is a CRITICAL accounting failure that must be fixed immediately."
 }
 
-**Trial Balance:** The `/api/reports/trial-balance` endpoint **does not exist** (404). This is a notable gap — accountants and auditors need to run a trial balance check independently. The accounting equation is verified via the balance sheet instead: **Assets (₹{ASSETS:,.0f}) = Liabilities (₹{LIABS:,.0f}) + Equity (₹{EQUITY_V:,.0f})** — {'this balances ✅' if abs(ASSETS-(LIABS+EQUITY_V))<1 else f'this does NOT balance ❌ diff=₹{abs(ASSETS-(LIABS+EQUITY_V)):,.2f}'}.
+**Trial Balance:** The `/api/v1/reports/trial-balance` endpoint **does not exist** (404). This is a notable gap — accountants and auditors need to run a trial balance check independently. The accounting equation is verified via the balance sheet instead: **Assets (₹{ASSETS:,.0f}) = Liabilities (₹{LIABS:,.0f}) + Equity (₹{EQUITY_V:,.0f})** — {'this balances ✅' if abs(ASSETS-(LIABS+EQUITY_V))<1 else f'this does NOT balance ❌ diff=₹{abs(ASSETS-(LIABS+EQUITY_V)):,.2f}'}.
 
 **Journal Entry Chain:** Invoice creation auto-posts journal entries (AR DR / Revenue CR / GST CR). Bill creation auto-posts AP entries. Payroll runs auto-post salary journal entries. The journal entries {'use CGST+SGST split' if find('T3.3')['ok'] else 'need CGST/SGST split verification'}.
 
@@ -1598,7 +1598,7 @@ The payroll module {'correctly calculates PF at 12% and ESI at 0.75%' if PF_OK e
 
 ### What Must Be Fixed Before Certifying for Commercial Use
 
-1. **Add `/api/reports/trial-balance` endpoint** — mandatory for any certified accounting system
+1. **Add `/api/v1/reports/trial-balance` endpoint** — mandatory for any certified accounting system
 2. **{'Already passing' if UB_REJ else 'URGENT: Fix unbalanced JE rejection — critical accounting control'}**
 3. **Verify CGST/SGST split** is consistently applied across all intra-state invoices in both API responses and JEs
 4. **Add `normal_balance` field to chart of accounts response** (currently inferred from type)

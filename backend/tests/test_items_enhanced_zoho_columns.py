@@ -16,7 +16,7 @@ import uuid
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # All 39 Zoho Books compatible columns
 ZOHO_EXPORT_COLUMNS = [
@@ -61,13 +61,13 @@ class TestItemsEnhancedZohoColumns:
     def test_health_check(self, api_client):
         """Test backend is running"""
         # Try multiple health endpoints
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/summary")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/summary")
         assert response.status_code == 200
         print("Backend health check passed (via items-enhanced/summary)")
 
     def test_items_endpoint_available(self, api_client):
         """Test items enhanced endpoint is available"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
@@ -150,7 +150,7 @@ class TestItemsEnhancedZohoColumns:
             "track_inventory": True
         }
         
-        response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         print(f"Create item response status: {response.status_code}")
         
         assert response.status_code == 200, f"Failed to create item: {response.text}"
@@ -202,7 +202,7 @@ class TestItemsEnhancedZohoColumns:
             "item_type": "inventory"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -225,7 +225,7 @@ class TestItemsEnhancedZohoColumns:
 
     def test_export_csv_has_39_columns(self, api_client):
         """Test CSV export contains all 39 Zoho Books columns"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/export?format=csv&include_inactive=true")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/export?format=csv&include_inactive=true")
         
         assert response.status_code == 200
         assert "text/csv" in response.headers.get("Content-Type", "")
@@ -259,7 +259,7 @@ class TestItemsEnhancedZohoColumns:
 
     def test_export_template_has_correct_columns(self, api_client):
         """Test import template contains correct Zoho Books columns"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/export/template")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/export/template")
         
         assert response.status_code == 200
         assert "text/csv" in response.headers.get("Content-Type", "")
@@ -292,7 +292,7 @@ class TestItemsEnhancedZohoColumns:
 
     def test_export_json_format(self, api_client):
         """Test JSON export format"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/export?format=json&include_inactive=true")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/export?format=json&include_inactive=true")
         
         assert response.status_code == 200
         
@@ -323,7 +323,7 @@ class TestItemsEnhancedZohoColumns:
 
     def test_item_list_with_new_fields(self, api_client):
         """Test item list displays correctly with new fields"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=10")
         
         assert response.status_code == 200
         
@@ -382,7 +382,7 @@ class TestItemsEnhancedZohoColumns:
             "track_inventory": False
         }
         
-        response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -412,7 +412,7 @@ class TestItemsEnhancedZohoColumns:
             "track_inventory": True
         }
         
-        response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         assert response.status_code == 200
         
         data = response.json()
@@ -441,13 +441,13 @@ class TestItemsEnhancedZohoColumns:
             "inventory_valuation_method": "fifo"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         assert create_response.status_code == 200
         
         item_id = create_response.json()["item"]["item_id"]
         
         # Get single item details
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         assert response.status_code == 200
         
         data = response.json()
@@ -476,7 +476,7 @@ class TestItemsEnhancedZohoColumns:
             "item_type": "inventory"
         }
         
-        create_response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=create_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=create_data)
         assert create_response.status_code == 200
         item_id = create_response.json()["item"]["item_id"]
         
@@ -495,11 +495,11 @@ class TestItemsEnhancedZohoColumns:
             "reorder_level": 30
         }
         
-        update_response = api_client.put(f"{BASE_URL}/api/items-enhanced/{item_id}", json=update_data)
+        update_response = api_client.put(f"{BASE_URL}/api/v1/items-enhanced/{item_id}", json=update_data)
         assert update_response.status_code == 200
         
         # Verify updates
-        get_response = api_client.get(f"{BASE_URL}/api/items-enhanced/{item_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         item = get_response.json()["item"]
         
         assert item["rate"] == 1500.00
@@ -547,11 +547,11 @@ class TestItemsExportValidation:
         }
         
         # Create item
-        create_response = api_client.post(f"{BASE_URL}/api/items-enhanced/", json=item_data)
+        create_response = api_client.post(f"{BASE_URL}/api/v1/items-enhanced/", json=item_data)
         assert create_response.status_code == 200
         
         # Export and find our item
-        export_response = api_client.get(f"{BASE_URL}/api/items-enhanced/export?format=csv&include_inactive=true")
+        export_response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/export?format=csv&include_inactive=true")
         assert export_response.status_code == 200
         
         content = export_response.text
@@ -593,7 +593,7 @@ class TestCleanup:
     
     def test_cleanup_test_items(self, api_client):
         """Clean up TEST_ prefixed items"""
-        response = api_client.get(f"{BASE_URL}/api/items-enhanced/?search=TEST_&per_page=100")
+        response = api_client.get(f"{BASE_URL}/api/v1/items-enhanced/?search=TEST_&per_page=100")
         
         if response.status_code == 200:
             data = response.json()
@@ -603,7 +603,7 @@ class TestCleanup:
             for item in items:
                 item_id = item.get("item_id")
                 if item_id:
-                    del_response = api_client.delete(f"{BASE_URL}/api/items-enhanced/{item_id}")
+                    del_response = api_client.delete(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
                     if del_response.status_code == 200:
                         deleted_count += 1
             

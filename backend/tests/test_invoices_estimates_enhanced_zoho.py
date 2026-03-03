@@ -8,7 +8,7 @@ import time
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestInvoiceEnhancedFeatures:
     """Test Invoice enhanced features: Edit, Share, Attachments, Comments, History"""
@@ -18,7 +18,7 @@ class TestInvoiceEnhancedFeatures:
         """Setup test data"""
         self.headers = {"Content-Type": "application/json"}
         # Get a draft invoice for edit tests
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?status=draft&per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?status=draft&per_page=1", headers=self.headers)
         if response.status_code == 200:
             invoices = response.json().get('invoices', [])
             self.draft_invoice_id = invoices[0].get('invoice_id') if invoices else None
@@ -26,7 +26,7 @@ class TestInvoiceEnhancedFeatures:
             self.draft_invoice_id = None
             
         # Get a non-draft invoice for share/attachments/comments tests
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?status=sent&per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?status=sent&per_page=1", headers=self.headers)
         if response.status_code == 200:
             invoices = response.json().get('invoices', [])
             self.sent_invoice_id = invoices[0].get('invoice_id') if invoices else None
@@ -40,7 +40,7 @@ class TestInvoiceEnhancedFeatures:
         if not self.sent_invoice_id:
             pytest.skip("No sent invoice available")
         
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -59,7 +59,7 @@ class TestInvoiceEnhancedFeatures:
         
         update_data = {"customer_notes": f"Updated notes at {time.time()}"}
         response = requests.put(
-            f"{BASE_URL}/api/invoices-enhanced/{self.draft_invoice_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.draft_invoice_id}",
             headers=self.headers,
             json=update_data
         )
@@ -70,7 +70,7 @@ class TestInvoiceEnhancedFeatures:
         assert data.get('message') == 'Invoice updated'
         
         # Verify update persisted
-        get_response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.draft_invoice_id}", headers=self.headers)
+        get_response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.draft_invoice_id}", headers=self.headers)
         assert get_response.status_code == 200
         invoice = get_response.json().get('invoice', {})
         assert invoice.get('customer_notes') == update_data['customer_notes']
@@ -83,7 +83,7 @@ class TestInvoiceEnhancedFeatures:
         # Try to update notes (allowed)
         update_data = {"customer_notes": f"Updated notes at {time.time()}"}
         response = requests.put(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}",
             headers=self.headers,
             json=update_data
         )
@@ -103,7 +103,7 @@ class TestInvoiceEnhancedFeatures:
             "password_protected": False
         }
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/share",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/share",
             headers=self.headers,
             json=share_config
         )
@@ -125,7 +125,7 @@ class TestInvoiceEnhancedFeatures:
         
         share_config = {"expiry_days": 30}
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.draft_invoice_id}/share",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.draft_invoice_id}/share",
             headers=self.headers,
             json=share_config
         )
@@ -139,7 +139,7 @@ class TestInvoiceEnhancedFeatures:
         if not self.sent_invoice_id:
             pytest.skip("No sent invoice available")
         
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/attachments", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/attachments", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -155,7 +155,7 @@ class TestInvoiceEnhancedFeatures:
         # Create a test file
         files = {'file': ('test_doc.txt', b'Test attachment content', 'text/plain')}
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/attachments",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/attachments",
             files=files
         )
         assert response.status_code == 200
@@ -178,7 +178,7 @@ class TestInvoiceEnhancedFeatures:
         # First upload an attachment
         files = {'file': ('delete_test.txt', b'Delete test content', 'text/plain')}
         upload_response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/attachments",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/attachments",
             files=files
         )
         assert upload_response.status_code == 200
@@ -186,7 +186,7 @@ class TestInvoiceEnhancedFeatures:
         
         # Delete the attachment
         delete_response = requests.delete(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/attachments/{attachment_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/attachments/{attachment_id}",
             headers=self.headers
         )
         assert delete_response.status_code == 200
@@ -200,7 +200,7 @@ class TestInvoiceEnhancedFeatures:
         if not self.sent_invoice_id:
             pytest.skip("No sent invoice available")
         
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/comments", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/comments", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -218,7 +218,7 @@ class TestInvoiceEnhancedFeatures:
             "is_internal": True
         }
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/comments",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/comments",
             headers=self.headers,
             json=comment_data
         )
@@ -243,7 +243,7 @@ class TestInvoiceEnhancedFeatures:
         # First add a comment
         comment_data = {"comment": "Comment to delete", "is_internal": True}
         add_response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/comments",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/comments",
             headers=self.headers,
             json=comment_data
         )
@@ -252,7 +252,7 @@ class TestInvoiceEnhancedFeatures:
         
         # Delete the comment
         delete_response = requests.delete(
-            f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/comments/{comment_id}",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/comments/{comment_id}",
             headers=self.headers
         )
         assert delete_response.status_code == 200
@@ -266,7 +266,7 @@ class TestInvoiceEnhancedFeatures:
         if not self.sent_invoice_id:
             pytest.skip("No sent invoice available")
         
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/history", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/history", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -288,7 +288,7 @@ class TestInvoiceEnhancedFeatures:
         if not self.sent_invoice_id:
             pytest.skip("No sent invoice available")
         
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{self.sent_invoice_id}/pdf", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{self.sent_invoice_id}/pdf", headers=self.headers)
         # PDF may fail due to missing system dependencies, but endpoint should exist
         assert response.status_code in [200, 500]  # 500 if weasyprint deps missing
 
@@ -301,7 +301,7 @@ class TestEstimateEnhancedFeatures:
         """Setup test data"""
         self.headers = {"Content-Type": "application/json"}
         # Get a draft estimate for edit tests
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/?status=draft&per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/?status=draft&per_page=1", headers=self.headers)
         if response.status_code == 200:
             estimates = response.json().get('estimates', [])
             self.draft_estimate_id = estimates[0].get('estimate_id') if estimates else None
@@ -313,7 +313,7 @@ class TestEstimateEnhancedFeatures:
         if not self.draft_estimate_id:
             pytest.skip("No draft estimate available")
         
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{self.draft_estimate_id}", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{self.draft_estimate_id}", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -331,7 +331,7 @@ class TestEstimateEnhancedFeatures:
         
         update_data = {"notes": f"Updated notes at {time.time()}"}
         response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{self.draft_estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{self.draft_estimate_id}",
             headers=self.headers,
             json=update_data
         )
@@ -342,14 +342,14 @@ class TestEstimateEnhancedFeatures:
         assert data.get('message') == 'Estimate updated'
         
         # Verify update persisted
-        get_response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{self.draft_estimate_id}", headers=self.headers)
+        get_response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/{self.draft_estimate_id}", headers=self.headers)
         assert get_response.status_code == 200
         estimate = get_response.json().get('estimate', {})
         assert estimate.get('notes') == update_data['notes']
     
     def test_list_estimates(self):
         """Test listing estimates"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -359,7 +359,7 @@ class TestEstimateEnhancedFeatures:
     
     def test_estimates_summary(self):
         """Test estimates summary endpoint"""
-        response = requests.get(f"{BASE_URL}/api/estimates-enhanced/summary", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/estimates-enhanced/summary", headers=self.headers)
         assert response.status_code == 200
         
         data = response.json()
@@ -378,7 +378,7 @@ class TestInvoiceDetailActions:
         """Setup test data"""
         self.headers = {"Content-Type": "application/json"}
         # Get any invoice
-        response = requests.get(f"{BASE_URL}/api/invoices-enhanced/?per_page=1", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/?per_page=1", headers=self.headers)
         if response.status_code == 200:
             invoices = response.json().get('invoices', [])
             self.invoice_id = invoices[0].get('invoice_id') if invoices else None
@@ -391,7 +391,7 @@ class TestInvoiceDetailActions:
             pytest.skip("No invoice available")
         
         response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.invoice_id}/clone",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.invoice_id}/clone",
             headers=self.headers
         )
         assert response.status_code == 200
@@ -410,7 +410,7 @@ class TestInvoiceDetailActions:
         
         # First clone to get a draft we can void
         clone_response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{self.invoice_id}/clone",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{self.invoice_id}/clone",
             headers=self.headers
         )
         if clone_response.status_code != 200:
@@ -420,13 +420,13 @@ class TestInvoiceDetailActions:
         
         # Void the cloned invoice
         void_response = requests.post(
-            f"{BASE_URL}/api/invoices-enhanced/{cloned_id}/void?reason=Test%20void",
+            f"{BASE_URL}/api/v1/invoices-enhanced/{cloned_id}/void?reason=Test%20void",
             headers=self.headers
         )
         assert void_response.status_code == 200
         assert void_response.json().get('code') == 0
         
         # Verify status changed
-        get_response = requests.get(f"{BASE_URL}/api/invoices-enhanced/{cloned_id}", headers=self.headers)
+        get_response = requests.get(f"{BASE_URL}/api/v1/invoices-enhanced/{cloned_id}", headers=self.headers)
         assert get_response.status_code == 200
         assert get_response.json().get('invoice', {}).get('status') == 'void'

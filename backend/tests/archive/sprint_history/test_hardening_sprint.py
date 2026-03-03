@@ -23,14 +23,14 @@ import json
 import time
 import jwt
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com').rstrip('/')
-AUTH_API = f"{BASE_URL}/api/auth"
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com').rstrip('/')
+AUTH_API = f"{BASE_URL}/api/v1/auth"
 API_V1 = f"{BASE_URL}/api/v1"
 JWT_SECRET = 'REDACTED_JWT_SECRET'
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_PASSWORD = "DevTest@123"
 ORG_ID = "dev-internal-testing-001"
 
 
@@ -61,7 +61,7 @@ class TestO2EnhancedHealthCheck:
     
     def test_health_endpoint_returns_healthy(self):
         """Health check returns healthy status"""
-        response = requests.get(f"{BASE_URL}/api/health")
+        response = requests.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "healthy"
@@ -211,22 +211,22 @@ class TestLifespanRefactor:
     def test_server_starts_with_lifespan(self):
         """Server is running with new lifespan (no on_event)"""
         # If server is responding, lifespan worked
-        response = requests.get(f"{BASE_URL}/api/health")
+        response = requests.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         print(f"✓ Server running with asynccontextmanager lifespan")
 
 
 class TestAPIVersioning:
-    """API versioning: auth at /api/, business at /api/v1/"""
+    """API versioning: auth at /api/v1/, business at /api/v1/"""
     
     def test_auth_at_api_root(self):
-        """Auth routes work at /api/auth/"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        """Auth routes work at /api/v1/auth/"""
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
         assert response.status_code == 200
-        print(f"✓ Auth at /api/auth/ working")
+        print(f"✓ Auth at /api/v1/auth/ working")
     
     def test_business_routes_at_v1(self, auth_headers):
         """Business routes work at /api/v1/"""

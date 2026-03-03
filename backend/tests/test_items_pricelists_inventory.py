@@ -8,12 +8,12 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 @pytest.fixture(scope="module")
 def auth_token():
     """Get authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -36,7 +36,7 @@ class TestItemsAPI:
     
     def test_list_items(self, api_client):
         """Test listing items"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/items?per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
@@ -46,14 +46,14 @@ class TestItemsAPI:
     def test_list_items_filter_by_type(self, api_client):
         """Test filtering items by type"""
         # Test goods filter
-        response = api_client.get(f"{BASE_URL}/api/zoho/items?item_type=goods&per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?item_type=goods&per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
         print(f"SUCCESS: Listed {len(data['items'])} goods items")
         
         # Test service filter
-        response = api_client.get(f"{BASE_URL}/api/zoho/items?item_type=service&per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?item_type=service&per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
@@ -61,7 +61,7 @@ class TestItemsAPI:
     
     def test_search_items(self, api_client):
         """Test searching items"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/items?search_text=battery&per_page=10")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?search_text=battery&per_page=10")
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
@@ -84,7 +84,7 @@ class TestItemsAPI:
             "is_taxable": True
         }
         
-        response = api_client.post(f"{BASE_URL}/api/zoho/items", json=test_item)
+        response = api_client.post(f"{BASE_URL}/api/v1/zoho/items", json=test_item)
         assert response.status_code == 200, f"Create item failed: {response.text}"
         data = response.json()
         assert "item" in data or "item_id" in data or data.get("code") == 0
@@ -99,7 +99,7 @@ class TestPriceListsAPI:
     
     def test_list_price_lists(self, api_client):
         """Test listing price lists"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/price-lists")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/price-lists")
         assert response.status_code == 200
         data = response.json()
         assert "price_lists" in data
@@ -117,7 +117,7 @@ class TestPriceListsAPI:
             "round_off_to": "never"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/zoho/price-lists", json=test_price_list)
+        response = api_client.post(f"{BASE_URL}/api/v1/zoho/price-lists", json=test_price_list)
         assert response.status_code == 200, f"Create price list failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0
@@ -140,12 +140,12 @@ class TestPriceListsAPI:
             "round_off_to": "never"
         }
         
-        response = api_client.post(f"{BASE_URL}/api/zoho/price-lists", json=test_price_list)
+        response = api_client.post(f"{BASE_URL}/api/v1/zoho/price-lists", json=test_price_list)
         assert response.status_code == 200
         price_list_id = response.json()["price_list"]["price_list_id"]
         
         # Get an existing item
-        items_response = api_client.get(f"{BASE_URL}/api/zoho/items?per_page=1")
+        items_response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?per_page=1")
         assert items_response.status_code == 200
         items = items_response.json().get("items", [])
         
@@ -155,7 +155,7 @@ class TestPriceListsAPI:
             
             # Add item to price list
             add_response = api_client.post(
-                f"{BASE_URL}/api/zoho/price-lists/{price_list_id}/items?item_id={item_id}&custom_rate={custom_rate}"
+                f"{BASE_URL}/api/v1/zoho/price-lists/{price_list_id}/items?item_id={item_id}&custom_rate={custom_rate}"
             )
             assert add_response.status_code == 200
             assert add_response.json().get("code") == 0
@@ -169,7 +169,7 @@ class TestInventoryAdjustmentsAPI:
     
     def test_list_inventory_adjustments(self, api_client):
         """Test listing inventory adjustments"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/inventory-adjustments")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/inventory-adjustments")
         assert response.status_code == 200
         data = response.json()
         assert "inventory_adjustments" in data
@@ -179,7 +179,7 @@ class TestInventoryAdjustmentsAPI:
     def test_create_inventory_adjustment(self, api_client):
         """Test creating a new inventory adjustment"""
         # Get an existing goods item
-        items_response = api_client.get(f"{BASE_URL}/api/zoho/items?item_type=goods&per_page=1")
+        items_response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?item_type=goods&per_page=1")
         assert items_response.status_code == 200
         items = items_response.json().get("items", [])
         
@@ -204,7 +204,7 @@ class TestInventoryAdjustmentsAPI:
                 ]
             }
             
-            response = api_client.post(f"{BASE_URL}/api/zoho/inventory-adjustments", json=test_adjustment)
+            response = api_client.post(f"{BASE_URL}/api/v1/zoho/inventory-adjustments", json=test_adjustment)
             assert response.status_code == 200, f"Create adjustment failed: {response.text}"
             data = response.json()
             assert data.get("code") == 0
@@ -220,7 +220,7 @@ class TestInventoryAdjustmentsAPI:
     
     def test_list_adjustments_by_reason(self, api_client):
         """Test filtering adjustments by reason"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/inventory-adjustments?reason=damaged")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/inventory-adjustments?reason=damaged")
         assert response.status_code == 200
         data = response.json()
         assert "inventory_adjustments" in data
@@ -232,19 +232,19 @@ class TestNavigationAndIntegration:
     
     def test_items_endpoint_exists(self, api_client):
         """Verify items endpoint is accessible"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/items?per_page=1")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/items?per_page=1")
         assert response.status_code == 200
         print("SUCCESS: Items endpoint accessible")
     
     def test_price_lists_endpoint_exists(self, api_client):
         """Verify price lists endpoint is accessible"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/price-lists")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/price-lists")
         assert response.status_code == 200
         print("SUCCESS: Price Lists endpoint accessible")
     
     def test_inventory_adjustments_endpoint_exists(self, api_client):
         """Verify inventory adjustments endpoint is accessible"""
-        response = api_client.get(f"{BASE_URL}/api/zoho/inventory-adjustments")
+        response = api_client.get(f"{BASE_URL}/api/v1/zoho/inventory-adjustments")
         assert response.status_code == 200
         print("SUCCESS: Inventory Adjustments endpoint accessible")
 

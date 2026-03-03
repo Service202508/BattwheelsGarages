@@ -188,6 +188,29 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
     r"^/api/dashboard(/.*)?$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
+
+    # ============ ACCOUNTING/FINANCE EXTENDED ============
+    r"^/api/accounting(/.*)?$":             ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/journal-entries(/.*)?$":        ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/ledger(/.*)?$":                 ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/payments-received(/.*)?$":      ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/stock-transfers(/.*)?$":        ["org_admin", "admin", "owner", "manager", "accountant"],
+
+    # ============ OPERATIONS EXTENDED ============
+    r"^/api/failure-cards(/.*)?$":          ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/services(/.*)?$":              ["org_admin", "admin", "owner", "manager", "technician"],
+
+    # ============ ADMIN/SYSTEM ============
+    r"^/api/alerts(/.*)?$":                 ["org_admin", "admin", "owner", "manager"],
+    r"^/api/audit-logs(/.*)?$":             ["org_admin", "admin", "owner"],
+    r"^/api/import(/.*)?$":                 ["org_admin", "admin", "owner"],
+    r"^/api/migration(/.*)?$":              ["org_admin", "admin", "owner"],
+    r"^/api/reseed(/.*)?$":                 ["org_admin", "admin", "owner"],
+    r"^/api/seed-customer-demo(/.*)?$":     ["org_admin", "admin", "owner"],
+    r"^/api/business(/.*)?$":               ["org_admin", "admin", "owner", "manager"],
+
+    # ============ CUSTOMERS MODULE ============
+    r"^/api/customers-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "dispatcher"],
 }
 
 # Compiled patterns for performance

@@ -8,7 +8,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 BUSINESS_CREDS = {"email": "business@bluwheelz.co.in", "password": "business123"}
@@ -21,7 +21,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_battery_issue(self):
         """Test AI suggestions for battery-related input"""
         response = requests.post(
-            f"{BASE_URL}/api/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "2W_EV",
                 "vehicle_model": "Ather 450X",
@@ -49,7 +49,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_motor_issue(self):
         """Test AI suggestions for motor-related input"""
         response = requests.post(
-            f"{BASE_URL}/api/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "4W_EV",
                 "vehicle_model": "Tata Nexon EV",
@@ -68,7 +68,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_minimal_input(self):
         """Test AI suggestions with minimal input"""
         response = requests.post(
-            f"{BASE_URL}/api/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "3W_EV",
                 "user_input": "not starting"
@@ -89,7 +89,7 @@ class TestBusinessPortalAPIs:
     def business_auth(self):
         """Get business customer auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json=BUSINESS_CREDS
         )
         print(f"Business login: {response.status_code}")
@@ -105,7 +105,7 @@ class TestBusinessPortalAPIs:
     def test_business_dashboard(self, business_auth):
         """Test business dashboard endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/business/dashboard",
+            f"{BASE_URL}/api/v1/business/dashboard",
             cookies=business_auth["cookies"],
             headers=business_auth["headers"]
         )
@@ -123,7 +123,7 @@ class TestBusinessPortalAPIs:
     def test_business_fleet(self, business_auth):
         """Test business fleet endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/business/fleet",
+            f"{BASE_URL}/api/v1/business/fleet",
             cookies=business_auth["cookies"],
             headers=business_auth["headers"]
         )
@@ -138,7 +138,7 @@ class TestBusinessPortalAPIs:
     def test_business_tickets(self, business_auth):
         """Test business tickets endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/business/tickets",
+            f"{BASE_URL}/api/v1/business/tickets",
             cookies=business_auth["cookies"],
             headers=business_auth["headers"]
         )
@@ -153,7 +153,7 @@ class TestBusinessPortalAPIs:
     def test_business_invoices(self, business_auth):
         """Test business invoices endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/business/invoices",
+            f"{BASE_URL}/api/v1/business/invoices",
             cookies=business_auth["cookies"],
             headers=business_auth["headers"]
         )
@@ -173,7 +173,7 @@ class TestTechnicianAIAssistant:
     def technician_auth(self):
         """Get technician auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json=TECHNICIAN_CREDS
         )
         print(f"Technician login: {response.status_code}")
@@ -189,7 +189,7 @@ class TestTechnicianAIAssistant:
     def test_technician_ai_assist_battery_query(self, technician_auth):
         """Test AI assist for battery diagnosis query"""
         response = requests.post(
-            f"{BASE_URL}/api/technician/ai-assist",
+            f"{BASE_URL}/api/v1/technician/ai-assist",
             json={
                 "query": "How to diagnose BMS communication error on Ather 450X?",
                 "category": "battery",
@@ -215,7 +215,7 @@ class TestTechnicianAIAssistant:
     def test_technician_ai_assist_motor_query(self, technician_auth):
         """Test AI assist for motor diagnosis query"""
         response = requests.post(
-            f"{BASE_URL}/api/technician/ai-assist",
+            f"{BASE_URL}/api/v1/technician/ai-assist",
             json={
                 "query": "Motor controller overheating troubleshooting steps",
                 "category": "motor",
@@ -237,7 +237,7 @@ class TestTechnicianAIAssistant:
     def test_technician_ai_assist_general_query(self, technician_auth):
         """Test AI assist for general EV query"""
         response = requests.post(
-            f"{BASE_URL}/api/technician/ai-assist",
+            f"{BASE_URL}/api/v1/technician/ai-assist",
             json={
                 "query": "What are the common causes of range reduction in EVs?",
                 "category": "general"
@@ -260,7 +260,7 @@ class TestTechnicianDashboard:
     def technician_auth(self):
         """Get technician auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json=TECHNICIAN_CREDS
         )
         if response.status_code != 200:
@@ -275,7 +275,7 @@ class TestTechnicianDashboard:
     def test_technician_dashboard(self, technician_auth):
         """Test technician dashboard endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/technician/dashboard",
+            f"{BASE_URL}/api/v1/technician/dashboard",
             cookies=technician_auth["cookies"],
             headers=technician_auth["headers"]
         )
@@ -295,7 +295,7 @@ class TestPublicTicketForm:
     
     def test_vehicle_categories(self):
         """Test vehicle categories for public form"""
-        response = requests.get(f"{BASE_URL}/api/public/vehicle-categories")
+        response = requests.get(f"{BASE_URL}/api/v1/public/vehicle-categories")
         print(f"Vehicle Categories: {response.status_code}")
         
         assert response.status_code == 200
@@ -305,7 +305,7 @@ class TestPublicTicketForm:
     
     def test_vehicle_models(self):
         """Test vehicle models for public form"""
-        response = requests.get(f"{BASE_URL}/api/public/vehicle-models?category_code=2W_EV")
+        response = requests.get(f"{BASE_URL}/api/v1/public/vehicle-models?category_code=2W_EV")
         print(f"Vehicle Models: {response.status_code}")
         
         assert response.status_code == 200
@@ -314,7 +314,7 @@ class TestPublicTicketForm:
     
     def test_service_charges(self):
         """Test service charges endpoint"""
-        response = requests.get(f"{BASE_URL}/api/public/service-charges")
+        response = requests.get(f"{BASE_URL}/api/v1/public/service-charges")
         print(f"Service Charges: {response.status_code}")
         
         assert response.status_code == 200

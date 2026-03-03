@@ -6,19 +6,19 @@ Tests for customer portal authentication that accepts tokens from both:
 2. session_token query parameter
 
 Endpoints tested:
-- POST /api/customer-portal/login - Login with portal token
-- GET /api/customer-portal/dashboard - Dashboard with session token
-- GET /api/customer-portal/invoices - Invoices list
-- GET /api/customer-portal/estimates - Estimates list  
-- GET /api/customer-portal/profile - Customer profile
-- GET /api/customer-portal/statement - Account statement
-- POST /api/contacts-enhanced/{contact_id}/enable-portal - Enable portal for contact
+- POST /api/v1/customer-portal/login - Login with portal token
+- GET /api/v1/customer-portal/dashboard - Dashboard with session token
+- GET /api/v1/customer-portal/invoices - Invoices list
+- GET /api/v1/customer-portal/estimates - Estimates list  
+- GET /api/v1/customer-portal/profile - Customer profile
+- GET /api/v1/customer-portal/statement - Account statement
+- POST /api/v1/contacts-enhanced/{contact_id}/enable-portal - Enable portal for contact
 """
 import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials from the review request
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -29,7 +29,7 @@ TEST_CONTACT_ID = "1837096000000463081"
 def get_fresh_portal_token():
     """Enable portal for the contact and get a fresh token"""
     # Login as admin first
-    login_resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    login_resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -41,7 +41,7 @@ def get_fresh_portal_token():
     
     # Enable portal for contact
     enable_resp = requests.post(
-        f"{BASE_URL}/api/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
+        f"{BASE_URL}/api/v1/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
         headers=admin_headers
     )
     if enable_resp.status_code == 200:
@@ -59,7 +59,7 @@ class TestPortalLogin:
         if not portal_token:
             pytest.skip("Could not get portal token - admin login or enable-portal failed")
         
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_token
         })
         
@@ -78,7 +78,7 @@ class TestPortalLogin:
     
     def test_portal_login_invalid_token(self):
         """Test portal login with invalid token"""
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": "invalid-token-12345678"
         })
         
@@ -87,7 +87,7 @@ class TestPortalLogin:
     
     def test_portal_login_short_token(self):
         """Test portal login with token that's too short"""
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": "short"
         })
         
@@ -107,7 +107,7 @@ class TestPortalSessionTokenMethods:
             pytest.skip("Could not get portal token - admin login or enable-portal failed")
         
         # Login to portal
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_token
         })
         
@@ -120,7 +120,7 @@ class TestPortalSessionTokenMethods:
     def test_dashboard_with_header(self):
         """Test dashboard access with X-Portal-Session header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/dashboard",
+            f"{BASE_URL}/api/v1/customer-portal/dashboard",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -135,7 +135,7 @@ class TestPortalSessionTokenMethods:
     def test_dashboard_with_query_param(self):
         """Test dashboard access with session_token query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/dashboard?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/dashboard?session_token={self.session_token}"
         )
         
         print(f"Dashboard (query) status: {response.status_code}")
@@ -149,7 +149,7 @@ class TestPortalSessionTokenMethods:
     def test_invoices_with_header(self):
         """Test invoices access with X-Portal-Session header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/invoices",
+            f"{BASE_URL}/api/v1/customer-portal/invoices",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -164,7 +164,7 @@ class TestPortalSessionTokenMethods:
     def test_invoices_with_query_param(self):
         """Test invoices access with session_token query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/invoices?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/invoices?session_token={self.session_token}"
         )
         
         print(f"Invoices (query) status: {response.status_code}")
@@ -178,7 +178,7 @@ class TestPortalSessionTokenMethods:
     def test_estimates_with_header(self):
         """Test estimates access with X-Portal-Session header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/estimates",
+            f"{BASE_URL}/api/v1/customer-portal/estimates",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -193,7 +193,7 @@ class TestPortalSessionTokenMethods:
     def test_estimates_with_query_param(self):
         """Test estimates access with session_token query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/estimates?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/estimates?session_token={self.session_token}"
         )
         
         print(f"Estimates (query) status: {response.status_code}")
@@ -207,7 +207,7 @@ class TestPortalSessionTokenMethods:
     def test_profile_with_header(self):
         """Test profile access with X-Portal-Session header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/profile",
+            f"{BASE_URL}/api/v1/customer-portal/profile",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -222,7 +222,7 @@ class TestPortalSessionTokenMethods:
     def test_profile_with_query_param(self):
         """Test profile access with session_token query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/profile?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/profile?session_token={self.session_token}"
         )
         
         print(f"Profile (query) status: {response.status_code}")
@@ -236,7 +236,7 @@ class TestPortalSessionTokenMethods:
     def test_statement_with_header(self):
         """Test statement access with X-Portal-Session header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/statement",
+            f"{BASE_URL}/api/v1/customer-portal/statement",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -251,7 +251,7 @@ class TestPortalSessionTokenMethods:
     def test_statement_with_query_param(self):
         """Test statement access with session_token query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/statement?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/statement?session_token={self.session_token}"
         )
         
         print(f"Statement (query) status: {response.status_code}")
@@ -268,7 +268,7 @@ class TestPortalSessionValidation:
     
     def test_missing_session_token(self):
         """Test endpoint fails with missing session token"""
-        response = requests.get(f"{BASE_URL}/api/customer-portal/dashboard")
+        response = requests.get(f"{BASE_URL}/api/v1/customer-portal/dashboard")
         
         assert response.status_code == 401, f"Expected 401 for missing token, got {response.status_code}"
         print("SUCCESS: Missing session token correctly rejected")
@@ -276,7 +276,7 @@ class TestPortalSessionValidation:
     def test_invalid_session_token_header(self):
         """Test endpoint fails with invalid session token in header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/dashboard",
+            f"{BASE_URL}/api/v1/customer-portal/dashboard",
             headers={"X-Portal-Session": "invalid-session-token"}
         )
         
@@ -286,7 +286,7 @@ class TestPortalSessionValidation:
     def test_invalid_session_token_query(self):
         """Test endpoint fails with invalid session token in query"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/dashboard?session_token=invalid-session-token"
+            f"{BASE_URL}/api/v1/customer-portal/dashboard?session_token=invalid-session-token"
         )
         
         assert response.status_code == 401, f"Expected 401 for invalid token, got {response.status_code}"
@@ -299,7 +299,7 @@ class TestEnablePortalEndpoint:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get admin token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -313,7 +313,7 @@ class TestEnablePortalEndpoint:
     def test_enable_portal_for_contact(self):
         """Test enabling portal for a contact"""
         response = requests.post(
-            f"{BASE_URL}/api/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
+            f"{BASE_URL}/api/v1/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
             headers=self.admin_headers
         )
         
@@ -341,7 +341,7 @@ class TestEnablePortalEndpoint:
     def test_enable_portal_invalid_contact(self):
         """Test enable portal for non-existent contact"""
         response = requests.post(
-            f"{BASE_URL}/api/contacts-enhanced/invalid-contact-id/enable-portal",
+            f"{BASE_URL}/api/v1/contacts-enhanced/invalid-contact-id/enable-portal",
             headers=self.admin_headers
         )
         
@@ -360,7 +360,7 @@ class TestPortalLogout:
         if not portal_token:
             pytest.skip("Could not get portal token")
         
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_token
         })
         
@@ -372,7 +372,7 @@ class TestPortalLogout:
     def test_logout_with_header(self):
         """Test logout with X-Portal-Session header"""
         response = requests.post(
-            f"{BASE_URL}/api/customer-portal/logout",
+            f"{BASE_URL}/api/v1/customer-portal/logout",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -385,7 +385,7 @@ class TestPortalLogout:
         
         # Verify session is invalid after logout
         verify_response = requests.get(
-            f"{BASE_URL}/api/customer-portal/dashboard",
+            f"{BASE_URL}/api/v1/customer-portal/dashboard",
             headers={"X-Portal-Session": self.session_token}
         )
         assert verify_response.status_code == 401, f"Session should be invalid after logout, got {verify_response.status_code}"
@@ -403,7 +403,7 @@ class TestPortalSessionInfo:
         if not portal_token:
             pytest.skip("Could not get portal token")
         
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_token
         })
         
@@ -415,7 +415,7 @@ class TestPortalSessionInfo:
     def test_session_info_with_header(self):
         """Test getting session info with header"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/session",
+            f"{BASE_URL}/api/v1/customer-portal/session",
             headers={"X-Portal-Session": self.session_token}
         )
         
@@ -430,7 +430,7 @@ class TestPortalSessionInfo:
     def test_session_info_with_query_param(self):
         """Test getting session info with query parameter"""
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/session?session_token={self.session_token}"
+            f"{BASE_URL}/api/v1/customer-portal/session?session_token={self.session_token}"
         )
         
         print(f"Session info (query) status: {response.status_code}")

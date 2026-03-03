@@ -15,8 +15,8 @@ MONTH = date.today().month
 # ─── Auth with rate-limit awareness ──────────────────────────────────────────
 def get_token():
     for attempt in range(5):
-        r = requests.post(f"{BASE}/api/auth/login",
-                          json={"email":"admin@battwheels.in","password":"admin"}, timeout=20)
+        r = requests.post(f"{BASE}/api/v1/auth/login",
+                          json={"email":"admin@battwheels.in","password":"DevTest@123"}, timeout=20)
         if r.status_code == 200 and r.json().get("token"):
             return r.json()["token"]
         wait = r.json().get("retry_after", 20) if r.status_code == 429 else 20
@@ -31,7 +31,7 @@ H = {"Authorization": f"Bearer {TOKEN}",
 
 def ensure_token():
     global TOKEN, H
-    probe = requests.get(f"{BASE}/api/journal-entries?limit=1",
+    probe = requests.get(f"{BASE}/api/v1/journal-entries?limit=1",
                          headers=H, timeout=10)
     if probe.status_code == 401:
         print("  Token expired, refreshing...")
@@ -102,7 +102,7 @@ def find(tid):
 
 # ─── Pre-discovery (use existing JEs for account IDs) ────────────────────────
 print("=== SETUP ===")
-jes = get("/api/journal-entries", {"limit":100})
+jes = get("/api/v1/journal-entries", {"limit":100})
 JE_ACCS = {}
 if jes and jes.status_code==200:
     for je in jes.json().get("data",[]):
@@ -116,11 +116,11 @@ AP_ID   = next((k for k,(n,t) in JE_ACCS.items() if "payable" in n.lower() and "
 print(f"Bank={BANK_ID} AR={AR_ID} Rev={REV_ID} AP={AP_ID}")
 
 # Expense categories
-cats_r = get("/api/expenses/categories")
+cats_r = get("/api/v1/expenses/categories")
 EXP_CAT = cats_r.json().get("categories",[{}])[0].get("category_id") if (cats_r and cats_r.status_code==200) else None
 
 # Get existing customer
-cts_r = get("/api/contacts-enhanced", {"limit":5})
+cts_r = get("/api/v1/contacts-enhanced", {"limit":5})
 CUST_ID = None
 if cts_r and cts_r.status_code==200:
     data = cts_r.json()
@@ -134,7 +134,7 @@ time.sleep(2)
 print("\n" + "="*60 + "\nSECTION 1 — CHART OF ACCOUNTS INTEGRITY\n" + "="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 
-coa_r = get("/api/chart-of-accounts")
+coa_r = get("/api/v1/chart-of-accounts")
 COA = [a for a in (coa_r.json() if coa_r and coa_r.status_code==200 else []) if isinstance(a,dict)]
 TYPES = set(a.get("account_type","") for a in COA)
 has_asset = any(t in TYPES for t in ["Cash","Accounts Receivable","Other Current Asset","Fixed Asset","Stock"])
@@ -159,7 +159,7 @@ found_k   = [k for k in KEY_ACC if k not in missing_k]
 rec("S1","T1.3","Key accounts present", len(missing_k)<=2,
     f"Found: {found_k}  Missing: {missing_k}")
 
-ca = post("/api/chart-of-accounts",
+ca = post("/api/v1/chart-of-accounts",
           {"account_name":"Audit Test Account","account_type":"Expense","account_code":"9999"})
 CA_ID = None
 if ca and ca.status_code in [200,201]:
@@ -167,7 +167,7 @@ if ca and ca.status_code in [200,201]:
     CA_ID = (acc.get("account_id") if isinstance(acc,dict) else None) or raw.get("account_id")
     IDS["custom_account"] = CA_ID
     time.sleep(0.5)
-    coa2 = get("/api/chart-of-accounts")
+    coa2 = get("/api/v1/chart-of-accounts")
     found_c = coa2 and coa2.status_code==200 and any(
         "Audit Test Account" in (a.get("account_name","")) for a in coa2.json() if isinstance(a,dict))
     rec("S1","T1.4","Create custom account", found_c, f"ID={CA_ID} visible_in_coa={found_c}")
@@ -183,7 +183,7 @@ print("\n" + "="*60 + "\nSECTION 2 — DOUBLE ENTRY BOOKKEEPING\n" + "="*60)
 time.sleep(2)
 JE_ID = None
 if BANK_ID and REV_ID:
-    je_r = post("/api/journal-entries", {
+    je_r = post("/api/v1/journal-entries", {
         "entry_date": TODAY, "description": "Audit test entry — manual",
         "lines": [
             {"account_id": BANK_ID, "debit_amount": 1000, "credit_amount": 0},
@@ -201,7 +201,7 @@ else:
     rec("S2","T2.1","Manual JE creation", False, f"Bank={BANK_ID} Rev={REV_ID}")
 
 if JE_ID:
-    je_get = get(f"/api/journal-entries/{JE_ID}")
+    je_get = get(f"/api/v1/journal-entries/{JE_ID}")
     if je_get and je_get.status_code==200:
         raw = je_get.json(); entry = raw.get("entry",raw)
         lines = (entry.get("lines",[]) if isinstance(entry,dict) else raw.get("lines",[]))
@@ -214,7 +214,7 @@ else:
     rec("S2","T2.2","Entry balanced", False, "No JE")
 
 time.sleep(2)
-ub = post("/api/journal-entries", {
+ub = post("/api/v1/journal-entries", {
     "entry_date": TODAY, "description": "Unbalanced MUST FAIL",
     "lines": [
         {"account_id": BANK_ID or "dummy", "debit_amount": 500, "credit_amount": 0},
@@ -228,27 +228,27 @@ if ub:
 else:
     rec("S2","T2.3","Unbalanced entry rejected", False, "No response from API", critical=True)
 
-tb_r = get("/api/reports/trial-balance")
+tb_r = get("/api/v1/reports/trial-balance")
 if tb_r and tb_r.status_code==200:
     d0=tb_r.json(); dr=float(d0.get("total_debits",0)); cr=float(d0.get("total_credits",0))
     rec("S2","T2.4","Trial balance balanced", abs(dr-cr)<0.01, f"DR=₹{dr:,.2f} CR=₹{cr:,.2f}", critical=abs(dr-cr)>=0.01)
 else:
     rec("S2","T2.4","Trial balance endpoint", False,
-        "MISSING: /api/reports/trial-balance returns 404. Accounting equation verified via balance sheet A=L+E.",
+        "MISSING: /api/v1/reports/trial-balance returns 404. Accounting equation verified via balance sheet A=L+E.",
         critical=True)
 
 rec("S2","T2.5","CoA has non-zero account balances",
     any(float(a.get("balance",0))!=0 for a in COA),
     f"Non-zero balances present in CoA")
 
-jl=get("/api/journal-entries",{"page":1,"limit":10})
+jl=get("/api/v1/journal-entries",{"page":1,"limit":10})
 if jl and jl.status_code==200:
     rec("S2","T2.6","JE listing paginated", "pagination" in jl.json(),
         f"pagination={'pagination' in jl.json()} count={len(jl.json().get('data',[]))}")
 else:
     rec("S2","T2.6","JE listing paginated", False, f"Status={jl.status_code if jl else 'NONE'}")
 
-jf=get("/api/journal-entries",{"source_type":"INVOICE"})
+jf=get("/api/v1/journal-entries",{"source_type":"INVOICE"})
 if jf and jf.status_code==200:
     rec("S2","T2.7","Filter JEs by source_type", True, f"{len(jf.json().get('data',[]))} INVOICE JEs")
 else:
@@ -262,7 +262,7 @@ print("\n" + "="*60 + "\nSECTION 3 — INVOICE ACCOUNTING CHAIN\n" + "="*60)
 time.sleep(2)
 INV_ID = None
 # Create contact
-ct = post("/api/contacts-enhanced",
+ct = post("/api/v1/contacts-enhanced",
           {"name":"Audit Customer","contact_type":"customer","email":"audit_cust@test.com","phone":"9800000001"})
 if ct and ct.status_code in [200,201]:
     raw=ct.json(); c=raw.get("contact",raw)
@@ -270,7 +270,7 @@ if ct and ct.status_code in [200,201]:
     IDS["contact"] = CUST_ID
 
 if CUST_ID:
-    inv = post("/api/invoices-enhanced", {
+    inv = post("/api/v1/invoices-enhanced", {
         "customer_id": CUST_ID, "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
         "line_items": [{"name":"Audit Service","description":"EV audit","quantity":2,"rate":5000,"tax_rate":18}]
@@ -296,7 +296,7 @@ else:
 JE_INV = []
 if INV_ID:
     time.sleep(1.5)
-    je_i = get("/api/journal-entries", {"source_document_id": INV_ID})
+    je_i = get("/api/v1/journal-entries", {"source_document_id": INV_ID})
     if je_i and je_i.status_code==200:
         JE_INV = je_i.json().get("data",[])
         if JE_INV:
@@ -332,9 +332,9 @@ if INV_ID:
 else:
     rec("S3","T3.3","GST split", False, "No invoice")
 
-# T3.4 — Full payment (/api/invoices-enhanced/{id}/payments)
+# T3.4 — Full payment (/api/v1/invoices-enhanced/{id}/payments)
 if INV_ID:
-    pay = post(f"/api/invoices-enhanced/{INV_ID}/payments",
+    pay = post(f"/api/v1/invoices-enhanced/{INV_ID}/payments",
                {"amount":11800,"payment_mode":"BANK_TRANSFER","payment_date":TODAY})
     if pay and pay.status_code in [200,201]:
         d0=pay.json(); p2=d0.get("payment",d0)
@@ -349,7 +349,7 @@ else:
 # T3.5 — Payment JE count
 if INV_ID:
     time.sleep(1.5)
-    je_after = get("/api/journal-entries", {"source_document_id": INV_ID})
+    je_after = get("/api/v1/journal-entries", {"source_document_id": INV_ID})
     if je_after and je_after.status_code==200:
         all_jes = je_after.json().get("data",[])
         rec("S3","T3.5","Payment creates additional JE",
@@ -364,7 +364,7 @@ else:
 INV2 = None
 if CUST_ID:
     time.sleep(1)
-    inv2 = post("/api/invoices-enhanced", {
+    inv2 = post("/api/v1/invoices-enhanced", {
         "customer_id": CUST_ID, "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
         "line_items": [{"name":"Partial test","quantity":1,"rate":5000,"tax_rate":0}]
@@ -373,7 +373,7 @@ if CUST_ID:
         raw=inv2.json(); iv=raw.get("invoice",raw)
         INV2 = (iv.get("invoice_id") if isinstance(iv,dict) else None) or raw.get("invoice_id")
         IDS["invoice2"] = INV2
-        pay2 = post(f"/api/invoices-enhanced/{INV2}/payments",
+        pay2 = post(f"/api/v1/invoices-enhanced/{INV2}/payments",
                     {"amount":2000,"payment_mode":"CASH","payment_date":TODAY})
         if pay2 and pay2.status_code in [200,201]:
             d2=pay2.json(); p2=d2.get("payment",d2)
@@ -391,7 +391,7 @@ else:
 
 # T3.7 — PDF
 if INV_ID:
-    pdf = requests.get(f"{BASE}/api/invoices-enhanced/{INV_ID}/pdf", headers=H, timeout=45)
+    pdf = requests.get(f"{BASE}/api/v1/invoices-enhanced/{INV_ID}/pdf", headers=H, timeout=45)
     ct = pdf.headers.get("content-type","") if pdf else ""
     sz = len(pdf.content) if pdf else 0
     is_pdf = "pdf" in ct.lower() or (pdf.content[:4]==b'%PDF' if pdf else False)
@@ -400,7 +400,7 @@ if INV_ID:
 else:
     rec("S3","T3.7","Invoice PDF", False, "No invoice")
 
-ar = get("/api/reports/ar-aging")
+ar = get("/api/v1/reports/ar-aging")
 rec("S3","T3.8","AR aging report", ar and ar.status_code==200,
     f"Status={ar.status_code if ar else 'NONE'} keys={list(ar.json().keys())[:5] if ar and ar.status_code==200 else ''}")
 
@@ -412,7 +412,7 @@ print("\n" + "="*60 + "\nSECTION 4 — PURCHASE & BILL ACCOUNTING\n" + "="*60)
 time.sleep(2)
 VEND_ID = BILL_ID = None
 
-vend = post("/api/contacts-enhanced",
+vend = post("/api/v1/contacts-enhanced",
             {"name":"Audit Vendor Co","contact_type":"vendor","email":"audit_v@test.com","phone":"9800000002"})
 if vend and vend.status_code in [200,201]:
     raw=vend.json(); c=raw.get("contact",raw)
@@ -420,7 +420,7 @@ if vend and vend.status_code in [200,201]:
     IDS["vendor"] = VEND_ID
 
 if VEND_ID:
-    bill = post("/api/bills-enhanced", {
+    bill = post("/api/v1/bills-enhanced", {
         "vendor_id": VEND_ID, "bill_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
         "line_items": [{"name":"Audit Parts","description":"Test parts","quantity":10,"rate":500,"tax_rate":18}]
@@ -444,7 +444,7 @@ else:
 JE_BILL = []
 if BILL_ID:
     time.sleep(1.5)
-    je_b = get("/api/journal-entries", {"source_document_id": BILL_ID})
+    je_b = get("/api/v1/journal-entries", {"source_document_id": BILL_ID})
     if je_b and je_b.status_code==200:
         JE_BILL = je_b.json().get("data",[])
         if JE_BILL:
@@ -468,9 +468,9 @@ else:
 
 if BILL_ID:
     time.sleep(1)
-    ap_bill = post(f"/api/bills-enhanced/{BILL_ID}/approve", {})
+    ap_bill = post(f"/api/v1/bills-enhanced/{BILL_ID}/approve", {})
     if ap_bill is None or ap_bill.status_code not in [200,201]:
-        ap_bill = put(f"/api/bills-enhanced/{BILL_ID}", {"status":"APPROVED"})
+        ap_bill = put(f"/api/v1/bills-enhanced/{BILL_ID}", {"status":"APPROVED"})
     rec("S4","T4.3","Approve bill",
         ap_bill and ap_bill.status_code in [200,201],
         f"Status={ap_bill.status_code if ap_bill else 'NONE'}: {ap_bill.text[:100] if ap_bill else ''}")
@@ -479,10 +479,10 @@ else:
 
 if BILL_ID:
     time.sleep(1)
-    bp = post(f"/api/bills-enhanced/{BILL_ID}/payments",
+    bp = post(f"/api/v1/bills-enhanced/{BILL_ID}/payments",
               {"amount":5900,"payment_mode":"BANK_TRANSFER","payment_date":TODAY})
     if bp is None or bp.status_code not in [200,201]:
-        bp = post(f"/api/bills-enhanced/{BILL_ID}/payment",
+        bp = post(f"/api/v1/bills-enhanced/{BILL_ID}/payment",
                   {"amount":5900,"payment_mode":"BANK_TRANSFER","payment_date":TODAY})
     rec("S4","T4.4","Bill payment",
         bp and bp.status_code in [200,201],
@@ -490,7 +490,7 @@ if BILL_ID:
 else:
     rec("S4","T4.4","Bill payment", False, "No bill")
 
-ap_ag = get("/api/reports/ap-aging")
+ap_ag = get("/api/v1/reports/ap-aging")
 rec("S4","T4.5","AP aging report", ap_ag and ap_ag.status_code==200,
     f"Status={ap_ag.status_code if ap_ag else 'NONE'}")
 
@@ -503,7 +503,7 @@ time.sleep(2)
 EXP_ID = None
 
 if EXP_CAT:
-    exp = post("/api/expenses", {
+    exp = post("/api/v1/expenses", {
         "description":"Audit test expense","amount":2500,
         "expense_date":TODAY,"vendor_name":"Test Supplier",
         "payment_mode":"CASH","category_id":EXP_CAT
@@ -521,9 +521,9 @@ else:
 
 if EXP_ID:
     time.sleep(1)
-    ap_e = post(f"/api/expenses/{EXP_ID}/approve", {})
+    ap_e = post(f"/api/v1/expenses/{EXP_ID}/approve", {})
     if ap_e is None or ap_e.status_code not in [200,201]:
-        ap_e = put(f"/api/expenses/{EXP_ID}/approve")
+        ap_e = put(f"/api/v1/expenses/{EXP_ID}/approve")
     rec("S5","T5.2","Approve expense",
         ap_e and ap_e.status_code in [200,201],
         f"Status={ap_e.status_code if ap_e else 'NONE'}: {ap_e.text[:100] if ap_e else ''}")
@@ -532,7 +532,7 @@ else:
 
 if EXP_ID:
     time.sleep(1.5)
-    je_e = get("/api/journal-entries", {"source_document_id": EXP_ID})
+    je_e = get("/api/v1/journal-entries", {"source_document_id": EXP_ID})
     if je_e and je_e.status_code==200:
         entries = je_e.json().get("data",[])
         if entries:
@@ -550,7 +550,7 @@ if EXP_ID:
 else:
     rec("S5","T5.3","Expense JE", False, "No expense")
 
-pl = get("/api/reports/profit-loss")
+pl = get("/api/v1/reports/profit-loss")
 if pl and pl.status_code==200:
     txt = json.dumps(pl.json()).lower()
     rec("S5","T5.4","Expense in P&L", "expense" in txt or "advertising" in txt,
@@ -566,7 +566,7 @@ print("\n" + "="*60 + "\nSECTION 6 — INVENTORY & COGS\n" + "="*60)
 time.sleep(2)
 ITEM_ID = TICK_ID = None
 
-item = post("/api/inventory", {
+item = post("/api/v1/inventory", {
     "name":"Audit Battery Cell","sku":"AUDIT-BATT-001","category":"Parts",
     "unit_price":800,"cost_price":800,"quantity":50,"min_stock_level":10
 })
@@ -579,7 +579,7 @@ else:
         f"Status={item.status_code if item else 'NONE'}: {item.text[:200] if item else ''}")
 
 if ITEM_ID:
-    ig = get(f"/api/inventory/{ITEM_ID}")
+    ig = get(f"/api/v1/inventory/{ITEM_ID}")
     if ig and ig.status_code==200:
         qty = float(ig.json().get("quantity",0))
         rec("S6","T6.2","Opening stock = 50", qty==50, f"qty={qty}")
@@ -589,7 +589,7 @@ else:
     rec("S6","T6.2","Stock level", False, "No item")
 
 if CUST_ID:
-    tick = post("/api/tickets", {
+    tick = post("/api/v1/tickets", {
         "title":"Audit Test Ticket","description":"Battery issue",
         "customer_id":CUST_ID,"vehicle_type":"2W","status":"OPEN"
     })
@@ -600,15 +600,15 @@ if CUST_ID:
 if TICK_ID and ITEM_ID:
     jc_r = None
     for parts_path in [
-        f"/api/tickets/{TICK_ID}/job-card/parts",
-        f"/api/tickets/{TICK_ID}/parts"
+        f"/api/v1/tickets/{TICK_ID}/job-card/parts",
+        f"/api/v1/tickets/{TICK_ID}/parts"
     ]:
         jc_r = post(parts_path, {"item_id":ITEM_ID,"quantity":2,"unit_cost":800})
         if jc_r and jc_r.status_code in [200,201]:
             break
     if jc_r and jc_r.status_code in [200,201]:
         time.sleep(1.5)
-        after = get(f"/api/inventory/{ITEM_ID}")
+        after = get(f"/api/v1/inventory/{ITEM_ID}")
         new_qty = float(after.json().get("quantity",50)) if after and after.status_code==200 else 50
         rec("S6","T6.3","Job card deducts stock", new_qty<=48, f"before=50 after={new_qty}")
     else:
@@ -618,7 +618,7 @@ else:
     rec("S6","T6.3","Job card deducts stock", False, f"tick={TICK_ID} item={ITEM_ID}")
 
 time.sleep(1.5)
-je_jc = get("/api/journal-entries", {"source_type":"JOB_CARD"})
+je_jc = get("/api/v1/journal-entries", {"source_type":"JOB_CARD"})
 if je_jc and je_jc.status_code==200:
     entries = je_jc.json().get("data",[])
     if entries:
@@ -631,9 +631,9 @@ if je_jc and je_jc.status_code==200:
 else:
     rec("S6","T6.4","COGS JE", False, f"Status={je_jc.status_code if je_jc else 'NONE'}", critical=True)
 
-val = get("/api/reports/inventory-valuation")
+val = get("/api/v1/reports/inventory-valuation")
 rec("S6","T6.5","Inventory valuation", val and val.status_code==200, f"Status={val.status_code if val else 'NONE'}")
-ro = get("/api/inventory/reorder-suggestions")
+ro = get("/api/v1/inventory/reorder-suggestions")
 rec("S6","T6.6","Reorder suggestions", ro and ro.status_code==200, f"Status={ro.status_code if ro else 'NONE'}")
 
 p6,n6=score("S6"); print(f"\n  S6: {p6}/{n6}")
@@ -643,7 +643,7 @@ print("\n" + "="*60 + "\nSECTION 7 — GST COMPLIANCE\n" + "="*60)
 # ══════════════════════════════════════════════════════════════════════════════
 time.sleep(2)
 
-gst_sum = get("/api/gst/summary", {"month":MONTH,"year":YEAR})
+gst_sum = get("/api/v1/gst/summary", {"month":MONTH,"year":YEAR})
 if gst_sum and gst_sum.status_code==200:
     d0=gst_sum.json(); s=d0.get("summary",d0)
     txt=json.dumps(s).lower()
@@ -656,7 +656,7 @@ else:
     rec("S7","T7.1","GST summary", False, f"Status={gst_sum.status_code if gst_sum else 'NONE'}")
 
 time.sleep(2)
-gstr1 = get("/api/gst/gstr1", {"month":MONTH,"year":YEAR})
+gstr1 = get("/api/v1/gst/gstr1", {"month":MONTH,"year":YEAR})
 if gstr1 and gstr1.status_code==200:
     d0=gstr1.json(); txt=json.dumps(d0).lower()
     rec("S7","T7.2","GSTR-1", True, f"B2B={'b2b' in txt} B2C={'b2c' in txt} keys={list(d0.keys())[:6]}")
@@ -666,7 +666,7 @@ else:
 MG_ID = None
 if CUST_ID:
     time.sleep(2)
-    mg = post("/api/invoices-enhanced", {
+    mg = post("/api/v1/invoices-enhanced", {
         "customer_id": CUST_ID, "invoice_date": TODAY,
         "due_date": (date.today()+timedelta(30)).isoformat(),
         "line_items": [
@@ -713,7 +713,7 @@ print("\n" + "="*60 + "\nSECTION 8 — FINANCIAL REPORTS\n" + "="*60)
 time.sleep(2)
 ASSETS = LIABS = EQ_V = 0.0
 
-pl2 = get("/api/reports/profit-loss", {"date_from":f"{YEAR}-01-01","date_to":TODAY})
+pl2 = get("/api/v1/reports/profit-loss", {"date_from":f"{YEAR}-01-01","date_to":TODAY})
 if pl2 and pl2.status_code==200:
     txt=json.dumps(pl2.json()).lower()
     rec("S8","T8.1","P&L structure", "revenue" in txt or "income" in txt,
@@ -721,7 +721,7 @@ if pl2 and pl2.status_code==200:
 else:
     rec("S8","T8.1","P&L structure", False, f"Status={pl2.status_code if pl2 else 'NONE'}")
 
-bs = get("/api/reports/balance-sheet")
+bs = get("/api/v1/reports/balance-sheet")
 if bs and bs.status_code==200:
     d0=bs.json(); rep=d0.get("report",d0)
     if isinstance(rep,dict):
@@ -741,7 +741,7 @@ if bs and bs.status_code==200:
 else:
     rec("S8","T8.2","Balance sheet", False, f"Status={bs.status_code if bs else 'NONE'}")
 
-tb_r = get("/api/reports/trial-balance")
+tb_r = get("/api/v1/reports/trial-balance")
 if tb_r and tb_r.status_code==200:
     d0=tb_r.json(); dr=float(d0.get("total_debits",0)); cr=float(d0.get("total_credits",0))
     diff=abs(dr-cr)
@@ -749,10 +749,10 @@ if tb_r and tb_r.status_code==200:
         f"DR=₹{dr:,.2f} CR=₹{cr:,.2f} diff=₹{diff:,.2f}", critical=diff>=0.01)
 else:
     rec("S8","T8.3","Trial balance endpoint MISSING",
-        False, "AUDIT FINDING: /api/reports/trial-balance does not exist (404). Must be built.",
+        False, "AUDIT FINDING: /api/v1/reports/trial-balance does not exist (404). Must be built.",
         critical=True)
 
-fd = get("/api/finance/dashboard")
+fd = get("/api/v1/finance/dashboard")
 if fd and fd.status_code==200:
     txt=json.dumps(fd.json()).lower()
     rec("S8","T8.4","Finance dashboard", any(k in txt for k in ["revenue","receivable","ar","sales"]),
@@ -761,8 +761,8 @@ else:
     rec("S8","T8.4","Finance dashboard", False, f"Status={fd.status_code if fd else 'NONE'}")
 
 last_m=MONTH-1 if MONTH>1 else 12; last_y=YEAR if MONTH>1 else YEAR-1
-pl_t = get("/api/reports/profit-loss",{"period":"this_month"})
-pl_l = get("/api/reports/profit-loss",{"date_from":f"{last_y}-{last_m:02d}-01","date_to":f"{last_y}-{last_m:02d}-{calendar.monthrange(last_y,last_m)[1]}"})
+pl_t = get("/api/v1/reports/profit-loss",{"period":"this_month"})
+pl_l = get("/api/v1/reports/profit-loss",{"date_from":f"{last_y}-{last_m:02d}-01","date_to":f"{last_y}-{last_m:02d}-{calendar.monthrange(last_y,last_m)[1]}"})
 rec("S8","T8.5","P&L period comparison",
     (pl_t and pl_t.status_code==200) and (pl_l and pl_l.status_code==200),
     f"this={pl_t.status_code if pl_t else 'NONE'} last={pl_l.status_code if pl_l else 'NONE'}")
@@ -775,7 +775,7 @@ print("\n" + "="*60 + "\nSECTION 9 — HR & PAYROLL\n" + "="*60)
 time.sleep(2)
 EMP_ID = None
 
-emp = post("/api/hr/employees", {
+emp = post("/api/v1/hr/employees", {
     "first_name":"Audit","last_name":"Tech","designation":"Senior Technician",
     "department":"Workshop","basic_salary":30000,"pan_number":"AUDIT1234F",
     "pf_applicable":True,"esi_applicable":True,
@@ -791,7 +791,7 @@ else:
         f"Status={emp.status_code if emp else 'NONE'}: {emp.text[:200] if emp else ''}")
 
 if EMP_ID:
-    eg = get(f"/api/hr/employees/{EMP_ID}")
+    eg = get(f"/api/v1/hr/employees/{EMP_ID}")
     if eg and eg.status_code==200:
         d0=eg.json()
         basic   = float(d0.get("basic_salary") or d0.get("ctc") or d0.get("gross_salary") or 0)
@@ -810,7 +810,7 @@ else:
 
 if EMP_ID:
     time.sleep(1)
-    pr = post("/api/hr/payroll/generate", {"month":MONTH,"year":YEAR,"employee_ids":[EMP_ID]})
+    pr = post("/api/v1/hr/payroll/generate", {"month":MONTH,"year":YEAR,"employee_ids":[EMP_ID]})
     if pr and pr.status_code in [200,201]:
         d0=pr.json()
         PR_RUN_ID = d0.get("payroll_run_id") or d0.get("id")
@@ -824,7 +824,7 @@ else:
 
 if EMP_ID:
     time.sleep(1)
-    pr_recs = get("/api/hr/payroll/records", {"month":MONTH,"year":YEAR,"employee_id":EMP_ID})
+    pr_recs = get("/api/v1/hr/payroll/records", {"month":MONTH,"year":YEAR,"employee_id":EMP_ID})
     PR_REC = None
     if pr_recs and pr_recs.status_code==200:
         d0=pr_recs.json(); recs=d0.get("data",d0 if isinstance(d0,list) else [])
@@ -846,7 +846,7 @@ else:
     rec("S9","T9.4","Payroll calculations", False, "No employee")
 
 time.sleep(1.5)
-je_pr = get("/api/journal-entries", {"source_type":"PAYROLL"})
+je_pr = get("/api/v1/journal-entries", {"source_type":"PAYROLL"})
 if je_pr and je_pr.status_code==200:
     entries = je_pr.json().get("data",[])
     if entries:
@@ -863,7 +863,7 @@ else:
     rec("S9","T9.5","Payroll JE", False, f"Status={je_pr.status_code if je_pr else 'NONE'}", critical=True)
 
 if EMP_ID:
-    tds = get(f"/api/hr/tds/calculate/{EMP_ID}")
+    tds = get(f"/api/v1/hr/tds/calculate/{EMP_ID}")
     if tds and tds.status_code==200:
         d0=tds.json()
         tds_amt = float(d0.get("tds_amount",d0.get("tds",d0.get("monthly_tds",0))))
@@ -875,7 +875,7 @@ else:
     rec("S9","T9.6","TDS calculation", False, "No employee")
 
 if EMP_ID:
-    f16 = requests.get(f"{BASE}/api/hr/payroll/form16/{EMP_ID}/2024-25/pdf", headers=H, timeout=45)
+    f16 = requests.get(f"{BASE}/api/v1/hr/payroll/form16/{EMP_ID}/2024-25/pdf", headers=H, timeout=45)
     ct = f16.headers.get("content-type","") if f16 else ""
     is_pdf = "pdf" in ct.lower() or (f16.content[:4]==b'%PDF' if f16 else False)
     rec("S9","T9.7","Form 16 PDF",
@@ -887,7 +887,7 @@ else:
 if EMP_ID:
     time.sleep(1)
     nw = (date.today()+timedelta(7)).isoformat()
-    lv = post("/api/hr/leave/request", {
+    lv = post("/api/v1/hr/leave/request", {
         "employee_id":EMP_ID,"leave_type":"SICK",
         "from_date":nw,"to_date":nw,"reason":"Audit test"
     })
@@ -900,7 +900,7 @@ else:
     rec("S9","T9.8","Leave management", False, "No employee")
 
 if EMP_ID:
-    att = post("/api/hr/attendance/clock-in", {
+    att = post("/api/v1/hr/attendance/clock-in", {
         "employee_id":EMP_ID,"clock_in_time":f"{TODAY}T09:00:00","notes":"Audit"
     })
     rec("S9","T9.9","Attendance clock-in",
@@ -910,7 +910,7 @@ else:
     rec("S9","T9.9","Attendance", False, "No employee")
 
 if EMP_ID:
-    f16d = get(f"/api/hr/payroll/form16/{EMP_ID}/2024-25")
+    f16d = get(f"/api/v1/hr/payroll/form16/{EMP_ID}/2024-25")
     if f16d and f16d.status_code==200:
         ct = f16d.headers.get("content-type","")
         is_pdf = "pdf" in ct.lower() or f16d.content[:4]==b'%PDF'
@@ -930,14 +930,14 @@ print("\n" + "="*60 + "\nSECTION 10 — BANKING MODULE\n" + "="*60)
 time.sleep(2)
 BNK_ID = None
 
-bl = get("/api/banking/accounts")
+bl = get("/api/v1/banking/accounts")
 if bl and bl.status_code==200:
     d0=bl.json(); accs=d0.get("data",d0 if isinstance(d0,list) else [])
     rec("S10","T10.1","Fetch bank accounts", True, f"{len(accs) if isinstance(accs,list) else '?'} accounts")
 else:
     rec("S10","T10.1","Fetch bank accounts", False, f"Status={bl.status_code if bl else 'NONE'}: {bl.text[:150] if bl else ''}")
 
-bk = post("/api/banking/accounts", {
+bk = post("/api/v1/banking/accounts", {
     "account_name":"Audit Test Bank","account_number":"9999000099990001",
     "bank_name":"HDFC Bank","ifsc_code":"HDFC0001234",
     "opening_balance":100000,"account_type":"CURRENT"
@@ -951,9 +951,9 @@ else:
     rec("S10","T10.2","Create bank account", False, f"Status={bk.status_code if bk else 'NONE'}: {bk.text[:200] if bk else ''}")
 
 if BNK_ID:
-    tx = get("/api/banking/transactions", {"account_id":BNK_ID})
+    tx = get("/api/v1/banking/transactions", {"account_id":BNK_ID})
     rec("S10","T10.3","Bank transactions", tx and tx.status_code==200, f"Status={tx.status_code if tx else 'NONE'}")
-    rc = get("/api/banking/reconciliation", {"account_id":BNK_ID})
+    rc = get("/api/v1/banking/reconciliation", {"account_id":BNK_ID})
     rec("S10","T10.4","Bank reconciliation", rc and rc.status_code==200,
         f"Status={rc.status_code if rc else 'NONE'} keys={list(rc.json().keys())[:5] if rc and rc.status_code==200 else ''}")
 else:
@@ -968,7 +968,7 @@ print("\n" + "="*60 + "\nSECTION 11 — EFI AI INTELLIGENCE\n" + "="*60)
 time.sleep(2)
 EFI_R1 = None
 
-efi1 = post("/api/efi/match", {
+efi1 = post("/api/v1/efi/match", {
     "symptom_text": "battery not charging, reduced range by 40%, BMS warning light on",
     "vehicle_type": "2W", "make": "Ola Electric", "model": "S1 Pro"
 })
@@ -984,7 +984,7 @@ else:
     rec("S11","T11.1","EFI symptom match", False,
         f"Status={efi1.status_code if efi1 else 'NONE'}: {efi1.text[:200] if efi1 else ''}")
 
-fc = get("/api/efi/failure-cards")
+fc = get("/api/v1/efi/failure-cards")
 if fc and fc.status_code==200:
     d0=fc.json(); cnt=len(d0) if isinstance(d0,list) else d0.get("total",d0.get("count","?"))
     rec("S11","T11.2","EFI failure card database", True, f"cards={cnt}")
@@ -993,7 +993,7 @@ else:
 
 time.sleep(1)
 t1=time.time()
-efi2 = post("/api/efi/match", {
+efi2 = post("/api/v1/efi/match", {
     "symptom_text": "battery not charging, reduced range by 40%, BMS warning",
     "vehicle_type": "2W"
 })
@@ -1003,7 +1003,7 @@ rec("S11","T11.3","EFI second call performance",
     f"Status={efi2.status_code if efi2 else 'NONE'} in {elapsed:.2f}s")
 
 time.sleep(1)
-efi3w = post("/api/efi/match", {
+efi3w = post("/api/v1/efi/match", {
     "symptom_text": "motor overheating on incline, power cut under heavy load",
     "vehicle_type": "3W", "make": "Mahindra", "model": "Treo"
 })
@@ -1018,7 +1018,7 @@ else:
     rec("S11","T11.4","EFI 3W response", False, f"Status={efi3w.status_code if efi3w else 'NONE'}")
 
 time.sleep(1)
-efi_pd = post("/api/efi/patterns/detect", {
+efi_pd = post("/api/v1/efi/patterns/detect", {
     "symptom_text":"battery not charging, reduced range","vehicle_type":"2W"
 })
 if efi_pd and efi_pd.status_code in [200,201]:
@@ -1034,7 +1034,7 @@ print("\n" + "="*60 + "\nSECTION 12 — ACCOUNTING INTEGRITY FINAL\n" + "="*60)
 time.sleep(2)
 FINAL_DR = FINAL_CR = 0.0
 
-tb_fin = get("/api/reports/trial-balance")
+tb_fin = get("/api/v1/reports/trial-balance")
 if tb_fin and tb_fin.status_code==200:
     d0=tb_fin.json(); FINAL_DR=float(d0.get("total_debits",0)); FINAL_CR=float(d0.get("total_credits",0))
     diff=abs(FINAL_DR-FINAL_CR)
@@ -1042,10 +1042,10 @@ if tb_fin and tb_fin.status_code==200:
         diff<0.01, f"DR=₹{FINAL_DR:,.2f} CR=₹{FINAL_CR:,.2f} diff=₹{diff:,.2f}", critical=diff>=0.01)
 else:
     rec("S12","T12.1","Trial balance endpoint MISSING",
-        False, "/api/reports/trial-balance = 404. AUDIT FINDING: Must be built before CA certification.",
+        False, "/api/v1/reports/trial-balance = 404. AUDIT FINDING: Must be built before CA certification.",
         critical=True)
 
-je_all = get("/api/journal-entries",{"limit":100})
+je_all = get("/api/v1/journal-entries",{"limit":100})
 orphans=0; total_je=0
 if je_all and je_all.status_code==200:
     entries=je_all.json().get("data",[]); total_je=len(entries)
@@ -1064,7 +1064,7 @@ else:
     rec("S12","T12.3","Accounting equation", False,
         "Balance sheet structured totals not available for verification", critical=True)
 
-gst_fin = get("/api/gst/summary",{"month":MONTH,"year":YEAR})
+gst_fin = get("/api/v1/gst/summary",{"month":MONTH,"year":YEAR})
 if gst_fin and gst_fin.status_code==200:
     s=gst_fin.json().get("summary",gst_fin.json())
     out = float(s.get("sales",{}).get("output_tax",0) if isinstance(s.get("sales"),dict) else 0) or \
@@ -1082,7 +1082,7 @@ else:
 
 if INV_ID and JE_INV:
     je_date = (JE_INV[0].get("entry_date",""))[:10]
-    inv_detail = get(f"/api/invoices-enhanced/{INV_ID}")
+    inv_detail = get(f"/api/v1/invoices-enhanced/{INV_ID}")
     if inv_detail and inv_detail.status_code==200:
         raw=inv_detail.json(); iv=raw.get("invoice",raw)
         inv_date = ((iv if isinstance(iv,dict) else raw).get("invoice_date",""))[:10]
@@ -1106,18 +1106,18 @@ def cleanup(name, paths):
         if r and r.status_code in [200,204]: print(f"  ✅ {name}"); return
     print(f"  ⚠ {name} (cannot delete)")
 
-if IDS.get("custom_account"): cleanup("custom_account",[f"/api/chart-of-accounts/{IDS['custom_account']}"])
-if IDS.get("journal_entry"):  cleanup("journal_entry",[f"/api/journal-entries/{IDS['journal_entry']}"])
+if IDS.get("custom_account"): cleanup("custom_account",[f"/api/v1/chart-of-accounts/{IDS['custom_account']}"])
+if IDS.get("journal_entry"):  cleanup("journal_entry",[f"/api/v1/journal-entries/{IDS['journal_entry']}"])
 for k in ["invoice","invoice2","invoice_multigst"]:
-    if IDS.get(k): cleanup(k,[f"/api/invoices-enhanced/{IDS[k]}"])
-if IDS.get("bill"): cleanup("bill",[f"/api/bills-enhanced/{IDS['bill']}",f"/api/bills/{IDS['bill']}"])
-if IDS.get("expense"): cleanup("expense",[f"/api/expenses/{IDS['expense']}"])
-if IDS.get("ticket"): cleanup("ticket",[f"/api/tickets/{IDS['ticket']}"])
-if IDS.get("inventory_item"): cleanup("inventory_item",[f"/api/inventory/{IDS['inventory_item']}"])
-if IDS.get("employee"): cleanup("employee",[f"/api/hr/employees/{IDS['employee']}"])
-if IDS.get("bank_account"): cleanup("bank_account",[f"/api/banking/accounts/{IDS['bank_account']}"])
-if IDS.get("contact"): cleanup("contact",[f"/api/contacts-enhanced/{IDS['contact']}"])
-if IDS.get("vendor"): cleanup("vendor",[f"/api/contacts-enhanced/{IDS['vendor']}"])
+    if IDS.get(k): cleanup(k,[f"/api/v1/invoices-enhanced/{IDS[k]}"])
+if IDS.get("bill"): cleanup("bill",[f"/api/v1/bills-enhanced/{IDS['bill']}",f"/api/v1/bills/{IDS['bill']}"])
+if IDS.get("expense"): cleanup("expense",[f"/api/v1/expenses/{IDS['expense']}"])
+if IDS.get("ticket"): cleanup("ticket",[f"/api/v1/tickets/{IDS['ticket']}"])
+if IDS.get("inventory_item"): cleanup("inventory_item",[f"/api/v1/inventory/{IDS['inventory_item']}"])
+if IDS.get("employee"): cleanup("employee",[f"/api/v1/hr/employees/{IDS['employee']}"])
+if IDS.get("bank_account"): cleanup("bank_account",[f"/api/v1/banking/accounts/{IDS['bank_account']}"])
+if IDS.get("contact"): cleanup("contact",[f"/api/v1/contacts-enhanced/{IDS['contact']}"])
+if IDS.get("vendor"): cleanup("vendor",[f"/api/v1/contacts-enhanced/{IDS['vendor']}"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # GENERATE REPORT
@@ -1206,8 +1206,8 @@ report += f"""---
 
 | Check | Result | Notes |
 |-------|--------|-------|
-| Trial Balance endpoint exists | {"YES ✅" if TB_BAL else "**MISSING ❌**"} | `/api/reports/trial-balance` = 404 (must be built) |
-| Accounting equation A = L + E | {"YES ✅" if EQ_OK else "NOT VERIFIED ⚠️"} | From /api/reports/balance-sheet |
+| Trial Balance endpoint exists | {"YES ✅" if TB_BAL else "**MISSING ❌**"} | `/api/v1/reports/trial-balance` = 404 (must be built) |
+| Accounting equation A = L + E | {"YES ✅" if EQ_OK else "NOT VERIFIED ⚠️"} | From /api/v1/reports/balance-sheet |
 | Unbalanced entry rejected | {"**YES ✅**" if UB_REJ else "**NO 🔴 CRITICAL**"} | HTTP 400 on debit≠credit |
 | GST output-input reconciliation | {"YES ✅" if GST_OK else "NO ❌"} | T12.4 |
 | Revenue on accrual basis | {"YES ✅" if ACC_OK else "NO ❌"} | JE date = invoice date |
@@ -1221,10 +1221,10 @@ report += f"""---
 
 | Check | Result | Notes |
 |-------|--------|-------|
-| Symptom matching works | {"YES ✅" if EFI_OK else "NO ❌"} | `/api/efi/match` — knowledge-base driven |
+| Symptom matching works | {"YES ✅" if EFI_OK else "NO ❌"} | `/api/v1/efi/match` — knowledge-base driven |
 | Failure card database | {"YES ✅" if F("T11.2")["ok"] else "NO ❌"} | 107 failure cards |
 | Vehicle-type specific | {"YES ✅" if F("T11.4")["ok"] else "PARTIAL ⚠️"} | 2W vs 3W different matches |
-| Pattern detection | {"YES ✅" if F("T11.5")["ok"] else "NO ❌"} | `/api/efi/patterns/detect` |
+| Pattern detection | {"YES ✅" if F("T11.5")["ok"] else "NO ❌"} | `/api/v1/efi/patterns/detect` |
 
 ---
 
@@ -1234,7 +1234,7 @@ report += f"""---
 |-------|--------|-------|
 | Employee creation (first_name/last_name) | {"YES ✅" if F("T9.1")["ok"] else "NO ❌"} | T9.1 |
 | PF 12% + ESI 0.75% correct | {"YES ✅" if PF_OK else "NEEDS VERIFICATION ⚠️"} | T9.4 |
-| TDS calculation endpoint | {"YES ✅" if TDS_OK else "NO ❌"} | `/api/hr/tds/calculate/{{emp_id}}` |
+| TDS calculation endpoint | {"YES ✅" if TDS_OK else "NO ❌"} | `/api/v1/hr/tds/calculate/{{emp_id}}` |
 | Payroll JE balanced | {"**YES ✅**" if PAY_JE else "**NO 🔴**"} | T9.5 |
 | Leave management | {"YES ✅" if F("T9.8")["ok"] else "NO ❌"} | T9.8 |
 | Attendance clock-in | {"YES ✅" if F("T9.9")["ok"] else "NO ❌"} | T9.9 |
@@ -1254,14 +1254,14 @@ The platform auto-posts double-entry journal entries on:
 - Job card parts consumption → COGS JEs present ✅ ({S("S6")[0]}/{S("S6")[1]} inventory tests pass)
 
 ### 2. Trial Balance Gap
-The `/api/reports/trial-balance` endpoint **does not exist** (HTTP 404). This is a notable gap for an accounting platform — accountants need to run a trial balance as a routine check. The accounting equation is verified indirectly: **Assets = Liabilities + Equity** {'holds (Balance sheet balanced ✅)' if EQ_OK else 'cannot be fully verified from current API structure'}.
+The `/api/v1/reports/trial-balance` endpoint **does not exist** (HTTP 404). This is a notable gap for an accounting platform — accountants need to run a trial balance as a routine check. The accounting equation is verified indirectly: **Assets = Liabilities + Equity** {'holds (Balance sheet balanced ✅)' if EQ_OK else 'cannot be fully verified from current API structure'}.
 
 ### 3. GST Compliance  
 The GST engine correctly:
 - Applies **CGST (9%) + SGST (9%) split** on intra-state invoices ✅ (verified in T3.1/T3.3)
 - Applies **different GST rates** (5%/12%/18%/28%) to individual line items ✅
 - Tracks ITC from purchases in the GST summary ✅
-- Returns GSTR-1 format data via `/api/gst/gstr1` ✅
+- Returns GSTR-1 format data via `/api/v1/gst/gstr1` ✅
 - GST summary shows financial_year, sales, purchases, net_liability structure ✅
 
 ### 4. EFI Intelligence Assessment
@@ -1270,14 +1270,14 @@ The EFI module is a **knowledge-base symptom-matching engine** (not a raw LLM pr
 This is a **genuine diagnostic intelligence system** appropriate for field technicians. It is not a mock.
 
 ### 5. Payroll Compliance (Indian Statutory)
-Employee creation uses first_name/last_name fields (not a single 'name'). PF at 12% and ESI at 0.75% are configured. TDS calculation endpoint is available at `/api/hr/tds/calculate/{{emp_id}}`. Leave management (SICK leave request) and attendance clock-in both function. Form 16 generation requires prior payroll history.
+Employee creation uses first_name/last_name fields (not a single 'name'). PF at 12% and ESI at 0.75% are configured. TDS calculation endpoint is available at `/api/v1/hr/tds/calculate/{{emp_id}}`. Leave management (SICK leave request) and attendance clock-in both function. Form 16 generation requires prior payroll history.
 
 ### 6. What Must Be Fixed Before Commercial Certification
 
 | Priority | Fix | Impact |
 |----------|-----|--------|
 | P0 | {'✅ Already passing' if UB_REJ else '❌ Enforce debit=credit on all JE paths'} | Core accounting integrity |
-| P0 | Build `/api/reports/trial-balance` endpoint | Accountant access to TB |
+| P0 | Build `/api/v1/reports/trial-balance` endpoint | Accountant access to TB |
 | P1 | Verify payroll PF/ESI calculations on actual payroll run records | Statutory compliance |
 | P1 | Confirm CGST/SGST is stored in JE lines (not just invoice totals) | GST filing accuracy |
 | P2 | Add `normal_balance` field to CoA response | Standard accounting field |

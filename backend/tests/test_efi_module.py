@@ -16,7 +16,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -30,7 +30,7 @@ class TestEFIModuleAuth:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -49,7 +49,7 @@ class TestEFIModuleAuth:
     def test_admin_login_success(self):
         """Test admin login with valid credentials"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -66,7 +66,7 @@ class TestFailureCardCRUD:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -108,7 +108,7 @@ class TestFailureCardCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -137,7 +137,7 @@ class TestFailureCardCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -163,7 +163,7 @@ class TestFailureCardCRUD:
     def test_list_failure_cards(self, auth_headers):
         """Test listing failure cards with pagination"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -180,7 +180,7 @@ class TestFailureCardCRUD:
         """Test filtering failure cards by status and subsystem"""
         # Filter by subsystem
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?subsystem=battery",
+            f"{BASE_URL}/api/v1/efi/failure-cards?subsystem=battery",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -194,7 +194,7 @@ class TestFailureCardCRUD:
         
         # Filter by status
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?status=draft",
+            f"{BASE_URL}/api/v1/efi/failure-cards?status=draft",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -208,7 +208,7 @@ class TestFailureCardCRUD:
     def test_get_single_failure_card(self, auth_headers, test_failure_card_id):
         """Test getting a single failure card by ID"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/{test_failure_card_id}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{test_failure_card_id}",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -225,7 +225,7 @@ class TestFailureCardCRUD:
     def test_get_nonexistent_failure_card(self, auth_headers):
         """Test getting a non-existent failure card returns 404"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/nonexistent_id_12345",
+            f"{BASE_URL}/api/v1/efi/failure-cards/nonexistent_id_12345",
             headers=auth_headers
         )
         assert response.status_code == 404
@@ -239,7 +239,7 @@ class TestFailureCardCRUD:
         }
         
         response = requests.put(
-            f"{BASE_URL}/api/efi/failure-cards/{test_failure_card_id}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{test_failure_card_id}",
             headers=auth_headers,
             json=update_data
         )
@@ -255,7 +255,7 @@ class TestFailureCardCRUD:
     def test_get_confidence_history(self, auth_headers, test_failure_card_id):
         """Test getting confidence score history"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/{test_failure_card_id}/confidence-history",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{test_failure_card_id}/confidence-history",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -276,7 +276,7 @@ class TestAIMatchingPipeline:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -301,7 +301,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -334,7 +334,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -355,7 +355,7 @@ class TestAIMatchingPipeline:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/match",
+            f"{BASE_URL}/api/v1/efi/match",
             headers=auth_headers,
             json=match_request
         )
@@ -378,7 +378,7 @@ class TestMatchTicketToFailures:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -406,7 +406,7 @@ class TestMatchTicketToFailures:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -418,7 +418,7 @@ class TestMatchTicketToFailures:
     def test_match_ticket_to_failures(self, auth_headers, test_ticket_id):
         """Test matching an existing ticket to failure cards"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/match-ticket/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/efi/match-ticket/{test_ticket_id}",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -436,7 +436,7 @@ class TestMatchTicketToFailures:
     def test_match_nonexistent_ticket(self, auth_headers):
         """Test matching non-existent ticket returns 404"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/match-ticket/nonexistent_ticket_12345",
+            f"{BASE_URL}/api/v1/efi/match-ticket/nonexistent_ticket_12345",
             headers=auth_headers
         )
         assert response.status_code == 404
@@ -446,13 +446,13 @@ class TestMatchTicketToFailures:
         """Test getting AI-suggested failure cards for a ticket"""
         # First ensure matching was performed
         requests.post(
-            f"{BASE_URL}/api/efi/match-ticket/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/efi/match-ticket/{test_ticket_id}",
             headers=auth_headers
         )
         
         # Now get matches via tickets endpoint
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{test_ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{test_ticket_id}/matches",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -472,7 +472,7 @@ class TestEFIAnalytics:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -489,7 +489,7 @@ class TestEFIAnalytics:
     def test_get_analytics_overview(self, auth_headers):
         """Test getting EFI analytics overview"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/analytics/overview",
+            f"{BASE_URL}/api/v1/efi/analytics/overview",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -509,7 +509,7 @@ class TestEFIAnalytics:
     def test_get_effectiveness_report(self, auth_headers):
         """Test getting effectiveness report"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/analytics/effectiveness",
+            f"{BASE_URL}/api/v1/efi/analytics/effectiveness",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -528,7 +528,7 @@ class TestFailureCardApproval:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -560,7 +560,7 @@ class TestFailureCardApproval:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -572,7 +572,7 @@ class TestFailureCardApproval:
     def test_approve_failure_card(self, auth_headers, draft_card_id):
         """Test approving a failure card"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards/{draft_card_id}/approve",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{draft_card_id}/approve",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -590,7 +590,7 @@ class TestFailureCardApproval:
         
         # Verify card status changed
         get_response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/{draft_card_id}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{draft_card_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -600,7 +600,7 @@ class TestFailureCardApproval:
     def test_approve_already_approved_card(self, auth_headers, draft_card_id):
         """Test approving an already approved card returns error"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards/{draft_card_id}/approve",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{draft_card_id}/approve",
             headers=auth_headers
         )
         assert response.status_code == 400
@@ -614,7 +614,7 @@ class TestFailureCardDeprecation:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -643,7 +643,7 @@ class TestFailureCardDeprecation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards",
+            f"{BASE_URL}/api/v1/efi/failure-cards",
             headers=auth_headers,
             json=card_data
         )
@@ -653,7 +653,7 @@ class TestFailureCardDeprecation:
     def test_deprecate_failure_card(self, auth_headers, card_to_deprecate):
         """Test deprecating a failure card"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/failure-cards/{card_to_deprecate}/deprecate?reason=Superseded%20by%20new%20card",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{card_to_deprecate}/deprecate?reason=Superseded%20by%20new%20card",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -664,7 +664,7 @@ class TestFailureCardDeprecation:
         
         # Verify card status changed
         get_response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards/{card_to_deprecate}",
+            f"{BASE_URL}/api/v1/efi/failure-cards/{card_to_deprecate}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -681,7 +681,7 @@ class TestEventIntegration:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -708,7 +708,7 @@ class TestEventIntegration:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -721,7 +721,7 @@ class TestEventIntegration:
         
         # Check if AI matching was performed
         get_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -748,7 +748,7 @@ class TestEventIntegration:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -759,7 +759,7 @@ class TestEventIntegration:
         
         # 2. Match ticket to failure cards
         match_response = requests.post(
-            f"{BASE_URL}/api/efi/match-ticket/{ticket_id}",
+            f"{BASE_URL}/api/v1/efi/match-ticket/{ticket_id}",
             headers=auth_headers
         )
         assert match_response.status_code == 200
@@ -768,7 +768,7 @@ class TestEventIntegration:
         
         # 3. Get ticket matches
         get_matches_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/matches",
             headers=auth_headers
         )
         assert get_matches_response.status_code == 200
@@ -777,7 +777,7 @@ class TestEventIntegration:
         
         # 4. Update ticket status
         update_response = requests.put(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers=auth_headers,
             json={"status": "in_progress"}
         )
@@ -786,7 +786,7 @@ class TestEventIntegration:
         
         # 5. Close ticket
         close_response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
             headers=auth_headers,
             json={
                 "resolution": "Motor bearing replaced, vibration resolved",
@@ -807,7 +807,7 @@ class TestCleanup:
     def admin_token(self):
         """Get admin authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200
@@ -825,7 +825,7 @@ class TestCleanup:
         """Verify test data can be identified for cleanup"""
         # List failure cards with TEST_ prefix
         response = requests.get(
-            f"{BASE_URL}/api/efi/failure-cards?search=TEST_",
+            f"{BASE_URL}/api/v1/efi/failure-cards?search=TEST_",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -836,7 +836,7 @@ class TestCleanup:
         
         # List tickets with TEST_ prefix
         tickets_response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers
         )
         assert tickets_response.status_code == 200

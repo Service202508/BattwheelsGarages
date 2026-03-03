@@ -94,7 +94,7 @@ class TestStarterPayrollBlocked:
     """Test 1: Starter org cannot access payroll endpoints"""
 
     def test_starter_payroll_records_returns_403(self, starter_token):
-        """GET /api/hr/payroll/records with starter plan should return 403"""
+        """GET /api/v1/hr/payroll/records with starter plan should return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
         resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"  Status: {resp.status_code}")
@@ -147,7 +147,7 @@ class TestProfessionalPayrollAllowed:
     """Test 2: Professional org can access payroll endpoints"""
 
     def test_professional_payroll_records_returns_200(self, professional_token):
-        """GET /api/hr/payroll/records with professional plan should return 200"""
+        """GET /api/v1/hr/payroll/records with professional plan should return 200"""
         headers = make_headers(professional_token)
         resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"  Status: {resp.status_code}")
@@ -218,7 +218,7 @@ class TestPlatformAdminPlanChange:
     """Test 4: Platform admin can list orgs and change org plan"""
 
     def test_platform_admin_can_list_organizations(self, platform_admin_token):
-        """GET /api/platform/organizations should return list"""
+        """GET /api/v1/platform/organizations should return list"""
         headers = make_headers(platform_admin_token)
         resp = requests.get(f"{BASE_URL}/api/v1/platform/organizations", headers=headers)
         print(f"  Status: {resp.status_code}")
@@ -230,7 +230,7 @@ class TestPlatformAdminPlanChange:
         print(f"  Found {len(data['organizations'])} organizations")
 
     def test_platform_admin_can_upgrade_org_to_professional(self, platform_admin_token, starter_token):
-        """PUT /api/platform/organizations/org_9c74befbaa95/plan to professional should succeed"""
+        """PUT /api/v1/platform/organizations/org_9c74befbaa95/plan to professional should succeed"""
         headers = make_headers(platform_admin_token)
         resp = requests.put(
             f"{BASE_URL}/api/v1/platform/organizations/{STARTER_ORG}/plan",
@@ -284,7 +284,7 @@ class TestStarterProjectsBlocked:
     """Test 5: Starter org cannot access Projects module"""
 
     def test_starter_projects_returns_403(self, starter_token):
-        """GET /api/projects with starter plan should return 403"""
+        """GET /api/v1/projects with starter plan should return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
         resp = requests.get(f"{BASE_URL}/api/v1/projects", headers=headers)
         print(f"  Status: {resp.status_code}")
@@ -318,18 +318,18 @@ class TestStarterEFIAllowed:
     """Test 6: EFI Intelligence is allowed on Starter plan"""
 
     def test_starter_efi_failure_cards_not_403(self, starter_token):
-        """GET /api/efi/failure-cards with starter plan should NOT return 403"""
+        """GET /api/v1/efi/failure-cards with starter plan should NOT return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/efi/failure-cards", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/efi/failure-cards", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code != 403, \
             f"Starter should be allowed EFI access but got 403: {resp.text[:300]}"
 
     def test_starter_efi_failure_cards_returns_2xx_or_404(self, starter_token):
-        """GET /api/efi/failure-cards should return 200 (or 404 if empty)"""
+        """GET /api/v1/efi/failure-cards should return 200 (or 404 if empty)"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/efi/failure-cards", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/efi/failure-cards", headers=headers)
         # Accept 200 (success) or 404 (no data) but not 403 (blocked)
         assert resp.status_code in [200, 201, 404], \
             f"Expected 200/404 for EFI on starter, got {resp.status_code}: {resp.text[:300]}"
@@ -342,18 +342,18 @@ class TestStarterAdvancedReportsAllowed:
     """Test 7: Advanced Reports is allowed on Starter plan"""
 
     def test_starter_profit_loss_report_not_403(self, starter_token):
-        """GET /api/reports/profit-loss with starter plan should NOT return 403"""
+        """GET /api/v1/reports/profit-loss with starter plan should NOT return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/reports/profit-loss", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/profit-loss", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code != 403, \
             f"Starter should be allowed Advanced Reports but got 403: {resp.text[:300]}"
 
     def test_starter_profit_loss_returns_200_or_other_non_403(self, starter_token):
-        """GET /api/reports/profit-loss should return 200 (or other non-403)"""
+        """GET /api/v1/reports/profit-loss should return 200 (or other non-403)"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/reports/profit-loss", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/profit-loss", headers=headers)
         # Accept 200, 201, 400 (bad params), 404 (no data), 500 - just not 403
         assert resp.status_code in [200, 201, 400, 404, 500], \
             f"Expected non-403 for Advanced Reports on starter, got {resp.status_code}: {resp.text[:300]}"
@@ -383,7 +383,7 @@ class TestBattwheelsGaragesProfessionalAllAccess:
     def test_professional_advanced_reports_accessible(self, professional_token):
         """Advanced Reports should NOT return 403 for professional org"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/reports/profit-loss", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/reports/profit-loss", headers=headers)
         print(f"  Advanced Reports status: {resp.status_code}")
         assert resp.status_code != 403, \
             f"Professional should access advanced reports but got 403: {resp.text[:300]}"
@@ -391,7 +391,7 @@ class TestBattwheelsGaragesProfessionalAllAccess:
     def test_professional_efi_accessible(self, professional_token):
         """EFI should NOT return 403 for professional org"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/efi/failure-cards", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/efi/failure-cards", headers=headers)
         print(f"  EFI status: {resp.status_code}")
         assert resp.status_code != 403, \
             f"Professional should access EFI but got 403: {resp.text[:300]}"

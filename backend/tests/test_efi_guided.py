@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -20,7 +20,7 @@ TECH_PASSWORD = "DevTest@123"
 def admin_token():
     """Get admin authentication token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
     )
     if response.status_code == 200:
@@ -32,7 +32,7 @@ def admin_token():
 def tech_token():
     """Get technician authentication token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
     )
     if response.status_code == 200:
@@ -64,7 +64,7 @@ class TestEFISeedData:
     def test_seed_failure_cards(self, admin_headers):
         """Test seeding failure cards and decision trees"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/seed",
+            f"{BASE_URL}/api/v1/efi-guided/seed",
             headers=admin_headers
         )
         assert response.status_code == 200
@@ -80,7 +80,7 @@ class TestEFIEmbeddings:
     def test_generate_all_embeddings(self, admin_headers):
         """Test generating embeddings for all failure cards"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/embeddings/generate-all",
+            f"{BASE_URL}/api/v1/efi-guided/embeddings/generate-all",
             headers=admin_headers
         )
         assert response.status_code == 200
@@ -92,7 +92,7 @@ class TestEFIEmbeddings:
     def test_embedding_status(self, tech_headers):
         """Test embedding status endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/embeddings/status",
+            f"{BASE_URL}/api/v1/efi-guided/embeddings/status",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -108,7 +108,7 @@ class TestEFIFailureCards:
     def test_list_failure_cards(self, tech_headers):
         """Test listing all failure cards"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -120,7 +120,7 @@ class TestEFIFailureCards:
     def test_list_failure_cards_by_subsystem(self, tech_headers):
         """Test filtering failure cards by subsystem"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards?subsystem=battery",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards?subsystem=battery",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -134,7 +134,7 @@ class TestEFIFailureCards:
         """Test getting a single failure card with decision tree"""
         # First get list to find a card ID
         list_response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards?limit=1",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards?limit=1",
             headers=tech_headers
         )
         assert list_response.status_code == 200
@@ -146,7 +146,7 @@ class TestEFIFailureCards:
         
         # Get single card
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards/{failure_id}",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards/{failure_id}",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -164,7 +164,7 @@ class TestEFISuggestions:
         """Get or create a test ticket"""
         # Get existing tickets
         response = requests.get(
-            f"{BASE_URL}/api/tickets?limit=5",
+            f"{BASE_URL}/api/v1/tickets?limit=5",
             headers=admin_headers
         )
         if response.status_code == 200:
@@ -176,7 +176,7 @@ class TestEFISuggestions:
     def test_get_suggestions_for_ticket(self, tech_headers, test_ticket_id):
         """Test getting EFI suggestions for a ticket"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/suggestions/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{test_ticket_id}",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -189,7 +189,7 @@ class TestEFISuggestions:
     def test_suggestions_include_confidence_scores(self, tech_headers, test_ticket_id):
         """Test that suggestions include confidence scores"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/suggestions/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/{test_ticket_id}",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -208,7 +208,7 @@ class TestEFIDiagnosticSession:
     def test_ticket_id(self, admin_headers):
         """Get or create a test ticket"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?limit=5",
+            f"{BASE_URL}/api/v1/tickets?limit=5",
             headers=admin_headers
         )
         if response.status_code == 200:
@@ -221,7 +221,7 @@ class TestEFIDiagnosticSession:
     def failure_card_with_tree(self, tech_headers):
         """Get a failure card that has a decision tree"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards",
             headers=tech_headers
         )
         if response.status_code == 200:
@@ -235,7 +235,7 @@ class TestEFIDiagnosticSession:
     def test_start_diagnostic_session(self, tech_headers, test_ticket_id, failure_card_with_tree):
         """Test starting a diagnostic session"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/start",
+            f"{BASE_URL}/api/v1/efi-guided/session/start",
             headers=tech_headers,
             json={
                 "ticket_id": test_ticket_id,
@@ -256,7 +256,7 @@ class TestEFIDiagnosticSession:
     def test_session_without_decision_tree_fails(self, tech_headers, test_ticket_id):
         """Test that starting session without decision tree fails"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/start",
+            f"{BASE_URL}/api/v1/efi-guided/session/start",
             headers=tech_headers,
             json={
                 "ticket_id": test_ticket_id,
@@ -269,7 +269,7 @@ class TestEFIDiagnosticSession:
         """Test getting session details"""
         # Start a session first
         start_response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/start",
+            f"{BASE_URL}/api/v1/efi-guided/session/start",
             headers=tech_headers,
             json={
                 "ticket_id": test_ticket_id,
@@ -283,7 +283,7 @@ class TestEFIDiagnosticSession:
         
         # Get session
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/session/{session_id}",
+            f"{BASE_URL}/api/v1/efi-guided/session/{session_id}",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -301,7 +301,7 @@ class TestEFIStepRecording:
         """Create an active session for testing"""
         # Get a ticket
         tickets_response = requests.get(
-            f"{BASE_URL}/api/tickets?limit=5",
+            f"{BASE_URL}/api/v1/tickets?limit=5",
             headers=admin_headers
         )
         if tickets_response.status_code != 200:
@@ -315,7 +315,7 @@ class TestEFIStepRecording:
         
         # Get a failure card with decision tree
         cards_response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards",
             headers=tech_headers
         )
         if cards_response.status_code != 200:
@@ -333,7 +333,7 @@ class TestEFIStepRecording:
         
         # Start session
         start_response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/start",
+            f"{BASE_URL}/api/v1/efi-guided/session/start",
             headers=tech_headers,
             json={
                 "ticket_id": ticket_id,
@@ -351,7 +351,7 @@ class TestEFIStepRecording:
         current_step_id = active_session["current_step"]["step_id"]
         
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/{session_id}/step/{current_step_id}",
+            f"{BASE_URL}/api/v1/efi-guided/session/{session_id}/step/{current_step_id}",
             headers=tech_headers,
             json={
                 "outcome": "pass",
@@ -369,7 +369,7 @@ class TestEFIStepRecording:
         current_step_id = active_session["current_step"]["step_id"]
         
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/{session_id}/step/{current_step_id}",
+            f"{BASE_URL}/api/v1/efi-guided/session/{session_id}/step/{current_step_id}",
             headers=tech_headers,
             json={
                 "outcome": "fail",
@@ -389,7 +389,7 @@ class TestEFISmartEstimate:
         """Test that estimate endpoint requires completed session"""
         # Try to get estimate for non-existent session
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/session/nonexistent/estimate",
+            f"{BASE_URL}/api/v1/efi-guided/session/nonexistent/estimate",
             headers=tech_headers
         )
         assert response.status_code == 404
@@ -402,7 +402,7 @@ class TestEFIDecisionTrees:
         """Test getting decision tree for a failure card"""
         # Get a failure card with decision tree
         cards_response = requests.get(
-            f"{BASE_URL}/api/efi-guided/failure-cards",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards",
             headers=tech_headers
         )
         if cards_response.status_code != 200:
@@ -419,7 +419,7 @@ class TestEFIDecisionTrees:
             pytest.skip("No failure cards with decision trees")
         
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/trees/{failure_card_id}",
+            f"{BASE_URL}/api/v1/efi-guided/trees/{failure_card_id}",
             headers=tech_headers
         )
         assert response.status_code == 200
@@ -437,14 +437,14 @@ class TestEFIAuthentication:
     def test_suggestions_requires_auth(self):
         """Test that suggestions endpoint requires authentication"""
         response = requests.get(
-            f"{BASE_URL}/api/efi-guided/suggestions/test_ticket"
+            f"{BASE_URL}/api/v1/efi-guided/suggestions/test_ticket"
         )
         assert response.status_code == 401
     
     def test_session_start_requires_auth(self):
         """Test that session start requires authentication"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/session/start",
+            f"{BASE_URL}/api/v1/efi-guided/session/start",
             json={"ticket_id": "test", "failure_card_id": "test"}
         )
         assert response.status_code == 401
@@ -452,7 +452,7 @@ class TestEFIAuthentication:
     def test_seed_requires_admin(self, tech_headers):
         """Test that seed endpoint requires admin role"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/seed",
+            f"{BASE_URL}/api/v1/efi-guided/seed",
             headers=tech_headers
         )
         assert response.status_code == 403
@@ -460,7 +460,7 @@ class TestEFIAuthentication:
     def test_embeddings_generate_requires_admin(self, tech_headers):
         """Test that embeddings generation requires admin role"""
         response = requests.post(
-            f"{BASE_URL}/api/efi-guided/embeddings/generate-all",
+            f"{BASE_URL}/api/v1/efi-guided/embeddings/generate-all",
             headers=tech_headers
         )
         assert response.status_code == 403

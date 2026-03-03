@@ -1,6 +1,6 @@
 """
 Test file for new features in iteration 64:
-1. GET /api/inventory-enhanced/stock - Bug fix for 404 error
+1. GET /api/v1/inventory-enhanced/stock - Bug fix for 404 error
 2. Organization Settings Export/Import
 3. Customer Portal Support Tickets
 """
@@ -12,11 +12,11 @@ import json
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 
 class TestInventoryEnhancedStock:
-    """Test the fixed /api/inventory-enhanced/stock endpoint (was 404, now should be 200)"""
+    """Test the fixed /api/v1/inventory-enhanced/stock endpoint (was 404, now should be 200)"""
     
     def test_stock_endpoint_returns_200(self):
-        """Bug fix test: GET /api/inventory-enhanced/stock should return 200 with stock data"""
-        response = requests.get(f"{BASE_URL}/api/inventory-enhanced/stock")
+        """Bug fix test: GET /api/v1/inventory-enhanced/stock should return 200 with stock data"""
+        response = requests.get(f"{BASE_URL}/api/v1/inventory-enhanced/stock")
         print(f"Stock endpoint status: {response.status_code}")
         print(f"Stock response: {response.text[:500]}")
         
@@ -31,7 +31,7 @@ class TestInventoryEnhancedStock:
     
     def test_stock_endpoint_with_warehouse_filter(self):
         """Test stock endpoint with optional warehouse_id filter"""
-        response = requests.get(f"{BASE_URL}/api/inventory-enhanced/stock", params={"warehouse_id": "WH-TEST-123"})
+        response = requests.get(f"{BASE_URL}/api/v1/inventory-enhanced/stock", params={"warehouse_id": "WH-TEST-123"})
         print(f"Stock with warehouse filter status: {response.status_code}")
         
         # Should still return 200 even with non-existent warehouse (empty list)
@@ -46,7 +46,7 @@ class TestOrganizationSettingsExportImport:
     @pytest.fixture
     def auth_token(self):
         """Login and get auth token"""
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -62,8 +62,8 @@ class TestOrganizationSettingsExportImport:
         return {"Content-Type": "application/json"}
     
     def test_export_organization_settings(self, auth_headers):
-        """Test GET /api/org/settings/export returns JSON with org and settings data"""
-        response = requests.get(f"{BASE_URL}/api/org/settings/export", headers=auth_headers)
+        """Test GET /api/v1/org/settings/export returns JSON with org and settings data"""
+        response = requests.get(f"{BASE_URL}/api/v1/org/settings/export", headers=auth_headers)
         print(f"Export settings status: {response.status_code}")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}. Response: {response.text[:300]}"
@@ -88,9 +88,9 @@ class TestOrganizationSettingsExportImport:
         print(f"Export contains org: {org.get('name')}, currency: {settings.get('currency')}")
     
     def test_import_organization_settings(self, auth_headers):
-        """Test POST /api/org/settings/import accepts JSON and updates settings"""
+        """Test POST /api/v1/org/settings/import accepts JSON and updates settings"""
         # First export to get current settings
-        export_response = requests.get(f"{BASE_URL}/api/org/settings/export", headers=auth_headers)
+        export_response = requests.get(f"{BASE_URL}/api/v1/org/settings/export", headers=auth_headers)
         assert export_response.status_code == 200
         export_data = export_response.json()
         
@@ -107,7 +107,7 @@ class TestOrganizationSettingsExportImport:
         }
         
         # Import the settings
-        response = requests.post(f"{BASE_URL}/api/org/settings/import", 
+        response = requests.post(f"{BASE_URL}/api/v1/org/settings/import", 
                                 headers=auth_headers, 
                                 json=import_data)
         print(f"Import settings status: {response.status_code}")
@@ -123,7 +123,7 @@ class TestOrganizationSettingsExportImport:
         """Test that import rejects invalid format"""
         invalid_data = {"invalid": "data", "no_export_version": True}
         
-        response = requests.post(f"{BASE_URL}/api/org/settings/import", 
+        response = requests.post(f"{BASE_URL}/api/v1/org/settings/import", 
                                 headers=auth_headers, 
                                 json=invalid_data)
         print(f"Import invalid format status: {response.status_code}")
@@ -138,7 +138,7 @@ class TestCustomerPortalTickets:
     def portal_contact_setup(self):
         """Setup: Create a test contact with portal access"""
         # Login as admin to create contact with portal access
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -168,7 +168,7 @@ class TestCustomerPortalTickets:
             "status": "active"
         }
         
-        create_response = requests.post(f"{BASE_URL}/api/contacts-v2/", 
+        create_response = requests.post(f"{BASE_URL}/api/v1/contacts-v2/", 
                                        headers=headers, 
                                        json=contact_data)
         
@@ -189,7 +189,7 @@ class TestCustomerPortalTickets:
             pytest.skip("No portal contact setup")
             return None
         
-        login_response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        login_response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_contact_setup["portal_token"]
         })
         
@@ -209,7 +209,7 @@ class TestCustomerPortalTickets:
         if not portal_contact_setup:
             pytest.skip("No portal contact available")
         
-        response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/customer-portal/login", json={
             "token": portal_contact_setup["portal_token"]
         })
         print(f"Portal login status: {response.status_code}")
@@ -222,12 +222,12 @@ class TestCustomerPortalTickets:
         print(f"Portal session created for: {data['contact'].get('name')}")
     
     def test_get_customer_tickets_empty(self, portal_session):
-        """Test GET /api/customer-portal/tickets returns list (can be empty)"""
+        """Test GET /api/v1/customer-portal/tickets returns list (can be empty)"""
         if not portal_session:
             pytest.skip("No portal session")
         
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/tickets",
+            f"{BASE_URL}/api/v1/customer-portal/tickets",
             params={"session_token": portal_session["session_token"]}
         )
         print(f"Get tickets status: {response.status_code}")
@@ -240,7 +240,7 @@ class TestCustomerPortalTickets:
         print(f"Customer tickets count: {len(data['tickets'])}")
     
     def test_create_support_ticket(self, portal_session):
-        """Test POST /api/customer-portal/tickets creates new support request"""
+        """Test POST /api/v1/customer-portal/tickets creates new support request"""
         if not portal_session:
             pytest.skip("No portal session")
         
@@ -252,7 +252,7 @@ class TestCustomerPortalTickets:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/customer-portal/tickets",
+            f"{BASE_URL}/api/v1/customer-portal/tickets",
             params={"session_token": portal_session["session_token"]},
             json=ticket_data,
             headers={"Content-Type": "application/json"}
@@ -275,7 +275,7 @@ class TestCustomerPortalTickets:
         return ticket["ticket_id"]
     
     def test_get_ticket_detail(self, portal_session):
-        """Test GET /api/customer-portal/tickets/{ticket_id} returns ticket with updates"""
+        """Test GET /api/v1/customer-portal/tickets/{ticket_id} returns ticket with updates"""
         if not portal_session:
             pytest.skip("No portal session")
         
@@ -288,7 +288,7 @@ class TestCustomerPortalTickets:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/customer-portal/tickets",
+            f"{BASE_URL}/api/v1/customer-portal/tickets",
             params={"session_token": portal_session["session_token"]},
             json=ticket_data,
             headers={"Content-Type": "application/json"}
@@ -301,7 +301,7 @@ class TestCustomerPortalTickets:
         
         # Now get the ticket detail
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/customer-portal/tickets/{ticket_id}",
             params={"session_token": portal_session["session_token"]}
         )
         print(f"Get ticket detail status: {response.status_code}")
@@ -316,7 +316,7 @@ class TestCustomerPortalTickets:
         print(f"Ticket detail retrieved: {ticket_id}, updates: {len(ticket.get('updates', []))}")
     
     def test_add_ticket_comment(self, portal_session):
-        """Test POST /api/customer-portal/tickets/{ticket_id}/comment adds comment"""
+        """Test POST /api/v1/customer-portal/tickets/{ticket_id}/comment adds comment"""
         if not portal_session:
             pytest.skip("No portal session")
         
@@ -329,7 +329,7 @@ class TestCustomerPortalTickets:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/customer-portal/tickets",
+            f"{BASE_URL}/api/v1/customer-portal/tickets",
             params={"session_token": portal_session["session_token"]},
             json=ticket_data,
             headers={"Content-Type": "application/json"}
@@ -343,7 +343,7 @@ class TestCustomerPortalTickets:
         # Add a comment
         comment_text = "TEST: This is a customer comment from the portal"
         response = requests.post(
-            f"{BASE_URL}/api/customer-portal/tickets/{ticket_id}/comment",
+            f"{BASE_URL}/api/v1/customer-portal/tickets/{ticket_id}/comment",
             params={
                 "session_token": portal_session["session_token"],
                 "comment": comment_text
@@ -359,12 +359,12 @@ class TestCustomerPortalTickets:
         print(f"Comment added to ticket: {ticket_id}")
     
     def test_get_customer_vehicles(self, portal_session):
-        """Test GET /api/customer-portal/vehicles returns customer vehicles"""
+        """Test GET /api/v1/customer-portal/vehicles returns customer vehicles"""
         if not portal_session:
             pytest.skip("No portal session")
         
         response = requests.get(
-            f"{BASE_URL}/api/customer-portal/vehicles",
+            f"{BASE_URL}/api/v1/customer-portal/vehicles",
             params={"session_token": portal_session["session_token"]}
         )
         print(f"Get vehicles status: {response.status_code}")
@@ -383,7 +383,7 @@ class TestOrganizationSwitcher:
     @pytest.fixture
     def auth_headers(self):
         """Login and get auth headers"""
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -393,8 +393,8 @@ class TestOrganizationSwitcher:
         return {}
     
     def test_get_current_organization(self, auth_headers):
-        """Test GET /api/org returns current organization"""
-        response = requests.get(f"{BASE_URL}/api/org", headers=auth_headers)
+        """Test GET /api/v1/org returns current organization"""
+        response = requests.get(f"{BASE_URL}/api/v1/org", headers=auth_headers)
         print(f"Get org status: {response.status_code}")
         
         assert response.status_code == 200
@@ -404,8 +404,8 @@ class TestOrganizationSwitcher:
         print(f"Current org: {data.get('name', data.get('organization_id'))}")
     
     def test_list_user_organizations(self, auth_headers):
-        """Test GET /api/org/list returns user's organizations"""
-        response = requests.get(f"{BASE_URL}/api/org/list", headers=auth_headers)
+        """Test GET /api/v1/org/list returns user's organizations"""
+        response = requests.get(f"{BASE_URL}/api/v1/org/list", headers=auth_headers)
         print(f"List orgs status: {response.status_code}")
         
         assert response.status_code == 200
@@ -415,8 +415,8 @@ class TestOrganizationSwitcher:
         print(f"User has {len(data['organizations'])} organization(s)")
     
     def test_get_organization_settings(self, auth_headers):
-        """Test GET /api/org/settings returns settings"""
-        response = requests.get(f"{BASE_URL}/api/org/settings", headers=auth_headers)
+        """Test GET /api/v1/org/settings returns settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/org/settings", headers=auth_headers)
         print(f"Get settings status: {response.status_code}")
         
         assert response.status_code == 200
@@ -426,8 +426,8 @@ class TestOrganizationSwitcher:
         assert "currency" in data or "timezone" in data or "organization_id" in data
     
     def test_get_roles(self, auth_headers):
-        """Test GET /api/org/roles returns available roles"""
-        response = requests.get(f"{BASE_URL}/api/org/roles", headers=auth_headers)
+        """Test GET /api/v1/org/roles returns available roles"""
+        response = requests.get(f"{BASE_URL}/api/v1/org/roles", headers=auth_headers)
         print(f"Get roles status: {response.status_code}")
         
         assert response.status_code == 200

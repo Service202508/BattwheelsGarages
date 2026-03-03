@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestReportsModule:
     """Test Financial Reports endpoints"""
@@ -19,7 +19,7 @@ class TestReportsModule:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Login to get token
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -32,8 +32,8 @@ class TestReportsModule:
     # ============== PROFIT & LOSS TESTS ==============
     
     def test_profit_loss_json(self):
-        """Test GET /api/reports/profit-loss returns JSON data"""
-        response = self.session.get(f"{BASE_URL}/api/reports/profit-loss")
+        """Test GET /api/v1/reports/profit-loss returns JSON data"""
+        response = self.session.get(f"{BASE_URL}/api/v1/reports/profit-loss")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -60,9 +60,9 @@ class TestReportsModule:
         print(f"P&L Report: Income={data['total_income']}, Net Profit={data['net_profit']}")
     
     def test_profit_loss_with_date_filter(self):
-        """Test GET /api/reports/profit-loss with date range filter"""
+        """Test GET /api/v1/reports/profit-loss with date range filter"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/profit-loss",
+            f"{BASE_URL}/api/v1/reports/profit-loss",
             params={"start_date": "2025-01-01", "end_date": "2025-12-31"}
         )
         assert response.status_code == 200
@@ -73,9 +73,9 @@ class TestReportsModule:
         print(f"P&L with date filter: {data['period']}")
     
     def test_profit_loss_pdf_export(self):
-        """Test GET /api/reports/profit-loss?format=pdf exports PDF"""
+        """Test GET /api/v1/reports/profit-loss?format=pdf exports PDF"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/profit-loss",
+            f"{BASE_URL}/api/v1/reports/profit-loss",
             params={"format": "pdf"}
         )
         assert response.status_code == 200, f"PDF export failed: {response.status_code}"
@@ -96,9 +96,9 @@ class TestReportsModule:
         print(f"P&L PDF export successful, size: {len(response.content)} bytes")
     
     def test_profit_loss_excel_export(self):
-        """Test GET /api/reports/profit-loss?format=excel exports Excel"""
+        """Test GET /api/v1/reports/profit-loss?format=excel exports Excel"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/profit-loss",
+            f"{BASE_URL}/api/v1/reports/profit-loss",
             params={"format": "excel"}
         )
         assert response.status_code == 200, f"Excel export failed: {response.status_code}"
@@ -120,8 +120,8 @@ class TestReportsModule:
     # ============== BALANCE SHEET TESTS ==============
     
     def test_balance_sheet_json(self):
-        """Test GET /api/reports/balance-sheet returns JSON data"""
-        response = self.session.get(f"{BASE_URL}/api/reports/balance-sheet")
+        """Test GET /api/v1/reports/balance-sheet returns JSON data"""
+        response = self.session.get(f"{BASE_URL}/api/v1/reports/balance-sheet")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -154,9 +154,9 @@ class TestReportsModule:
         print(f"Balance Sheet: Assets={assets['total']}, Liabilities={liabilities['total']}, Equity={equity['total']}")
     
     def test_balance_sheet_pdf_export(self):
-        """Test GET /api/reports/balance-sheet?format=pdf exports PDF"""
+        """Test GET /api/v1/reports/balance-sheet?format=pdf exports PDF"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/balance-sheet",
+            f"{BASE_URL}/api/v1/reports/balance-sheet",
             params={"format": "pdf"}
         )
         assert response.status_code == 200, f"PDF export failed: {response.status_code}"
@@ -168,9 +168,9 @@ class TestReportsModule:
         print(f"Balance Sheet PDF export successful, size: {len(response.content)} bytes")
     
     def test_balance_sheet_excel_export(self):
-        """Test GET /api/reports/balance-sheet?format=excel exports Excel"""
+        """Test GET /api/v1/reports/balance-sheet?format=excel exports Excel"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/balance-sheet",
+            f"{BASE_URL}/api/v1/reports/balance-sheet",
             params={"format": "excel"}
         )
         assert response.status_code == 200, f"Excel export failed: {response.status_code}"
@@ -184,8 +184,8 @@ class TestReportsModule:
     # ============== AR AGING TESTS ==============
     
     def test_ar_aging_json(self):
-        """Test GET /api/reports/ar-aging returns JSON data"""
-        response = self.session.get(f"{BASE_URL}/api/reports/ar-aging")
+        """Test GET /api/v1/reports/ar-aging returns JSON data"""
+        response = self.session.get(f"{BASE_URL}/api/v1/reports/ar-aging")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -218,9 +218,9 @@ class TestReportsModule:
         print(f"AR Aging: Total AR={data['total_ar']}, Invoices count={len(data['invoices'])}")
     
     def test_ar_aging_pdf_export(self):
-        """Test GET /api/reports/ar-aging?format=pdf exports PDF"""
+        """Test GET /api/v1/reports/ar-aging?format=pdf exports PDF"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/ar-aging",
+            f"{BASE_URL}/api/v1/reports/ar-aging",
             params={"format": "pdf"}
         )
         assert response.status_code == 200, f"PDF export failed: {response.status_code}"
@@ -232,9 +232,9 @@ class TestReportsModule:
         print(f"AR Aging PDF export successful, size: {len(response.content)} bytes")
     
     def test_ar_aging_excel_export(self):
-        """Test GET /api/reports/ar-aging?format=excel exports Excel"""
+        """Test GET /api/v1/reports/ar-aging?format=excel exports Excel"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/ar-aging",
+            f"{BASE_URL}/api/v1/reports/ar-aging",
             params={"format": "excel"}
         )
         assert response.status_code == 200, f"Excel export failed: {response.status_code}"
@@ -248,8 +248,8 @@ class TestReportsModule:
     # ============== AP AGING TESTS ==============
     
     def test_ap_aging_json(self):
-        """Test GET /api/reports/ap-aging returns JSON data"""
-        response = self.session.get(f"{BASE_URL}/api/reports/ap-aging")
+        """Test GET /api/v1/reports/ap-aging returns JSON data"""
+        response = self.session.get(f"{BASE_URL}/api/v1/reports/ap-aging")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -282,9 +282,9 @@ class TestReportsModule:
         print(f"AP Aging: Total AP={data['total_ap']}, Bills count={len(data['bills'])}")
     
     def test_ap_aging_pdf_export(self):
-        """Test GET /api/reports/ap-aging?format=pdf exports PDF"""
+        """Test GET /api/v1/reports/ap-aging?format=pdf exports PDF"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/ap-aging",
+            f"{BASE_URL}/api/v1/reports/ap-aging",
             params={"format": "pdf"}
         )
         assert response.status_code == 200, f"PDF export failed: {response.status_code}"
@@ -296,9 +296,9 @@ class TestReportsModule:
         print(f"AP Aging PDF export successful, size: {len(response.content)} bytes")
     
     def test_ap_aging_excel_export(self):
-        """Test GET /api/reports/ap-aging?format=excel exports Excel"""
+        """Test GET /api/v1/reports/ap-aging?format=excel exports Excel"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/ap-aging",
+            f"{BASE_URL}/api/v1/reports/ap-aging",
             params={"format": "excel"}
         )
         assert response.status_code == 200, f"Excel export failed: {response.status_code}"
@@ -312,8 +312,8 @@ class TestReportsModule:
     # ============== SALES BY CUSTOMER TESTS ==============
     
     def test_sales_by_customer_json(self):
-        """Test GET /api/reports/sales-by-customer returns JSON data"""
-        response = self.session.get(f"{BASE_URL}/api/reports/sales-by-customer")
+        """Test GET /api/v1/reports/sales-by-customer returns JSON data"""
+        response = self.session.get(f"{BASE_URL}/api/v1/reports/sales-by-customer")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -340,9 +340,9 @@ class TestReportsModule:
         print(f"Sales by Customer: Total Sales={data['total_sales']}, Customers={len(data['sales_data'])}")
     
     def test_sales_by_customer_pdf_export(self):
-        """Test GET /api/reports/sales-by-customer?format=pdf exports PDF"""
+        """Test GET /api/v1/reports/sales-by-customer?format=pdf exports PDF"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/sales-by-customer",
+            f"{BASE_URL}/api/v1/reports/sales-by-customer",
             params={"format": "pdf"}
         )
         assert response.status_code == 200, f"PDF export failed: {response.status_code}"
@@ -354,9 +354,9 @@ class TestReportsModule:
         print(f"Sales by Customer PDF export successful, size: {len(response.content)} bytes")
     
     def test_sales_by_customer_excel_export(self):
-        """Test GET /api/reports/sales-by-customer?format=excel exports Excel"""
+        """Test GET /api/v1/reports/sales-by-customer?format=excel exports Excel"""
         response = self.session.get(
-            f"{BASE_URL}/api/reports/sales-by-customer",
+            f"{BASE_URL}/api/v1/reports/sales-by-customer",
             params={"format": "excel"}
         )
         assert response.status_code == 200, f"Excel export failed: {response.status_code}"

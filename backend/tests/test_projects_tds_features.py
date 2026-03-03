@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test IDs from agent context
 TEST_PROJECT_ID = "proj_060e595d2008"
@@ -25,7 +25,7 @@ class TestAuth:
     
     def test_login_success(self):
         """Test login with admin credentials"""
-        response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -41,7 +41,7 @@ def auth_token():
     """Get authentication token"""
     session = requests.Session()
     session.headers.update({"Content-Type": "application/json"})
-    response = session.post(f"{BASE_URL}/api/auth/login", json={
+    response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -70,8 +70,8 @@ class TestTDSModule:
     """TDS Calculation Engine tests"""
     
     def test_tds_summary_endpoint(self, authenticated_session):
-        """Test TDS summary endpoint - GET /api/hr/payroll/tds-summary"""
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/payroll/tds-summary", params={
+        """Test TDS summary endpoint - GET /api/v1/hr/payroll/tds-summary"""
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/payroll/tds-summary", params={
             "month": 12,
             "year": 2025
         })
@@ -85,7 +85,7 @@ class TestTDSModule:
     
     def test_tds_calculate_for_employee(self, authenticated_session):
         """Test TDS calculation for specific employee"""
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/tds/calculate/{TEST_EMPLOYEE_ID}", params={
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/tds/calculate/{TEST_EMPLOYEE_ID}", params={
             "month": 12,
             "year": 2025
         })
@@ -99,8 +99,8 @@ class TestTDSModule:
         print(f"TDS calculated for employee: {data.get('employee_name', TEST_EMPLOYEE_ID)}")
     
     def test_tds_export_csv(self, authenticated_session):
-        """Test TDS CSV export - GET /api/hr/payroll/tds/export"""
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/payroll/tds/export", params={
+        """Test TDS CSV export - GET /api/v1/hr/payroll/tds/export"""
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/payroll/tds/export", params={
             "month": 12,
             "year": 2025
         })
@@ -118,7 +118,7 @@ class TestTDSModule:
         print(f"TDS CSV export successful, {len(lines)} lines")
     
     def test_mark_tds_deposited(self, authenticated_session):
-        """Test Mark TDS Deposited - POST /api/hr/payroll/tds/mark-deposited"""
+        """Test Mark TDS Deposited - POST /api/v1/hr/payroll/tds/mark-deposited"""
         import uuid
         test_challan = f"TEST_{uuid.uuid4().hex[:8].upper()}"
         
@@ -132,7 +132,7 @@ class TestTDSModule:
             "payment_mode": "net_banking"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/hr/payroll/tds/mark-deposited", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/hr/payroll/tds/mark-deposited", json=payload)
         assert response.status_code == 200, f"Mark TDS deposited failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0, f"Mark TDS error: {data}"
@@ -161,11 +161,11 @@ class TestTDSModule:
         }
         
         # First request should succeed
-        response1 = authenticated_session.post(f"{BASE_URL}/api/hr/payroll/tds/mark-deposited", json=payload)
+        response1 = authenticated_session.post(f"{BASE_URL}/api/v1/hr/payroll/tds/mark-deposited", json=payload)
         assert response1.status_code == 200, f"First challan failed: {response1.text}"
         
         # Second request with same challan should fail
-        response2 = authenticated_session.post(f"{BASE_URL}/api/hr/payroll/tds/mark-deposited", json=payload)
+        response2 = authenticated_session.post(f"{BASE_URL}/api/v1/hr/payroll/tds/mark-deposited", json=payload)
         assert response2.status_code == 400, f"Duplicate challan should fail: {response2.text}"
         error_data = response2.json()
         assert "duplicate" in error_data.get("detail", "").lower() or "already exists" in error_data.get("detail", "").lower()
@@ -173,7 +173,7 @@ class TestTDSModule:
     
     def test_list_tds_challans(self, authenticated_session):
         """Test list TDS challans endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/tds/challans")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/tds/challans")
         assert response.status_code == 200, f"List challans failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0, f"List challans error: {data}"
@@ -181,9 +181,9 @@ class TestTDSModule:
         print(f"Found {len(data['challans'])} TDS challans")
     
     def test_form16_api(self, authenticated_session):
-        """Test Form 16 API - GET /api/hr/payroll/form16/{employee_id}/{fy}"""
+        """Test Form 16 API - GET /api/v1/hr/payroll/form16/{employee_id}/{fy}"""
         # Test with known employee
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/payroll/form16/{TEST_EMPLOYEE_ID}/2025-26")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/payroll/form16/{TEST_EMPLOYEE_ID}/2025-26")
         
         # May fail if no payroll data, that's ok
         if response.status_code == 404:
@@ -208,7 +208,7 @@ class TestProjectsModule:
     
     def test_list_projects(self, authenticated_session):
         """Test list projects endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects")
         assert response.status_code == 200, f"List projects failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0, f"List projects error: {data}"
@@ -216,8 +216,8 @@ class TestProjectsModule:
         print(f"Found {len(data['projects'])} projects")
     
     def test_get_project_detail(self, authenticated_session):
-        """Test get project detail - GET /api/projects/{project_id}"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}")
+        """Test get project detail - GET /api/v1/projects/{project_id}"""
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}")
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -233,7 +233,7 @@ class TestProjectsModule:
     
     def test_project_tasks(self, authenticated_session):
         """Test project tasks endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/tasks")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/tasks")
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -246,7 +246,7 @@ class TestProjectsModule:
     
     def test_project_time_logs(self, authenticated_session):
         """Test project time logs endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/time-logs")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/time-logs")
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -260,7 +260,7 @@ class TestProjectsModule:
     
     def test_project_expenses(self, authenticated_session):
         """Test project expenses endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses")
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -273,7 +273,7 @@ class TestProjectsModule:
     
     def test_project_profitability(self, authenticated_session):
         """Test project profitability endpoint"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/profitability")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/profitability")
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -290,7 +290,7 @@ class TestProjectsModule:
     
     def test_project_dashboard_stats(self, authenticated_session):
         """Test project dashboard stats"""
-        response = authenticated_session.get(f"{BASE_URL}/api/projects/stats/dashboard")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/projects/stats/dashboard")
         assert response.status_code == 200, f"Get dashboard stats failed: {response.text}"
         data = response.json()
         assert data.get("code") == 0, f"Dashboard stats error: {data}"
@@ -314,7 +314,7 @@ class TestProjectExpenseApproval:
             "category": "materials"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -330,7 +330,7 @@ class TestProjectExpenseApproval:
         return expense.get("project_expense_id")
     
     def test_approve_expense(self, authenticated_session):
-        """Test expense approval - POST /api/projects/{id}/expenses/{expense_id}/approve"""
+        """Test expense approval - POST /api/v1/projects/{id}/expenses/{expense_id}/approve"""
         import uuid
         
         # First create an expense
@@ -341,7 +341,7 @@ class TestProjectExpenseApproval:
             "category": "equipment"
         }
         
-        create_response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses", json=payload)
+        create_response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses", json=payload)
         
         if create_response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -351,7 +351,7 @@ class TestProjectExpenseApproval:
         
         # Now approve it
         approve_response = authenticated_session.post(
-            f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses/{expense_id}/approve",
+            f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses/{expense_id}/approve",
             json={"approved": True}
         )
         
@@ -373,7 +373,7 @@ class TestProjectExpenseApproval:
             "category": "travel"
         }
         
-        create_response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses", json=payload)
+        create_response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses", json=payload)
         
         if create_response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -383,7 +383,7 @@ class TestProjectExpenseApproval:
         
         # Now reject it
         reject_response = authenticated_session.post(
-            f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/expenses/{expense_id}/approve",
+            f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/expenses/{expense_id}/approve",
             json={"approved": False}
         )
         
@@ -397,7 +397,7 @@ class TestProjectInvoiceGeneration:
     """Test project invoice generation"""
     
     def test_generate_invoice_from_project(self, authenticated_session):
-        """Test invoice generation - POST /api/projects/{id}/invoice"""
+        """Test invoice generation - POST /api/v1/projects/{id}/invoice"""
         payload = {
             "billing_period_from": "2025-01-01",
             "billing_period_to": "2025-01-31",
@@ -406,7 +406,7 @@ class TestProjectInvoiceGeneration:
             "notes": "Test invoice generation"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/invoice", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/invoice", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -439,7 +439,7 @@ class TestProjectInvoiceGeneration:
             "notes": "Test - grouped by employee"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/invoice", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/invoice", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -458,7 +458,7 @@ class TestProjectInvoiceGeneration:
             "notes": "Test - grouped by date"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/invoice", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/invoice", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -482,7 +482,7 @@ class TestProjectTaskManagement:
             "estimated_hours": 4.0
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/tasks", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/tasks", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -506,7 +506,7 @@ class TestProjectTaskManagement:
             "priority": "HIGH"
         }
         
-        create_response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/tasks", json=create_payload)
+        create_response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/tasks", json=create_payload)
         
         if create_response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -516,7 +516,7 @@ class TestProjectTaskManagement:
         
         # Update status
         update_response = authenticated_session.put(
-            f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/tasks/{task_id}",
+            f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/tasks/{task_id}",
             json={"status": "IN_PROGRESS"}
         )
         
@@ -539,7 +539,7 @@ class TestTimeLogging:
             "log_date": "2025-01-10"
         }
         
-        response = authenticated_session.post(f"{BASE_URL}/api/projects/{TEST_PROJECT_ID}/time-log", json=payload)
+        response = authenticated_session.post(f"{BASE_URL}/api/v1/projects/{TEST_PROJECT_ID}/time-log", json=payload)
         
         if response.status_code == 404:
             pytest.skip(f"Test project {TEST_PROJECT_ID} not found")
@@ -556,7 +556,7 @@ class TestEmployeeTaxConfig:
     
     def test_get_employee_tax_config(self, authenticated_session):
         """Test getting employee tax config"""
-        response = authenticated_session.get(f"{BASE_URL}/api/hr/employees/{TEST_EMPLOYEE_ID}/tax-config")
+        response = authenticated_session.get(f"{BASE_URL}/api/v1/hr/employees/{TEST_EMPLOYEE_ID}/tax-config")
         
         if response.status_code == 404:
             pytest.skip(f"Employee {TEST_EMPLOYEE_ID} not found")
@@ -576,7 +576,7 @@ class TestEmployeeTaxConfig:
         }
         
         response = authenticated_session.put(
-            f"{BASE_URL}/api/hr/employees/{TEST_EMPLOYEE_ID}/tax-config",
+            f"{BASE_URL}/api/v1/hr/employees/{TEST_EMPLOYEE_ID}/tax-config",
             json=payload
         )
         

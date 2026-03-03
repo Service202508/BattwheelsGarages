@@ -53,8 +53,8 @@ class TestAuthTokens:
 class TestP01RBACBypassFix:
     """
     P0-1: Verify RBAC path normalization fix.
-    Routes are mounted at /api/v1/... but ROUTE_PERMISSIONS use /api/...
-    The fix normalizes /api/v1/ to /api/ before pattern matching.
+    Routes are mounted at /api/v1/... but ROUTE_PERMISSIONS use /api/v1/...
+    The fix normalizes /api/v1/ to /api/v1/ before pattern matching.
     """
     
     def test_public_endpoint_accessible_without_auth(self):
@@ -65,7 +65,7 @@ class TestP01RBACBypassFix:
         )
         # Should get 401 (invalid creds) not 403 (RBAC denied) or 500
         assert response.status_code in [401, 400], f"Expected 401/400, got {response.status_code}: {response.text}"
-        print("PASS: Public endpoint /api/auth/login accessible without auth")
+        print("PASS: Public endpoint /api/v1/auth/login accessible without auth")
     
     def test_technician_cannot_access_payroll(self):
         """Technician role should get 403 on /api/v1/payroll/records (admin-only)"""
@@ -371,7 +371,7 @@ class TestStaticCodeAnalysis:
             content = f.read()
         
         # Check for the normalization regex
-        assert "re.sub(r'^/api/v1/', '/api/', path)" in content or "normalized_path" in content, \
+        assert "re.sub(r'^/api/v1/', '/api/v1/', path)" in content or "normalized_path" in content, \
             "Path normalization not found in rbac.py"
         print("PASS: RBAC path normalization exists in middleware")
     

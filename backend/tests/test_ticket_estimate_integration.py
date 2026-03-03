@@ -16,7 +16,7 @@ import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
-    BASE_URL = ""
+    BASE_URL = "http://localhost:8001"
 
 # Test credentials from main agent
 ADMIN_EMAIL = "dev@battwheels.internal"
@@ -34,7 +34,7 @@ created_line_items = []
 def auth_token():
     """Login and get auth token"""
     response = requests.post(
-        f"{BASE_URL}/api/auth/login",
+        f"{BASE_URL}/api/v1/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
     )
     if response.status_code == 200:
@@ -56,16 +56,16 @@ def api_client(auth_token):
 
 
 class TestTicketEstimateEnsure:
-    """Test POST /api/tickets/{id}/estimate/ensure - Idempotent estimate creation"""
+    """Test POST /api/v1/tickets/{id}/estimate/ensure - Idempotent estimate creation"""
     
     def test_ensure_estimate_creates_new(self, api_client):
         """Test creating estimate for ticket that doesn't have one"""
         # First check if test ticket exists
-        response = api_client.get(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}")
         if response.status_code == 404:
             pytest.skip(f"Test ticket {TEST_TICKET_ID} not found")
         
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         
         # Should return 200 regardless of whether estimate exists or not
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -88,12 +88,12 @@ class TestTicketEstimateEnsure:
     def test_ensure_estimate_idempotent(self, api_client):
         """Test that calling ensure twice returns same estimate"""
         # Call ensure first time
-        response1 = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response1 = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         assert response1.status_code == 200
         estimate1 = response1.json().get("estimate")
         
         # Call ensure second time
-        response2 = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response2 = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         assert response2.status_code == 200
         estimate2 = response2.json().get("estimate")
         
@@ -108,7 +108,7 @@ class TestTicketEstimateEnsure:
     def test_ensure_estimate_for_nonexistent_ticket(self, api_client):
         """Test ensure estimate for ticket that doesn't exist"""
         fake_ticket_id = f"tkt_fake_{uuid.uuid4().hex[:12]}"
-        response = api_client.post(f"{BASE_URL}/api/tickets/{fake_ticket_id}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{fake_ticket_id}/estimate/ensure")
         
         # Should return 404 for non-existent ticket
         assert response.status_code == 404, f"Expected 404 for fake ticket, got {response.status_code}"
@@ -116,16 +116,16 @@ class TestTicketEstimateEnsure:
 
 
 class TestGetTicketEstimate:
-    """Test GET /api/tickets/{id}/estimate - Get estimate with line items"""
+    """Test GET /api/v1/tickets/{id}/estimate - Get estimate with line items"""
     
     def test_get_estimate_by_ticket(self, api_client):
         """Test getting estimate for a ticket"""
         # First ensure estimate exists
-        ensure_response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        ensure_response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if ensure_response.status_code != 200:
             pytest.skip("Could not ensure estimate for test")
         
-        response = api_client.get(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
@@ -147,13 +147,13 @@ class TestGetTicketEstimate:
     def test_get_estimate_by_id(self, api_client):
         """Test getting estimate by its ID"""
         # First ensure we have an estimate
-        ensure_response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        ensure_response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if ensure_response.status_code != 200:
             pytest.skip("Could not ensure estimate")
         
         estimate_id = ensure_response.json()["estimate"]["estimate_id"]
         
-        response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{estimate_id}")
+        response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{estimate_id}")
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
@@ -165,7 +165,7 @@ class TestGetTicketEstimate:
     def test_get_nonexistent_estimate(self, api_client):
         """Test getting estimate for ticket without one"""
         fake_ticket_id = f"tkt_noest_{uuid.uuid4().hex[:8]}"
-        response = api_client.get(f"{BASE_URL}/api/tickets/{fake_ticket_id}/estimate")
+        response = api_client.get(f"{BASE_URL}/api/v1/tickets/{fake_ticket_id}/estimate")
         
         # Should return 404
         assert response.status_code == 404, f"Expected 404, got {response.status_code}"
@@ -177,7 +177,7 @@ class TestLineItemCRUD:
     @pytest.fixture(autouse=True)
     def setup_estimate(self, api_client):
         """Ensure we have an estimate to work with"""
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if response.status_code == 200:
             self.estimate = response.json()["estimate"]
             self.estimate_id = self.estimate["estimate_id"]
@@ -188,12 +188,12 @@ class TestLineItemCRUD:
     def test_add_part_line_item(self, api_client):
         """Test adding a part line item"""
         # Refresh estimate to get latest version
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         if get_response.status_code == 200:
             self.current_version = get_response.json()["estimate"].get("version", 1)
         
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Battery Pack 48V",
@@ -232,11 +232,11 @@ class TestLineItemCRUD:
     def test_add_labour_line_item(self, api_client):
         """Test adding a labour line item"""
         # Get latest version
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         current_version = get_response.json()["estimate"].get("version", 1)
         
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "labour",
                 "name": "TEST_Installation Labour",
@@ -261,11 +261,11 @@ class TestLineItemCRUD:
     def test_add_fee_line_item(self, api_client):
         """Test adding a fee line item"""
         # Get latest version
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         current_version = get_response.json()["estimate"].get("version", 1)
         
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "fee",
                 "name": "TEST_Diagnostic Fee",
@@ -285,13 +285,13 @@ class TestLineItemCRUD:
     def test_update_line_item(self, api_client):
         """Test updating a line item"""
         # First add an item to update
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         estimate = get_response.json()["estimate"]
         current_version = estimate.get("version", 1)
         
         # Add an item first
         add_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Item to Update",
@@ -316,7 +316,7 @@ class TestLineItemCRUD:
         
         # Now update it
         response = api_client.patch(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}",
             json={
                 "name": "TEST_Updated Item Name",
                 "qty": 2,
@@ -341,11 +341,11 @@ class TestLineItemCRUD:
     def test_delete_line_item(self, api_client):
         """Test deleting a line item"""
         # First add an item to delete
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         current_version = get_response.json()["estimate"].get("version", 1)
         
         add_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "fee",
                 "name": "TEST_Item to Delete",
@@ -371,7 +371,7 @@ class TestLineItemCRUD:
         
         # Delete the item
         response = api_client.delete(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}?version={new_version}"
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}?version={new_version}"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -390,7 +390,7 @@ class TestConcurrencyControl:
     @pytest.fixture(autouse=True)
     def setup_estimate(self, api_client):
         """Ensure we have an estimate to work with"""
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if response.status_code == 200:
             self.estimate = response.json()["estimate"]
             self.estimate_id = self.estimate["estimate_id"]
@@ -403,7 +403,7 @@ class TestConcurrencyControl:
         wrong_version = 99999
         
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Should Fail - Wrong Version",
@@ -425,12 +425,12 @@ class TestConcurrencyControl:
     def test_update_with_wrong_version(self, api_client):
         """Test that update with wrong version returns 409"""
         # First get the estimate
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         estimate = get_response.json()["estimate"]
         
         # Add an item first
         add_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Concurrency Test Item",
@@ -456,7 +456,7 @@ class TestConcurrencyControl:
         old_version = estimate.get("version", 1)  # This is now stale
         
         response = api_client.patch(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items/{line_item_id}",
             json={
                 "qty": 5,
                 "version": old_version  # Stale version
@@ -474,7 +474,7 @@ class TestEstimateLocking:
     def setup_fresh_estimate(self, api_client):
         """Create a fresh ticket and estimate for locking tests"""
         # First try to use the test ticket
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if response.status_code == 200:
             self.estimate = response.json()["estimate"]
             self.estimate_id = self.estimate["estimate_id"]
@@ -487,14 +487,14 @@ class TestEstimateLocking:
     def test_lock_estimate_as_admin(self, api_client):
         """Test locking an estimate (admin/manager only)"""
         # First approve the estimate (required before locking)
-        approve_response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/approve")
+        approve_response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/approve")
         
         if approve_response.status_code not in [200, 400]:  # 400 if already approved/locked
             pytest.skip(f"Could not approve estimate: {approve_response.status_code}")
         
         # Now lock it
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/lock",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/lock",
             json={"reason": "TEST_Locked for conversion to invoice"}
         )
         
@@ -517,17 +517,17 @@ class TestEstimateLocking:
     def test_modify_locked_estimate_returns_423(self, api_client):
         """Test that modifying a locked estimate returns 423"""
         # Get the estimate
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         estimate = get_response.json()["estimate"]
         
         # If not locked, lock it first
         if not estimate.get("locked_at"):
             # First approve
-            api_client.post(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/approve")
+            api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/approve")
             
             # Then lock
             lock_response = api_client.post(
-                f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/lock",
+                f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/lock",
                 json={"reason": "TEST_Locked for 423 test"}
             )
             
@@ -538,7 +538,7 @@ class TestEstimateLocking:
         
         # Now try to add item to locked estimate
         response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Should Fail - Locked",
@@ -563,7 +563,7 @@ class TestEstimateStatusOperations:
     @pytest.fixture(autouse=True)
     def setup_estimate(self, api_client):
         """Ensure we have an estimate"""
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if response.status_code == 200:
             self.estimate = response.json()["estimate"]
             self.estimate_id = self.estimate["estimate_id"]
@@ -576,7 +576,7 @@ class TestEstimateStatusOperations:
         if self.estimate.get("locked_at"):
             pytest.skip("Cannot send locked estimate")
         
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/send")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/send")
         
         if response.status_code == 400:
             # Might be locked or already in a state that can't be sent
@@ -597,7 +597,7 @@ class TestEstimateStatusOperations:
         if self.estimate.get("locked_at"):
             pytest.skip("Cannot approve locked estimate")
         
-        response = api_client.post(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/approve")
+        response = api_client.post(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/approve")
         
         if response.status_code == 400:
             error_text = response.text.lower()
@@ -622,7 +622,7 @@ class TestListTicketEstimates:
     
     def test_list_estimates(self, api_client):
         """Test listing all estimates for organization"""
-        response = api_client.get(f"{BASE_URL}/api/ticket-estimates")
+        response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -643,7 +643,7 @@ class TestListTicketEstimates:
     
     def test_list_estimates_with_status_filter(self, api_client):
         """Test listing estimates with status filter"""
-        response = api_client.get(f"{BASE_URL}/api/ticket-estimates?status=draft")
+        response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates?status=draft")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -663,7 +663,7 @@ class TestTotalsCalculation:
     @pytest.fixture(autouse=True)
     def setup_estimate(self, api_client):
         """Ensure we have an estimate"""
-        response = api_client.post(f"{BASE_URL}/api/tickets/{TEST_TICKET_ID}/estimate/ensure")
+        response = api_client.post(f"{BASE_URL}/api/v1/tickets/{TEST_TICKET_ID}/estimate/ensure")
         if response.status_code == 200:
             self.estimate = response.json()["estimate"]
             self.estimate_id = self.estimate["estimate_id"]
@@ -673,7 +673,7 @@ class TestTotalsCalculation:
     def test_totals_update_on_add(self, api_client):
         """Test that totals are recalculated when adding items"""
         # Get initial totals
-        get_response = api_client.get(f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}")
+        get_response = api_client.get(f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}")
         estimate = get_response.json()["estimate"]
         
         if estimate.get("locked_at"):
@@ -685,7 +685,7 @@ class TestTotalsCalculation:
         
         # Add an item
         add_response = api_client.post(
-            f"{BASE_URL}/api/ticket-estimates/{self.estimate_id}/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/{self.estimate_id}/line-items",
             json={
                 "type": "part",
                 "name": "TEST_Totals Test Item",

@@ -11,7 +11,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestStockIndicatorFeature:
     """Tests for stock indicator column in estimates"""
@@ -19,7 +19,7 @@ class TestStockIndicatorFeature:
     @pytest.fixture(scope="class")
     def auth_token(self):
         """Get authentication token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -39,7 +39,7 @@ class TestStockIndicatorFeature:
         """Test that parts with sufficient stock show 'in_stock' status"""
         # Get estimate with parts that have item_id
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_5b6ea472ac46",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_5b6ea472ac46",
             headers=headers
         )
         assert response.status_code == 200, f"Failed to get estimate: {response.text}"
@@ -64,7 +64,7 @@ class TestStockIndicatorFeature:
         """Test that labour items don't have stock_info"""
         # Use the estimate we created with labour item
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -81,7 +81,7 @@ class TestStockIndicatorFeature:
     def test_3_stock_status_in_stock(self, headers):
         """Test in_stock status (available > reorder_level)"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -101,7 +101,7 @@ class TestStockIndicatorFeature:
     def test_4_stock_status_low_stock(self, headers):
         """Test low_stock status (available <= reorder_level && available > 0)"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -121,7 +121,7 @@ class TestStockIndicatorFeature:
     def test_5_stock_status_out_of_stock(self, headers):
         """Test out_of_stock status (available <= 0)"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -141,7 +141,7 @@ class TestStockIndicatorFeature:
     def test_6_parts_catalog_shows_stock(self, headers):
         """Test that parts catalog API shows stock info"""
         response = requests.get(
-            f"{BASE_URL}/api/items-enhanced/?per_page=10&item_type=inventory",
+            f"{BASE_URL}/api/v1/items-enhanced/?per_page=10&item_type=inventory",
             headers=headers
         )
         assert response.status_code == 200
@@ -158,7 +158,7 @@ class TestStockIndicatorFeature:
         """Test that adding a part to estimate returns stock_info"""
         # Get current version
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -166,7 +166,7 @@ class TestStockIndicatorFeature:
         
         # Add a new part with known stock
         add_response = requests.post(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6/line-items",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6/line-items",
             headers=headers,
             json={
                 "type": "part",
@@ -196,7 +196,7 @@ class TestStockIndicatorFeature:
     def test_8_stock_info_includes_all_fields(self, headers):
         """Test that stock_info includes all required fields"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_253fe4cc8bd6",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_253fe4cc8bd6",
             headers=headers
         )
         assert response.status_code == 200
@@ -217,7 +217,7 @@ class TestStockIndicatorFeature:
     def test_9_parts_without_item_id_no_stock(self, headers):
         """Test that parts without item_id have no stock_info"""
         response = requests.get(
-            f"{BASE_URL}/api/ticket-estimates/est_5b6ea472ac46",
+            f"{BASE_URL}/api/v1/ticket-estimates/est_5b6ea472ac46",
             headers=headers
         )
         assert response.status_code == 200

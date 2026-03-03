@@ -8,7 +8,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestContactPriceLists:
     """Test contact price list assignment feature"""
@@ -20,7 +20,7 @@ class TestContactPriceLists:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Get existing contacts
-        response = self.session.get(f"{BASE_URL}/api/contacts-enhanced/")
+        response = self.session.get(f"{BASE_URL}/api/v1/contacts-enhanced/")
         if response.status_code == 200:
             contacts = response.json().get("contacts", [])
             if contacts:
@@ -31,7 +31,7 @@ class TestContactPriceLists:
             self.test_contact_id = None
             
         # Get existing price lists
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/price-lists")
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists")
         if response.status_code == 200:
             price_lists = response.json().get("price_lists", [])
             if price_lists:
@@ -42,7 +42,7 @@ class TestContactPriceLists:
             self.test_price_list_id = None
     
     def test_assign_price_list_to_contact(self):
-        """Test POST /api/items-enhanced/contact-price-lists"""
+        """Test POST /api/v1/items-enhanced/contact-price-lists"""
         if not self.test_contact_id or not self.test_price_list_id:
             pytest.skip("No test contact or price list available")
         
@@ -52,7 +52,7 @@ class TestContactPriceLists:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/contact-price-lists",
+            f"{BASE_URL}/api/v1/items-enhanced/contact-price-lists",
             json=payload
         )
         
@@ -63,12 +63,12 @@ class TestContactPriceLists:
         print(f"✓ Assigned price list {self.test_price_list_id} to contact {self.test_contact_id}")
     
     def test_get_contact_price_lists(self):
-        """Test GET /api/items-enhanced/contact-price-lists/{contact_id}"""
+        """Test GET /api/v1/items-enhanced/contact-price-lists/{contact_id}"""
         if not self.test_contact_id:
             pytest.skip("No test contact available")
         
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/contact-price-lists/{self.test_contact_id}"
+            f"{BASE_URL}/api/v1/items-enhanced/contact-price-lists/{self.test_contact_id}"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -82,9 +82,9 @@ class TestContactPriceLists:
         print(f"✓ Retrieved price lists for contact: {contact_pl.get('contact_name')}")
     
     def test_get_contact_price_lists_not_found(self):
-        """Test GET /api/items-enhanced/contact-price-lists/{contact_id} with invalid ID"""
+        """Test GET /api/v1/items-enhanced/contact-price-lists/{contact_id} with invalid ID"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/contact-price-lists/INVALID-CONTACT-ID"
+            f"{BASE_URL}/api/v1/items-enhanced/contact-price-lists/INVALID-CONTACT-ID"
         )
         
         assert response.status_code == 404
@@ -101,7 +101,7 @@ class TestLineItemPricing:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Get existing items
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=5")
         if response.status_code == 200:
             items = response.json().get("items", [])
             self.test_items = [item.get("item_id") for item in items[:3] if item.get("item_id")]
@@ -109,7 +109,7 @@ class TestLineItemPricing:
             self.test_items = []
             
         # Get existing contacts
-        response = self.session.get(f"{BASE_URL}/api/contacts-enhanced/?per_page=1")
+        response = self.session.get(f"{BASE_URL}/api/v1/contacts-enhanced/?per_page=1")
         if response.status_code == 200:
             contacts = response.json().get("contacts", [])
             if contacts:
@@ -120,7 +120,7 @@ class TestLineItemPricing:
             self.test_contact_id = None
     
     def test_calculate_line_prices_basic(self):
-        """Test POST /api/items-enhanced/calculate-line-prices - basic calculation"""
+        """Test POST /api/v1/items-enhanced/calculate-line-prices - basic calculation"""
         if not self.test_items:
             pytest.skip("No test items available")
         
@@ -132,7 +132,7 @@ class TestLineItemPricing:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/calculate-line-prices",
+            f"{BASE_URL}/api/v1/items-enhanced/calculate-line-prices",
             json=payload
         )
         
@@ -154,7 +154,7 @@ class TestLineItemPricing:
         print(f"✓ Calculated line prices, sub_total: {total}")
     
     def test_calculate_line_prices_with_contact(self):
-        """Test POST /api/items-enhanced/calculate-line-prices - with contact price list"""
+        """Test POST /api/v1/items-enhanced/calculate-line-prices - with contact price list"""
         if not self.test_items or not self.test_contact_id:
             pytest.skip("No test items or contact available")
         
@@ -167,7 +167,7 @@ class TestLineItemPricing:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/calculate-line-prices",
+            f"{BASE_URL}/api/v1/items-enhanced/calculate-line-prices",
             json=payload
         )
         
@@ -178,7 +178,7 @@ class TestLineItemPricing:
         print(f"✓ Calculated line prices with contact, sub_total: {total}")
     
     def test_calculate_line_prices_multiple_items(self):
-        """Test POST /api/items-enhanced/calculate-line-prices - multiple items"""
+        """Test POST /api/v1/items-enhanced/calculate-line-prices - multiple items"""
         if len(self.test_items) < 2:
             pytest.skip("Need at least 2 test items")
         
@@ -191,7 +191,7 @@ class TestLineItemPricing:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/calculate-line-prices",
+            f"{BASE_URL}/api/v1/items-enhanced/calculate-line-prices",
             json=payload
         )
         
@@ -223,7 +223,7 @@ class TestBulkPriceSetting:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/price-lists",
+            f"{BASE_URL}/api/v1/items-enhanced/price-lists",
             json=payload
         )
         
@@ -233,7 +233,7 @@ class TestBulkPriceSetting:
             self.test_price_list_id = None
             
         # Get existing items
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=5")
         if response.status_code == 200:
             items = response.json().get("items", [])
             self.test_items = [item.get("item_id") for item in items[:3] if item.get("item_id")]
@@ -241,7 +241,7 @@ class TestBulkPriceSetting:
             self.test_items = []
     
     def test_set_bulk_prices_percentage(self):
-        """Test POST /api/items-enhanced/price-lists/{id}/set-prices - percentage method"""
+        """Test POST /api/v1/items-enhanced/price-lists/{id}/set-prices - percentage method"""
         if not self.test_price_list_id:
             pytest.skip("No test price list available")
         
@@ -252,7 +252,7 @@ class TestBulkPriceSetting:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/price-lists/{self.test_price_list_id}/set-prices",
+            f"{BASE_URL}/api/v1/items-enhanced/price-lists/{self.test_price_list_id}/set-prices",
             json=payload
         )
         
@@ -266,7 +266,7 @@ class TestBulkPriceSetting:
         print(f"✓ Set bulk prices with 10% markup, items updated: {items_updated}")
     
     def test_set_bulk_prices_custom(self):
-        """Test POST /api/items-enhanced/price-lists/{id}/set-prices - custom method"""
+        """Test POST /api/v1/items-enhanced/price-lists/{id}/set-prices - custom method"""
         if not self.test_price_list_id or not self.test_items:
             pytest.skip("No test price list or items available")
         
@@ -279,7 +279,7 @@ class TestBulkPriceSetting:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/price-lists/{self.test_price_list_id}/set-prices",
+            f"{BASE_URL}/api/v1/items-enhanced/price-lists/{self.test_price_list_id}/set-prices",
             json=payload
         )
         
@@ -301,7 +301,7 @@ class TestBarcodeFeatures:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Get existing items
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=5")
         if response.status_code == 200:
             items = response.json().get("items", [])
             if items:
@@ -315,7 +315,7 @@ class TestBarcodeFeatures:
             self.test_item_sku = None
     
     def test_create_barcode(self):
-        """Test POST /api/items-enhanced/barcodes"""
+        """Test POST /api/v1/items-enhanced/barcodes"""
         if not self.test_item_id:
             pytest.skip("No test item available")
         
@@ -327,7 +327,7 @@ class TestBarcodeFeatures:
         }
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/barcodes",
+            f"{BASE_URL}/api/v1/items-enhanced/barcodes",
             json=payload
         )
         
@@ -337,7 +337,7 @@ class TestBarcodeFeatures:
         print(f"✓ Created barcode: {unique_barcode}")
     
     def test_barcode_lookup(self):
-        """Test GET /api/items-enhanced/lookup/barcode/{value}"""
+        """Test GET /api/v1/items-enhanced/lookup/barcode/{value}"""
         if not self.test_item_id:
             pytest.skip("No test item available")
         
@@ -350,14 +350,14 @@ class TestBarcodeFeatures:
         }
         
         create_response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/barcodes",
+            f"{BASE_URL}/api/v1/items-enhanced/barcodes",
             json=payload
         )
         assert create_response.status_code == 200
         
         # Now lookup
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/lookup/barcode/{unique_barcode}"
+            f"{BASE_URL}/api/v1/items-enhanced/lookup/barcode/{unique_barcode}"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -367,9 +367,9 @@ class TestBarcodeFeatures:
         print(f"✓ Barcode lookup successful, found item: {data.get('item', {}).get('name')}")
     
     def test_barcode_lookup_not_found(self):
-        """Test GET /api/items-enhanced/lookup/barcode/{value} - not found"""
+        """Test GET /api/v1/items-enhanced/lookup/barcode/{value} - not found"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/lookup/barcode/NONEXISTENT-BARCODE-12345"
+            f"{BASE_URL}/api/v1/items-enhanced/lookup/barcode/NONEXISTENT-BARCODE-12345"
         )
         
         # Should return 404 for non-existent barcode
@@ -377,7 +377,7 @@ class TestBarcodeFeatures:
         print("✓ Returns 404 for non-existent barcode")
     
     def test_batch_barcode_lookup(self):
-        """Test POST /api/items-enhanced/lookup/batch"""
+        """Test POST /api/v1/items-enhanced/lookup/batch"""
         if not self.test_item_id:
             pytest.skip("No test item available")
         
@@ -390,7 +390,7 @@ class TestBarcodeFeatures:
         }
         
         create_response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/barcodes",
+            f"{BASE_URL}/api/v1/items-enhanced/barcodes",
             json=payload
         )
         assert create_response.status_code == 200
@@ -399,7 +399,7 @@ class TestBarcodeFeatures:
         batch_payload = [unique_barcode, "NONEXISTENT-123"]
         
         response = self.session.post(
-            f"{BASE_URL}/api/items-enhanced/lookup/batch",
+            f"{BASE_URL}/api/v1/items-enhanced/lookup/batch",
             json=batch_payload
         )
         
@@ -423,9 +423,9 @@ class TestAdvancedReports:
         self.session.headers.update({"Content-Type": "application/json"})
     
     def test_sales_by_item_report(self):
-        """Test GET /api/items-enhanced/reports/sales-by-item"""
+        """Test GET /api/v1/items-enhanced/reports/sales-by-item"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/sales-by-item"
+            f"{BASE_URL}/api/v1/items-enhanced/reports/sales-by-item"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -442,9 +442,9 @@ class TestAdvancedReports:
         print(f"✓ Sales by Item report: {len(report.get('items', []))} items, total revenue: {summary.get('total_revenue', 0)}")
     
     def test_sales_by_item_report_with_filters(self):
-        """Test GET /api/items-enhanced/reports/sales-by-item with date filters"""
+        """Test GET /api/v1/items-enhanced/reports/sales-by-item with date filters"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/sales-by-item",
+            f"{BASE_URL}/api/v1/items-enhanced/reports/sales-by-item",
             params={
                 "start_date": "2024-01-01",
                 "end_date": "2026-12-31"
@@ -458,9 +458,9 @@ class TestAdvancedReports:
         print(f"✓ Sales by Item report with date filter: {len(report.get('items', []))} items")
     
     def test_purchases_by_item_report(self):
-        """Test GET /api/items-enhanced/reports/purchases-by-item"""
+        """Test GET /api/v1/items-enhanced/reports/purchases-by-item"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/purchases-by-item"
+            f"{BASE_URL}/api/v1/items-enhanced/reports/purchases-by-item"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -476,9 +476,9 @@ class TestAdvancedReports:
         print(f"✓ Purchases by Item report: {len(report.get('items', []))} items, total cost: {summary.get('total_cost', 0)}")
     
     def test_inventory_valuation_report(self):
-        """Test GET /api/items-enhanced/reports/inventory-valuation"""
+        """Test GET /api/v1/items-enhanced/reports/inventory-valuation"""
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/inventory-valuation"
+            f"{BASE_URL}/api/v1/items-enhanced/reports/inventory-valuation"
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -495,9 +495,9 @@ class TestAdvancedReports:
         print(f"✓ Inventory Valuation report: {len(report.get('items', []))} items, total value: {summary.get('total_stock_value', 0)}")
     
     def test_item_movement_report(self):
-        """Test GET /api/items-enhanced/reports/item-movement - requires item_id"""
+        """Test GET /api/v1/items-enhanced/reports/item-movement - requires item_id"""
         # Get an item first
-        items_response = self.session.get(f"{BASE_URL}/api/items-enhanced/?per_page=1")
+        items_response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=1")
         if items_response.status_code != 200:
             pytest.skip("Could not get items")
         
@@ -509,7 +509,7 @@ class TestAdvancedReports:
         
         # Item movement requires item_id parameter
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/item-movement",
+            f"{BASE_URL}/api/v1/items-enhanced/reports/item-movement",
             params={"item_id": item_id}
         )
         
@@ -519,9 +519,9 @@ class TestAdvancedReports:
         print(f"✓ Item Movement report retrieved successfully")
     
     def test_item_movement_report_with_date_filter(self):
-        """Test GET /api/items-enhanced/reports/item-movement with date filter"""
+        """Test GET /api/v1/items-enhanced/reports/item-movement with date filter"""
         # Get an item first
-        items_response = self.session.get(f"{BASE_URL}/api/items-enhanced/?per_page=1")
+        items_response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=1")
         if items_response.status_code != 200:
             pytest.skip("Could not get items")
         
@@ -532,7 +532,7 @@ class TestAdvancedReports:
         item_id = items[0].get("item_id")
         
         response = self.session.get(
-            f"{BASE_URL}/api/items-enhanced/reports/item-movement",
+            f"{BASE_URL}/api/v1/items-enhanced/reports/item-movement",
             params={
                 "item_id": item_id,
                 "start_date": "2024-01-01",
@@ -556,8 +556,8 @@ class TestExistingPhase1Features:
         self.session.headers.update({"Content-Type": "application/json"})
     
     def test_items_list(self):
-        """Test GET /api/items-enhanced/ still works"""
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/")
+        """Test GET /api/v1/items-enhanced/ still works"""
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/")
         
         assert response.status_code == 200
         data = response.json()
@@ -566,8 +566,8 @@ class TestExistingPhase1Features:
         print(f"✓ Items list: {len(data.get('items', []))} items")
     
     def test_price_lists(self):
-        """Test GET /api/items-enhanced/price-lists still works"""
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/price-lists")
+        """Test GET /api/v1/items-enhanced/price-lists still works"""
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists")
         
         assert response.status_code == 200
         data = response.json()
@@ -576,8 +576,8 @@ class TestExistingPhase1Features:
         print(f"✓ Price lists: {len(data.get('price_lists', []))} lists")
     
     def test_groups(self):
-        """Test GET /api/items-enhanced/groups still works"""
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/groups")
+        """Test GET /api/v1/items-enhanced/groups still works"""
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/groups")
         
         assert response.status_code == 200
         data = response.json()
@@ -586,8 +586,8 @@ class TestExistingPhase1Features:
         print(f"✓ Groups: {len(data.get('groups', []))} groups")
     
     def test_warehouses(self):
-        """Test GET /api/items-enhanced/warehouses still works"""
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/warehouses")
+        """Test GET /api/v1/items-enhanced/warehouses still works"""
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         
         assert response.status_code == 200
         data = response.json()
@@ -596,8 +596,8 @@ class TestExistingPhase1Features:
         print(f"✓ Warehouses: {len(data.get('warehouses', []))} warehouses")
     
     def test_summary(self):
-        """Test GET /api/items-enhanced/summary still works"""
-        response = self.session.get(f"{BASE_URL}/api/items-enhanced/summary")
+        """Test GET /api/v1/items-enhanced/summary still works"""
+        response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/summary")
         
         assert response.status_code == 200
         data = response.json()

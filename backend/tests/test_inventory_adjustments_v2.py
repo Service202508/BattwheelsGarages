@@ -10,7 +10,7 @@ import os
 import uuid
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test item with inventory tracking
 TEST_ITEM_ID = "1837096000001141394"  # 2 WHEELER SEATCOVER-25 (stock: 10.0)
@@ -21,8 +21,8 @@ class TestReasonsCRUD:
     """Test adjustment reasons CRUD operations"""
     
     def test_get_reasons_seeds_defaults(self):
-        """GET /api/inv-adjustments/reasons should seed defaults on first call"""
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        """GET /api/v1/inv-adjustments/reasons should seed defaults on first call"""
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -37,7 +37,7 @@ class TestReasonsCRUD:
         print(f"✓ Found {len(reasons)} reasons including defaults")
     
     def test_create_custom_reason(self):
-        """POST /api/inv-adjustments/reasons - create custom reason"""
+        """POST /api/v1/inv-adjustments/reasons - create custom reason"""
         custom_name = f"TEST_Reason_{uuid.uuid4().hex[:6]}"
         payload = {
             "name": custom_name,
@@ -46,7 +46,7 @@ class TestReasonsCRUD:
             "sort_order": 50
         }
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/reasons",
+            f"{BASE_URL}/api/v1/inv-adjustments/reasons",
             json=payload
         )
         assert response.status_code == 200
@@ -56,7 +56,7 @@ class TestReasonsCRUD:
         print(f"✓ Created custom reason: {custom_name} (ID: {data['reason_id']})")
         
         # Verify it appears in list
-        list_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        list_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reasons = list_resp.json()["reasons"]
         assert any(r["name"] == custom_name for r in reasons)
         
@@ -64,12 +64,12 @@ class TestReasonsCRUD:
         pytest.test_reason_id = data["reason_id"]
     
     def test_disable_reason(self):
-        """DELETE /api/inv-adjustments/reasons/{id} - soft delete"""
+        """DELETE /api/v1/inv-adjustments/reasons/{id} - soft delete"""
         if not hasattr(pytest, 'test_reason_id'):
             pytest.skip("No test reason to delete")
         
         response = requests.delete(
-            f"{BASE_URL}/api/inv-adjustments/reasons/{pytest.test_reason_id}"
+            f"{BASE_URL}/api/v1/inv-adjustments/reasons/{pytest.test_reason_id}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -77,7 +77,7 @@ class TestReasonsCRUD:
         print(f"✓ Disabled reason: {pytest.test_reason_id}")
         
         # Verify it no longer appears in active list
-        list_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons?active_only=true")
+        list_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons?active_only=true")
         reasons = list_resp.json()["reasons"]
         assert not any(r["reason_id"] == pytest.test_reason_id for r in reasons)
 
@@ -88,12 +88,12 @@ class TestAdjustmentWorkflow:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get a valid reason for tests"""
-        resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         self.reasons = resp.json()["reasons"]
         self.default_reason = self.reasons[0]["name"] if self.reasons else "Other"
     
     def test_create_draft_quantity_adjustment(self):
-        """POST /api/inv-adjustments - create draft quantity adjustment"""
+        """POST /api/v1/inv-adjustments - create draft quantity adjustment"""
         payload = {
             "adjustment_type": "quantity",
             "date": "2026-01-18",
@@ -111,7 +111,7 @@ class TestAdjustmentWorkflow:
             "status": "draft"
         }
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments",
+            f"{BASE_URL}/api/v1/inv-adjustments",
             json=payload
         )
         assert response.status_code == 200
@@ -127,9 +127,9 @@ class TestAdjustmentWorkflow:
         pytest.draft_reference = data["reference_number"]
     
     def test_list_adjustments_with_filters(self):
-        """GET /api/inv-adjustments - verify pagination and filtering"""
+        """GET /api/v1/inv-adjustments - verify pagination and filtering"""
         # Get all adjustments
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments")
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -141,7 +141,7 @@ class TestAdjustmentWorkflow:
         print(f"✓ Listed {data['total']} adjustments")
         
         # Filter by status=draft
-        draft_resp = requests.get(f"{BASE_URL}/api/inv-adjustments?status=draft")
+        draft_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments?status=draft")
         draft_data = draft_resp.json()
         assert draft_data["code"] == 0
         draft_statuses = [a["status"] for a in draft_data["adjustments"]]
@@ -151,7 +151,7 @@ class TestAdjustmentWorkflow:
         # Search by reference number
         if hasattr(pytest, 'draft_reference'):
             search_resp = requests.get(
-                f"{BASE_URL}/api/inv-adjustments?search={pytest.draft_reference}"
+                f"{BASE_URL}/api/v1/inv-adjustments?search={pytest.draft_reference}"
             )
             search_data = search_resp.json()
             assert search_data["code"] == 0
@@ -159,12 +159,12 @@ class TestAdjustmentWorkflow:
             print(f"✓ Search by reference works: {pytest.draft_reference}")
     
     def test_get_adjustment_detail_with_audit(self):
-        """GET /api/inv-adjustments/{id} - verify audit_trail included"""
+        """GET /api/v1/inv-adjustments/{id} - verify audit_trail included"""
         if not hasattr(pytest, 'draft_adjustment_id'):
             pytest.skip("No draft adjustment to get")
         
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/{pytest.draft_adjustment_id}"
+            f"{BASE_URL}/api/v1/inv-adjustments/{pytest.draft_adjustment_id}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -178,18 +178,18 @@ class TestAdjustmentWorkflow:
         print(f"✓ Got detail with audit trail: {len(adj['audit_trail'])} entries")
     
     def test_convert_to_adjusted(self):
-        """POST /api/inv-adjustments/{id}/convert - convert draft to adjusted"""
+        """POST /api/v1/inv-adjustments/{id}/convert - convert draft to adjusted"""
         if not hasattr(pytest, 'draft_adjustment_id'):
             pytest.skip("No draft to convert")
         
         # Get item stock before conversion
-        items_resp = requests.get(f"{BASE_URL}/api/items-enhanced/?per_page=500")
+        items_resp = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=500")
         items_data = items_resp.json()
         item_before = next((i for i in items_data["items"] if i["item_id"] == TEST_ITEM_ID), None)
         stock_before = item_before.get("stock_on_hand", 0) if item_before else 0
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/{pytest.draft_adjustment_id}/convert"
+            f"{BASE_URL}/api/v1/inv-adjustments/{pytest.draft_adjustment_id}/convert"
         )
         assert response.status_code == 200
         data = response.json()
@@ -198,14 +198,14 @@ class TestAdjustmentWorkflow:
         
         # Verify status changed
         detail_resp = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/{pytest.draft_adjustment_id}"
+            f"{BASE_URL}/api/v1/inv-adjustments/{pytest.draft_adjustment_id}"
         )
         detail = detail_resp.json()["adjustment"]
         assert detail["status"] == "adjusted"
         assert detail["converted_at"] is not None
         
         # Verify stock was updated
-        items_resp_after = requests.get(f"{BASE_URL}/api/items-enhanced/?per_page=500")
+        items_resp_after = requests.get(f"{BASE_URL}/api/v1/items-enhanced/?per_page=500")
         items_data_after = items_resp_after.json()
         item_after = next((i for i in items_data_after["items"] if i["item_id"] == TEST_ITEM_ID), None)
         if item_after:
@@ -213,12 +213,12 @@ class TestAdjustmentWorkflow:
             print(f"✓ Stock changed: {stock_before} -> {stock_after}")
     
     def test_void_adjusted(self):
-        """POST /api/inv-adjustments/{id}/void - void and reverse stock"""
+        """POST /api/v1/inv-adjustments/{id}/void - void and reverse stock"""
         if not hasattr(pytest, 'draft_adjustment_id'):
             pytest.skip("No adjustment to void")
         
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments/{pytest.draft_adjustment_id}/void"
+            f"{BASE_URL}/api/v1/inv-adjustments/{pytest.draft_adjustment_id}/void"
         )
         assert response.status_code == 200
         data = response.json()
@@ -227,7 +227,7 @@ class TestAdjustmentWorkflow:
         
         # Verify status
         detail_resp = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/{pytest.draft_adjustment_id}"
+            f"{BASE_URL}/api/v1/inv-adjustments/{pytest.draft_adjustment_id}"
         )
         detail = detail_resp.json()["adjustment"]
         assert detail["status"] == "void"
@@ -238,9 +238,9 @@ class TestValueAdjustment:
     """Test value adjustment type"""
     
     def test_create_value_adjustment_adjusted(self):
-        """POST /api/inv-adjustments with adjustment_type=value, status=adjusted"""
+        """POST /api/v1/inv-adjustments with adjustment_type=value, status=adjusted"""
         # Get a reason
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         payload = {
@@ -258,7 +258,7 @@ class TestValueAdjustment:
             "status": "adjusted"  # Create as adjusted directly
         }
         response = requests.post(
-            f"{BASE_URL}/api/inv-adjustments",
+            f"{BASE_URL}/api/v1/inv-adjustments",
             json=payload
         )
         assert response.status_code == 200
@@ -269,7 +269,7 @@ class TestValueAdjustment:
         
         # Get detail to verify value_adjusted calculated
         detail_resp = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/{data['adjustment_id']}"
+            f"{BASE_URL}/api/v1/inv-adjustments/{data['adjustment_id']}"
         )
         detail = detail_resp.json()["adjustment"]
         assert detail["adjustment_type"] == "value"
@@ -287,7 +287,7 @@ class TestDeleteDraft:
     def test_create_and_delete_draft(self):
         """Create a draft then delete it - should succeed"""
         # Get a reason
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         # Create draft
@@ -302,24 +302,24 @@ class TestDeleteDraft:
             ],
             "status": "draft"
         }
-        create_resp = requests.post(f"{BASE_URL}/api/inv-adjustments", json=payload)
+        create_resp = requests.post(f"{BASE_URL}/api/v1/inv-adjustments", json=payload)
         adj_id = create_resp.json()["adjustment_id"]
         print(f"✓ Created draft: {adj_id}")
         
         # Delete it
-        delete_resp = requests.delete(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        delete_resp = requests.delete(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
         assert delete_resp.status_code == 200
         assert delete_resp.json()["code"] == 0
         print(f"✓ Deleted draft: {adj_id}")
         
         # Verify it's gone
-        get_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        get_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
         assert get_resp.status_code == 404
     
     def test_delete_adjusted_fails(self):
         """Deleting an adjusted adjustment should fail with 400"""
         # Create and convert an adjustment
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         payload = {
@@ -333,27 +333,27 @@ class TestDeleteDraft:
             ],
             "status": "draft"
         }
-        create_resp = requests.post(f"{BASE_URL}/api/inv-adjustments", json=payload)
+        create_resp = requests.post(f"{BASE_URL}/api/v1/inv-adjustments", json=payload)
         adj_id = create_resp.json()["adjustment_id"]
         
         # Convert to adjusted
-        requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/convert")
+        requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/convert")
         
         # Try to delete - should fail
-        delete_resp = requests.delete(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        delete_resp = requests.delete(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
         assert delete_resp.status_code == 400
         print(f"✓ Cannot delete adjusted adjustment (400 returned)")
         
         # Cleanup - void it
-        requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/void")
+        requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/void")
 
 
 class TestSummary:
     """Test summary endpoint"""
     
     def test_get_summary(self):
-        """GET /api/inv-adjustments/summary - verify counts"""
-        response = requests.get(f"{BASE_URL}/api/inv-adjustments/summary")
+        """GET /api/v1/inv-adjustments/summary - verify counts"""
+        response = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -378,9 +378,9 @@ class TestReports:
     """Test report endpoints"""
     
     def test_adjustment_summary_report(self):
-        """GET /api/inv-adjustments/reports/adjustment-summary"""
+        """GET /api/v1/inv-adjustments/reports/adjustment-summary"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/adjustment-summary"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/adjustment-summary"
         )
         assert response.status_code == 200
         data = response.json()
@@ -395,9 +395,9 @@ class TestReports:
         print(f"✓ Adjustment summary report: {report['total_adjustments']} adjustments")
     
     def test_fifo_tracking_report(self):
-        """GET /api/inv-adjustments/reports/fifo-tracking"""
+        """GET /api/v1/inv-adjustments/reports/fifo-tracking"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/fifo-tracking"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/fifo-tracking"
         )
         assert response.status_code == 200
         data = response.json()
@@ -412,9 +412,9 @@ class TestReports:
         print(f"✓ FIFO tracking report: {report['total_lots']} lots")
     
     def test_abc_classification_report(self):
-        """GET /api/inv-adjustments/reports/abc-classification"""
+        """GET /api/v1/inv-adjustments/reports/abc-classification"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/reports/abc-classification"
+            f"{BASE_URL}/api/v1/inv-adjustments/reports/abc-classification"
         )
         assert response.status_code == 200
         data = response.json()
@@ -434,9 +434,9 @@ class TestNumberingSettings:
     """Test numbering settings endpoints"""
     
     def test_get_numbering_settings(self):
-        """GET /api/inv-adjustments/settings/numbering"""
+        """GET /api/v1/inv-adjustments/settings/numbering"""
         response = requests.get(
-            f"{BASE_URL}/api/inv-adjustments/settings/numbering"
+            f"{BASE_URL}/api/v1/inv-adjustments/settings/numbering"
         )
         assert response.status_code == 200
         data = response.json()
@@ -454,7 +454,7 @@ class TestEdgeCases:
     def test_convert_non_draft_fails(self):
         """Converting non-draft should return 400"""
         # Create and convert to adjusted first
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         payload = {
@@ -463,23 +463,23 @@ class TestEdgeCases:
             "line_items": [{"item_id": TEST_ITEM_ID, "new_quantity": 1}],
             "status": "draft"
         }
-        create_resp = requests.post(f"{BASE_URL}/api/inv-adjustments", json=payload)
+        create_resp = requests.post(f"{BASE_URL}/api/v1/inv-adjustments", json=payload)
         adj_id = create_resp.json()["adjustment_id"]
         
         # Convert first time
-        requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/convert")
+        requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/convert")
         
         # Try converting again
-        second_convert = requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/convert")
+        second_convert = requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/convert")
         assert second_convert.status_code == 400
         print(f"✓ Cannot convert non-draft (400 returned)")
         
         # Cleanup
-        requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/void")
+        requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/void")
     
     def test_void_non_adjusted_fails(self):
         """Voiding a draft should return 400"""
-        reasons_resp = requests.get(f"{BASE_URL}/api/inv-adjustments/reasons")
+        reasons_resp = requests.get(f"{BASE_URL}/api/v1/inv-adjustments/reasons")
         reason = reasons_resp.json()["reasons"][0]["name"]
         
         payload = {
@@ -488,16 +488,16 @@ class TestEdgeCases:
             "line_items": [{"item_id": TEST_ITEM_ID, "new_quantity": 1}],
             "status": "draft"
         }
-        create_resp = requests.post(f"{BASE_URL}/api/inv-adjustments", json=payload)
+        create_resp = requests.post(f"{BASE_URL}/api/v1/inv-adjustments", json=payload)
         adj_id = create_resp.json()["adjustment_id"]
         
         # Try voiding draft
-        void_resp = requests.post(f"{BASE_URL}/api/inv-adjustments/{adj_id}/void")
+        void_resp = requests.post(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}/void")
         assert void_resp.status_code == 400
         print(f"✓ Cannot void draft (400 returned)")
         
         # Cleanup
-        requests.delete(f"{BASE_URL}/api/inv-adjustments/{adj_id}")
+        requests.delete(f"{BASE_URL}/api/v1/inv-adjustments/{adj_id}")
 
 
 if __name__ == "__main__":

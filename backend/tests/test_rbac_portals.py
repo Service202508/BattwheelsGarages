@@ -13,7 +13,7 @@ class TestHealthAndAuth:
     
     def test_health_check(self):
         """Verify API is running"""
-        res = requests.get(f"{BASE_URL}/api/health")
+        res = requests.get(f"{BASE_URL}/api/v1/health")
         print(f"Health check response: {res.status_code}")
         assert res.status_code == 200
     
@@ -245,7 +245,7 @@ class TestTechnicianPortalAPI:
         }
     
     def test_technician_dashboard(self, tech_headers):
-        """GET /api/technician/dashboard - Technician dashboard data"""
+        """GET /api/v1/technician/dashboard - Technician dashboard data"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/dashboard",
             headers=tech_headers
@@ -266,7 +266,7 @@ class TestTechnicianPortalAPI:
         print(f"Dashboard data: {data}")
     
     def test_technician_my_tickets(self, tech_headers):
-        """GET /api/technician/tickets - Only assigned tickets"""
+        """GET /api/v1/technician/tickets - Only assigned tickets"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/tickets",
             headers=tech_headers
@@ -281,7 +281,7 @@ class TestTechnicianPortalAPI:
         print(f"Found {data['total']} assigned tickets")
     
     def test_technician_tickets_filter_status(self, tech_headers):
-        """GET /api/technician/tickets?status=active - Filter by status"""
+        """GET /api/v1/technician/tickets?status=active - Filter by status"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/tickets",
             params={"status": "active"},
@@ -293,7 +293,7 @@ class TestTechnicianPortalAPI:
         assert "tickets" in data
     
     def test_technician_attendance(self, tech_headers):
-        """GET /api/technician/attendance - Own attendance records"""
+        """GET /api/v1/technician/attendance - Own attendance records"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/attendance",
             headers=tech_headers
@@ -310,7 +310,7 @@ class TestTechnicianPortalAPI:
         assert "absent" in summary
     
     def test_technician_leave_requests(self, tech_headers):
-        """GET /api/technician/leave - Own leave requests"""
+        """GET /api/v1/technician/leave - Own leave requests"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/leave",
             headers=tech_headers
@@ -322,7 +322,7 @@ class TestTechnicianPortalAPI:
         assert "balance" in data
     
     def test_technician_payroll(self, tech_headers):
-        """GET /api/technician/payroll - Own payroll history"""
+        """GET /api/v1/technician/payroll - Own payroll history"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/payroll",
             headers=tech_headers
@@ -333,7 +333,7 @@ class TestTechnicianPortalAPI:
         assert "payslips" in data
     
     def test_technician_productivity(self, tech_headers):
-        """GET /api/technician/productivity - Own productivity metrics"""
+        """GET /api/v1/technician/productivity - Own productivity metrics"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/productivity",
             headers=tech_headers
@@ -387,7 +387,7 @@ class TestBusinessPortalAPI:
         return res.json().get("token") or res.json().get("access_token")
     
     def test_business_registration_endpoint_exists(self):
-        """POST /api/business/register - Endpoint exists"""
+        """POST /api/v1/business/register - Endpoint exists"""
         res = requests.post(
             f"{BASE_URL}/api/v1/business/register",
             json={
@@ -408,7 +408,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 201, 400, 401]
     
     def test_business_dashboard_endpoint_exists(self, admin_token):
-        """GET /api/business/dashboard - Endpoint exists"""
+        """GET /api/v1/business/dashboard - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/dashboard",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -418,7 +418,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_fleet_endpoint_exists(self, admin_token):
-        """GET /api/business/fleet - Endpoint exists"""
+        """GET /api/v1/business/fleet - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/fleet",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -427,7 +427,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_tickets_endpoint_exists(self, admin_token):
-        """GET /api/business/tickets - Endpoint exists"""
+        """GET /api/v1/business/tickets - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -436,7 +436,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_invoices_endpoint_exists(self, admin_token):
-        """GET /api/business/invoices - Endpoint exists"""
+        """GET /api/v1/business/invoices - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/invoices",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -445,7 +445,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_amc_endpoint_exists(self, admin_token):
-        """GET /api/business/amc - Endpoint exists"""
+        """GET /api/v1/business/amc - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/amc",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -454,7 +454,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_reports_endpoint_exists(self, admin_token):
-        """GET /api/business/reports/summary - Endpoint exists"""
+        """GET /api/v1/business/reports/summary - Endpoint exists"""
         res = requests.get(
             f"{BASE_URL}/api/v1/business/reports/summary",
             headers={"Authorization": f"Bearer {admin_token}"}
@@ -463,7 +463,7 @@ class TestBusinessPortalAPI:
         assert res.status_code in [200, 403, 404]
     
     def test_business_bulk_payment_endpoint_exists(self, admin_token):
-        """POST /api/business/invoices/bulk-payment - Endpoint exists"""
+        """POST /api/v1/business/invoices/bulk-payment - Endpoint exists"""
         res = requests.post(
             f"{BASE_URL}/api/v1/business/invoices/bulk-payment",
             headers={

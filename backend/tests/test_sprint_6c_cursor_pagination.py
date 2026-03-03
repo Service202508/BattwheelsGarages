@@ -40,7 +40,7 @@ def dev_session():
     })
     
     # Login
-    resp = session.post(f"{BASE_URL}/api/auth/login", json={
+    resp = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": DEV_USER_EMAIL,
         "password": DEV_USER_PASSWORD
     })
@@ -64,7 +64,7 @@ def platform_admin_session():
         "X-Organization-ID": DEV_ORG_ID
     })
     
-    resp = session.post(f"{BASE_URL}/api/auth/login", json={
+    resp = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": PLATFORM_ADMIN_EMAIL,
         "password": PLATFORM_ADMIN_PASSWORD
     })

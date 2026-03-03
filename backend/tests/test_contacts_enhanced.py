@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test data tracking
 created_tag_ids = []
@@ -22,7 +22,7 @@ class TestContactTags:
     
     def test_list_tags(self):
         """Test listing all contact tags"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/tags")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/tags")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -38,7 +38,7 @@ class TestContactTags:
             "description": "Test tag for automated testing",
             "color": "#10B981"
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/tags", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/tags", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -53,7 +53,7 @@ class TestContactTags:
         if not created_tag_ids:
             pytest.skip("No tag created to test")
         tag_id = created_tag_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/tags/{tag_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/tags/{tag_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -69,7 +69,7 @@ class TestContactTags:
             "description": "Updated description for testing",
             "color": "#F59E0B"
         }
-        response = requests.put(f"{BASE_URL}/api/contacts-enhanced/tags/{tag_id}", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/contacts-enhanced/tags/{tag_id}", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -81,12 +81,12 @@ class TestContactTags:
         # First create a tag
         tag_name = f"TEST_Duplicate_{uuid.uuid4().hex[:8]}"
         payload = {"name": tag_name, "description": "First tag", "color": "#3B82F6"}
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/tags", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/tags", json=payload)
         assert response.status_code == 200
         created_tag_ids.append(response.json()["tag"]["tag_id"])
         
         # Try to create another with same name
-        response2 = requests.post(f"{BASE_URL}/api/contacts-enhanced/tags", json=payload)
+        response2 = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/tags", json=payload)
         assert response2.status_code == 400
         print(f"✓ Duplicate tag name correctly rejected")
 
@@ -96,7 +96,7 @@ class TestContacts:
     
     def test_list_contacts(self):
         """Test listing all contacts"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -106,7 +106,7 @@ class TestContacts:
     
     def test_get_contacts_summary(self):
         """Test getting contacts summary statistics"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/summary")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -120,7 +120,7 @@ class TestContacts:
     
     def test_get_indian_states(self):
         """Test getting list of Indian states"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/states")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/states")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -142,7 +142,7 @@ class TestContacts:
             "gst_treatment": "registered",
             "tax_treatment": "business_gst"
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -165,7 +165,7 @@ class TestContacts:
             "payment_terms": 45,
             "gst_treatment": "registered"
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -183,7 +183,7 @@ class TestContacts:
             "email": f"both_{uuid.uuid4().hex[:6]}@example.com",
             "phone": "+91-9999999999"
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -196,7 +196,7 @@ class TestContacts:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -216,7 +216,7 @@ class TestContacts:
             "payment_terms": 60,
             "notes": "Updated via automated test"
         }
-        response = requests.put(f"{BASE_URL}/api/contacts-enhanced/{contact_id}", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -225,7 +225,7 @@ class TestContacts:
     
     def test_filter_contacts_by_type(self):
         """Test filtering contacts by type"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?contact_type=customer")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?contact_type=customer")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -236,7 +236,7 @@ class TestContacts:
     
     def test_search_contacts(self):
         """Test searching contacts"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/?search=TEST_")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/?search=TEST_")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -249,7 +249,7 @@ class TestGSTINValidation:
     def test_valid_gstin(self):
         """Test validation of a valid GSTIN"""
         gstin = "07AAAAA0000A1Z5"  # Delhi GSTIN
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -262,7 +262,7 @@ class TestGSTINValidation:
     def test_invalid_gstin_format(self):
         """Test validation of an invalid GSTIN format"""
         gstin = "INVALID123"
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 1
@@ -277,7 +277,7 @@ class TestGSTINValidation:
             ("33AABCT9012C1Z5", "TN", "Tamil Nadu"),
         ]
         for gstin, expected_code, expected_name in test_cases:
-            response = requests.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/{gstin}")
+            response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/validate-gstin/{gstin}")
             assert response.status_code == 200
             data = response.json()
             assert data["valid"] == True
@@ -302,7 +302,7 @@ class TestContactPersons:
             "department": "Sales",
             "is_primary": True
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/persons", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/persons", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -316,7 +316,7 @@ class TestContactPersons:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/persons")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/persons")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -332,7 +332,7 @@ class TestContactPersons:
             "designation": "Senior Manager",
             "department": "Operations"
         }
-        response = requests.put(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/persons/{person_id}", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/persons/{person_id}", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -360,7 +360,7 @@ class TestAddresses:
             "country": "India",
             "is_default": True
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/addresses", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/addresses", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -384,7 +384,7 @@ class TestAddresses:
             "country": "India",
             "is_default": True
         }
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/addresses", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/addresses", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -397,7 +397,7 @@ class TestAddresses:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/addresses")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/addresses")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -409,7 +409,7 @@ class TestAddresses:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/addresses?address_type=billing")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/addresses?address_type=billing")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -426,7 +426,7 @@ class TestPortalAccess:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/enable-portal")
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/enable-portal")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -438,7 +438,7 @@ class TestPortalAccess:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/disable-portal")
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/disable-portal")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -453,7 +453,7 @@ class TestEmailStatements:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.post(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/email-statement")
+        response = requests.post(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/email-statement")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -466,7 +466,7 @@ class TestEmailStatements:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/statement-history")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/statement-history")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -482,13 +482,13 @@ class TestContactActivation:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.put(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/deactivate")
+        response = requests.put(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/deactivate")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deactivation
-        get_response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}")
+        get_response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}")
         assert get_response.json()["contact"]["is_active"] == False
         print(f"✓ Contact deactivated: {contact_id}")
     
@@ -497,13 +497,13 @@ class TestContactActivation:
         if not created_contact_ids:
             pytest.skip("No contact created to test")
         contact_id = created_contact_ids[0]
-        response = requests.put(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/activate")
+        response = requests.put(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/activate")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify activation
-        get_response = requests.get(f"{BASE_URL}/api/contacts-enhanced/{contact_id}")
+        get_response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}")
         assert get_response.json()["contact"]["is_active"] == True
         print(f"✓ Contact activated: {contact_id}")
 
@@ -513,7 +513,7 @@ class TestBackwardCompatibility:
     
     def test_customers_endpoint(self):
         """Test backward compatible /customers endpoint"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/customers")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/customers")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -524,7 +524,7 @@ class TestBackwardCompatibility:
     
     def test_vendors_endpoint(self):
         """Test backward compatible /vendors endpoint"""
-        response = requests.get(f"{BASE_URL}/api/contacts-enhanced/vendors")
+        response = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/vendors")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -540,28 +540,28 @@ class TestCleanup:
     def test_delete_test_persons(self):
         """Delete test persons"""
         for contact_id, person_id in created_person_ids:
-            response = requests.delete(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/persons/{person_id}")
+            response = requests.delete(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/persons/{person_id}")
             if response.status_code == 200:
                 print(f"✓ Deleted person: {person_id}")
     
     def test_delete_test_addresses(self):
         """Delete test addresses"""
         for contact_id, address_id in created_address_ids:
-            response = requests.delete(f"{BASE_URL}/api/contacts-enhanced/{contact_id}/addresses/{address_id}")
+            response = requests.delete(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}/addresses/{address_id}")
             if response.status_code == 200:
                 print(f"✓ Deleted address: {address_id}")
     
     def test_delete_test_contacts(self):
         """Delete test contacts"""
         for contact_id in created_contact_ids:
-            response = requests.delete(f"{BASE_URL}/api/contacts-enhanced/{contact_id}")
+            response = requests.delete(f"{BASE_URL}/api/v1/contacts-enhanced/{contact_id}")
             if response.status_code == 200:
                 print(f"✓ Deleted contact: {contact_id}")
     
     def test_delete_test_tags(self):
         """Delete test tags"""
         for tag_id in created_tag_ids:
-            response = requests.delete(f"{BASE_URL}/api/contacts-enhanced/tags/{tag_id}")
+            response = requests.delete(f"{BASE_URL}/api/v1/contacts-enhanced/tags/{tag_id}")
             if response.status_code == 200:
                 print(f"✓ Deleted tag: {tag_id}")
 

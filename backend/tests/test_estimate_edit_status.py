@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestEstimateEditStatus:
     """Test estimate editing availability at different statuses"""
@@ -16,7 +16,7 @@ class TestEstimateEditStatus:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -35,7 +35,7 @@ class TestEstimateEditStatus:
         """Test editing a Draft status estimate - should succeed"""
         # Get Draft estimate EST-00062
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?search=EST-00062",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?search=EST-00062",
             headers=headers
         )
         assert response.status_code == 200, f"Failed to get estimate: {response.text}"
@@ -64,7 +64,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -80,7 +80,7 @@ class TestEstimateEditStatus:
         """Test editing a Sent status estimate - should succeed"""
         # Get Sent estimate EST-00059
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?search=EST-00059",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?search=EST-00059",
             headers=headers
         )
         assert response.status_code == 200
@@ -107,7 +107,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -122,7 +122,7 @@ class TestEstimateEditStatus:
         """Test editing an Accepted status estimate - should succeed"""
         # Get Accepted estimate EST-00037
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?search=EST-00037",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?search=EST-00037",
             headers=headers
         )
         assert response.status_code == 200
@@ -149,7 +149,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -164,7 +164,7 @@ class TestEstimateEditStatus:
         """Test editing a Converted status estimate - should FAIL with 400"""
         # Get Converted estimate EST-00036
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?search=EST-00036",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?search=EST-00036",
             headers=headers
         )
         assert response.status_code == 200
@@ -195,7 +195,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -212,7 +212,7 @@ class TestEstimateEditStatus:
         """Test editing a Declined status estimate - should succeed"""
         # Search for any declined estimate
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?status=declined&per_page=5",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?status=declined&per_page=5",
             headers=headers
         )
         assert response.status_code == 200
@@ -234,7 +234,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -248,7 +248,7 @@ class TestEstimateEditStatus:
         """Test editing an Expired status estimate - should succeed"""
         # Search for any expired estimate
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/?status=expired&per_page=5",
+            f"{BASE_URL}/api/v1/estimates-enhanced/?status=expired&per_page=5",
             headers=headers
         )
         assert response.status_code == 200
@@ -270,7 +270,7 @@ class TestEstimateEditStatus:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/estimates-enhanced/{estimate_id}",
+            f"{BASE_URL}/api/v1/estimates-enhanced/{estimate_id}",
             headers=headers,
             json=update_payload
         )
@@ -288,7 +288,7 @@ class TestEstimateStatusSummary:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert response.status_code == 200
@@ -305,7 +305,7 @@ class TestEstimateStatusSummary:
     def test_get_estimates_summary(self, headers):
         """Get summary of all estimate statuses"""
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/summary",
+            f"{BASE_URL}/api/v1/estimates-enhanced/summary",
             headers=headers
         )
         assert response.status_code == 200

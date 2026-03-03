@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestEmployeeCreation:
     """Test employee creation flow after bug fix"""
@@ -17,7 +17,7 @@ class TestEmployeeCreation:
     @pytest.fixture(scope="class")
     def admin_token(self):
         """Login as admin and get token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -32,7 +32,7 @@ class TestEmployeeCreation:
     
     def test_admin_login(self):
         """Test admin can login successfully"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -63,7 +63,7 @@ class TestEmployeeCreation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )
@@ -86,7 +86,7 @@ class TestEmployeeCreation:
     def test_get_employees_list(self, auth_headers):
         """Test getting employees list"""
         response = requests.get(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             headers=auth_headers
         )
         
@@ -116,7 +116,7 @@ class TestEmployeeCreation:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )
@@ -128,7 +128,7 @@ class TestEmployeeCreation:
         print(f"✓ Employee created: {created.get('employee_id')}")
         
         # Try to login with the new employee's credentials
-        login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": test_email,
             "password": test_password
         })
@@ -194,7 +194,7 @@ class TestEmployeeCreation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )
@@ -228,7 +228,7 @@ class TestEmployeeValidation:
     @pytest.fixture(scope="class")
     def admin_token(self):
         """Login as admin and get token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -254,7 +254,7 @@ class TestEmployeeValidation:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )
@@ -282,7 +282,7 @@ class TestEmployeeValidation:
         
         # Create first employee
         response1 = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )
@@ -292,7 +292,7 @@ class TestEmployeeValidation:
         # Try to create second employee with same email
         employee_data["last_name"] = "Test2"
         response2 = requests.post(
-            f"{BASE_URL}/api/employees",
+            f"{BASE_URL}/api/v1/employees",
             json=employee_data,
             headers=auth_headers
         )

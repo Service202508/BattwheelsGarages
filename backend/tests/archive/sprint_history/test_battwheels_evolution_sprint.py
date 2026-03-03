@@ -15,7 +15,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_USER_EMAIL = "demo@voltmotors.in"
@@ -33,7 +33,7 @@ class TestSetup:
     
     def test_01_health_check(self):
         """API health check - returns version 2.5.0"""
-        response = session.get(f"{BASE_URL}/api/health")
+        response = session.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         assert "version" in data
@@ -48,7 +48,7 @@ class TestSetup:
         # Add small delay to avoid rate limiting
         time.sleep(0.5)
         
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_USER_EMAIL,
             "password": TEST_USER_PASSWORD
         })
@@ -320,8 +320,8 @@ class TestPhase6FeatureFlagsVersion:
     """Phase 6: Feature flags + version tracking + migration system"""
     
     def test_01_health_returns_version(self):
-        """GET /api/health returns version: 2.5.0 and release_date"""
-        response = session.get(f"{BASE_URL}/api/health")
+        """GET /api/v1/health returns version: 2.5.0 and release_date"""
+        response = session.get(f"{BASE_URL}/api/v1/health")
         assert response.status_code == 200
         data = response.json()
         
@@ -354,8 +354,8 @@ class TestPublicEndpoints:
     """Test public endpoints - Note: subdomain routing won't work in preview"""
     
     def test_01_public_vehicle_categories(self):
-        """GET /api/public/vehicle-categories - public form master data (no /v1 prefix)"""
-        response = session.get(f"{BASE_URL}/api/public/vehicle-categories")
+        """GET /api/v1/public/vehicle-categories - public form master data (no /v1 prefix)"""
+        response = session.get(f"{BASE_URL}/api/v1/public/vehicle-categories")
         assert response.status_code == 200
         data = response.json()
         
@@ -364,8 +364,8 @@ class TestPublicEndpoints:
         print(f"✓ Public vehicle categories accessible - {len(categories)} categories")
     
     def test_02_public_service_charges(self):
-        """GET /api/public/service-charges - service fee info (no /v1 prefix)"""
-        response = session.get(f"{BASE_URL}/api/public/service-charges")
+        """GET /api/v1/public/service-charges - service fee info (no /v1 prefix)"""
+        response = session.get(f"{BASE_URL}/api/v1/public/service-charges")
         assert response.status_code == 200
         data = response.json()
         
@@ -375,8 +375,8 @@ class TestPublicEndpoints:
         print(f"✓ Public service charges accessible - visit fee: ₹{data['visit_fee']['amount']}")
     
     def test_03_customer_lookup_requires_subdomain(self):
-        """GET /api/public/customer-lookup - requires subdomain (404 in preview, 400 in prod)"""
-        response = session.get(f"{BASE_URL}/api/public/customer-lookup?phone=9999999999")
+        """GET /api/v1/public/customer-lookup - requires subdomain (404 in preview, 400 in prod)"""
+        response = session.get(f"{BASE_URL}/api/v1/public/customer-lookup?phone=9999999999")
         # In preview environment without subdomain, endpoint returns 404 (not routed)
         # In production with subdomain, it would return 400 for missing org context
         assert response.status_code in [400, 404], f"Unexpected status: {response.status_code}"

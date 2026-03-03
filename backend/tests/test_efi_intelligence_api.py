@@ -16,7 +16,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test organization IDs for tenant isolation testing
 ORG_A = f"TEST_org_A_{uuid.uuid4().hex[:6]}"
@@ -37,7 +37,7 @@ class TestAIGuidanceSnapshots:
     def test_get_snapshot_info_non_existing_ticket(self):
         """Test snapshot info for non-existing ticket returns exists=False"""
         response = requests.get(
-            f"{BASE_URL}/api/ai/guidance/snapshot/TKT-NONEXISTENT-{uuid.uuid4().hex[:6]}",
+            f"{BASE_URL}/api/v1/ai/guidance/snapshot/TKT-NONEXISTENT-{uuid.uuid4().hex[:6]}",
             headers=get_headers(),
             params={"mode": "quick"}
         )
@@ -50,7 +50,7 @@ class TestAIGuidanceSnapshots:
     def test_check_context_requires_ticket(self):
         """Test check-context endpoint requires valid ticket"""
         response = requests.post(
-            f"{BASE_URL}/api/ai/guidance/check-context",
+            f"{BASE_URL}/api/v1/ai/guidance/check-context",
             headers=get_headers(),
             json={
                 "ticket_id": f"TKT-FAKE-{uuid.uuid4().hex[:6]}",
@@ -67,7 +67,7 @@ class TestAIGuidanceSnapshots:
         guidance_id = f"GD-TEST-{uuid.uuid4().hex[:6]}"
         
         response = requests.get(
-            f"{BASE_URL}/api/ai/guidance/feedback-summary/{guidance_id}",
+            f"{BASE_URL}/api/v1/ai/guidance/feedback-summary/{guidance_id}",
             headers=get_headers()
         )
         
@@ -103,7 +103,7 @@ class TestFailureCards:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(),
             json=card_data
         )
@@ -127,7 +127,7 @@ class TestFailureCards:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(ORG_A),
             json=card_data
         )
@@ -136,7 +136,7 @@ class TestFailureCards:
         
         # Query cards from ORG_A
         response_a = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(ORG_A),
             params={"status": "all"}
         )
@@ -145,7 +145,7 @@ class TestFailureCards:
         
         # Query cards from ORG_B - should NOT see ORG_A's tenant cards
         response_b = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(ORG_B),
             params={"status": "all"}
         )
@@ -176,7 +176,7 @@ class TestFailureCards:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(),
             json=card_data
         )
@@ -185,7 +185,7 @@ class TestFailureCards:
         
         # Approve the card
         approve_response = requests.put(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards/{card_id}/approve",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards/{card_id}/approve",
             headers=get_headers()
         )
         
@@ -202,7 +202,7 @@ class TestModelAwareRanking:
     def test_rank_causes_returns_top_3(self):
         """Test that ranking returns at most top 3 causes"""
         response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/ranking/rank-causes",
+            f"{BASE_URL}/api/v1/efi/intelligence/ranking/rank-causes",
             headers=get_headers(),
             params={
                 "vehicle_make": "Ola",
@@ -230,7 +230,7 @@ class TestModelAwareRanking:
         """Test that low confidence returns safe checklist"""
         # Query with minimal/no matching context to get low confidence
         response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/ranking/rank-causes",
+            f"{BASE_URL}/api/v1/efi/intelligence/ranking/rank-causes",
             headers=get_headers(),
             params={
                 "subsystem": "unknown_subsystem_xyz",
@@ -273,19 +273,19 @@ class TestModelAwareRanking:
         
         # Create both cards
         requests.post(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(),
             json=matching_card
         )
         requests.post(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_headers(),
             json=non_matching_card
         )
         
         # Query for Ather 450X - matching card should rank higher
         response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/ranking/rank-causes",
+            f"{BASE_URL}/api/v1/efi/intelligence/ranking/rank-causes",
             headers=get_headers(),
             params={
                 "vehicle_make": "Ather",
@@ -325,7 +325,7 @@ class TestContinuousLearning:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/efi/intelligence/learning/capture-closure/{ticket_id}",
+            f"{BASE_URL}/api/v1/efi/intelligence/learning/capture-closure/{ticket_id}",
             headers=get_headers(),
             json=closure_data
         )
@@ -342,7 +342,7 @@ class TestContinuousLearning:
     def test_learning_stats(self):
         """Test getting learning statistics"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/learning/stats",
+            f"{BASE_URL}/api/v1/efi/intelligence/learning/stats",
             headers=get_headers()
         )
         
@@ -362,7 +362,7 @@ class TestRiskAlerts:
     def test_get_risk_alerts(self):
         """Test getting risk alerts"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/risk-alerts",
+            f"{BASE_URL}/api/v1/efi/intelligence/risk-alerts",
             headers=get_headers(),
             params={"status": "all"}
         )
@@ -380,7 +380,7 @@ class TestRiskAlerts:
         """Test filtering risk alerts by status"""
         for status in ["active", "acknowledged", "resolved"]:
             response = requests.get(
-                f"{BASE_URL}/api/efi/intelligence/risk-alerts",
+                f"{BASE_URL}/api/v1/efi/intelligence/risk-alerts",
                 headers=get_headers(),
                 params={"status": status}
             )
@@ -401,7 +401,7 @@ class TestDashboardSummary:
     def test_get_dashboard_summary(self):
         """Test getting dashboard summary with all intelligence stats"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/dashboard-summary",
+            f"{BASE_URL}/api/v1/efi/intelligence/dashboard-summary",
             headers=get_headers()
         )
         
@@ -439,7 +439,7 @@ class TestAIGuidanceRoutes:
     def test_guidance_status(self):
         """Test guidance status endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/ai/guidance/status",
+            f"{BASE_URL}/api/v1/ai/guidance/status",
             headers=get_headers()
         )
         

@@ -7,14 +7,14 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com')
 
 class TestAuth:
     """Authentication endpoint tests"""
     
     def test_root_api(self):
         """Test root API endpoint"""
-        response = requests.get(f"{BASE_URL}/api/")
+        response = requests.get(f"{BASE_URL}/api/v1/")
         assert response.status_code == 200
         data = response.json()
         assert "message" in data or "status" in data
@@ -22,7 +22,7 @@ class TestAuth:
     
     def test_admin_login(self):
         """Test admin login with provided credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "admin@battwheels.in",
             "password": "DevTest@123"
         })
@@ -36,7 +36,7 @@ class TestAuth:
     
     def test_technician_login(self):
         """Test technician login with provided credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "deepak@battwheelsgarages.in",
             "password": "DevTest@123"
         })
@@ -49,7 +49,7 @@ class TestAuth:
     
     def test_invalid_login(self):
         """Test login with invalid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "invalid@test.com",
             "password": "wrong_pwd_placeholder"
         })
@@ -60,7 +60,7 @@ class TestAuth:
 @pytest.fixture(scope="class")
 def admin_token():
     """Get admin authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "admin@battwheels.in",
         "password": "DevTest@123"
     })
@@ -80,7 +80,7 @@ class TestDashboard:
     
     def test_dashboard_stats(self, auth_headers):
         """Test dashboard stats endpoint returns all required metrics"""
-        response = requests.get(f"{BASE_URL}/api/dashboard/stats", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/dashboard/stats", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -102,7 +102,7 @@ class TestInventory:
     
     def test_get_inventory(self, auth_headers):
         """Test fetching inventory items"""
-        response = requests.get(f"{BASE_URL}/api/inventory", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/inventory", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -134,7 +134,7 @@ class TestInventory:
             "reorder_quantity": 20,
             "location": "Warehouse A"
         }
-        response = requests.post(f"{BASE_URL}/api/inventory", headers=auth_headers, json=test_item)
+        response = requests.post(f"{BASE_URL}/api/v1/inventory", headers=auth_headers, json=test_item)
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == test_item["name"]
@@ -149,7 +149,7 @@ class TestSuppliers:
     
     def test_get_suppliers(self, auth_headers):
         """Test fetching suppliers - should have 3 seeded suppliers"""
-        response = requests.get(f"{BASE_URL}/api/suppliers", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/suppliers", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -181,7 +181,7 @@ class TestSuppliers:
             "payment_terms": "net_30",
             "category": "parts"
         }
-        response = requests.post(f"{BASE_URL}/api/suppliers", headers=auth_headers, json=test_supplier)
+        response = requests.post(f"{BASE_URL}/api/v1/suppliers", headers=auth_headers, json=test_supplier)
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == test_supplier["name"]
@@ -194,7 +194,7 @@ class TestPurchaseOrders:
     
     def test_get_purchase_orders(self, auth_headers):
         """Test fetching purchase orders"""
-        response = requests.get(f"{BASE_URL}/api/purchase-orders", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/purchase-orders", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -206,7 +206,7 @@ class TestSalesOrders:
     
     def test_get_sales_orders(self, auth_headers):
         """Test fetching sales orders"""
-        response = requests.get(f"{BASE_URL}/api/sales-orders", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/sales-orders", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -218,7 +218,7 @@ class TestInvoices:
     
     def test_get_invoices(self, auth_headers):
         """Test fetching invoices"""
-        response = requests.get(f"{BASE_URL}/api/invoices", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/invoices", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -230,7 +230,7 @@ class TestAccounting:
     
     def test_get_accounting_summary(self, auth_headers):
         """Test fetching accounting summary"""
-        response = requests.get(f"{BASE_URL}/api/accounting/summary", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/accounting/summary", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         
@@ -242,7 +242,7 @@ class TestAccounting:
     
     def test_get_ledger(self, auth_headers):
         """Test fetching general ledger"""
-        response = requests.get(f"{BASE_URL}/api/ledger", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/ledger", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -254,7 +254,7 @@ class TestVehicles:
     
     def test_get_vehicles(self, auth_headers):
         """Test fetching vehicles"""
-        response = requests.get(f"{BASE_URL}/api/vehicles", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/vehicles", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -272,7 +272,7 @@ class TestVehicles:
             "registration_number": "TEST-MH-01-AB-1234",
             "battery_capacity": 40.5
         }
-        response = requests.post(f"{BASE_URL}/api/vehicles", headers=auth_headers, json=test_vehicle)
+        response = requests.post(f"{BASE_URL}/api/v1/vehicles", headers=auth_headers, json=test_vehicle)
         assert response.status_code == 200
         data = response.json()
         assert data["make"] == test_vehicle["make"]
@@ -287,7 +287,7 @@ class TestTickets:
     
     def test_get_tickets(self, auth_headers):
         """Test fetching tickets"""
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -296,7 +296,7 @@ class TestTickets:
     def test_create_ticket(self, auth_headers):
         """Test creating a new ticket"""
         # First get a vehicle
-        vehicles_response = requests.get(f"{BASE_URL}/api/vehicles", headers=auth_headers)
+        vehicles_response = requests.get(f"{BASE_URL}/api/v1/vehicles", headers=auth_headers)
         vehicles = vehicles_response.json()
         
         if len(vehicles) == 0:
@@ -311,7 +311,7 @@ class TestTickets:
                 "registration_number": "TEST-MH-02-CD-5678",
                 "battery_capacity": 39.4
             }
-            vehicle_response = requests.post(f"{BASE_URL}/api/vehicles", headers=auth_headers, json=vehicle_data)
+            vehicle_response = requests.post(f"{BASE_URL}/api/v1/vehicles", headers=auth_headers, json=vehicle_data)
             vehicle_id = vehicle_response.json()["vehicle_id"]
         else:
             vehicle_id = vehicles[0]["vehicle_id"]
@@ -324,7 +324,7 @@ class TestTickets:
             "priority": "high",
             "estimated_cost": 5000
         }
-        response = requests.post(f"{BASE_URL}/api/tickets", headers=auth_headers, json=test_ticket)
+        response = requests.post(f"{BASE_URL}/api/v1/tickets", headers=auth_headers, json=test_ticket)
         assert response.status_code == 200
         data = response.json()
         assert data["title"] == test_ticket["title"]
@@ -337,7 +337,7 @@ class TestServices:
     
     def test_get_services(self, auth_headers):
         """Test fetching service offerings"""
-        response = requests.get(f"{BASE_URL}/api/services", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/services", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -349,7 +349,7 @@ class TestAlerts:
     
     def test_get_alerts(self, auth_headers):
         """Test fetching alerts"""
-        response = requests.get(f"{BASE_URL}/api/alerts", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/alerts", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -361,7 +361,7 @@ class TestTechnicians:
     
     def test_get_technicians(self, auth_headers):
         """Test fetching technicians"""
-        response = requests.get(f"{BASE_URL}/api/technicians", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/technicians", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -373,7 +373,7 @@ class TestUsers:
     
     def test_get_users(self, auth_headers):
         """Test fetching users (admin only)"""
-        response = requests.get(f"{BASE_URL}/api/users", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/users", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)

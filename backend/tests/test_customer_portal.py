@@ -7,14 +7,14 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 class TestCustomerAuth:
     """Test customer authentication and role-based access"""
     
     def test_customer_login_success(self):
         """Test customer can login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -30,7 +30,7 @@ class TestCustomerAuth:
     
     def test_admin_login_success(self):
         """Test admin can login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -45,7 +45,7 @@ class TestCustomerAuth:
     
     def test_invalid_login(self):
         """Test login fails with invalid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "invalid@test.com",
             "password": "wrong_pwd_placeholder"
         })
@@ -59,7 +59,7 @@ class TestCustomerDashboard:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -70,7 +70,7 @@ class TestCustomerDashboard:
     
     def test_get_dashboard(self):
         """Test customer dashboard returns correct stats"""
-        response = requests.get(f"{BASE_URL}/api/customer/dashboard", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/dashboard", headers=self.headers)
         assert response.status_code == 200, f"Dashboard failed: {response.text}"
         
         data = response.json()
@@ -89,7 +89,7 @@ class TestCustomerDashboard:
     
     def test_dashboard_requires_auth(self):
         """Test dashboard requires authentication"""
-        response = requests.get(f"{BASE_URL}/api/customer/dashboard")
+        response = requests.get(f"{BASE_URL}/api/v1/customer/dashboard")
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("SUCCESS: Dashboard correctly requires authentication")
 
@@ -100,7 +100,7 @@ class TestCustomerVehicles:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -111,7 +111,7 @@ class TestCustomerVehicles:
     
     def test_get_vehicles(self):
         """Test customer can get their vehicles"""
-        response = requests.get(f"{BASE_URL}/api/customer/vehicles", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/vehicles", headers=self.headers)
         assert response.status_code == 200, f"Vehicles API failed: {response.text}"
         
         data = response.json()
@@ -129,7 +129,7 @@ class TestCustomerVehicles:
     
     def test_vehicles_requires_auth(self):
         """Test vehicles API requires authentication"""
-        response = requests.get(f"{BASE_URL}/api/customer/vehicles")
+        response = requests.get(f"{BASE_URL}/api/v1/customer/vehicles")
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("SUCCESS: Vehicles API correctly requires authentication")
 
@@ -140,7 +140,7 @@ class TestCustomerServiceHistory:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -151,7 +151,7 @@ class TestCustomerServiceHistory:
     
     def test_get_service_history(self):
         """Test customer can get their service history"""
-        response = requests.get(f"{BASE_URL}/api/customer/service-history", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/service-history", headers=self.headers)
         assert response.status_code == 200, f"Service history failed: {response.text}"
         
         data = response.json()
@@ -171,7 +171,7 @@ class TestCustomerServiceHistory:
     
     def test_service_history_with_status_filter(self):
         """Test service history with status filter"""
-        response = requests.get(f"{BASE_URL}/api/customer/service-history?status=resolved", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/service-history?status=resolved", headers=self.headers)
         assert response.status_code == 200, f"Filtered service history failed: {response.text}"
         
         data = response.json()
@@ -182,7 +182,7 @@ class TestCustomerServiceHistory:
     
     def test_service_history_with_limit(self):
         """Test service history with limit parameter"""
-        response = requests.get(f"{BASE_URL}/api/customer/service-history?limit=3", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/service-history?limit=3", headers=self.headers)
         assert response.status_code == 200, f"Limited service history failed: {response.text}"
         
         data = response.json()
@@ -196,7 +196,7 @@ class TestCustomerInvoices:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -207,7 +207,7 @@ class TestCustomerInvoices:
     
     def test_get_invoices(self):
         """Test customer can get their invoices"""
-        response = requests.get(f"{BASE_URL}/api/customer/invoices", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/invoices", headers=self.headers)
         assert response.status_code == 200, f"Invoices API failed: {response.text}"
         
         data = response.json()
@@ -230,7 +230,7 @@ class TestCustomerPaymentsDue:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -241,7 +241,7 @@ class TestCustomerPaymentsDue:
     
     def test_get_payments_due(self):
         """Test customer can get their payments due"""
-        response = requests.get(f"{BASE_URL}/api/customer/payments-due", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/payments-due", headers=self.headers)
         assert response.status_code == 200, f"Payments due API failed: {response.text}"
         
         data = response.json()
@@ -260,7 +260,7 @@ class TestCustomerAMC:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get customer token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -271,7 +271,7 @@ class TestCustomerAMC:
     
     def test_get_amc_subscriptions(self):
         """Test customer can get their AMC subscriptions"""
-        response = requests.get(f"{BASE_URL}/api/customer/amc", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/amc", headers=self.headers)
         assert response.status_code == 200, f"AMC subscriptions API failed: {response.text}"
         
         data = response.json()
@@ -291,7 +291,7 @@ class TestCustomerAMC:
     
     def test_get_available_amc_plans(self):
         """Test customer can view available AMC plans"""
-        response = requests.get(f"{BASE_URL}/api/customer/amc-plans", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/amc-plans", headers=self.headers)
         assert response.status_code == 200, f"AMC plans API failed: {response.text}"
         
         data = response.json()
@@ -316,7 +316,7 @@ class TestAdminAMCManagement:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get admin token for tests"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -327,7 +327,7 @@ class TestAdminAMCManagement:
     
     def test_admin_get_amc_plans(self):
         """Test admin can get all AMC plans"""
-        response = requests.get(f"{BASE_URL}/api/amc/plans", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/amc/plans", headers=self.headers)
         assert response.status_code == 200, f"Admin AMC plans API failed: {response.text}"
         
         data = response.json()
@@ -336,7 +336,7 @@ class TestAdminAMCManagement:
     
     def test_admin_get_amc_subscriptions(self):
         """Test admin can get all AMC subscriptions"""
-        response = requests.get(f"{BASE_URL}/api/amc/subscriptions", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/amc/subscriptions", headers=self.headers)
         assert response.status_code == 200, f"Admin AMC subscriptions API failed: {response.text}"
         
         data = response.json()
@@ -345,7 +345,7 @@ class TestAdminAMCManagement:
     
     def test_admin_get_amc_analytics(self):
         """Test admin can get AMC analytics"""
-        response = requests.get(f"{BASE_URL}/api/amc/analytics", headers=self.headers)
+        response = requests.get(f"{BASE_URL}/api/v1/amc/analytics", headers=self.headers)
         assert response.status_code == 200, f"AMC analytics API failed: {response.text}"
         
         data = response.json()
@@ -362,7 +362,7 @@ class TestRoleBasedAccess:
     def test_customer_cannot_access_admin_amc_routes(self):
         """Test customer cannot access admin AMC management routes"""
         # Login as customer
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "customer@demo.com",
             "password": "test_pwd_placeholder"
         })
@@ -373,14 +373,14 @@ class TestRoleBasedAccess:
         headers = {"Authorization": f"Bearer {token}"}
         
         # Try to access admin AMC routes
-        response = requests.get(f"{BASE_URL}/api/amc/plans", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/amc/plans", headers=headers)
         assert response.status_code == 403, f"Expected 403 for customer accessing admin route, got {response.status_code}"
         print("SUCCESS: Customer correctly blocked from admin AMC routes")
     
     def test_admin_can_access_customer_portal(self):
         """Test admin can access customer portal routes (for support)"""
         # Login as admin
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -391,7 +391,7 @@ class TestRoleBasedAccess:
         headers = {"Authorization": f"Bearer {token}"}
         
         # Admin should be able to access customer portal routes
-        response = requests.get(f"{BASE_URL}/api/customer/dashboard", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/customer/dashboard", headers=headers)
         assert response.status_code == 200, f"Admin should be able to access customer dashboard, got {response.status_code}"
         print("SUCCESS: Admin can access customer portal routes for support")
 

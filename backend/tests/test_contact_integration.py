@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 class TestContactIntegrationModule:
     """Test suite for Contact Integration API endpoints"""
@@ -20,7 +20,7 @@ class TestContactIntegrationModule:
         
         # Login to get token
         login_response = self.session.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert login_response.status_code == 200, f"Login failed: {login_response.text}"
@@ -35,7 +35,7 @@ class TestContactIntegrationModule:
     
     def test_contact_search_all(self):
         """Test unified contact search - all contacts"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/search?limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -46,7 +46,7 @@ class TestContactIntegrationModule:
     
     def test_contact_search_with_query(self):
         """Test contact search with search query"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/search?q=Rahul&limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?q=Rahul&limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -57,7 +57,7 @@ class TestContactIntegrationModule:
     
     def test_contact_search_by_type_customer(self):
         """Test contact search filtered by customer type"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/search?contact_type=customer&limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?contact_type=customer&limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -68,7 +68,7 @@ class TestContactIntegrationModule:
     
     def test_contact_search_by_type_vendor(self):
         """Test contact search filtered by vendor type"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/search?contact_type=vendor&limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?contact_type=vendor&limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -76,7 +76,7 @@ class TestContactIntegrationModule:
     
     def test_contact_search_includes_source(self):
         """Test that search results include source (enhanced/legacy)"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/search?limit=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/search?limit=5")
         assert response.status_code == 200
         data = response.json()
         for contact in data["contacts"]:
@@ -88,7 +88,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_for_transaction(self):
         """Test getting contact details formatted for transaction"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/{self.test_customer_id}/for-transaction")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/{self.test_customer_id}/for-transaction")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -116,7 +116,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_for_transaction_not_found(self):
         """Test getting non-existent contact returns 404"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/INVALID-ID-12345/for-transaction")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/INVALID-ID-12345/for-transaction")
         assert response.status_code == 404
         print("✓ Non-existent contact returns 404")
     
@@ -124,7 +124,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_transactions(self):
         """Test getting transaction history for a contact"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/{self.test_customer_id}/transactions")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/{self.test_customer_id}/transactions")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -147,7 +147,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_transactions_filtered_by_type(self):
         """Test filtering transactions by type"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/{self.test_customer_id}/transactions?transaction_type=invoices")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/{self.test_customer_id}/transactions?transaction_type=invoices")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -158,7 +158,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_transactions_pagination(self):
         """Test transaction history pagination"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/{self.test_customer_id}/transactions?page=1&per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/{self.test_customer_id}/transactions?page=1&per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["page_context"]["page"] == 1
@@ -169,7 +169,7 @@ class TestContactIntegrationModule:
     
     def test_get_contact_balance_summary(self):
         """Test getting balance summary for a contact"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/contacts/{self.test_customer_id}/balance-summary")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/contacts/{self.test_customer_id}/balance-summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -208,7 +208,7 @@ class TestContactIntegrationModule:
     
     def test_invoices_with_contacts(self):
         """Test listing invoices with enriched contact details"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/invoices/with-contacts?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/invoices/with-contacts?per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -224,7 +224,7 @@ class TestContactIntegrationModule:
     
     def test_bills_with_contacts(self):
         """Test listing bills with enriched contact details"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/bills/with-contacts?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/bills/with-contacts?per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -238,7 +238,7 @@ class TestContactIntegrationModule:
     
     def test_estimates_with_contacts(self):
         """Test listing estimates with enriched contact details"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/estimates/with-contacts?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/estimates/with-contacts?per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -252,7 +252,7 @@ class TestContactIntegrationModule:
     
     def test_purchase_orders_with_contacts(self):
         """Test listing purchase orders with enriched contact details"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/purchase-orders/with-contacts?per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/purchase-orders/with-contacts?per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -264,7 +264,7 @@ class TestContactIntegrationModule:
     
     def test_migration_dry_run(self):
         """Test migration dry-run (does not actually migrate)"""
-        response = self.session.post(f"{BASE_URL}/api/contact-integration/migrate/contacts-to-enhanced?dry_run=true")
+        response = self.session.post(f"{BASE_URL}/api/v1/contact-integration/migrate/contacts-to-enhanced?dry_run=true")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -283,7 +283,7 @@ class TestContactIntegrationModule:
     
     def test_link_transactions_dry_run(self):
         """Test linking transactions to enhanced contacts (dry-run)"""
-        response = self.session.post(f"{BASE_URL}/api/contact-integration/migrate/link-transactions?dry_run=true")
+        response = self.session.post(f"{BASE_URL}/api/v1/contact-integration/migrate/link-transactions?dry_run=true")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -301,7 +301,7 @@ class TestContactIntegrationModule:
     
     def test_report_customers_by_revenue(self):
         """Test top customers by revenue report"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/reports/customers-by-revenue?limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/reports/customers-by-revenue?limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -328,7 +328,7 @@ class TestContactIntegrationModule:
     
     def test_report_vendors_by_expense(self):
         """Test top vendors by expense report"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/reports/vendors-by-expense?limit=10")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/reports/vendors-by-expense?limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -346,7 +346,7 @@ class TestContactIntegrationModule:
     
     def test_report_receivables_aging(self):
         """Test receivables aging report"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/reports/receivables-aging")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/reports/receivables-aging")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -386,7 +386,7 @@ class TestContactIntegrationModule:
     
     def test_report_payables_aging(self):
         """Test payables aging report"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/reports/payables-aging")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/reports/payables-aging")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -411,7 +411,7 @@ class TestContactIntegrationModule:
     
     def test_invoices_filter_by_status(self):
         """Test filtering invoices by status"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/invoices/with-contacts?status=paid&per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/invoices/with-contacts?status=paid&per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -421,7 +421,7 @@ class TestContactIntegrationModule:
     
     def test_invoices_filter_by_customer(self):
         """Test filtering invoices by customer_id"""
-        response = self.session.get(f"{BASE_URL}/api/contact-integration/invoices/with-contacts?customer_id=C-195F30EC3C88&per_page=5")
+        response = self.session.get(f"{BASE_URL}/api/v1/contact-integration/invoices/with-contacts?customer_id=C-195F30EC3C88&per_page=5")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0

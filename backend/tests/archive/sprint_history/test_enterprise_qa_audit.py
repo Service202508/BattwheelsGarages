@@ -22,7 +22,7 @@ import os
 from datetime import datetime
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://org-hub-redesign.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zero-tolerance-check.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
@@ -35,7 +35,7 @@ ORGANIZATION_ID = "org_71f0df814d6d"  # Battwheels Garages default org
 @pytest.fixture(scope="module")
 def admin_token():
     """Get admin authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -49,7 +49,7 @@ def admin_token():
 @pytest.fixture(scope="module")
 def technician_token():
     """Get technician authentication token"""
-    response = requests.post(f"{BASE_URL}/api/auth/login", json={
+    response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TECHNICIAN_EMAIL,
         "password": TECHNICIAN_PASSWORD
     })
@@ -72,7 +72,7 @@ class TestAdminLogin:
     
     def test_admin_login_success(self):
         """Test admin login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -86,7 +86,7 @@ class TestAdminLogin:
 
     def test_admin_login_invalid_password(self):
         """Test admin login with wrong password"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": "wrong_pwd_placeholder"
         })
@@ -99,7 +99,7 @@ class TestTechnicianLogin:
     
     def test_technician_login_success(self):
         """Test technician login with valid credentials"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECHNICIAN_EMAIL,
             "password": TECHNICIAN_PASSWORD
         })
@@ -117,7 +117,7 @@ class TestDashboardStats:
     def test_dashboard_stats_with_admin(self, admin_token):
         """Admin can access dashboard stats"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -150,7 +150,7 @@ class TestDashboardStats:
     def test_dashboard_stats_with_technician(self, technician_token):
         """Technician can also access dashboard stats"""
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=get_auth_headers(technician_token)
         )
         assert response.status_code == 200
@@ -185,7 +185,7 @@ class TestTicketLifecycle:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_data,
             headers=get_auth_headers(self.admin_token)
         )
@@ -205,7 +205,7 @@ class TestTicketLifecycle:
             pytest.skip("No ticket created in previous test")
             
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{self.__class__.created_ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{self.__class__.created_ticket_id}",
             headers=get_auth_headers(self.admin_token)
         )
         assert response.status_code == 200
@@ -220,7 +220,7 @@ class TestTicketLifecycle:
         
         # Get technician user_id first
         response = requests.get(
-            f"{BASE_URL}/api/technicians",
+            f"{BASE_URL}/api/v1/technicians",
             headers=get_auth_headers(self.admin_token)
         )
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class TestTicketLifecycle:
         
         # Assign ticket
         response = requests.post(
-            f"{BASE_URL}/api/tickets/{self.__class__.created_ticket_id}/assign",
+            f"{BASE_URL}/api/v1/tickets/{self.__class__.created_ticket_id}/assign",
             json={"technician_id": tech_id},
             headers=get_auth_headers(self.admin_token)
         )
@@ -246,7 +246,7 @@ class TestTicketLifecycle:
             pytest.skip("No ticket created in previous test")
             
         response = requests.put(
-            f"{BASE_URL}/api/tickets/{self.__class__.created_ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{self.__class__.created_ticket_id}",
             json={
                 "status": "work_in_progress",
                 "estimated_cost": 2500.00
@@ -265,7 +265,7 @@ class TestTicketLifecycle:
             pytest.skip("No ticket created in previous test")
             
         response = requests.post(
-            f"{BASE_URL}/api/tickets/{self.__class__.created_ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{self.__class__.created_ticket_id}/close",
             json={
                 "resolution": "Battery cell replaced successfully",
                 "resolution_outcome": "success",
@@ -285,7 +285,7 @@ class TestTicketLifecycle:
         # Note: Tickets typically don't have delete endpoints in production
         # Just verify it's closed
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{self.__class__.created_ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{self.__class__.created_ticket_id}",
             headers=get_auth_headers(self.admin_token)
         )
         assert response.status_code == 200
@@ -300,7 +300,7 @@ class TestInvoiceCreation:
     def test_list_invoices(self, admin_token):
         """Admin can list all invoices"""
         response = requests.get(
-            f"{BASE_URL}/api/invoices",
+            f"{BASE_URL}/api/v1/invoices",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -311,7 +311,7 @@ class TestInvoiceCreation:
     def test_invoice_has_required_fields(self, admin_token):
         """Verify invoice structure has required fields"""
         response = requests.get(
-            f"{BASE_URL}/api/invoices",
+            f"{BASE_URL}/api/v1/invoices",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -332,7 +332,7 @@ class TestMultiTenantIsolation:
         """Admin should only see data from their organization"""
         # Get tickets - returns paginated response
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -350,7 +350,7 @@ class TestMultiTenantIsolation:
         
     def test_unauthorized_access_blocked(self):
         """Unauthenticated requests should be blocked"""
-        response = requests.get(f"{BASE_URL}/api/tickets")
+        response = requests.get(f"{BASE_URL}/api/v1/tickets")
         assert response.status_code == 401
         print("✓ Unauthorized access correctly blocked")
 
@@ -361,7 +361,7 @@ class TestRBAC:
     def test_technician_cannot_access_users_list(self, technician_token):
         """Technician should not be able to list all users (admin-only)"""
         response = requests.get(
-            f"{BASE_URL}/api/users",
+            f"{BASE_URL}/api/v1/users",
             headers=get_auth_headers(technician_token)
         )
         # Users list is admin-only
@@ -371,7 +371,7 @@ class TestRBAC:
     def test_technician_can_access_tickets(self, technician_token):
         """Technician should be able to access tickets"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=get_auth_headers(technician_token)
         )
         assert response.status_code == 200
@@ -380,7 +380,7 @@ class TestRBAC:
     def test_technician_can_access_inventory(self, technician_token):
         """Technician should be able to access inventory"""
         response = requests.get(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             headers=get_auth_headers(technician_token)
         )
         assert response.status_code == 200
@@ -389,7 +389,7 @@ class TestRBAC:
     def test_admin_can_access_users(self, admin_token):
         """Admin should be able to access users list"""
         response = requests.get(
-            f"{BASE_URL}/api/users",
+            f"{BASE_URL}/api/v1/users",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -404,7 +404,7 @@ class TestEFIIntelligenceEngine:
     def test_efi_failure_cards_list(self, admin_token):
         """Can list EFI failure cards"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/failure-cards",
+            f"{BASE_URL}/api/v1/efi/intelligence/failure-cards",
             headers=get_auth_headers(admin_token, include_org=True)
         )
         assert response.status_code == 200
@@ -416,7 +416,7 @@ class TestEFIIntelligenceEngine:
     def test_efi_dashboard_summary(self, admin_token):
         """Can get EFI dashboard summary"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/dashboard-summary",
+            f"{BASE_URL}/api/v1/efi/intelligence/dashboard-summary",
             headers=get_auth_headers(admin_token, include_org=True)
         )
         assert response.status_code == 200
@@ -428,7 +428,7 @@ class TestEFIIntelligenceEngine:
     def test_efi_risk_alerts(self, admin_token):
         """Can get risk alerts"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/risk-alerts",
+            f"{BASE_URL}/api/v1/efi/intelligence/risk-alerts",
             headers=get_auth_headers(admin_token, include_org=True)
         )
         assert response.status_code == 200
@@ -439,7 +439,7 @@ class TestEFIIntelligenceEngine:
     def test_efi_learning_stats(self, admin_token):
         """Can get learning stats"""
         response = requests.get(
-            f"{BASE_URL}/api/efi/intelligence/learning/stats",
+            f"{BASE_URL}/api/v1/efi/intelligence/learning/stats",
             headers=get_auth_headers(admin_token, include_org=True)
         )
         assert response.status_code == 200
@@ -452,7 +452,7 @@ class TestFinanceCalculations:
     def test_invoice_totals_calculation(self, admin_token):
         """Verify invoice totals are calculated correctly"""
         response = requests.get(
-            f"{BASE_URL}/api/invoices",
+            f"{BASE_URL}/api/v1/invoices",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -478,7 +478,7 @@ class TestWorkflowSync:
         """Verify dashboard stats reflect ticket status changes"""
         # Get initial stats
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -495,7 +495,7 @@ class TestWorkflowSync:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_data,
             headers=get_auth_headers(admin_token)
         )
@@ -504,7 +504,7 @@ class TestWorkflowSync:
         
         # Check stats updated
         response = requests.get(
-            f"{BASE_URL}/api/dashboard/stats",
+            f"{BASE_URL}/api/v1/dashboard/stats",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
@@ -516,7 +516,7 @@ class TestWorkflowSync:
         
         # Close the test ticket to clean up
         requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
             json={
                 "resolution": "Test completed",
                 "resolution_outcome": "success"

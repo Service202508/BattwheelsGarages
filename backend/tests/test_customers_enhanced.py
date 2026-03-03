@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 # Test data prefix for cleanup
 TEST_PREFIX = "TEST_"
@@ -17,8 +17,8 @@ class TestCustomersEnhancedSettings:
     """Test settings and summary endpoints"""
     
     def test_get_settings(self):
-        """GET /api/customers-enhanced/settings - Returns module settings"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/settings")
+        """GET /api/v1/customers-enhanced/settings - Returns module settings"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/settings")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -28,8 +28,8 @@ class TestCustomersEnhancedSettings:
         print(f"Settings: {data['settings']}")
     
     def test_get_summary(self):
-        """GET /api/customers-enhanced/summary - Returns customer statistics"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/summary")
+        """GET /api/v1/customers-enhanced/summary - Returns customer statistics"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -46,8 +46,8 @@ class TestCustomersEnhancedSettings:
         print(f"Summary: {summary}")
     
     def test_check_sync(self):
-        """GET /api/customers-enhanced/check-sync - Audit customers data quality"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/check-sync")
+        """GET /api/v1/customers-enhanced/check-sync - Audit customers data quality"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/check-sync")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -65,9 +65,9 @@ class TestGSTINValidation:
     """Test GSTIN validation endpoint"""
     
     def test_validate_valid_gstin_delhi(self):
-        """GET /api/customers-enhanced/validate-gstin/{gstin} - Valid Delhi GSTIN"""
+        """GET /api/v1/customers-enhanced/validate-gstin/{gstin} - Valid Delhi GSTIN"""
         gstin = "07AAACH1234L1Z2"
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -79,9 +79,9 @@ class TestGSTINValidation:
         print(f"Valid GSTIN result: {result}")
     
     def test_validate_valid_gstin_maharashtra(self):
-        """GET /api/customers-enhanced/validate-gstin/{gstin} - Valid Maharashtra GSTIN"""
+        """GET /api/v1/customers-enhanced/validate-gstin/{gstin} - Valid Maharashtra GSTIN"""
         gstin = "27AABCU9603R1ZN"
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -92,9 +92,9 @@ class TestGSTINValidation:
         print(f"Valid Maharashtra GSTIN: {result}")
     
     def test_validate_invalid_gstin_format(self):
-        """GET /api/customers-enhanced/validate-gstin/{gstin} - Invalid format"""
+        """GET /api/v1/customers-enhanced/validate-gstin/{gstin} - Invalid format"""
         gstin = "INVALID123"
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 1
@@ -104,9 +104,9 @@ class TestGSTINValidation:
         print(f"Invalid GSTIN error: {result['error']}")
     
     def test_validate_invalid_state_code(self):
-        """GET /api/customers-enhanced/validate-gstin/{gstin} - Invalid state code"""
+        """GET /api/v1/customers-enhanced/validate-gstin/{gstin} - Invalid state code"""
         gstin = "99AAACH1234L1Z2"  # 99 is not a valid state code
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/validate-gstin/{gstin}")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 1
@@ -121,7 +121,7 @@ class TestCustomerCRUD:
     created_customer_id = None
     
     def test_create_customer_basic(self):
-        """POST /api/customers-enhanced/ - Create customer with basic info"""
+        """POST /api/v1/customers-enhanced/ - Create customer with basic info"""
         payload = {
             "display_name": f"{TEST_PREFIX}Basic Customer",
             "company_name": "Test Company Ltd",
@@ -132,7 +132,7 @@ class TestCustomerCRUD:
             "payment_terms": 30,
             "credit_limit": 50000
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -146,7 +146,7 @@ class TestCustomerCRUD:
         print(f"Created customer: {customer['customer_number']} - {customer['customer_id']}")
     
     def test_create_customer_with_gstin(self):
-        """POST /api/customers-enhanced/ - Create customer with GSTIN validation"""
+        """POST /api/v1/customers-enhanced/ - Create customer with GSTIN validation"""
         payload = {
             "display_name": f"{TEST_PREFIX}GSTIN Customer",
             "company_name": "GST Registered Company",
@@ -155,7 +155,7 @@ class TestCustomerCRUD:
             "gst_treatment": "registered",
             "customer_type": "business"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -166,21 +166,21 @@ class TestCustomerCRUD:
         print(f"Created GSTIN customer: {customer['customer_number']}")
     
     def test_create_customer_invalid_gstin(self):
-        """POST /api/customers-enhanced/ - Reject invalid GSTIN"""
+        """POST /api/v1/customers-enhanced/ - Reject invalid GSTIN"""
         payload = {
             "display_name": f"{TEST_PREFIX}Invalid GSTIN Customer",
             "gstin": "INVALID123",
             "gst_treatment": "registered"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/", json=payload)
         assert response.status_code == 400
         data = response.json()
         assert "Invalid GSTIN" in data["detail"]
         print(f"Correctly rejected invalid GSTIN: {data['detail']}")
     
     def test_list_customers(self):
-        """GET /api/customers-enhanced/ - List customers with filters"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/?status=active&per_page=50")
+        """GET /api/v1/customers-enhanced/ - List customers with filters"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/?status=active&per_page=50")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -189,16 +189,16 @@ class TestCustomerCRUD:
         print(f"Listed {len(data['customers'])} customers, total: {data['page_context']['total']}")
     
     def test_list_customers_with_search(self):
-        """GET /api/customers-enhanced/ - Search customers"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/?search={TEST_PREFIX}")
+        """GET /api/v1/customers-enhanced/ - Search customers"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/?search={TEST_PREFIX}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         print(f"Search found {len(data['customers'])} customers with prefix {TEST_PREFIX}")
     
     def test_list_customers_by_gst_treatment(self):
-        """GET /api/customers-enhanced/ - Filter by GST treatment"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/?gst_treatment=registered")
+        """GET /api/v1/customers-enhanced/ - Filter by GST treatment"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/?gst_treatment=registered")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -207,11 +207,11 @@ class TestCustomerCRUD:
         print(f"Found {len(data['customers'])} registered customers")
     
     def test_get_customer_detail(self):
-        """GET /api/customers-enhanced/{id} - Get customer with full details"""
+        """GET /api/v1/customers-enhanced/{id} - Get customer with full details"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -226,7 +226,7 @@ class TestCustomerCRUD:
         print(f"Customer detail: {customer['display_name']}, balance: {customer['balance_details']}")
     
     def test_update_customer(self):
-        """PUT /api/customers-enhanced/{id} - Update customer"""
+        """PUT /api/v1/customers-enhanced/{id} - Update customer"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -236,7 +236,7 @@ class TestCustomerCRUD:
             "credit_limit": 100000,
             "notes": "Updated via test"
         }
-        response = requests.put(f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}", json=payload)
+        response = requests.put(f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -247,8 +247,8 @@ class TestCustomerCRUD:
         print(f"Updated customer: {customer['customer_id']}")
     
     def test_get_customer_not_found(self):
-        """GET /api/customers-enhanced/{id} - Customer not found"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/NONEXISTENT-ID")
+        """GET /api/v1/customers-enhanced/{id} - Customer not found"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/NONEXISTENT-ID")
         assert response.status_code == 404
         print("Correctly returned 404 for non-existent customer")
 
@@ -259,7 +259,7 @@ class TestContactPersons:
     person_id = None
     
     def test_add_contact_person(self):
-        """POST /api/customers-enhanced/{id}/persons - Add contact person"""
+        """POST /api/v1/customers-enhanced/{id}/persons - Add contact person"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -273,7 +273,7 @@ class TestContactPersons:
             "is_primary": True
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons",
             json=payload
         )
         assert response.status_code == 200
@@ -286,7 +286,7 @@ class TestContactPersons:
         print(f"Added contact person: {person['person_id']}")
     
     def test_add_second_person(self):
-        """POST /api/customers-enhanced/{id}/persons - Add second person"""
+        """POST /api/v1/customers-enhanced/{id}/persons - Add second person"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -298,7 +298,7 @@ class TestContactPersons:
             "is_primary": False
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons",
             json=payload
         )
         assert response.status_code == 200
@@ -307,11 +307,11 @@ class TestContactPersons:
         print(f"Added second person: {data['person']['person_id']}")
     
     def test_get_customer_persons(self):
-        """GET /api/customers-enhanced/{id}/persons - Get all persons"""
+        """GET /api/v1/customers-enhanced/{id}/persons - Get all persons"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -319,7 +319,7 @@ class TestContactPersons:
         print(f"Customer has {len(data['persons'])} contact persons")
     
     def test_update_person(self):
-        """PUT /api/customers-enhanced/{id}/persons/{person_id} - Update person"""
+        """PUT /api/v1/customers-enhanced/{id}/persons/{person_id} - Update person"""
         if not TestCustomerCRUD.created_customer_id or not TestContactPersons.person_id:
             pytest.skip("No customer or person created")
         
@@ -328,7 +328,7 @@ class TestContactPersons:
             "department": "Operations"
         }
         response = requests.put(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons/{TestContactPersons.person_id}",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons/{TestContactPersons.person_id}",
             json=payload
         )
         assert response.status_code == 200
@@ -338,12 +338,12 @@ class TestContactPersons:
         print(f"Updated person: {TestContactPersons.person_id}")
     
     def test_set_primary_person(self):
-        """POST /api/customers-enhanced/{id}/persons/{person_id}/set-primary - Set primary contact"""
+        """POST /api/v1/customers-enhanced/{id}/persons/{person_id}/set-primary - Set primary contact"""
         if not TestCustomerCRUD.created_customer_id or not TestContactPersons.person_id:
             pytest.skip("No customer or person created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons/{TestContactPersons.person_id}/set-primary"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/persons/{TestContactPersons.person_id}/set-primary"
         )
         assert response.status_code == 200
         data = response.json()
@@ -357,7 +357,7 @@ class TestAddresses:
     address_id = None
     
     def test_add_billing_address(self):
-        """POST /api/customers-enhanced/{id}/addresses - Add billing address"""
+        """POST /api/v1/customers-enhanced/{id}/addresses - Add billing address"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -375,7 +375,7 @@ class TestAddresses:
             "is_default": True
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses",
             json=payload
         )
         assert response.status_code == 200
@@ -388,7 +388,7 @@ class TestAddresses:
         print(f"Added billing address: {address['address_id']}")
     
     def test_add_shipping_address(self):
-        """POST /api/customers-enhanced/{id}/addresses - Add shipping address"""
+        """POST /api/v1/customers-enhanced/{id}/addresses - Add shipping address"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -403,7 +403,7 @@ class TestAddresses:
             "is_default": True
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses",
             json=payload
         )
         assert response.status_code == 200
@@ -413,11 +413,11 @@ class TestAddresses:
         print(f"Added shipping address: {data['address']['address_id']}")
     
     def test_get_customer_addresses(self):
-        """GET /api/customers-enhanced/{id}/addresses - Get all addresses"""
+        """GET /api/v1/customers-enhanced/{id}/addresses - Get all addresses"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -425,7 +425,7 @@ class TestAddresses:
         print(f"Customer has {len(data['addresses'])} addresses")
     
     def test_update_address(self):
-        """PUT /api/customers-enhanced/{id}/addresses/{address_id} - Update address"""
+        """PUT /api/v1/customers-enhanced/{id}/addresses/{address_id} - Update address"""
         if not TestCustomerCRUD.created_customer_id or not TestAddresses.address_id:
             pytest.skip("No customer or address created")
         
@@ -434,7 +434,7 @@ class TestAddresses:
             "zip_code": "110002"
         }
         response = requests.put(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses/{TestAddresses.address_id}",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/addresses/{TestAddresses.address_id}",
             json=payload
         )
         assert response.status_code == 200
@@ -448,12 +448,12 @@ class TestPortalAccess:
     """Test portal access management"""
     
     def test_enable_portal(self):
-        """POST /api/customers-enhanced/{id}/enable-portal - Enable portal access"""
+        """POST /api/v1/customers-enhanced/{id}/enable-portal - Enable portal access"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/enable-portal"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/enable-portal"
         )
         assert response.status_code == 200
         data = response.json()
@@ -462,12 +462,12 @@ class TestPortalAccess:
         print(f"Portal enabled, token: {data['token'][:20]}...")
     
     def test_disable_portal(self):
-        """POST /api/customers-enhanced/{id}/disable-portal - Disable portal access"""
+        """POST /api/v1/customers-enhanced/{id}/disable-portal - Disable portal access"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/disable-portal"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/disable-portal"
         )
         assert response.status_code == 200
         data = response.json()
@@ -479,12 +479,12 @@ class TestStatements:
     """Test statement endpoints"""
     
     def test_get_statement(self):
-        """GET /api/customers-enhanced/{id}/statement - Get statement data"""
+        """GET /api/v1/customers-enhanced/{id}/statement - Get statement data"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.get(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/statement"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/statement"
         )
         assert response.status_code == 200
         data = response.json()
@@ -499,7 +499,7 @@ class TestStatements:
         print(f"Statement retrieved for customer: {statement['customer']['display_name']}")
     
     def test_email_statement(self):
-        """POST /api/customers-enhanced/{id}/email-statement - Send statement (MOCKED)"""
+        """POST /api/v1/customers-enhanced/{id}/email-statement - Send statement (MOCKED)"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -510,7 +510,7 @@ class TestStatements:
             "include_details": True
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/email-statement",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/email-statement",
             json=payload
         )
         assert response.status_code == 200
@@ -523,12 +523,12 @@ class TestStatusManagement:
     """Test activate/deactivate endpoints"""
     
     def test_deactivate_customer(self):
-        """POST /api/customers-enhanced/{id}/deactivate - Deactivate customer"""
+        """POST /api/v1/customers-enhanced/{id}/deactivate - Deactivate customer"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/deactivate"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/deactivate"
         )
         assert response.status_code == 200
         data = response.json()
@@ -536,12 +536,12 @@ class TestStatusManagement:
         print("Customer deactivated successfully")
     
     def test_activate_customer(self):
-        """POST /api/customers-enhanced/{id}/activate - Activate customer"""
+        """POST /api/v1/customers-enhanced/{id}/activate - Activate customer"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/activate"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/activate"
         )
         assert response.status_code == 200
         data = response.json()
@@ -555,7 +555,7 @@ class TestCreditsAndRefunds:
     credit_id = None
     
     def test_add_credit(self):
-        """POST /api/customers-enhanced/{id}/credits - Add credit note"""
+        """POST /api/v1/customers-enhanced/{id}/credits - Add credit note"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -566,7 +566,7 @@ class TestCreditsAndRefunds:
             "date": "2025-01-15"
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/credits",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/credits",
             json=payload
         )
         assert response.status_code == 200
@@ -580,12 +580,12 @@ class TestCreditsAndRefunds:
         print(f"Added credit: {credit['credit_id']} - ₹{credit['amount']}")
     
     def test_get_credits(self):
-        """GET /api/customers-enhanced/{id}/credits - Get customer credits"""
+        """GET /api/v1/customers-enhanced/{id}/credits - Get customer credits"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.get(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/credits"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/credits"
         )
         assert response.status_code == 200
         data = response.json()
@@ -594,7 +594,7 @@ class TestCreditsAndRefunds:
         print(f"Customer has {len(data['credits'])} credits")
     
     def test_create_refund(self):
-        """POST /api/customers-enhanced/{id}/refunds - Create refund from credits"""
+        """POST /api/v1/customers-enhanced/{id}/refunds - Create refund from credits"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -605,7 +605,7 @@ class TestCreditsAndRefunds:
             "notes": "Partial refund"
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/refunds",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/refunds",
             json=payload
         )
         assert response.status_code == 200
@@ -617,7 +617,7 @@ class TestCreditsAndRefunds:
         print(f"Created refund: {refund['refund_id']} - ₹{refund['amount']}")
     
     def test_refund_insufficient_credits(self):
-        """POST /api/customers-enhanced/{id}/refunds - Reject refund exceeding credits"""
+        """POST /api/v1/customers-enhanced/{id}/refunds - Reject refund exceeding credits"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -626,7 +626,7 @@ class TestCreditsAndRefunds:
             "mode": "cash"
         }
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/refunds",
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/refunds",
             json=payload
         )
         assert response.status_code == 400
@@ -641,13 +641,13 @@ class TestTags:
     tag_id = None
     
     def test_create_tag(self):
-        """POST /api/customers-enhanced/tags - Create tag"""
+        """POST /api/v1/customers-enhanced/tags - Create tag"""
         payload = {
             "name": f"{TEST_PREFIX}VIP",
             "description": "VIP customers",
             "color": "#FFD700"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/tags", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/tags", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -657,8 +657,8 @@ class TestTags:
         print(f"Created tag: {tag['tag_id']} - {tag['name']}")
     
     def test_get_all_tags(self):
-        """GET /api/customers-enhanced/tags/all - Get all tags"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/tags/all")
+        """GET /api/v1/customers-enhanced/tags/all - Get all tags"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/tags/all")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -666,13 +666,13 @@ class TestTags:
         print(f"Total tags: {len(data['tags'])}")
     
     def test_add_tag_to_customer(self):
-        """POST /api/customers-enhanced/{id}/tags/{tag_name} - Add tag to customer"""
+        """POST /api/v1/customers-enhanced/{id}/tags/{tag_name} - Add tag to customer"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         tag_name = f"{TEST_PREFIX}VIP"
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/tags/{tag_name}"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/tags/{tag_name}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -680,13 +680,13 @@ class TestTags:
         print(f"Added tag '{tag_name}' to customer")
     
     def test_remove_tag_from_customer(self):
-        """DELETE /api/customers-enhanced/{id}/tags/{tag_name} - Remove tag from customer"""
+        """DELETE /api/v1/customers-enhanced/{id}/tags/{tag_name} - Remove tag from customer"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         tag_name = f"{TEST_PREFIX}VIP"
         response = requests.delete(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/tags/{tag_name}"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/tags/{tag_name}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -698,12 +698,12 @@ class TestTransactions:
     """Test transaction history endpoint"""
     
     def test_get_transactions(self):
-        """GET /api/customers-enhanced/{id}/transactions - Get transaction history"""
+        """GET /api/v1/customers-enhanced/{id}/transactions - Get transaction history"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.get(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/transactions"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/transactions"
         )
         assert response.status_code == 200
         data = response.json()
@@ -712,12 +712,12 @@ class TestTransactions:
         print(f"Customer has {len(data['transactions'])} transactions")
     
     def test_get_transactions_by_type(self):
-        """GET /api/customers-enhanced/{id}/transactions - Filter by type"""
+        """GET /api/v1/customers-enhanced/{id}/transactions - Filter by type"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.get(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/transactions?transaction_type=invoice"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/transactions?transaction_type=invoice"
         )
         assert response.status_code == 200
         data = response.json()
@@ -731,7 +731,7 @@ class TestBulkOperations:
     """Test bulk operations"""
     
     def test_bulk_activate(self):
-        """POST /api/customers-enhanced/bulk-action - Bulk activate"""
+        """POST /api/v1/customers-enhanced/bulk-action - Bulk activate"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -739,7 +739,7 @@ class TestBulkOperations:
             "customer_ids": [TestCustomerCRUD.created_customer_id],
             "action": "activate"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/bulk-action", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/bulk-action", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -747,7 +747,7 @@ class TestBulkOperations:
         print(f"Bulk activate: {data['results']}")
     
     def test_bulk_add_tag(self):
-        """POST /api/customers-enhanced/bulk-action - Bulk add tag"""
+        """POST /api/v1/customers-enhanced/bulk-action - Bulk add tag"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
@@ -756,7 +756,7 @@ class TestBulkOperations:
             "action": "add_tag",
             "tag_name": "Bulk-Tagged"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/bulk-action", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/bulk-action", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -767,8 +767,8 @@ class TestReports:
     """Test report endpoints"""
     
     def test_report_by_segment(self):
-        """GET /api/customers-enhanced/reports/by-segment - Segment report"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/reports/by-segment")
+        """GET /api/v1/customers-enhanced/reports/by-segment - Segment report"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/reports/by-segment")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -776,8 +776,8 @@ class TestReports:
         print(f"Segment report: {len(data['report'])} segments")
     
     def test_report_top_customers(self):
-        """GET /api/customers-enhanced/reports/top-customers - Top customers"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/reports/top-customers?limit=10")
+        """GET /api/v1/customers-enhanced/reports/top-customers - Top customers"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/reports/top-customers?limit=10")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -785,8 +785,8 @@ class TestReports:
         print(f"Top customers: {len(data['report'])} customers")
     
     def test_report_aging_summary(self):
-        """GET /api/customers-enhanced/reports/aging-summary - Aging summary"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/reports/aging-summary")
+        """GET /api/v1/customers-enhanced/reports/aging-summary - Aging summary"""
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/reports/aging-summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -804,12 +804,12 @@ class TestQuickEstimate:
     """Test quick estimate redirect"""
     
     def test_quick_estimate(self):
-        """POST /api/customers-enhanced/{id}/quick-estimate - Quick estimate redirect"""
+        """POST /api/v1/customers-enhanced/{id}/quick-estimate - Quick estimate redirect"""
         if not TestCustomerCRUD.created_customer_id:
             pytest.skip("No customer created")
         
         response = requests.post(
-            f"{BASE_URL}/api/customers-enhanced/{TestCustomerCRUD.created_customer_id}/quick-estimate"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestCustomerCRUD.created_customer_id}/quick-estimate"
         )
         assert response.status_code == 200
         data = response.json()
@@ -831,7 +831,7 @@ class TestDeleteProtection:
             "email": f"delete.test.{int(time.time())}@example.com",
             "gst_treatment": "consumer"
         }
-        response = requests.post(f"{BASE_URL}/api/customers-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/customers-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
         TestDeleteProtection.customer_with_estimate_id = data["customer"]["customer_id"]
@@ -844,7 +844,7 @@ class TestDeleteProtection:
         
         # First get customer details
         cust_response = requests.get(
-            f"{BASE_URL}/api/customers-enhanced/{TestDeleteProtection.customer_with_estimate_id}"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestDeleteProtection.customer_with_estimate_id}"
         )
         customer = cust_response.json()["customer"]
         
@@ -863,19 +863,19 @@ class TestDeleteProtection:
                 }
             ]
         }
-        response = requests.post(f"{BASE_URL}/api/estimates-enhanced/", json=payload)
+        response = requests.post(f"{BASE_URL}/api/v1/estimates-enhanced/", json=payload)
         if response.status_code == 200:
             print(f"Created estimate for customer")
         else:
             print(f"Estimate creation response: {response.status_code}")
     
     def test_delete_customer_with_transactions(self):
-        """DELETE /api/customers-enhanced/{id} - Should fail if has transactions"""
+        """DELETE /api/v1/customers-enhanced/{id} - Should fail if has transactions"""
         if not TestDeleteProtection.customer_with_estimate_id:
             pytest.skip("No customer created")
         
         response = requests.delete(
-            f"{BASE_URL}/api/customers-enhanced/{TestDeleteProtection.customer_with_estimate_id}"
+            f"{BASE_URL}/api/v1/customers-enhanced/{TestDeleteProtection.customer_with_estimate_id}"
         )
         # If estimate was created, should fail with 400
         # If no estimate, should succeed with 200
@@ -893,13 +893,13 @@ class TestCleanup:
     def test_delete_test_customers(self):
         """Delete all test customers"""
         # Get all test customers
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/?search={TEST_PREFIX}&per_page=100")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/?search={TEST_PREFIX}&per_page=100")
         if response.status_code == 200:
             customers = response.json().get("customers", [])
             deleted = 0
             for customer in customers:
                 del_response = requests.delete(
-                    f"{BASE_URL}/api/customers-enhanced/{customer['customer_id']}"
+                    f"{BASE_URL}/api/v1/customers-enhanced/{customer['customer_id']}"
                 )
                 if del_response.status_code == 200:
                     deleted += 1
@@ -907,14 +907,14 @@ class TestCleanup:
     
     def test_delete_test_tags(self):
         """Delete test tags"""
-        response = requests.get(f"{BASE_URL}/api/customers-enhanced/tags/all")
+        response = requests.get(f"{BASE_URL}/api/v1/customers-enhanced/tags/all")
         if response.status_code == 200:
             tags = response.json().get("tags", [])
             deleted = 0
             for tag in tags:
                 if tag["name"].startswith(TEST_PREFIX):
                     del_response = requests.delete(
-                        f"{BASE_URL}/api/customers-enhanced/tags/{tag['tag_id']}"
+                        f"{BASE_URL}/api/v1/customers-enhanced/tags/{tag['tag_id']}"
                     )
                     if del_response.status_code == 200:
                         deleted += 1

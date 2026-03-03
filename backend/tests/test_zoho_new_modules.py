@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 @pytest.fixture(scope="module")
 def api_client():
@@ -25,7 +25,7 @@ def api_client():
 @pytest.fixture(scope="module")
 def auth_token(api_client):
     """Get authentication token"""
-    response = api_client.post(f"{BASE_URL}/api/auth/login", json={
+    response = api_client.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
@@ -49,7 +49,7 @@ class TestRecurringBills:
     
     def test_list_recurring_bills(self, authenticated_client):
         """Test listing recurring bills"""
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/recurring-bills")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/recurring-bills")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -81,7 +81,7 @@ class TestRecurringBills:
             "notes": "Test recurring bill"
         }
         
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/recurring-bills", json=payload)
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/recurring-bills", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -97,7 +97,7 @@ class TestRecurringBills:
         if not TestRecurringBills.created_bill_id:
             pytest.skip("No recurring bill created")
         
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -109,13 +109,13 @@ class TestRecurringBills:
         if not TestRecurringBills.created_bill_id:
             pytest.skip("No recurring bill created")
         
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}/stop")
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}/stop")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status changed
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
         assert get_response.json()["recurring_bill"]["status"] == "stopped"
         print("Recurring bill stopped successfully")
     
@@ -124,19 +124,19 @@ class TestRecurringBills:
         if not TestRecurringBills.created_bill_id:
             pytest.skip("No recurring bill created")
         
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}/resume")
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}/resume")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify status changed
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
         assert get_response.json()["recurring_bill"]["status"] == "active"
         print("Recurring bill resumed successfully")
     
     def test_generate_due_bills(self, authenticated_client):
         """Test generating due bills from recurring profiles"""
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/recurring-bills/generate")
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/recurring-bills/generate")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -148,13 +148,13 @@ class TestRecurringBills:
         if not TestRecurringBills.created_bill_id:
             pytest.skip("No recurring bill created")
         
-        response = authenticated_client.delete(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
+        response = authenticated_client.delete(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deletion
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/recurring-bills/{TestRecurringBills.created_bill_id}")
         assert get_response.status_code == 404
         print("Recurring bill deleted successfully")
 
@@ -168,7 +168,7 @@ class TestFixedAssets:
     
     def test_get_fixed_assets_summary(self, authenticated_client):
         """Test getting fixed assets summary"""
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/summary")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -180,7 +180,7 @@ class TestFixedAssets:
     
     def test_list_fixed_assets(self, authenticated_client):
         """Test listing fixed assets"""
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -203,7 +203,7 @@ class TestFixedAssets:
             "serial_number": "TEST-FURN-001"
         }
         
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/fixed-assets", json=payload)
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/fixed-assets", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -220,7 +220,7 @@ class TestFixedAssets:
         if not TestFixedAssets.created_asset_id:
             pytest.skip("No fixed asset created")
         
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -234,7 +234,7 @@ class TestFixedAssets:
         
         period = datetime.now().strftime("%Y-%m")
         response = authenticated_client.post(
-            f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}/depreciate",
+            f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}/depreciate",
             params={"period": period}
         )
         assert response.status_code == 200
@@ -245,7 +245,7 @@ class TestFixedAssets:
         print(f"Recorded depreciation: {data['entry']['amount']} for period {period}")
         
         # Verify book value updated
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
         asset = get_response.json()["fixed_asset"]
         assert asset["accumulated_depreciation"] == 750
         assert asset["book_value"] == 99250  # 100000 - 750
@@ -257,7 +257,7 @@ class TestFixedAssets:
         
         today = datetime.now().strftime("%Y-%m-%d")
         response = authenticated_client.post(
-            f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}/dispose",
+            f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}/dispose",
             params={
                 "disposal_date": today,
                 "disposal_amount": 95000,
@@ -273,7 +273,7 @@ class TestFixedAssets:
         print(f"Asset disposed with gain/loss: {data['disposal']['gain_loss']}")
         
         # Verify status changed
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
         assert get_response.json()["fixed_asset"]["status"] == "disposed"
     
     def test_create_and_write_off_asset(self, authenticated_client):
@@ -290,13 +290,13 @@ class TestFixedAssets:
             "salvage_value": 5000
         }
         
-        create_response = authenticated_client.post(f"{BASE_URL}/api/zoho/fixed-assets", json=payload)
+        create_response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/fixed-assets", json=payload)
         assert create_response.status_code == 200
         asset_id = create_response.json()["fixed_asset"]["asset_id"]
         
         # Write off the asset
         response = authenticated_client.post(
-            f"{BASE_URL}/api/zoho/fixed-assets/{asset_id}/write-off",
+            f"{BASE_URL}/api/v1/zoho/fixed-assets/{asset_id}/write-off",
             params={"reason": "Damaged beyond repair"}
         )
         assert response.status_code == 200
@@ -306,26 +306,26 @@ class TestFixedAssets:
         print(f"Asset written off: {data['write_off_amount']}")
         
         # Verify status
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/{asset_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/{asset_id}")
         asset = get_response.json()["fixed_asset"]
         assert asset["status"] == "written_off"
         assert asset["book_value"] == 0
         
         # Cleanup
-        authenticated_client.delete(f"{BASE_URL}/api/zoho/fixed-assets/{asset_id}")
+        authenticated_client.delete(f"{BASE_URL}/api/v1/zoho/fixed-assets/{asset_id}")
     
     def test_delete_fixed_asset(self, authenticated_client):
         """Test deleting a fixed asset"""
         if not TestFixedAssets.created_asset_id:
             pytest.skip("No fixed asset created")
         
-        response = authenticated_client.delete(f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
+        response = authenticated_client.delete(f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deletion
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/fixed-assets/{TestFixedAssets.created_asset_id}")
         assert get_response.status_code == 404
         print("Fixed asset deleted successfully")
 
@@ -340,7 +340,7 @@ class TestCustomModules:
     
     def test_list_custom_modules(self, authenticated_client):
         """Test listing custom modules"""
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/custom-modules")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/custom-modules")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -365,7 +365,7 @@ class TestCustomModules:
             "icon": "car"
         }
         
-        response = authenticated_client.post(f"{BASE_URL}/api/zoho/custom-modules", json=payload)
+        response = authenticated_client.post(f"{BASE_URL}/api/v1/zoho/custom-modules", json=payload)
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -381,7 +381,7 @@ class TestCustomModules:
         if not TestCustomModules.created_module_id:
             pytest.skip("No custom module created")
         
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -404,7 +404,7 @@ class TestCustomModules:
         }
         
         response = authenticated_client.post(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
             json=payload
         )
         assert response.status_code == 200
@@ -421,7 +421,7 @@ class TestCustomModules:
         if not TestCustomModules.created_module_id:
             pytest.skip("No custom module created")
         
-        response = authenticated_client.get(f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -435,7 +435,7 @@ class TestCustomModules:
             pytest.skip("No custom module or record created")
         
         response = authenticated_client.get(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -454,7 +454,7 @@ class TestCustomModules:
         }
         
         response = authenticated_client.put(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}",
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}",
             json=payload
         )
         assert response.status_code == 200
@@ -463,7 +463,7 @@ class TestCustomModules:
         
         # Verify update
         get_response = authenticated_client.get(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
         )
         record = get_response.json()["record"]
         assert record["mileage"] == 50000
@@ -476,7 +476,7 @@ class TestCustomModules:
             pytest.skip("No custom module created")
         
         response = authenticated_client.get(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
             params={"search": "Test Driver"}
         )
         assert response.status_code == 200
@@ -496,7 +496,7 @@ class TestCustomModules:
         }
         
         response = authenticated_client.post(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records",
             json=payload
         )
         assert response.status_code == 400
@@ -508,7 +508,7 @@ class TestCustomModules:
             pytest.skip("No custom module or record created")
         
         response = authenticated_client.delete(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
         )
         assert response.status_code == 200
         data = response.json()
@@ -516,7 +516,7 @@ class TestCustomModules:
         
         # Verify deletion
         get_response = authenticated_client.get(
-            f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
+            f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}/records/{TestCustomModules.created_record_id}"
         )
         assert get_response.status_code == 404
         print("Custom record deleted successfully")
@@ -526,13 +526,13 @@ class TestCustomModules:
         if not TestCustomModules.created_module_id:
             pytest.skip("No custom module created")
         
-        response = authenticated_client.delete(f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}")
+        response = authenticated_client.delete(f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
         
         # Verify deactivation (module still exists but is_active=False)
-        get_response = authenticated_client.get(f"{BASE_URL}/api/zoho/custom-modules/{TestCustomModules.created_module_id}")
+        get_response = authenticated_client.get(f"{BASE_URL}/api/v1/zoho/custom-modules/{TestCustomModules.created_module_id}")
         assert get_response.status_code == 200
         assert get_response.json()["custom_module"]["is_active"] == False
         print("Custom module deactivated successfully")
@@ -545,7 +545,7 @@ class TestContactsEnhanced:
     
     def test_list_contacts(self, authenticated_client):
         """Test listing contacts"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/", params={"per_page": 10})
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/", params={"per_page": 10})
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -555,7 +555,7 @@ class TestContactsEnhanced:
     
     def test_contacts_summary(self, authenticated_client):
         """Test contacts summary endpoint"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/summary")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -567,7 +567,7 @@ class TestContactsEnhanced:
     
     def test_filter_customers(self, authenticated_client):
         """Test filtering by contact type - customers"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/", params={"contact_type": "customer", "per_page": 5})
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/", params={"contact_type": "customer", "per_page": 5})
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -578,7 +578,7 @@ class TestContactsEnhanced:
     
     def test_filter_vendors(self, authenticated_client):
         """Test filtering by contact type - vendors"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/", params={"contact_type": "vendor", "per_page": 5})
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/", params={"contact_type": "vendor", "per_page": 5})
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -590,7 +590,7 @@ class TestContactsEnhanced:
     def test_validate_gstin(self, authenticated_client):
         """Test GSTIN validation endpoint"""
         # Valid GSTIN format
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/27AABCU9603R1ZN")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/validate-gstin/27AABCU9603R1ZN")
         assert response.status_code == 200
         data = response.json()
         assert data["valid"] == True
@@ -599,7 +599,7 @@ class TestContactsEnhanced:
     
     def test_get_indian_states(self, authenticated_client):
         """Test getting list of Indian states"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/states")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/states")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -609,7 +609,7 @@ class TestContactsEnhanced:
     
     def test_contact_tags(self, authenticated_client):
         """Test contact tags endpoint"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/tags")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/tags")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
@@ -618,7 +618,7 @@ class TestContactsEnhanced:
     
     def test_check_sync(self, authenticated_client):
         """Test contacts sync/audit endpoint"""
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/check-sync")
+        response = authenticated_client.get(f"{BASE_URL}/api/v1/contacts-enhanced/check-sync")
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0

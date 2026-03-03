@@ -74,10 +74,10 @@ class TestAuthentication:
     def test_missing_auth_returns_401(self):
         """Requests without authentication should return 401"""
         endpoints = [
-            "/api/tickets",
-            "/api/vehicles",
-            "/api/inventory",
-            "/api/suppliers"
+            "/api/v1/tickets",
+            "/api/v1/vehicles",
+            "/api/v1/inventory",
+            "/api/v1/suppliers"
         ]
         
         for endpoint in endpoints:
