@@ -5,11 +5,9 @@ from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 from calendar import monthrange
-import motor.motor_asyncio
-import os
 
 from core.subscriptions.entitlement import require_feature
-from utils.database import extract_org_id, org_query
+from utils.database import db, extract_org_id, org_query
 
 
 router = APIRouter(
@@ -17,12 +15,6 @@ router = APIRouter(
     tags=["Advanced Reports"],
     dependencies=[Depends(require_feature("advanced_reports"))]
 )
-
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 # Collections
 invoices_collection = db["invoices"]

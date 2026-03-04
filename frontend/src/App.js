@@ -3,6 +3,7 @@ import "@/App.css";
 import "leaflet/dist/leaflet.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Pages
 import Login from "@/pages/Login";
@@ -1341,14 +1342,16 @@ function AppRouter() {
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <AppRouter />
-        <CommandPalette />
-        <UpgradeModal />
-      </BrowserRouter>
-      <Toaster position="top-right" richColors />
-    </div>
+    <ErrorBoundary>
+      <div className="App">
+        <BrowserRouter>
+          <AppRouter />
+          <CommandPalette />
+          <UpgradeModal />
+        </BrowserRouter>
+        <Toaster position="top-right" richColors />
+      </div>
+    </ErrorBoundary>
   );
 }
 
