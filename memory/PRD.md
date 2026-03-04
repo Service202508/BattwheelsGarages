@@ -30,14 +30,28 @@ Battwheels OS is an EV service workshop management SaaS platform. After a stabil
 - **Back arrow**: Added back button (`data-testid="platform-admin-back-btn"`) to PlatformAdmin header using `navigate(-1)`
 - **Logout button**: Already existed (`data-testid="platform-admin-logout-btn"`) with `onLogout` prop properly passed from App.js
 
+## Completed Tasks (Session - 2026-03-04, Fork)
+
+### Fix reports_advanced.py Collection Names + DB Fallback — DONE
+- **Root cause**: `backend/routes/reports_advanced.py` queried `_enhanced` collections (`invoices_enhanced`, `estimates_enhanced`, `salesorders_enhanced`, `contacts_enhanced`) which had 0-3 docs, instead of canonical collections (`invoices`: 1637, `contacts`: 513, `estimates`: 1253, `salesorders`: 667)
+- **Fix**: Changed collection references on lines 28-31 to canonical names. Changed DB fallback from `zoho_books_clone` to `battwheels_dev`.
+- **Verification**: All 4 advanced report endpoints return non-zero multi-month data. Regression check passed (receivables: 142,177.55, total_invoiced: 573,509.60, cash_flow: 390,208.40, AMC active: 7).
+
+### Audit: Untested Dashboard Endpoints — DONE (Report Only)
+- `/dashboard/financial/bank-accounts`: Working (HTTP 200). Returns default placeholder. **Data gap** — no seeded bank accounts.
+- `/dashboard/financial/projects-watchlist`: Working (HTTP 200). Returns 5 test projects. Sparse data (unbilled_amount = 0).
+
 ## Prioritized Backlog
 
-### P0 — Next Session (Tasks 3-6)
-- Task 3: EFI Intelligence Panel in Ticket Detail
-- Task 4: EFI All 7 Modes + Hinglish Fix (EFIGuidancePanel.jsx bugs)
-- Task 5: AI Diagnosis Branding + IP Protection (remove copy/share buttons)
-- Task 6: Investigate Items Route 404 (`/api/v1/items`)
+### P1 — Upcoming
+- Seed bank account records for demo org to populate `/bank-accounts` dashboard
+- Seed `customerpayments` and `expenses` records for richer cash-flow reporting
 
-### P3 — Future
+### P2 — Future
+- Refactor DB connections: centralize into shared utility (currently duplicated per route file)
+- Resolve dual-collection architecture: CRUD routes write to `_enhanced` collections, analytics read from canonical collections
+- Remove stale `zoho_books_clone` fallback strings from other route files
+
+### P3 — Backlog
 - Fix skipped password reset tests (state pollution in `test_password_reset.py`)
 - Investigate failed API spot-checks (404s on `items/search`, `efi-guided/failure-cards`)

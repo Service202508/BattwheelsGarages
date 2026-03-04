@@ -20,15 +20,15 @@ router = APIRouter(
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
+DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 # Collections
-invoices_collection = db["invoices_enhanced"]
-estimates_collection = db["estimates_enhanced"]
-salesorders_collection = db["salesorders_enhanced"]
-contacts_collection = db["contacts_enhanced"]
+invoices_collection = db["invoices"]
+estimates_collection = db["estimates"]
+salesorders_collection = db["salesorders"]
+contacts_collection = db["contacts"]
 payments_collection = db["invoice_payments"]
 expenses_collection = db["expenses"]
 items_collection = db["items"]

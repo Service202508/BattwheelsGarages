@@ -1,3 +1,25 @@
+## 2026-03-04 — Fix reports_advanced.py Collection Names + DB Fallback
+
+### Fix: Advanced Reports Module
+- **File**: `backend/routes/reports_advanced.py`
+- **Changes (lines 23, 28-31)**:
+  - `DB_NAME` fallback: `zoho_books_clone` → `battwheels_dev`
+  - `invoices_enhanced` → `invoices` (1637 docs)
+  - `estimates_enhanced` → `estimates` (1253 docs)
+  - `salesorders_enhanced` → `salesorders` (667 docs)
+  - `contacts_enhanced` → `contacts` (513 docs)
+- **Result**: All advanced report endpoints (`/revenue/monthly`, `/revenue/quarterly`, `/receivables/aging`, `/dashboard-summary`) now return correct non-zero data
+
+### Audit: Untested Dashboard Endpoints
+- `/dashboard/financial/bank-accounts`: Working, returns default (no seed data)
+- `/dashboard/financial/projects-watchlist`: Working, returns 5 projects
+
+### Regression: No regressions detected
+- Backend tests: 68 passed (unchanged)
+- Frontend build: successful
+- Production DB: untouched (1 user, 0 tickets)
+
+
 # Battwheels OS — Changelog
 
 ## 2026-03-01 — Sprint 6A Complete (5 Production Bugs Fixed)
