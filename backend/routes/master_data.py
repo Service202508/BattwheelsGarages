@@ -437,7 +437,13 @@ async def seed_master_data(request: Request):
         {"model_id": "vmod_tata_ace_ev", "name": "Ace EV", "oem": "Tata Motors", "category_code": "COMM_EV", "category_name": "Commercial EV (Bus/Truck)", "battery_type": "Li-ion 21.3 kWh", "range_km": 154, "is_active": True, "created_at": now, "updated_at": now},
     ]
     
-    await db.vehicle_models.insert_many(models)
+    # Upsert models to prevent duplicates
+    for model in models:
+        await db.vehicle_models.update_one(
+            {"model_id": model["model_id"]},
+            {"$setOnInsert": model},
+            upsert=True
+        )
     
     # EV Issue Suggestions
     issue_suggestions = [
@@ -470,7 +476,13 @@ async def seed_master_data(request: Request):
         {"suggestion_id": "evis_gen_05", "title": "Lights not working", "category_codes": ["2W_EV", "3W_EV", "4W_EV"], "issue_type": "electrical", "common_symptoms": ["Headlight dim/off", "Tail light not working", "Indicators malfunction"], "severity": "medium", "is_active": True, "usage_count": 0, "source": "manual", "created_at": now, "updated_at": now},
     ]
     
-    await db.ev_issue_suggestions.insert_many(issue_suggestions)
+    # Upsert suggestions to prevent duplicates
+    for suggestion in issue_suggestions:
+        await db.ev_issue_suggestions.update_one(
+            {"suggestion_id": suggestion["suggestion_id"]},
+            {"$setOnInsert": suggestion},
+            upsert=True
+        )
     
     return {
         "message": "Master data seeded successfully",
