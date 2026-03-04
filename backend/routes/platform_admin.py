@@ -290,7 +290,7 @@ async def get_platform_metrics(request: Request, _=Depends(require_platform_admi
 async def get_revenue_health(request: Request, _=Depends(require_platform_admin),
 ):
     """Revenue & Health metrics: MRR by plan, trial pipeline, churn risk, recent signups"""
-    PLAN_MRR = {"free": 0, "starter": 2999, "professional": 7999, "enterprise": 24999}
+    PLAN_MRR = {"free": 0, "starter": 2999, "professional": 5999, "enterprise": 24999}
 
     now = datetime.now(timezone.utc)
     thirty_days_ago = now - timedelta(days=30)

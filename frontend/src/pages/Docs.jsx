@@ -13,7 +13,7 @@ const sections = [
     content: [
       { heading: 'Create your organisation', body: 'Visit /register and complete the 3-step onboarding: workshop details, admin account, and confirmation. Your workspace is isolated — no data is shared with other organisations.' },
       { heading: 'Onboarding checklist', body: 'After sign-in, Battwheels OS shows a guided checklist: add your first contact, register a vehicle, open a service ticket, add inventory, raise an invoice, and invite a team member. Each step unlocks the next layer of the platform.' },
-      { heading: 'Subscription plans', body: 'Free 14-day trial includes all Professional features. Plans: Starter (₹2,999/mo), Professional (₹7,999/mo), Enterprise (custom). Features are enforced at API level — the platform shows an upgrade prompt when a gated feature is accessed on a lower plan.' },
+      { heading: 'Subscription plans', body: 'Free 14-day trial includes all Professional features. Plans: Starter (₹2,999/mo), Professional (₹5,999/mo), Enterprise (custom). Features are enforced at API level — the platform shows an upgrade prompt when a gated feature is accessed on a lower plan.' },
     ]
   },
   {

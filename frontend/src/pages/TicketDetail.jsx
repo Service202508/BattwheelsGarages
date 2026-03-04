@@ -60,11 +60,26 @@ export default function TicketDetail({ user }) {
   const [startingSession, setStartingSession] = useState(false);
   const [efiCollapsed, setEfiCollapsed] = useState(true);
 
+  // AI Token status
+  const [tokenStatus, setTokenStatus] = useState(null);
+
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
     "Content-Type": "application/json",
     ...(orgId ? { "X-Organization-ID": orgId } : {}),
   };
+
+  const fetchTokenStatus = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/ai-usage/status`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setTokenStatus(data);
+      }
+    } catch (err) {
+      // Silent fail — badge just won't show
+    }
+  }, [orgId]);
 
   const fetchTicket = useCallback(async () => {
     try {
@@ -90,7 +105,7 @@ export default function TicketDetail({ user }) {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.all([fetchTicket(), fetchActivities(), fetchEstimate(), fetchEfiSuggestions()]);
+      await Promise.all([fetchTicket(), fetchActivities(), fetchEstimate(), fetchEfiSuggestions(), fetchTokenStatus()]);
       setLoading(false);
     })();
   }, [fetchTicket, fetchActivities, fetchEfiSuggestions]);
@@ -350,6 +365,29 @@ export default function TicketDetail({ user }) {
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] font-mono ml-1">AI DIAGNOSTICS</Badge>
                 </CardTitle>
                 <div className="flex items-center gap-2">
+                  {tokenStatus && (
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                        tokenStatus.unlimited
+                          ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                          : tokenStatus.tokens_remaining <= 0
+                          ? "text-red-400 bg-red-500/10 border-red-500/30"
+                          : tokenStatus.tokens_remaining / tokenStatus.tokens_limit > 0.5
+                          ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                          : tokenStatus.tokens_remaining / tokenStatus.tokens_limit > 0.1
+                          ? "text-amber-400 bg-amber-500/10 border-amber-500/30"
+                          : "text-red-400 bg-red-500/10 border-red-500/30"
+                      }`}
+                      data-testid="efi-token-badge"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {tokenStatus.unlimited
+                        ? "Unlimited tokens"
+                        : tokenStatus.tokens_remaining <= 0
+                        ? "Token limit reached"
+                        : `${tokenStatus.tokens_remaining}/${tokenStatus.tokens_limit} tokens`}
+                    </span>
+                  )}
                   {efiData && !efiLoading && !efiCollapsed && (
                     <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); fetchEfiSuggestions(); }} className="h-7 text-xs text-zinc-500 hover:text-zinc-300" data-testid="efi-refresh-btn">
                       Refresh
@@ -492,13 +530,19 @@ export default function TicketDetail({ user }) {
                                 {card.has_decision_tree && !efiData.has_active_session && (
                                   <Button
                                     size="sm"
-                                    className="w-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 text-xs"
+                                    className={`w-full text-xs border ${
+                                      tokenStatus && !tokenStatus.unlimited && tokenStatus.tokens_remaining <= 0
+                                        ? "bg-zinc-700/20 text-zinc-500 border-zinc-600/30 cursor-not-allowed"
+                                        : "bg-emerald-600/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-600/30"
+                                    }`}
                                     onClick={() => handleStartDiagnosticSession(card.failure_id)}
-                                    disabled={startingSession}
+                                    disabled={startingSession || (tokenStatus && !tokenStatus.unlimited && tokenStatus.tokens_remaining <= 0)}
                                     data-testid={`efi-start-session-${idx}`}
                                   >
                                     {startingSession ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <GitBranch className="w-3 h-3 mr-1" />}
-                                    Start Guided Diagnosis ({card.decision_tree_steps} steps)
+                                    {tokenStatus && !tokenStatus.unlimited && tokenStatus.tokens_remaining <= 0
+                                      ? "Token limit reached"
+                                      : `Start Guided Diagnosis (${card.decision_tree_steps} steps)`}
                                   </Button>
                                 )}
                               </div>

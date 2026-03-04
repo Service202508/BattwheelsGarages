@@ -1,3 +1,28 @@
+## 2026-03-04 — Session 3A: Rebuild AI Token System + Plan Sync
+
+### Task 1: AI Diagnostic Token System
+- Created `backend/services/ai_token_service.py` — token allocations: Free 10, Starter 25, Professional 100, Enterprise unlimited
+- Created `backend/routes/ai_usage.py` — GET /api/v1/ai-usage/status
+- Integrated consume_token in `efi_guided.py` /session/start — HTTP 429 when limit reached
+- Added RBAC permission for `/api/ai-usage` route
+- Frontend: token badge in EFI panel header (TicketDetail.jsx) with color coding + disabled button
+- 8 unit tests all passing
+
+### Task 2: Plan Sync
+- Professional price: ₹7,999 → ₹5,999/mo across 4 files:
+  - `backend/core/subscriptions/models.py` (price_monthly + price_annual)
+  - `backend/routes/platform_admin.py` (PLAN_MRR)
+  - `frontend/src/pages/Docs.jsx`
+  - `frontend/src/pages/Terms.jsx`
+
+### Verification
+- 8/8 AI token tests passed
+- 68/68 baseline tests passed (no regression)
+- Frontend build: compiled successfully
+- Production DB: untouched (1 user, 0 tickets)
+- Regression: receivables 142,177.55, total_invoiced 573,509.60, 7 months revenue data
+
+
 ## 2026-03-04 — Fix reports_advanced.py Collection Names + DB Fallback
 
 ### Fix: Advanced Reports Module

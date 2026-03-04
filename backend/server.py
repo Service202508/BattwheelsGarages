@@ -76,6 +76,10 @@ async def lifespan(app: FastAPI):
     from utils.helpers import init_helpers
     init_helpers(db)
 
+    # Init AI token service
+    from services.ai_token_service import init_ai_token_service
+    init_ai_token_service(db)
+
     # Ensure indexes
     try:
         from utils.indexes import ensure_compound_indexes
@@ -134,6 +138,7 @@ V1_ROUTES = [
     "routes.expenses", "routes.banking",
     "routes.banking_module",
     "routes.financial_dashboard", "routes.organizations",
+    "routes.ai_usage",
     "routes.fault_tree_import",
     # Extracted from server.py inline routes
     "routes.auth_main", "routes.entity_crud", "routes.inventory_api",

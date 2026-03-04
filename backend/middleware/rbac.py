@@ -188,6 +188,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
     r"^/api/dashboard(/.*)?$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/ai-usage(/.*)?$":                ["org_admin", "admin", "owner", "manager", "technician"],
 
     # ============ ACCOUNTING/FINANCE EXTENDED ============
     r"^/api/accounting(/.*)?$":             ["org_admin", "admin", "owner", "accountant"],

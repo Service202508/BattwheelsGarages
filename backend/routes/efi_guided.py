@@ -296,6 +296,14 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
     
+    # Consume an AI diagnostic token before creating session
+    from services.ai_token_service import consume_token
+    import uuid
+    session_id = str(uuid.uuid4())[:12]
+    token_result = await consume_token(org_id, session_id, data.ticket_id)
+    if not token_result.get("success"):
+        raise HTTPException(status_code=429, detail=token_result.get("error", "Monthly diagnostic limit reached"))
+    
     try:
         session = await _decision_engine.start_session(
             ticket_id=data.ticket_id,

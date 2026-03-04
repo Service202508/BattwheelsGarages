@@ -21,7 +21,7 @@ const Section = ({ icon: Icon, num, title, children }) => (
 const plans = [
   { name: 'Free Trial', price: '₹0', duration: '14 days', features: 'All Professional features' },
   { name: 'Starter', price: '₹2,999', duration: '/month', features: 'Core operations, basic reports, 5 users' },
-  { name: 'Professional', price: '₹7,999', duration: '/month', features: 'HR & Payroll, E-Invoice, EFI AI, 25 users' },
+  { name: 'Professional', price: '₹5,999', duration: '/month', features: 'HR & Payroll, E-Invoice, EFI AI, 25 users' },
   { name: 'Enterprise', price: 'Custom', duration: 'annual', features: 'Unlimited users, SLA, custom onboarding, dedicated support' },
 ];
 

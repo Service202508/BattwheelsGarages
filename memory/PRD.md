@@ -30,6 +30,20 @@ Battwheels OS is an EV service workshop management SaaS platform. After a stabil
 - **Back arrow**: Added back button (`data-testid="platform-admin-back-btn"`) to PlatformAdmin header using `navigate(-1)`
 - **Logout button**: Already existed (`data-testid="platform-admin-logout-btn"`) with `onLogout` prop properly passed from App.js
 
+## Completed Tasks (Session 3A - 2026-03-04)
+
+### Task 1: AI Diagnostic Token System — DONE
+- Created `backend/services/ai_token_service.py` with get_token_status, consume_token, lazy monthly reset
+- Created `backend/routes/ai_usage.py` with GET /api/v1/ai-usage/status
+- Integrated token consumption in `efi_guided.py` /session/start (HTTP 429 on limit)
+- Added token badge to EFI panel in TicketDetail.jsx (color-coded: green/amber/red)
+- Button disabled when tokens exhausted
+- 8 unit tests all passing
+
+### Task 2: Plan Sync — DONE
+- Professional price synced to ₹5,999/mo across models.py, platform_admin.py, Docs.jsx, Terms.jsx
+- Token allocations: Free Trial 10, Starter 25, Professional 100, Enterprise unlimited
+
 ## Completed Tasks (Session - 2026-03-04, Fork)
 
 ### Fix reports_advanced.py Collection Names + DB Fallback — DONE
