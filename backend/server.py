@@ -46,6 +46,46 @@ from config.env_validator import check_and_report
 if not check_and_report():
     logger.warning("Missing env vars — continuing with defaults")
 
+# ==================== P0 DB SAFETY GUARD ====================
+# Prevents catastrophic cross-environment data corruption.
+# If ENVIRONMENT and DB_NAME are inconsistent, the app refuses to start.
+import sys
+
+_VALID_ENV_DB_MAP = {
+    "development": "battwheels_dev",
+    "staging":     "battwheels_staging",
+    "production":  "battwheels",
+}
+
+_guard_env = os.environ.get("ENVIRONMENT", "").strip().lower()
+_guard_db  = os.environ.get("DB_NAME", "").strip()
+
+if not _guard_env:
+    _guard_env = "development"
+    print("WARNING: ENVIRONMENT not set — defaulting to 'development'", file=sys.stderr)
+    logger.warning("ENVIRONMENT not set — defaulting to 'development'")
+
+_expected_db = _VALID_ENV_DB_MAP.get(_guard_env)
+
+if _expected_db is None:
+    msg = f"CRITICAL: Unknown ENVIRONMENT='{_guard_env}'. Must be one of: {list(_VALID_ENV_DB_MAP.keys())}"
+    print(msg, file=sys.stderr)
+    logger.critical(msg)
+    sys.exit(1)
+
+if _guard_db != _expected_db:
+    msg = (
+        f"CRITICAL: DB_NAME / ENVIRONMENT mismatch! "
+        f"ENVIRONMENT='{_guard_env}' requires DB_NAME='{_expected_db}', "
+        f"but DB_NAME='{_guard_db}'. Refusing to start to prevent data corruption."
+    )
+    print(msg, file=sys.stderr)
+    logger.critical(msg)
+    sys.exit(1)
+
+logger.info(f"DB safety guard passed: ENVIRONMENT={_guard_env}, DB_NAME={_guard_db}")
+# ==================== END DB SAFETY GUARD ====================
+
 # ==================== DATABASE ====================
 mongo_url = os.environ.get('MONGO_URL')
 client = AsyncIOMotorClient(mongo_url)
@@ -235,11 +275,16 @@ try:
     from middleware.rate_limiter import init_rate_limiter_sync
     init_rate_limiter_sync(db)
 
-    app.add_middleware(RateLimitMiddleware)
-    app.add_middleware(SanitizationMiddleware)  # Sanitize: after CSRF, strips HTML from all JSON
-    app.add_middleware(CSRFMiddleware)       # CSRF: after auth, before routes
-    app.add_middleware(RBACMiddleware)
-    app.add_middleware(TenantGuardMiddleware)
+    # Middleware registration order: LAST added = OUTERMOST (runs first).
+    # Target execution order (request flow):
+    #   CORS → SecurityHeaders → RateLimit → TenantGuard → RBAC → CSRF → Sanitization → Route
+    #
+    # So we add innermost first, outermost last:
+    app.add_middleware(SanitizationMiddleware)  # 7-innermost: strips HTML from JSON
+    app.add_middleware(CSRFMiddleware)          # 6: CSRF check after auth
+    app.add_middleware(RBACMiddleware)          # 5: role-based access control
+    app.add_middleware(TenantGuardMiddleware)   # 4: auth + tenant isolation
+    app.add_middleware(RateLimitMiddleware)     # 3: reject floods early, before auth costs
     logger.info("Multi-tenant system + middleware initialized")
 except Exception as e:
     logger.error(f"Failed to initialize multi-tenant system: {e}")
