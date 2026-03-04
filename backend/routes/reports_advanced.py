@@ -69,8 +69,8 @@ async def get_monthly_revenue(request: Request, year: int = None, months: int = 
             }},
             {"$group": {
                 "_id": None,
-                "invoiced": {"$sum": "$grand_total"},
-                "collected": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}},
+                "invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+                "collected": {"$sum": {"$subtract": [{"$ifNull": ["$grand_total", "$total_amount"]}, {"$ifNull": ["$balance_due", "$amount_due"]}]}},
                 "count": {"$sum": 1}
             }}
         ]
@@ -122,9 +122,9 @@ async def get_quarterly_revenue(request: Request, year: int = None):
             }},
             {"$group": {
                 "_id": None,
-                "invoiced": {"$sum": "$grand_total"},
-                "collected": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}},
-                "outstanding": {"$sum": "$balance_due"}
+                "invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+                "collected": {"$sum": {"$subtract": [{"$ifNull": ["$grand_total", "$total_amount"]}, {"$ifNull": ["$balance_due", "$amount_due"]}]}},
+                "outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}
             }}
         ]
         
@@ -167,8 +167,8 @@ async def get_yearly_comparison(request: Request, years: int = 3):
             }},
             {"$group": {
                 "_id": None,
-                "total_invoiced": {"$sum": "$grand_total"},
-                "total_collected": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}},
+                "total_invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+                "total_collected": {"$sum": {"$subtract": [{"$ifNull": ["$grand_total", "$total_amount"]}, {"$ifNull": ["$balance_due", "$amount_due"]}]}},
                 "invoice_count": {"$sum": 1}
             }}
         ]
@@ -199,8 +199,8 @@ async def get_receivables_aging_chart(request: Request):
     today = datetime.now(timezone.utc).date()
     
     invoices = await invoices_collection.find(
-        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}},
-        {"_id": 0, "due_date": 1, "balance_due": 1}
+        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
+        {"_id": 0, "due_date": 1, "balance_due": 1, "amount_due": 1}
     ).to_list(2000)
     
     buckets = {
@@ -219,7 +219,7 @@ async def get_receivables_aging_chart(request: Request):
         try:
             due_date = datetime.fromisoformat(due_date_str.replace('Z', '+00:00')).date()
             days = (today - due_date).days
-            balance = inv.get("balance_due", 0)
+            balance = inv.get("balance_due") or inv.get("amount_due") or 0
             
             if days <= 0:
                 bucket = "current"
@@ -280,7 +280,7 @@ async def get_receivables_trend(request: Request, months: int = 6):
             }},
             {"$group": {
                 "_id": None,
-                "total_outstanding": {"$sum": "$balance_due"}
+                "total_outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}
             }}
         ]
         
@@ -314,7 +314,7 @@ async def get_top_customers_by_revenue(request: Request, limit: int = 10):
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
-            "total_revenue": {"$sum": "$grand_total"},
+            "total_revenue": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
             "invoice_count": {"$sum": 1}
         }},
         {"$sort": {"total_revenue": -1}},
@@ -346,11 +346,11 @@ async def get_top_customers_by_outstanding(request: Request, limit: int = 10):
     org_id = extract_org_id(request)
     """Get customers with highest outstanding"""
     pipeline = [
-        {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}}},
+        {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
-            "total_outstanding": {"$sum": "$balance_due"},
+            "total_outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}},
             "invoice_count": {"$sum": 1}
         }},
         {"$sort": {"total_outstanding": -1}},
@@ -428,7 +428,7 @@ async def get_sales_funnel(request: Request):
     estimates_value = 0
     est_data = await estimates_collection.aggregate([
         {"$match": {"status": {"$ne": "draft"}}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if est_data:
         estimates_value = est_data[0].get("total", 0)
@@ -440,7 +440,7 @@ async def get_sales_funnel(request: Request):
     orders_value = 0
     so_data = await salesorders_collection.aggregate([
         {"$match": {"status": {"$nin": ["draft", "void"]}}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if so_data:
         orders_value = so_data[0].get("total", 0)
@@ -450,7 +450,7 @@ async def get_sales_funnel(request: Request):
     invoices_value = 0
     inv_data = await invoices_collection.aggregate([
         {"$match": {"status": {"$nin": ["draft", "void"]}}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if inv_data:
         invoices_value = inv_data[0].get("total", 0)
@@ -460,7 +460,7 @@ async def get_sales_funnel(request: Request):
     paid_value = 0
     paid_data = await invoices_collection.aggregate([
         {"$match": {"status": "paid"}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if paid_data:
         paid_value = paid_data[0].get("total", 0)
@@ -502,7 +502,7 @@ async def get_invoice_status_distribution(request: Request):
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1},
-            "value": {"$sum": "$grand_total"}
+            "value": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}
         }}
     ]
     
@@ -656,25 +656,25 @@ async def get_dashboard_summary(request: Request):
     # This month revenue
     month_revenue = await invoices_collection.aggregate([
         {"$match": {"invoice_date": {"$gte": first_of_month}, "status": {"$nin": ["draft", "void"]}}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}, "count": {"$sum": 1}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}, "count": {"$sum": 1}}}
     ]).to_list(1)
     
     # Year to date
     ytd_revenue = await invoices_collection.aggregate([
         {"$match": {"invoice_date": {"$gte": first_of_year}, "status": {"$nin": ["draft", "void"]}}},
-        {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     
     # Total outstanding
     outstanding = await invoices_collection.aggregate([
         {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}}},
-        {"$group": {"_id": None, "total": {"$sum": "$balance_due"}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}}}
     ]).to_list(1)
     
     # Overdue
     overdue = await invoices_collection.aggregate([
         {"$match": {"status": "overdue"}},
-        {"$group": {"_id": None, "total": {"$sum": "$balance_due"}, "count": {"$sum": 1}}}
+        {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}, "count": {"$sum": 1}}}
     ]).to_list(1)
     
     # Active customers

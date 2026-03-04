@@ -66,10 +66,10 @@ async def get_financial_summary(request: Request):
     invoices_cursor = db.invoices.find({
         "organization_id": org_id,
         "status": {"$nin": ["paid", "void", "draft"]}
-    }, {"_id": 0, "balance": 1, "due_date": 1, "total": 1})
+    }, {"_id": 0, "balance": 1, "balance_due": 1, "amount_due": 1, "due_date": 1, "total": 1, "total_amount": 1})
     
     async for invoice in invoices_cursor:
-        balance = float(invoice.get("balance") or invoice.get("total") or 0)
+        balance = float(invoice.get("amount_due") or invoice.get("balance_due") or invoice.get("balance") or invoice.get("total_amount") or invoice.get("total") or 0)
         total_receivables += balance
         
         due_date_str = invoice.get("due_date")
@@ -238,7 +238,7 @@ async def get_cash_flow(request: Request, period: str = "fiscal_year"):
     paid_invoices_cursor = db.invoices.find({
         "organization_id": org_id,
         "status": "paid"
-    }, {"_id": 0, "total": 1, "last_modified_time": 1, "invoice_date": 1})
+    }, {"_id": 0, "total": 1, "total_amount": 1, "last_modified_time": 1, "invoice_date": 1})
     
     async for invoice in paid_invoices_cursor:
         try:
@@ -250,7 +250,7 @@ async def get_cash_flow(request: Request, period: str = "fiscal_year"):
                     inv_date = date_str
                 month_key = inv_date.strftime("%Y-%m")
                 if month_key in monthly_data:
-                    monthly_data[month_key]["incoming"] += float(invoice.get("total", 0))
+                    monthly_data[month_key]["incoming"] += float(invoice.get("total_amount") or invoice.get("total") or 0)
         except:
             pass
     
@@ -359,13 +359,13 @@ async def get_income_expense(request: Request, period: str = "fiscal_year", meth
         invoices_cursor = db.invoices.find({
             "organization_id": org_id,
             "status": {"$ne": "void"}
-        }, {"_id": 0, "total": 1, "invoice_date": 1, "date": 1})
+        }, {"_id": 0, "total": 1, "total_amount": 1, "invoice_date": 1, "date": 1})
     else:
         # Cash: use payment date
         invoices_cursor = db.invoices.find({
             "organization_id": org_id,
             "status": "paid"
-        }, {"_id": 0, "total": 1, "last_modified_time": 1})
+        }, {"_id": 0, "total": 1, "total_amount": 1, "last_modified_time": 1})
     
     async for invoice in invoices_cursor:
         try:
@@ -381,7 +381,7 @@ async def get_income_expense(request: Request, period: str = "fiscal_year", meth
                     inv_date = date_str
                 month_key = inv_date.strftime("%Y-%m")
                 if month_key in monthly_data:
-                    monthly_data[month_key]["income"] += float(invoice.get("total", 0))
+                    monthly_data[month_key]["income"] += float(invoice.get("total_amount") or invoice.get("total") or 0)
         except:
             pass
     

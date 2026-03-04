@@ -352,8 +352,8 @@ async def update_contact_balance(customer_id: str):
         {"$match": {"customer_id": customer_id, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {
             "_id": None,
-            "total_invoiced": {"$sum": "$grand_total"},
-            "total_outstanding": {"$sum": "$balance_due"}
+            "total_invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+            "total_outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}
         }}
     ]
     
@@ -530,9 +530,9 @@ async def get_invoices_summary(request: Request, period: str = "all"):
         {"$match": {**query}},
         {"$group": {
             "_id": None,
-            "total_invoiced": {"$sum": "$grand_total"},
-            "total_outstanding": {"$sum": "$balance_due"},
-            "total_paid": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}}
+            "total_invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+            "total_outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}},
+            "total_paid": {"$sum": {"$subtract": [{"$ifNull": ["$grand_total", "$total_amount"]}, {"$ifNull": ["$balance_due", "$amount_due"]}]}}
         }}
     ]
     
@@ -563,9 +563,9 @@ async def get_aging_report():
     today = datetime.now(timezone.utc).date()
     
     invoices = await invoices_collection.find(
-        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}},
+        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
         {"_id": 0, "invoice_id": 1, "invoice_number": 1, "customer_id": 1, "customer_name": 1, 
-         "due_date": 1, "grand_total": 1, "balance_due": 1}
+         "due_date": 1, "grand_total": 1, "total_amount": 1, "balance_due": 1, "amount_due": 1}
     ).to_list(1000)
     
     aging = {"current": 0, "1_30": 0, "31_60": 0, "61_90": 0, "over_90": 0}
@@ -579,7 +579,7 @@ async def get_aging_report():
         try:
             due_date = datetime.fromisoformat(due_date_str.replace('Z', '+00:00')).date()
             days_overdue = (today - due_date).days
-            balance = inv.get("balance_due", 0)
+            balance = inv.get("balance_due") or inv.get("amount_due") or 0
             
             if days_overdue <= 0:
                 bucket = "current"
@@ -620,8 +620,8 @@ async def get_customer_wise_report(limit: int = 20):
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
             "invoice_count": {"$sum": 1},
-            "total_invoiced": {"$sum": "$grand_total"},
-            "total_outstanding": {"$sum": "$balance_due"}
+            "total_invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+            "total_outstanding": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}
         }},
         {"$sort": {"total_outstanding": -1}},
         {"$limit": limit}
@@ -663,8 +663,8 @@ async def get_monthly_report(year: int = None):
         {"$group": {
             "_id": "$month",
             "invoice_count": {"$sum": 1},
-            "total_invoiced": {"$sum": "$grand_total"},
-            "total_collected": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}}
+            "total_invoiced": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}},
+            "total_collected": {"$sum": {"$subtract": [{"$ifNull": ["$grand_total", "$total_amount"]}, {"$ifNull": ["$balance_due", "$amount_due"]}]}}
         }},
         {"$sort": {"_id": 1}}
     ]
