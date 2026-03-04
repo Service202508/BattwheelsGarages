@@ -30,6 +30,19 @@ Battwheels OS is an EV service workshop management SaaS platform. After a stabil
 - **Back arrow**: Added back button (`data-testid="platform-admin-back-btn"`) to PlatformAdmin header using `navigate(-1)`
 - **Logout button**: Already existed (`data-testid="platform-admin-logout-btn"`) with `onLogout` prop properly passed from App.js
 
+## Completed Tasks (Session 3B - 2026-03-04)
+
+### Task 1: Homepage Redesign (10 sections) — DONE
+- Rewrote SaaSLanding.jsx (795 lines) with 10 sections: Hero, Pain Stories (Hinglish), Four Audiences (tabbed), EFI Intelligence (outcomes only), Complete Platform (16 modules), Social Proof (animated counters), Pricing (4 cards with correct prices), Intelligence Flywheel, Final CTA, Footer
+- Zero em dashes, zero EFI architecture leaks, all brand rules followed
+- Responsive across all breakpoints (sm/md/lg/xl)
+
+### Task 2: ProductTour Component — DONE
+- Created ProductTour.jsx (255 lines) with 6 interactive steps
+- Static mockups of dashboard, AI diagnosis, GST invoice, payments, inventory, module grid
+- Keyboard navigation (arrows + Escape), dot indicators, slide transitions
+- Integrated via hero "See It In Action" button
+
 ## Completed Tasks (Session 3A - 2026-03-04)
 
 ### Task 1: AI Diagnostic Token System — DONE

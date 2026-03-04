@@ -1,3 +1,22 @@
+## 2026-03-04 — Session 3B: Homepage Redesign + Product Tour
+
+### Homepage Redesign
+- Rewrote `frontend/src/pages/SaaSLanding.jsx` (795 lines) with 10-section layout
+- Sections: Hero, Pain Stories (Hinglish quotes), Four Audiences (tabbed UI), EFI Intelligence (outcomes only), Complete Platform (16 module grid), Social Proof (animated counters), Pricing (4 plans), Intelligence Flywheel, Final CTA, Footer
+- All pricing matches platform: Free Trial ₹0, Starter ₹2,999, Professional ₹5,999, Enterprise Custom
+- Brand rules: zero em dashes, zero architecture leaks, dark volt theme, responsive
+
+### ProductTour Component
+- Created `frontend/src/components/ProductTour.jsx` (255 lines)
+- 6 steps with static mockups: Dashboard, AI Diagnosis, GST Invoice, Payments, Inventory, Module Grid
+- Keyboard navigation, dot indicators, integrated via hero "See It In Action" button
+
+### Verification
+- Frontend build: compiled successfully
+- 76/76 backend tests passed (no regression)
+- Production DB: untouched (1 user, 0 tickets)
+
+
 ## 2026-03-04 — Session 3A: Rebuild AI Token System + Plan Sync
 
 ### Task 1: AI Diagnostic Token System
