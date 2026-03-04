@@ -1135,7 +1135,7 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/insights" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <DataInsights user={auth.user} />
           </Layout>

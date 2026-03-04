@@ -16,17 +16,17 @@ import { API, getAuthHeaders } from "@/App";
 
 // Issue categories - clean single-color design
 const ISSUE_CATEGORIES = [
-  { id: "battery", label: "Battery Issues", icon: Battery },
-  { id: "motor", label: "Motor Problems", icon: Cpu },
-  { id: "charging", label: "Charging System", icon: Plug },
-  { id: "electrical", label: "Electrical", icon: Zap },
-  { id: "mechanical", label: "Mechanical", icon: Settings },
-  { id: "software", label: "Software Issues", icon: Code },
-  { id: "suspension", label: "Suspension", icon: ArrowUpDown },
-  { id: "braking", label: "Braking System", icon: CircleDot },
-  { id: "cooling", label: "Cooling System", icon: Thermometer },
-  { id: "hvac", label: "AC/Heating", icon: Wind },
-  { id: "other", label: "Other", icon: HelpCircle },
+  { id: "battery", label: "Battery ki Health Check", icon: Battery },
+  { id: "motor", label: "Motor Performance Dekho", icon: Cpu },
+  { id: "charging", label: "Charging System Jaanch", icon: Plug },
+  { id: "electrical", label: "Electrical Wiring Check", icon: Zap },
+  { id: "mechanical", label: "Mechanical Dikkat", icon: Settings },
+  { id: "software", label: "Software / ECU Issues", icon: Code },
+  { id: "suspension", label: "Suspension Check Karo", icon: ArrowUpDown },
+  { id: "braking", label: "Braking System Dekho", icon: CircleDot },
+  { id: "cooling", label: "Cooling System Jaanch", icon: Thermometer },
+  { id: "hvac", label: "AC / Heating Check", icon: Wind },
+  { id: "other", label: "Kuch Aur Dikkat", icon: HelpCircle },
 ];
 
 // Vehicle categories
@@ -253,7 +253,7 @@ Please provide:
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-bw-white">Battwheels EFI™</h1>
+              <h1 className="text-2xl font-bold text-bw-white">{`AI Diagnosis \u2014 Battwheels EFI\u2122`}</h1>
               <span className="px-3 py-1 text-[10px] font-semibold bg-bw-volt/10 text-bw-volt border border-bw-volt/25 rounded-full font-mono uppercase tracking-[0.1em]">
                 AI Diagnostics
               </span>
@@ -527,7 +527,7 @@ Please provide:
           <div className="flex items-start gap-3">
             <Lightbulb className="h-5 w-5 text-bw-volt mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-bw-volt mb-1">Tips for better diagnosis</h4>
+              <h4 className="font-medium text-bw-volt mb-1">{`Tips for better diagnosis \u2014 Battwheels EFI\u2122`}</h4>
               <ul className="text-sm text-bw-white/60 space-y-1">
                 <li>• Be specific about symptoms (sounds, warning lights, behavior)</li>
                 <li>• Include any DTC/error codes if available</li>
