@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Building2, Users, BarChart3, ShieldAlert, CheckCircle,
   XCircle, TrendingUp, Search, RefreshCw, ChevronRight,
-  Crown, Loader2, AlertTriangle, Settings,
+  Crown, Loader2, AlertTriangle, Settings, ArrowLeft,
   IndianRupee, Activity, UserPlus, Flame, Play, X, PhoneCall, LogOut
 } from "lucide-react";
 
@@ -337,6 +337,14 @@ export default function PlatformAdmin({ user, onLogout }) {
       <div className="border-b border-white/[0.07] bg-bw-off-black px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <button
+              data-testid="platform-admin-back-btn"
+              onClick={() => navigate(-1)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/[0.07] transition"
+              title="Go back"
+            >
+              <ArrowLeft className="w-4 h-4 text-bw-white/60" />
+            </button>
             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
               <Crown className="w-4 h-4 text-purple-400" />
             </div>

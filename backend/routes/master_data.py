@@ -328,9 +328,9 @@ async def seed_master_data(request: Request):
     db = get_db()
     now = datetime.now(timezone.utc).isoformat()
     
-    # Check if already seeded
-    existing_categories = await db.vehicle_categories.count_documents(org_query(org_id))
-    if existing_categories > 0:
+    # Check if already seeded (use code-based check, not org-scoped)
+    existing_categories = await db.vehicle_categories.count_documents({"is_active": True})
+    if existing_categories >= 5:
         return {"message": "Master data already exists", "categories": existing_categories}
     
     # Vehicle Categories
@@ -397,7 +397,13 @@ async def seed_master_data(request: Request):
         }
     ]
     
-    await db.vehicle_categories.insert_many(categories)
+    # Upsert categories to prevent duplicates
+    for cat in categories:
+        await db.vehicle_categories.update_one(
+            {"code": cat["code"]},
+            {"$setOnInsert": cat},
+            upsert=True
+        )
     
     # Vehicle Models (Popular EVs in India)
     models = [

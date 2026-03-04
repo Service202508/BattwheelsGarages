@@ -18,7 +18,7 @@ import secrets
 from datetime import datetime, timezone, timedelta
 
 # Environment
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://final-9-fixes.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://rebuild-verification.preview.emergentagent.com").rstrip("/")
 AUTH_API = f"{BASE_URL}/api/v1/auth"
 V1_API = f"{BASE_URL}/api/v1"
 
