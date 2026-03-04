@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2, Brain, X, Zap, ChevronDown, ChevronUp, BookOpen, GitBranch, Target, Shield } from "lucide-react";
+import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2, Brain, X, Zap, ChevronDown, ChevronUp, ChevronRight, BookOpen, GitBranch, Target, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,6 +58,7 @@ export default function TicketDetail({ user }) {
   const [efiError, setEfiError] = useState(null);
   const [expandedCard, setExpandedCard] = useState(null);
   const [startingSession, setStartingSession] = useState(false);
+  const [efiCollapsed, setEfiCollapsed] = useState(true);
 
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -341,20 +342,24 @@ export default function TicketDetail({ user }) {
 
           {/* EFI Intelligence Panel */}
           <Card className="bg-zinc-900/60 border-zinc-800 border-l-2 border-l-emerald-500" data-testid="efi-intelligence-panel">
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-3 cursor-pointer" onClick={() => setEfiCollapsed(!efiCollapsed)} data-testid="efi-panel-toggle">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                   <Zap className="w-4 h-4 text-emerald-400" />
-                  <span>Battwheels EFI</span>
+                  <span>{`Battwheels EFI\u2122`}</span>
                   <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] font-mono ml-1">AI DIAGNOSTICS</Badge>
                 </CardTitle>
-                {efiData && !efiLoading && (
-                  <Button variant="ghost" size="sm" onClick={fetchEfiSuggestions} className="h-7 text-xs text-zinc-500 hover:text-zinc-300" data-testid="efi-refresh-btn">
-                    Refresh
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {efiData && !efiLoading && !efiCollapsed && (
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); fetchEfiSuggestions(); }} className="h-7 text-xs text-zinc-500 hover:text-zinc-300" data-testid="efi-refresh-btn">
+                      Refresh
+                    </Button>
+                  )}
+                  {efiCollapsed ? <ChevronDown className="w-4 h-4 text-zinc-500" /> : <ChevronUp className="w-4 h-4 text-zinc-500" />}
+                </div>
               </div>
             </CardHeader>
+            {!efiCollapsed && (
             <CardContent>
               {efiLoading ? (
                 <div className="flex items-center justify-center py-6 gap-3" data-testid="efi-loading">
@@ -511,13 +516,19 @@ export default function TicketDetail({ user }) {
                 </div>
               ) : (
                 <div className="text-center py-4 text-zinc-500 text-sm" data-testid="efi-empty">
-                  <p>EFI intelligence not available for this ticket</p>
+                  <p>No diagnosis started yet</p>
+                  <a
+                    href={`/ai-diagnostic?ticket=${ticketId}`}
+                    className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded bg-emerald-600/20 text-emerald-400 text-sm font-medium hover:bg-emerald-600/30 transition-colors border border-emerald-500/30"
+                    data-testid="efi-start-diagnosis-link"
+                  >
+                    <Zap className="w-3.5 h-3.5" />{`Start EFI\u2122 Diagnosis`}<ChevronRight className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               )}
             </CardContent>
+            )}
           </Card>
-
-          {/* Section 3: Costs */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-costs-section">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Financials</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
