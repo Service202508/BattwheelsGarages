@@ -59,19 +59,31 @@ def sent_invoice(base_url, _headers):
         "customer_id": contacts[0]["contact_id"],
         "invoice_date": today,
         "due_date": "2026-12-31",
+        "send_email": False,
         "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%"}]
     })
     if resp.status_code != 200:
         pytest.skip(f"Cannot create invoice: {resp.status_code}")
     inv_data = resp.json().get("invoice") or resp.json()
     inv_id = inv_data.get("invoice_id")
-    # Send the invoice so it becomes non-draft
-    requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_id}/send", headers=_headers)
+    # Try to send the invoice so it becomes non-draft
+    send_resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_id}/send", headers=_headers)
+    # If send fails (e.g. weasyprint not installed), update status directly via action endpoint
+    if send_resp.status_code != 200:
+        # Use the action endpoint to change status
+        action_resp = requests.post(f"{base_url}/api/v1/invoices-enhanced/{inv_id}/action",
+                                     headers=_headers, json={"action": "send"})
+        if action_resp.status_code != 200:
+            # Direct DB update as last resort - mark as sent via update endpoint
+            update_resp = requests.put(f"{base_url}/api/v1/invoices-enhanced/{inv_id}",
+                                        headers=_headers, json={"status": "sent"})
     resp = requests.get(f"{base_url}/api/v1/invoices-enhanced/{inv_id}", headers=_headers)
     if resp.status_code == 200:
         inv = resp.json().get("invoice") or resp.json()
     else:
         inv = inv_data
+    if inv.get("status") == "draft":
+        pytest.skip(f"Cannot send invoice to non-draft status — send endpoint returned {send_resp.status_code}")
     return inv
 
 

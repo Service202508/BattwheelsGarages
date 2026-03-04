@@ -96,6 +96,178 @@ def _ensure_test_user_passwords(_db):
         )
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _seed_test_data(_db):
+    """Seed required test entities that many test files reference by hardcoded IDs."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    dev_org = "dev-internal-testing-001"
+    demo_org = "demo-volt-motors-001"
+
+    # --- Contacts (customers / vendors) referenced by tests ---
+    test_contacts = [
+        {
+            "contact_id": "CON-235065AEEC94",
+            "contact_number": "C-SEED-001",
+            "contact_type": "customer",
+            "name": "Rahul Sharma",
+            "display_name": "Rahul Sharma",
+            "email": "rahul.sharma@test.com",
+            "phone": "9876543210",
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "contact_id": "CUST-93AE14BE3618",
+            "contact_number": "C-SEED-002",
+            "contact_type": "customer",
+            "name": "Full Zoho Test Co",
+            "display_name": "Full Zoho Test Co",
+            "email": "zoho.test@test.com",
+            "phone": "9876543211",
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "contact_id": "1837096000000463081",
+            "contact_number": "C-SEED-003",
+            "contact_type": "customer",
+            "name": "Integration Test Contact",
+            "display_name": "Integration Test Contact",
+            "email": "integration@test.com",
+            "phone": "9876543212",
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+    ]
+    for contact in test_contacts:
+        _db.contacts.update_one(
+            {"contact_id": contact["contact_id"]},
+            {"$setOnInsert": contact},
+            upsert=True,
+        )
+
+    # --- Items referenced by tests ---
+    test_items = [
+        {
+            "item_id": "I-DDC36534C55C",
+            "name": "EV Battery Service",
+            "item_type": "service",
+            "sku": "SVC-BAT-001",
+            "unit_price": 5000,
+            "rate": 5000,
+            "sales_rate": 5000,
+            "quantity": 0,
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "item_id": "1837096000000446195",
+            "name": "12V Battery replacement",
+            "item_type": "inventory",
+            "sku": "BAT-12V-001",
+            "unit_price": 200,
+            "rate": 200,
+            "sales_rate": 200,
+            "purchase_rate": 150,
+            "quantity": 100,
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+        {
+            "item_id": "1837096000001141394",
+            "name": "2 Wheeler Seatcover-25",
+            "item_type": "inventory",
+            "sku": "SC-2W-025",
+            "unit_price": 200,
+            "rate": 200,
+            "sales_rate": 200,
+            "quantity": 50,
+            "organization_id": dev_org,
+            "status": "active",
+            "created_at": now,
+            "updated_at": now,
+        },
+    ]
+    for item in test_items:
+        _db.items.update_one(
+            {"item_id": item["item_id"]},
+            {"$setOnInsert": item},
+            upsert=True,
+        )
+        # Ensure rate fields are always set
+        _db.items.update_one(
+            {"item_id": item["item_id"]},
+            {"$set": {
+                "rate": item.get("rate", item.get("unit_price", 0)),
+                "sales_rate": item.get("sales_rate", item.get("unit_price", 0)),
+            }},
+        )
+
+    # --- Price Lists ---
+    _db.price_lists.update_one(
+        {"pricelist_id": "PL-B575D8BF"},
+        {"$setOnInsert": {
+            "pricelist_id": "PL-B575D8BF",
+            "organization_id": dev_org,
+            "name": "Wholesale",
+            "description": "Wholesale price list - 15% discount",
+            "discount_percentage": 15.0,
+            "markup_percentage": 0.0,
+            "is_active": True,
+            "item_count": 1,
+            "created_time": now,
+            "updated_time": now,
+        }},
+        upsert=True,
+    )
+
+    # --- Item Prices (link items to price lists) ---
+    _db.item_prices.update_one(
+        {"item_id": "1837096000000446195", "price_list_id": "PL-B575D8BF"},
+        {"$setOnInsert": {
+            "price_id": "IP-SEED-001",
+            "item_id": "1837096000000446195",
+            "item_name": "12V Battery replacement",
+            "organization_id": dev_org,
+            "price_list_id": "PL-B575D8BF",
+            "price_list_name": "Wholesale",
+            "rate": 170.0,
+            "created_time": now,
+            "updated_time": now,
+        }},
+        upsert=True,
+    )
+
+    # --- Assign Wholesale price list to CUST-93AE14BE3618 ---
+    _db.contacts.update_one(
+        {"contact_id": "CUST-93AE14BE3618"},
+        {"$set": {
+            "price_list_id": "PL-B575D8BF",
+            "price_list_name": "Wholesale",
+            "sales_price_list_id": "PL-B575D8BF",
+        }},
+    )
+
+    yield
+    # Cleanup: remove seeded test data
+    _db.contacts.delete_many({"contact_id": {"$in": [c["contact_id"] for c in test_contacts]}})
+    _db.items.delete_many({"item_id": {"$in": [i["item_id"] for i in test_items]}})
+    _db.price_lists.delete_many({"pricelist_id": "PL-B575D8BF"})
+    _db.item_prices.delete_many({"price_list_id": "PL-B575D8BF"})
+
+
+
 @pytest.fixture(autouse=True)
 def _clear_login_attempts_per_test(_db):
     """Clear login_attempts before EVERY test to prevent 429 cascading."""
@@ -196,9 +368,10 @@ def _auto_inject_auth(request, dev_token):
         headers = kwargs.get("headers")
         if headers is None:
             headers = {}
-        if isinstance(headers, dict) and "Authorization" not in headers:
+        if isinstance(headers, dict):
             headers = dict(headers)
-            headers["Authorization"] = f"Bearer {token}"
+            if "Authorization" not in headers:
+                headers["Authorization"] = f"Bearer {token}"
             if "X-Organization-ID" not in headers:
                 headers["X-Organization-ID"] = "dev-internal-testing-001"
             kwargs["headers"] = headers

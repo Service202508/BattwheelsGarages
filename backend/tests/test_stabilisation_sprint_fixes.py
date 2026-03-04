@@ -133,7 +133,7 @@ class TestServerDecomposition:
 
     def test_health_returns_version_2_5_0(self):
         """FIX 3: Health endpoint returns version 2.5.0"""
-        response = requests.get(f"{BASE_URL}/api/v1/health")
+        response = requests.get(f"{BASE_URL}/api/health")
         assert response.status_code == 200
         data = response.json()
         assert data.get("version") == "2.5.0", f"Expected version 2.5.0, got {data.get('version')}"

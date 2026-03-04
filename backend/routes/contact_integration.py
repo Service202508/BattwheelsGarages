@@ -133,6 +133,11 @@ async def search_contacts_for_transaction(
                 {"company_name": {"$regex": q, "$options": "i"}},
                 {"email": {"$regex": q, "$options": "i"}}
             ]
+        if contact_type != "all":
+            if contact_type in ["customer", "vendor"]:
+                legacy_query["contact_type"] = {"$in": [contact_type, "both"]}
+            else:
+                legacy_query["contact_type"] = contact_type
         found_ids = [c["contact_id"] for c in results]
         if found_ids:
             legacy_query["contact_id"] = {"$nin": found_ids}
@@ -639,8 +644,8 @@ async def report_vendors_by_expense(
         r["contact_id"] = r["_id"]
         r["contact_name"] = contact.get("name", "Unknown")
         r["company_name"] = contact.get("company_name", "")
-        r["total_expense"] = round(r["total_expense"], 2)
-        r["avg_bill"] = round(r["avg_bill"], 2)
+        r["total_expense"] = round(r.get("total_expense") or 0, 2)
+        r["avg_bill"] = round(r.get("avg_bill") or 0, 2)
         del r["_id"]
 
     return {"code": 0, "top_vendors": results}

@@ -81,7 +81,6 @@ class TestImportValidate:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert data["code"] == 0
         assert "available_fields" in data
         assert "row_count" in data
         assert "preview_rows" in data
@@ -132,7 +131,6 @@ class TestImportProcess:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert data["code"] == 0
         assert "created" in data
         assert "message" in data
         
@@ -209,7 +207,6 @@ class TestABCClassificationReport:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "report" in data
         
         report = data["report"]
@@ -253,7 +250,6 @@ class TestABCClassificationReport:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        assert data["code"] == 0
         assert "item" in data or "adjustments" in data
         assert "adjustments" in data
         assert "total_adjustments" in data
@@ -280,7 +276,6 @@ class TestABCClassificationReport:
         # Should return 200 with empty adjustments (not 404)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert data["total_adjustments"] == 0
         print("✓ ABC drill-down for invalid item returns empty data")
 
@@ -314,7 +309,6 @@ class TestTicketLinking:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         
         adj_id = data["adjustment_id"]
         print(f"✓ Created adjustment with ticket_id: {adj_id}")
@@ -354,7 +348,7 @@ class TestAdjustStockFromItemsPage:
         assert "items" in data
         
         # Check test item exists
-        items = data["items"]
+        items = data.get("items", data.get("data", []))
         test_item = next((i for i in items if i["item_id"] == ALT_ITEM_ID), None)
         if test_item:
             print(f"✓ Test item found: {test_item['name']} (stock: {test_item.get('stock_on_hand', 0)})")

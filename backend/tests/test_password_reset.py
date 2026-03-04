@@ -31,18 +31,33 @@ def run_async(coro):
 
 
 async def admin_login():
-    """Login with retry for rate limiting."""
+    """Login with retry for rate limiting. Tries both passwords in case test left password changed."""
     import time
-    for attempt in range(3):
-        async with httpx.AsyncClient(timeout=15) as client:
-            resp = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
-            if resp.status_code == 429:
-                await asyncio.sleep(2)
-                continue
-            data = resp.json()
-            token = data.get("token", "")
-            if token:
-                return token
+    passwords_to_try = [ADMIN_PASSWORD, STRONG_PASSWORD]
+    for password in passwords_to_try:
+        for attempt in range(3):
+            async with httpx.AsyncClient(timeout=15) as client:
+                resp = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": password})
+                if resp.status_code == 429:
+                    await asyncio.sleep(2)
+                    continue
+                data = resp.json()
+                token = data.get("token", "")
+                if token:
+                    # If we logged in with the changed password, change it back
+                    if password == STRONG_PASSWORD:
+                        async with httpx.AsyncClient(timeout=15) as c2:
+                            await c2.post(
+                                f"{AUTH}/change-password",
+                                headers={"Authorization": f"Bearer {token}"},
+                                json={"current_password": STRONG_PASSWORD, "new_password": ADMIN_PASSWORD},
+                            )
+                        # Re-login with original password
+                        resp2 = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+                        if resp2.status_code == 200:
+                            return resp2.json().get("token", token)
+                    return token
+            break  # Don't retry non-429 errors
     raise RuntimeError("Failed to login after retries")
 
 
@@ -138,7 +153,7 @@ class TestForgotPassword:
             # Verify token in DB (stored as hash)
             from motor.motor_asyncio import AsyncIOMotorClient
             mongo = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-            db_client = mongo[os.environ.get("DB_NAME", "battwheels")]
+            db_client = mongo[os.environ.get("DB_NAME", "battwheels_dev")]
             doc = await db_client.password_reset_tokens.find_one(
                 {"email": ADMIN_EMAIL, "used": False},
                 sort=[("created_at", -1)]
@@ -161,7 +176,7 @@ class TestForgotPassword:
             # Verify no token created
             from motor.motor_asyncio import AsyncIOMotorClient
             mongo = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-            db_client = mongo[os.environ.get("DB_NAME", "battwheels")]
+            db_client = mongo[os.environ.get("DB_NAME", "battwheels_dev")]
             doc = await db_client.password_reset_tokens.find_one({"email": "nonexistent@nowhere.com"})
             assert doc is None, "Token created for non-existent email — info leak!"
         run_async(_test())
@@ -186,7 +201,7 @@ class TestForgotPassword:
             from datetime import datetime, timezone, timedelta
 
             mongo = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-            db_client = mongo[os.environ.get("DB_NAME", "battwheels")]
+            db_client = mongo[os.environ.get("DB_NAME", "battwheels_dev")]
 
             # Find admin user_id
             admin_user = await db_client.users.find_one({"email": ADMIN_EMAIL}, {"_id": 0, "user_id": 1})
@@ -246,7 +261,7 @@ class TestForgotPassword:
             from datetime import datetime, timezone, timedelta
 
             mongo = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-            db_client = mongo[os.environ.get("DB_NAME", "battwheels")]
+            db_client = mongo[os.environ.get("DB_NAME", "battwheels_dev")]
             admin_user = await db_client.users.find_one({"email": ADMIN_EMAIL}, {"_id": 0, "user_id": 1})
 
             raw_token = secrets.token_urlsafe(48)
@@ -278,7 +293,7 @@ class TestForgotPassword:
             from datetime import datetime, timezone, timedelta
 
             mongo = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-            db_client = mongo[os.environ.get("DB_NAME", "battwheels")]
+            db_client = mongo[os.environ.get("DB_NAME", "battwheels_dev")]
             admin_user = await db_client.users.find_one({"email": ADMIN_EMAIL}, {"_id": 0, "user_id": 1})
 
             raw_token = secrets.token_urlsafe(48)

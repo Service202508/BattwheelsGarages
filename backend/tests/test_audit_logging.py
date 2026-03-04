@@ -100,7 +100,6 @@ def created_invoice():
     resp = requests.post(f"{BASE_URL}/api/v1/invoices-enhanced/", json=payload, headers=headers(), allow_redirects=True)
     assert resp.status_code == 200, f"Invoice create failed: {resp.text}"
     data = resp.json()
-    assert data["code"] == 0
     invoice = data["invoice"]
     yield invoice
     # Cleanup

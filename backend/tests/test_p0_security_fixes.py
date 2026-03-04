@@ -68,7 +68,7 @@ class TestP01RBACBypassFix:
         print("PASS: Public endpoint /api/v1/auth/login accessible without auth")
     
     def test_technician_cannot_access_payroll(self):
-        """Technician role should get 403 on /api/v1/payroll/records (admin-only)"""
+        """Technician role should get 403 on /api/v1/hr/payroll/records (admin-only)"""
         token = TestAuthTokens.get_technician_token()
         if not token:
             pytest.skip("Could not get technician token")
@@ -77,7 +77,7 @@ class TestP01RBACBypassFix:
             "Authorization": f"Bearer {token}",
             "X-Organization-ID": ORG_ID
         }
-        response = requests.get(f"{BASE_URL}/api/v1/payroll/records", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         
         # Should be 403 Forbidden due to RBAC
         assert response.status_code == 403, f"Expected 403 RBAC denied, got {response.status_code}: {response.text}"
@@ -85,10 +85,10 @@ class TestP01RBACBypassFix:
         # Verify it's RBAC denial
         data = response.json()
         assert "RBAC_DENIED" in str(data) or "Access denied" in str(data), f"Expected RBAC denial message, got: {data}"
-        print("PASS: Technician correctly blocked from /api/v1/payroll/records")
+        print("PASS: Technician correctly blocked from /api/v1/hr/payroll/records")
     
     def test_admin_can_access_payroll(self):
-        """Admin role should get 200 on /api/v1/payroll/records"""
+        """Admin role should get 200 on /api/v1/hr/payroll/records"""
         token = TestAuthTokens.get_admin_token()
         if not token:
             pytest.skip("Could not get admin token")
@@ -97,12 +97,12 @@ class TestP01RBACBypassFix:
             "Authorization": f"Bearer {token}",
             "X-Organization-ID": ORG_ID
         }
-        response = requests.get(f"{BASE_URL}/api/v1/payroll/records", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         
         # Should be 200 or 404 (no data) but NOT 403
         assert response.status_code != 403, f"Admin got 403 RBAC denied: {response.text}"
         assert response.status_code in [200, 404], f"Expected 200/404, got {response.status_code}: {response.text}"
-        print(f"PASS: Admin can access /api/v1/payroll/records (status={response.status_code})")
+        print(f"PASS: Admin can access /api/v1/hr/payroll/records (status={response.status_code})")
     
     def test_technician_can_access_tickets(self):
         """Technician role should get 200 on /api/v1/tickets (allowed for technicians)"""

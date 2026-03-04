@@ -109,7 +109,7 @@ class TestTicketsCRUD:
             # Check if we need to fetch org separately
             
         # For now, use the known org ID from previous tests
-        return "org_71f0df814d6d"
+        return "dev-internal-testing-001"
     
     def test_list_tickets(self, auth_headers):
         """List tickets should return tickets for user's org"""

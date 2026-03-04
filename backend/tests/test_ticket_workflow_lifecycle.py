@@ -25,7 +25,7 @@ if not BASE_URL:
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "DevTest@123"
-ORGANIZATION_ID = "org_71f0df814d6d"
+ORGANIZATION_ID = "dev-internal-testing-001"
 
 # Track created resources
 created_tickets = []

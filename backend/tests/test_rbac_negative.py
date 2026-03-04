@@ -19,7 +19,7 @@ TECH_ORG = "dev-internal-testing-001"
 
 def server_is_running():
     try:
-        return requests.get(f"{BASE_URL}/api/v1/health", timeout=3).status_code == 200
+        return requests.get(f"{BASE_URL}/api/health", timeout=3).status_code == 200
     except Exception:
         return False
 

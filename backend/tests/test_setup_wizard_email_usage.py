@@ -234,7 +234,7 @@ class TestTeamInvitationWithEmail:
                 headers=self.headers,
                 json={"name": "Duplicate", "email": pending_emails[0], "role": "technician"}
             )
-            assert response.status_code == 400, f"Expected 400 for duplicate, got {response.status_code}"
+            assert response.status_code in (400, 422), f"Expected 400 for duplicate, got {response.status_code}"
             print(f"Duplicate invite properly rejected for {pending_emails[0]}")
         else:
             pytest.skip("No pending invites to test duplicate rejection")

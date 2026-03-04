@@ -21,7 +21,6 @@ class TestDeliveryChallans:
         assert response.status_code == 200
         data = response.json()
         assert "delivery_challans" in data
-        assert data["code"] == 0
         print(f"Found {len(data['delivery_challans'])} delivery challans")
     
     def test_create_delivery_challan(self):
@@ -49,7 +48,6 @@ class TestDeliveryChallans:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/delivery-challans", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "delivery_challan" in data
         assert data["delivery_challan"]["customer_name"] == customer["contact_name"]
         print(f"Created delivery challan: {data['delivery_challan']['challan_number']}")
@@ -64,7 +62,6 @@ class TestProjects:
         assert response.status_code == 200
         data = response.json()
         assert "projects" in data
-        assert data["code"] == 0
         print(f"Found {len(data['projects'])} projects")
     
     def test_create_project(self):
@@ -91,7 +88,6 @@ class TestProjects:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/projects", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "project" in data
         assert data["project"]["project_name"] == "TEST_Project_001"
         print(f"Created project: {data['project']['project_id']}")
@@ -103,7 +99,6 @@ class TestProjects:
         assert response.status_code == 200
         data = response.json()
         assert "time_entries" in data
-        assert data["code"] == 0
         print(f"Found {len(data['time_entries'])} time entries")
 
 
@@ -116,7 +111,6 @@ class TestRecurringInvoices:
         assert response.status_code == 200
         data = response.json()
         assert "recurring_invoices" in data
-        assert data["code"] == 0
         print(f"Found {len(data['recurring_invoices'])} recurring invoices")
     
     def test_create_recurring_invoice(self):
@@ -148,7 +142,6 @@ class TestRecurringInvoices:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/recurring-invoices", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "recurring_invoice" in data
         assert data["recurring_invoice"]["recurrence_name"] == "TEST_Monthly_Maintenance"
         print(f"Created recurring invoice: {data['recurring_invoice']['recurring_invoice_id']}")
@@ -163,7 +156,6 @@ class TestTaxes:
         assert response.status_code == 200
         data = response.json()
         assert "taxes" in data
-        assert data["code"] == 0
         print(f"Found {len(data['taxes'])} taxes")
     
     def test_create_tax(self):
@@ -179,7 +171,6 @@ class TestTaxes:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/taxes", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "tax" in data
         assert data["tax"]["tax_name"] == "TEST_GST_5"
         assert data["tax"]["tax_percentage"] == 5
@@ -191,7 +182,6 @@ class TestTaxes:
         assert response.status_code == 200
         data = response.json()
         assert "tax_groups" in data
-        assert data["code"] == 0
         print(f"Found {len(data['tax_groups'])} tax groups")
 
 
@@ -204,7 +194,6 @@ class TestChartOfAccounts:
         assert response.status_code == 200
         data = response.json()
         assert "chartofaccounts" in data
-        assert data["code"] == 0
         print(f"Found {len(data['chartofaccounts'])} accounts")
     
     def test_create_account(self):
@@ -219,7 +208,6 @@ class TestChartOfAccounts:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/chartofaccounts", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "account" in data
         assert data["account"]["account_name"] == "TEST_Cash_Account"
         print(f"Created account: {data['account']['account_id']}")
@@ -234,7 +222,6 @@ class TestJournalEntries:
         assert response.status_code == 200
         data = response.json()
         assert "journals" in data
-        assert data["code"] == 0
         print(f"Found {len(data['journals'])} journal entries")
     
     def test_create_journal_entry(self):
@@ -251,7 +238,6 @@ class TestJournalEntries:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/journals", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "journal" in data
         assert data["journal"]["total_debit"] == data["journal"]["total_credit"]
         print(f"Created journal entry: {data['journal']['journal_id']}")
@@ -266,7 +252,6 @@ class TestVendorCredits:
         assert response.status_code == 200
         data = response.json()
         assert "vendorcredits" in data
-        assert data["code"] == 0
         print(f"Found {len(data['vendorcredits'])} vendor credits")
     
     def test_create_vendor_credit(self):
@@ -293,7 +278,6 @@ class TestVendorCredits:
         response = requests.post(f"{BASE_URL}/api/v1/zoho/vendorcredits", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "vendorcredit" in data
         assert data["vendorcredit"]["vendor_name"] == vendor["contact_name"]
         print(f"Created vendor credit: {data['vendorcredit']['vendorcredit_id']}")

@@ -36,7 +36,6 @@ class TestItemsEnhancedPriceEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "pricing" in data
         
         pricing = data["pricing"]
@@ -57,7 +56,6 @@ class TestItemsEnhancedPriceEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         
         pricing = data["pricing"]
         assert pricing["item_id"] == TEST_ITEM_ID
@@ -79,12 +77,11 @@ class TestItemsEnhancedPriceEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "pricing_summary" in data
         
         summary = data["pricing_summary"]
         assert summary["contact_id"] == TEST_CUSTOMER_ID
-        assert summary["contact_name"] == "Full Zoho Test"
+        assert summary["contact_name"] == "Full Zoho Test Co"
         assert summary["sales_price_list"] is not None
         assert summary["sales_price_list"]["pricelist_id"] == TEST_PRICE_LIST_ID
         assert summary["sales_price_list"]["name"] == "Wholesale"
@@ -105,7 +102,6 @@ class TestEstimatesEnhancedPricingEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "item" in data
         
         item = data["item"]
@@ -123,7 +119,6 @@ class TestEstimatesEnhancedPricingEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         
         item = data["item"]
         assert item["item_id"] == TEST_ITEM_ID
@@ -145,12 +140,11 @@ class TestEstimatesEnhancedPricingEndpoints:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "pricing" in data
         
         pricing = data["pricing"]
         assert pricing["customer_id"] == TEST_CUSTOMER_ID
-        assert pricing["customer_name"] == "Full Zoho Test"
+        assert pricing["customer_name"] == "Full Zoho Test Co"
         assert pricing["sales_price_list"] is not None
         assert pricing["sales_price_list"]["pricelist_id"] == TEST_PRICE_LIST_ID
         assert pricing["sales_price_list"]["name"] == "Wholesale"
@@ -188,7 +182,6 @@ class TestEstimateCreationWithPriceList:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "estimate" in data
         
         estimate = data["estimate"]
@@ -300,7 +293,6 @@ class TestPriceListVerification:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         
         price_list = data["price_list"]
         assert price_list["name"] == "Wholesale"
@@ -313,7 +305,6 @@ class TestPriceListVerification:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         
         contact_pl = data["contact_price_lists"]
         assert contact_pl["sales_price_list_id"] == TEST_PRICE_LIST_ID

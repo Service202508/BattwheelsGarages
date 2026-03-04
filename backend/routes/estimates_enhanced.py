@@ -2241,14 +2241,14 @@ Battwheels Team
     return {"code": 0, "message": f"Estimate sent to {recipient}"}
 
 @router.post("/{estimate_id}/mark-accepted")
-async def mark_accepted(estimate_id: str):
+async def mark_accepted(request: Request, estimate_id: str):
     """Mark estimate as accepted"""
-    return await update_estimate_status(estimate_id, StatusUpdate(status="accepted"))
+    return await update_estimate_status(estimate_id, StatusUpdate(status="accepted"), request)
 
 @router.post("/{estimate_id}/mark-declined")
-async def mark_declined(estimate_id: str, reason: str = ""):
+async def mark_declined(request: Request, estimate_id: str, reason: str = ""):
     """Mark estimate as declined"""
-    return await update_estimate_status(estimate_id, StatusUpdate(status="declined", reason=reason))
+    return await update_estimate_status(estimate_id, StatusUpdate(status="declined", reason=reason), request)
 
 # ========================= CONVERSION ENDPOINTS =========================
 

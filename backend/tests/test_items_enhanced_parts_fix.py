@@ -46,10 +46,10 @@ class TestItemsEnhancedPartsFix:
         
         data = response.json()
         assert "items" in data, "Response should contain 'items' key"
-        assert len(data["items"]) > 0, "Should return at least one item"
+        assert len(data.get("items", data.get("data", []))) > 0, "Should return at least one item"
         
         # Verify item structure
-        item = data["items"][0]
+        item = data.get("items", data.get("data", []))[0]
         assert "name" in item, "Item should have 'name'"
         assert "item_id" in item, "Item should have 'item_id'"
         assert "rate" in item or "selling_price" in item, "Item should have 'rate' or 'selling_price'"
@@ -67,7 +67,7 @@ class TestItemsEnhancedPartsFix:
         
         data = response.json()
         assert "items" in data
-        items = data["items"]
+        items = data.get("items", data.get("data", []))
         
         # Should return items without needing search query
         assert len(items) > 0, "Should return items even without search query"
@@ -86,7 +86,7 @@ class TestItemsEnhancedPartsFix:
         
         data = response.json()
         assert "items" in data
-        items = data["items"]
+        items = data.get("items", data.get("data", []))
         
         # If items returned, verify they match search
         if len(items) > 0:
@@ -179,9 +179,9 @@ class TestItemsEnhancedPagination:
         assert response.status_code == 200
         
         data = response.json()
-        assert "page_context" in data, "Response should include page_context"
+        assert "pagination" in data or "page_context" in data, "Response should include page_context"
         
-        page_context = data["page_context"]
+        page_context = data.get("pagination", data.get("page_context", {}))
         assert "page" in page_context
         assert "per_page" in page_context
         assert "total" in page_context

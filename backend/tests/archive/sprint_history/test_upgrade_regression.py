@@ -254,7 +254,7 @@ class TestCORSRegression:
 
     def test_cors_allows_configured_origin(self):
         """Allowed origin should be echoed back"""
-        allowed_origin = "https://zero-tolerance-check.preview.emergentagent.com"
+        allowed_origin = "https://final-9-fixes.preview.emergentagent.com"
         resp = requests.options(
             f"{INTERNAL_URL}/api/v1/health",
             headers={

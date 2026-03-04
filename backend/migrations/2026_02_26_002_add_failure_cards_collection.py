@@ -5,7 +5,8 @@ async def up(db):
     # Create indexes for failure_cards
     await db.failure_cards.create_index(
         [("organization_id", 1), ("ticket_id", 1)],
-        unique=True, background=True
+        unique=True, background=True,
+        partialFilterExpression={"ticket_id": {"$type": "string"}}
     )
     await db.failure_cards.create_index(
         [("organization_id", 1), ("vehicle_make", 1), ("fault_category", 1)],

@@ -139,7 +139,8 @@ class EFIService:
     async def create_failure_card(
         self,
         data: FailureCardCreate,
-        user_id: str
+        user_id: str,
+        org_id: str = None
     ) -> Dict[str, Any]:
         """
         Create a new failure intelligence card
@@ -223,6 +224,11 @@ class EFIService:
         
         # Serialize and store
         doc = card.model_dump()
+        if org_id:
+            doc['organization_id'] = org_id
+        # Align with failure_cards.py schema: card_id = failure_id
+        if 'card_id' not in doc or not doc['card_id']:
+            doc['card_id'] = doc.get('failure_id')
         doc['created_at'] = doc['created_at'].isoformat()
         if doc.get('first_detected_at'):
             doc['first_detected_at'] = doc['first_detected_at'].isoformat()
@@ -327,8 +333,8 @@ class EFIService:
             raise ValueError(f"Failure card {failure_id} not found")
         
         return {
-            "failure_id": card["failure_id"],
-            "title": card["title"],
+            "failure_id": card.get("failure_id") or card.get("card_id"),
+            "title": card.get("title") or card.get("issue_title", "Unknown"),
             "current_confidence": card.get("confidence_score", 0.5),
             "history": card.get("confidence_history", [])
         }
@@ -536,8 +542,8 @@ class EFIService:
             stages_used.append("signature")
             for card in signature_matches:
                 all_matches.append(FailureMatchResult(
-                    failure_id=card["failure_id"],
-                    title=card["title"],
+                    failure_id=card.get("failure_id") or card.get("card_id"),
+                    title=card.get("title") or card.get("issue_title", "Unknown"),
                     match_score=0.95,
                     match_type="signature",
                     match_stage=1,
@@ -559,7 +565,7 @@ class EFIService:
             ).limit(20).to_list(20)
             
             for card in stage2_cards:
-                if card["failure_id"] in [m.failure_id for m in all_matches]:
+                if card.get("failure_id") or card.get("card_id") in [m.failure_id for m in all_matches]:
                     continue
                 
                 score = 0.5
@@ -581,8 +587,8 @@ class EFIService:
                 
                 if score > 0.4:
                     all_matches.append(FailureMatchResult(
-                        failure_id=card["failure_id"],
-                        title=card["title"],
+                        failure_id=card.get("failure_id") or card.get("card_id"),
+                        title=card.get("title") or card.get("issue_title", "Unknown"),
                         match_score=min(0.85, score),
                         match_type="subsystem_vehicle",
                         match_stage=2,
@@ -610,10 +616,10 @@ class EFIService:
                     )
                     
                     for card in vector_results:
-                        if card["failure_id"] in [m.failure_id for m in all_matches]:
+                        if card.get("failure_id") or card.get("card_id") in [m.failure_id for m in all_matches]:
                             # Update existing match score if vector score is higher
                             for m in all_matches:
-                                if m.failure_id == card["failure_id"]:
+                                if m.failure_id == card.get("failure_id") or card.get("card_id"):
                                     vector_score = card.get("score", 0) * 0.85
                                     if vector_score > m.match_score:
                                         m.match_score = vector_score
@@ -621,8 +627,8 @@ class EFIService:
                             continue
                         
                         all_matches.append(FailureMatchResult(
-                            failure_id=card["failure_id"],
-                            title=card["title"],
+                            failure_id=card.get("failure_id") or card.get("card_id"),
+                            title=card.get("title") or card.get("issue_title", "Unknown"),
                             match_score=card.get("score", 0.6) * 0.85,
                             match_type="vector_semantic",
                             match_stage=3,
@@ -650,12 +656,12 @@ class EFIService:
                     stages_used.append("hybrid")
                     
                     for card in hybrid_results:
-                        if card["failure_id"] in [m.failure_id for m in all_matches]:
+                        if card.get("failure_id") or card.get("card_id") in [m.failure_id for m in all_matches]:
                             continue
                         
                         all_matches.append(FailureMatchResult(
-                            failure_id=card["failure_id"],
-                            title=card["title"],
+                            failure_id=card.get("failure_id") or card.get("card_id"),
+                            title=card.get("title") or card.get("issue_title", "Unknown"),
                             match_score=min(0.75, card.get("hybrid_score", 0.5)),
                             match_type="hybrid",
                             match_stage=4,
@@ -680,12 +686,12 @@ class EFIService:
                 ).sort([("score", {"$meta": "textScore"})]).limit(5).to_list(5)
                 
                 for card in stage5_cards:
-                    if card["failure_id"] in [m.failure_id for m in all_matches]:
+                    if card.get("failure_id") or card.get("card_id") in [m.failure_id for m in all_matches]:
                         continue
                     
                     all_matches.append(FailureMatchResult(
-                        failure_id=card["failure_id"],
-                        title=card["title"],
+                        failure_id=card.get("failure_id") or card.get("card_id"),
+                        title=card.get("title") or card.get("issue_title", "Unknown"),
                         match_score=min(0.5, card.get("score", 0) / 10),
                         match_type="keyword",
                         match_stage=5,

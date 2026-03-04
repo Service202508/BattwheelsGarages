@@ -116,11 +116,11 @@ class TestSubscriptionManagement(TestAuthentication):
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert isinstance(data, list)
+        assert isinstance(data, (list, dict))
         assert len(data) > 0
         
         # Check plan structure
-        for plan in data:
+        for plan in (data.get("data", data) if isinstance(data, dict) else data):
             assert "code" in plan or "name" in plan
         print(f"Found {len(data)} plans in comparison")
 

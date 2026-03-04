@@ -195,6 +195,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/ledger(/.*)?$":                 ["org_admin", "admin", "owner", "accountant"],
     r"^/api/payments-received(/.*)?$":      ["org_admin", "admin", "owner", "accountant"],
     r"^/api/stock-transfers(/.*)?$":        ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/warehouses(/.*)?$":             ["org_admin", "admin", "owner", "manager", "accountant"],
 
     # ============ OPERATIONS EXTENDED ============
     r"^/api/failure-cards(/.*)?$":          ["org_admin", "admin", "owner", "manager", "technician"],

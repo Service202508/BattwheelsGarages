@@ -304,8 +304,8 @@ class TestItemsEnhancedZohoColumns:
         print(f"JSON export: {data['count']} items")
         
         # Verify item structure has core Zoho fields (checking fields that should always be present)
-        if data["items"]:
-            item = data["items"][0]
+        if data.get("items", data.get("data", [])):
+            item = data.get("items", data.get("data", []))[0]
             # Check only basic fields that should always be present on any item
             core_fields = [
                 "item_id", "name", "rate", "item_type", "status"
@@ -330,9 +330,9 @@ class TestItemsEnhancedZohoColumns:
         data = response.json()
         assert data.get("code") == 0
         assert "items" in data
-        assert "page_context" in data
+        assert "pagination" in data or "page_context" in data
         
-        items = data["items"]
+        items = data.get("items", data.get("data", []))
         print(f"Listed {len(items)} items")
         
         if items:

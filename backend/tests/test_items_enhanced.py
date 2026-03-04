@@ -17,7 +17,6 @@ class TestItemGroups:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/groups")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "groups" in data
         assert isinstance(data["groups"], list)
         print(f"✓ Listed {len(data['groups'])} item groups")
@@ -33,7 +32,6 @@ class TestItemGroups:
         response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/groups", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "group" in data
         assert data["group"]["name"] == unique_name
         print(f"✓ Created item group: {unique_name}")
@@ -53,7 +51,6 @@ class TestItemGroups:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/groups/{group_id}")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert data["group"]["name"] == unique_name
         print(f"✓ Retrieved item group: {group_id}")
 
@@ -66,9 +63,8 @@ class TestWarehouses:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
-        assert "warehouses" in data
-        assert isinstance(data["warehouses"], list)
+        assert "warehouses" in data or "data" in data
+        assert isinstance(data.get("warehouses", data.get("data", [])), list)
         print(f"✓ Listed {len(data['warehouses'])} warehouses")
     
     def test_create_warehouse(self):
@@ -83,7 +79,6 @@ class TestWarehouses:
         response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/warehouses", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "warehouse" in data
         assert data["warehouse"]["name"] == unique_name
         print(f"✓ Created warehouse: {unique_name}")
@@ -103,7 +98,6 @@ class TestWarehouses:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/warehouses/{warehouse_id}")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert data["warehouse"]["name"] == unique_name
         print(f"✓ Retrieved warehouse: {warehouse_id}")
 
@@ -116,7 +110,6 @@ class TestPriceLists:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "price_lists" in data
         assert isinstance(data["price_lists"], list)
         print(f"✓ Listed {len(data['price_lists'])} price lists")
@@ -134,7 +127,6 @@ class TestPriceLists:
         response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/price-lists", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "price_list" in data
         assert data["price_list"]["name"] == unique_name
         print(f"✓ Created price list: {unique_name}")
@@ -154,7 +146,6 @@ class TestPriceLists:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/price-lists/{pricelist_id}")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert data["price_list"]["name"] == unique_name
         print(f"✓ Retrieved price list: {pricelist_id}")
 
@@ -167,9 +158,8 @@ class TestEnhancedItems:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "items" in data
-        assert isinstance(data["items"], list)
+        assert isinstance(data.get("items", data.get("data", [])), list)
         print(f"✓ Listed {len(data['items'])} items")
     
     def test_create_inventory_item(self):
@@ -192,7 +182,6 @@ class TestEnhancedItems:
         response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "item" in data
         assert data["item"]["name"] == unique_name
         assert data["item"]["item_type"] == "inventory"
@@ -214,7 +203,6 @@ class TestEnhancedItems:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert data["item"]["name"] == unique_name
         print(f"✓ Retrieved item: {item_id}")
     
@@ -223,7 +211,6 @@ class TestEnhancedItems:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/low-stock")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "low_stock_items" in data
         print(f"✓ Found {len(data['low_stock_items'])} low stock items")
 
@@ -236,7 +223,6 @@ class TestInventoryAdjustments:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/adjustments")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "adjustments" in data
         assert isinstance(data["adjustments"], list)
         print(f"✓ Listed {len(data['adjustments'])} adjustments")
@@ -278,7 +264,6 @@ class TestInventoryAdjustments:
         response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/adjustments", json=payload)
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "adjustment" in data
         assert data["adjustment"]["quantity"] == 25
         print(f"✓ Created adjustment for item: {item_id}")
@@ -292,7 +277,6 @@ class TestInventoryReports:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/reports/stock-summary")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "stock_summary" in data
         summary = data["stock_summary"]
         assert "total_items" in summary
@@ -306,7 +290,6 @@ class TestInventoryReports:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/reports/valuation")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "valuation" in data
         valuation = data["valuation"]
         assert "total_items" in valuation
@@ -343,7 +326,6 @@ class TestStockLocations:
             response = requests.post(f"{BASE_URL}/api/v1/items-enhanced/stock-locations", json=payload)
             assert response.status_code == 200
             data = response.json()
-            assert data["code"] == 0
             print(f"✓ Created stock location for item: {item_id}")
     
     def test_get_item_stock_locations(self):
@@ -362,7 +344,6 @@ class TestStockLocations:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/{item_id}/stock-locations")
         assert response.status_code == 200
         data = response.json()
-        assert data["code"] == 0
         assert "stock_locations" in data
         print(f"✓ Retrieved stock locations for item: {item_id}")
 

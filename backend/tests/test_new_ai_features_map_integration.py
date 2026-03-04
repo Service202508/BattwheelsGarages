@@ -21,7 +21,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_battery_issue(self):
         """Test AI suggestions for battery-related input"""
         response = requests.post(
-            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "2W_EV",
                 "vehicle_model": "Ather 450X",
@@ -49,7 +49,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_motor_issue(self):
         """Test AI suggestions for motor-related input"""
         response = requests.post(
-            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "4W_EV",
                 "vehicle_model": "Tata Nexon EV",
@@ -68,7 +68,7 @@ class TestAIIssueSuggestions:
     def test_ai_suggestions_minimal_input(self):
         """Test AI suggestions with minimal input"""
         response = requests.post(
-            f"{BASE_URL}/api/v1/public/ai/issue-suggestions",
+            f"{BASE_URL}/api/public/ai/issue-suggestions",
             json={
                 "vehicle_category": "3W_EV",
                 "user_input": "not starting"
@@ -295,7 +295,7 @@ class TestPublicTicketForm:
     
     def test_vehicle_categories(self):
         """Test vehicle categories for public form"""
-        response = requests.get(f"{BASE_URL}/api/v1/public/vehicle-categories")
+        response = requests.get(f"{BASE_URL}/api/public/vehicle-categories")
         print(f"Vehicle Categories: {response.status_code}")
         
         assert response.status_code == 200
@@ -305,7 +305,7 @@ class TestPublicTicketForm:
     
     def test_vehicle_models(self):
         """Test vehicle models for public form"""
-        response = requests.get(f"{BASE_URL}/api/v1/public/vehicle-models?category_code=2W_EV")
+        response = requests.get(f"{BASE_URL}/api/public/vehicle-models?category_code=2W_EV")
         print(f"Vehicle Models: {response.status_code}")
         
         assert response.status_code == 200
@@ -314,7 +314,7 @@ class TestPublicTicketForm:
     
     def test_service_charges(self):
         """Test service charges endpoint"""
-        response = requests.get(f"{BASE_URL}/api/v1/public/service-charges")
+        response = requests.get(f"{BASE_URL}/api/public/service-charges")
         print(f"Service Charges: {response.status_code}")
         
         assert response.status_code == 200

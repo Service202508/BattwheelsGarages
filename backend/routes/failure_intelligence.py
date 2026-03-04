@@ -102,7 +102,8 @@ async def create_failure_card(request: Request, data: FailureCardCreate):
     
     result = await service.create_failure_card(
         data=data,
-        user_id=user.get("user_id")
+        user_id=user.get("user_id"),
+        org_id=org_id
     )
     return result
 

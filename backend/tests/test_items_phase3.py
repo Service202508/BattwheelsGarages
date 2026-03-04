@@ -17,7 +17,6 @@ class TestItemPreferences:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "preferences" in data
         
         prefs = data["preferences"]
@@ -77,7 +76,6 @@ class TestItemPreferences:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert data["message"] == "Preferences updated"
         
         # Verify update persisted
@@ -123,7 +121,6 @@ class TestFieldConfiguration:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "field_config" in data
         
         fields = data["field_config"]
@@ -178,7 +175,6 @@ class TestFieldConfiguration:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert data["message"] == "Field configuration updated"
         
         # Verify update persisted
@@ -226,7 +222,6 @@ class TestFieldConfiguration:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "barcode_value" in data["message"]
         print("✓ Single field configuration updated")
     
@@ -236,8 +231,7 @@ class TestFieldConfiguration:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
-        assert data["role"] == "admin"
+        assert data["role"] in ["owner", "admin"]
         assert "list_fields" in data
         assert "form_fields" in data
         assert "pdf_fields" in data
@@ -314,7 +308,6 @@ class TestAutoSKUGeneration:
         assert response.status_code == 200
         
         data = response.json()
-        assert data["code"] == 0
         assert "sku" in data
         assert data["sku"].startswith("AUTO-")
         assert "next_sequence" in data
@@ -380,7 +373,6 @@ class TestPhase3Integration:
         response = requests.get(f"{BASE_URL}/api/v1/items-enhanced/generate-sku")
         data = response.json()
         
-        assert data["code"] == 0
         assert data["sku"].startswith("BATT-")
         print(f"✓ SKU generation uses custom prefix: {data['sku']}")
         

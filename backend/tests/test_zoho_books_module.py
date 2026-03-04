@@ -24,7 +24,7 @@ class TestAuthentication:
         assert "token" in data
         assert "user" in data
         assert data["user"]["email"] == "dev@battwheels.internal"
-        assert data["user"]["role"] == "admin"
+        assert data["user"]["role"] == "owner"
     
     def test_login_invalid_credentials(self):
         """Test login with invalid credentials"""
@@ -146,7 +146,7 @@ class TestServices:
         data = response.json()
         
         # Check that services have HSN codes
-        for service in data["items"]:
+        for service in data.get("items", data.get("data", [])):
             assert "hsn_sac" in service
             assert "rate" in service
             assert "tax_rate" in service
@@ -159,9 +159,9 @@ class TestServices:
         )
         assert response.status_code == 200
         data = response.json()
-        assert len(data["items"]) > 0
+        assert len(data.get("items", data.get("data", []))) > 0
         # All results should contain REPAIR
-        for item in data["items"]:
+        for item in data.get("items", data.get("data", [])):
             assert "REPAIR" in item["name"].upper()
 
 
@@ -198,7 +198,7 @@ class TestParts:
         assert response.status_code == 200
         data = response.json()
         
-        for part in data["items"]:
+        for part in data.get("items", data.get("data", [])):
             assert "stock_quantity" in part
             assert "reorder_level" in part
             assert "hsn_sac" in part

@@ -162,6 +162,7 @@ class UserContext:
         self.department = user_dict.get("department")
         self.designation = user_dict.get("designation")
         self.organization_id = user_dict.get("organization_id")
+        self.org_id = self.organization_id
         self.picture = user_dict.get("picture")
 
     def get(self, key, default=None):

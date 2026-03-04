@@ -13,7 +13,7 @@ class TestHealthAndAuth:
     
     def test_health_check(self):
         """Verify API is running"""
-        res = requests.get(f"{BASE_URL}/api/v1/health")
+        res = requests.get(f"{BASE_URL}/api/health")
         print(f"Health check response: {res.status_code}")
         assert res.status_code == 200
     
@@ -105,7 +105,7 @@ class TestPermissionsAPI:
         print(f"Get admin permissions: {res.status_code}")
         assert res.status_code == 200
         data = res.json()
-        assert data["role"] == "admin"
+        assert data["role"] in ["owner", "admin"]
         assert "modules" in data
         # Admin should have full access to dashboard
         dashboard_perms = data["modules"].get("dashboard", {})

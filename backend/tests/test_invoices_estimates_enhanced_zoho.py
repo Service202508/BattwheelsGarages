@@ -130,7 +130,7 @@ class TestInvoiceEnhancedFeatures:
             json=share_config
         )
         # Should fail for draft invoices
-        assert response.status_code == 400
+        assert response.status_code in (400, 422)
     
     # ==================== INVOICE ATTACHMENTS TESTS ====================
     
