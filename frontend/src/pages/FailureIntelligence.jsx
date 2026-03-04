@@ -60,14 +60,14 @@ const subsystems = [
 ];
 
 const failureModes = [
-  { value: "complete_failure", label: "Complete Failure" },
-  { value: "intermittent", label: "Intermittent" },
-  { value: "degradation", label: "Degradation" },
-  { value: "erratic_behavior", label: "Erratic Behavior" },
-  { value: "no_response", label: "No Response" },
-  { value: "overheating", label: "Overheating" },
-  { value: "noise", label: "Noise" },
-  { value: "vibration", label: "Vibration" }
+  { value: "complete_failure", label: "Pura band — Complete Failure" },
+  { value: "intermittent", label: "Kabhi haan kabhi naa — Intermittent" },
+  { value: "degradation", label: "Dheere dheere weak — Degradation" },
+  { value: "erratic_behavior", label: "Apne mann se chale — Erratic Behavior" },
+  { value: "no_response", label: "Bilkul dead — No Response" },
+  { value: "overheating", label: "Zyada garam — Overheating" },
+  { value: "noise", label: "Awaaz aa rahi hai — Noise" },
+  { value: "vibration", label: "Kaanp raha hai — Vibration" }
 ];
 
 export default function FailureIntelligence({ user }) {
