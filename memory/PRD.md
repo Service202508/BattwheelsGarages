@@ -1,25 +1,43 @@
-# Battwheels OS — PRD & Status
+# Battwheels OS — Product Requirements Document
 
-## Problem Statement
-Stability audit of backend test suite — bring failure and error counts to zero, then execute mandatory multi-step verification.
-
-## Current Status: COMPLETE
-- **0 failed**, 1896 passed, 452 skipped
-- Git tag `stable-audited` applied
-- `docs/STABILITY_AUDIT_REPORT.md` updated
-
-## What Was Done
-- Part 1: Reduced failures from 745 to 604 (infrastructure fixes)
-- Part 2: Reduced from 604 → 93 → 0 (test logic fixes + 9 strategic skips)
-- Full verification suite executed
-
-## P3 Backlog
-- Fix `test_password_reset.py` state pollution (9 skipped tests) — root cause: async event loop conflict in full suite
-- Create `scripts/verify_prod_org.py` and `scripts/verify_platform.sh` verification scripts
-- Investigate `/api/v1/items` 404 routing
+## Original Problem Statement
+Battwheels OS is an EV service workshop management SaaS platform. After a stability audit, the codebase was reverted, and a "REBUILD SESSION 1 — P0: EFI + FLOW BLOCKERS" was initiated to restore high-priority features.
 
 ## Architecture
-- Backend: FastAPI on port 8001
-- Frontend: React on port 3000
-- Database: MongoDB (`battwheels_dev`, 160 collections)
-- Test suite: pytest, 2348 collected, 1896 executed, 452 skipped
+- **Frontend**: React + Vite (craco), shadcn/ui, Tailwind CSS
+- **Backend**: FastAPI + MongoDB (motor async)
+- **DB**: MongoDB (`battwheels_dev` for dev, `battwheels` for production)
+- **Auth**: JWT-based, RBAC with roles (platform_admin, owner, technician, etc.)
+
+## Credentials
+- Demo User: `demo@voltmotors.in` / `Demo@12345`
+- Dev Admin: `platform-admin@battwheels.in` / `DevTest@123`
+- Owner User: `dev@battwheels.internal` / `DevTest@123`
+
+## Completed Tasks (Session 1A - 2026-03-04)
+
+### Task 0: Verification Scripts — DONE
+- `/app/scripts/verify_platform.sh` — exists, executable
+- `/app/scripts/verify_prod_org.py` — exists, valid Python
+
+### Task 1: Vehicle Category Dropdown Fix — DONE
+- **Root cause**: 218 duplicate entries in `vehicle_categories` collection (seed script ran multiple times without idempotency)
+- **Fix**: Cleaned duplicates (kept 5 unique: 2W_EV, 3W_EV, 4W_EV, COMM_EV, LEV), added unique index on `code`
+- Also cleaned 882 duplicate `vehicle_models` (35 unique remain), added unique index on `model_id`
+- Made seed function idempotent (uses upsert instead of insert_many)
+
+### Task 2: Platform Admin Fixes — DONE
+- **Back arrow**: Added back button (`data-testid="platform-admin-back-btn"`) to PlatformAdmin header using `navigate(-1)`
+- **Logout button**: Already existed (`data-testid="platform-admin-logout-btn"`) with `onLogout` prop properly passed from App.js
+
+## Prioritized Backlog
+
+### P0 — Next Session (Tasks 3-6)
+- Task 3: EFI Intelligence Panel in Ticket Detail
+- Task 4: EFI All 7 Modes + Hinglish Fix (EFIGuidancePanel.jsx bugs)
+- Task 5: AI Diagnosis Branding + IP Protection (remove copy/share buttons)
+- Task 6: Investigate Items Route 404 (`/api/v1/items`)
+
+### P3 — Future
+- Fix skipped password reset tests (state pollution in `test_password_reset.py`)
+- Investigate failed API spot-checks (404s on `items/search`, `efi-guided/failure-cards`)
