@@ -222,6 +222,8 @@ class JournalEntry:
             "entry_type": self.entry_type.value if isinstance(self.entry_type, EntryType) else self.entry_type,
             "source_document_id": self.source_document_id,
             "source_document_type": self.source_document_type,
+            "reference_id": self.source_document_id,
+            "reference_type": self.source_document_type,
             "is_posted": self.is_posted,
             "is_reversed": self.is_reversed,
             "reversed_entry_id": self.reversed_entry_id,
