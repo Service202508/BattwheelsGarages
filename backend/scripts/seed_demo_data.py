@@ -622,6 +622,8 @@ async def seed():
             "entry_type": "INVOICE",
             "source_document_id": inv_id,
             "source_document_type": "INVOICE",
+            "reference_id": inv_id,
+            "reference_type": "invoice",
             "is_posted": True,
             "is_reversed": False,
             "lines": [
@@ -776,6 +778,8 @@ async def seed():
             "entry_type": "BILL",
             "source_document_id": bill_id,
             "source_document_type": "BILL",
+            "reference_id": bill_id,
+            "reference_type": "bill",
             "is_posted": True,
             "is_reversed": False,
             "lines": [

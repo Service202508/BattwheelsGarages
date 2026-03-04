@@ -77,7 +77,7 @@ export default function Accounting({ user }) {
   const filteredLedger = ledger.filter(entry =>
     entry.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     entry.account_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    entry.reference_id?.toLowerCase().includes(searchTerm.toLowerCase())
+    entry.source_document_id?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Prepare chart data
@@ -341,7 +341,7 @@ export default function Accounting({ user }) {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
                       {entry.description}
                     </TableCell>
-                    <TableCell className="mono text-xs">{entry.reference_id}</TableCell>
+                    <TableCell className="mono text-xs">{entry.source_document_id}</TableCell>
                     <TableCell className="text-right mono">
                       {entry.debit > 0 ? `₹${entry.debit.toLocaleString()}` : '-'}
                     </TableCell>
