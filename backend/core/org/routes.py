@@ -85,7 +85,7 @@ async def update_current_organization(
     service = get_organization_service()
     
     # Resolve org context
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -186,7 +186,7 @@ async def get_organization_settings(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -213,7 +213,7 @@ async def update_organization_settings(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -246,7 +246,7 @@ async def export_organization_settings(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -311,7 +311,7 @@ async def import_organization_settings(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -385,7 +385,7 @@ async def list_organization_users(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -432,7 +432,7 @@ async def add_user_to_organization(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(user.user_id)
         if user_orgs:
@@ -480,7 +480,7 @@ async def update_user_membership(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(current_user.user_id)
         if user_orgs:
@@ -514,7 +514,7 @@ async def remove_user_from_organization(
     service = get_organization_service()
     
     # Resolve org
-    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    resolved_org_id = org_id or getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
     if not resolved_org_id:
         user_orgs = await service.get_user_organizations(current_user.user_id)
         if user_orgs:

@@ -109,7 +109,7 @@ async def get_risk_alerts(http_request: Request, status: str = Query("active", d
     Get Model Risk Alerts for supervisor dashboard.
     Shows patterns: ≥3 similar failures in 30 days.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -136,7 +136,7 @@ async def get_risk_alerts(http_request: Request, status: str = Query("active", d
 @router.get("/risk-alerts/{alert_id}")
 async def get_risk_alert(alert_id: str, http_request: Request):
     """Get details of a specific risk alert"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -159,7 +159,7 @@ async def acknowledge_risk_alert(
     http_request: Request
 ):
     """Acknowledge a risk alert (supervisor action)"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "unknown")
     
     if not org_id:
@@ -192,7 +192,7 @@ async def resolve_risk_alert(
     http_request: Request
 ):
     """Resolve a risk alert"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "unknown")
     
     if not org_id:
@@ -227,7 +227,7 @@ async def get_failure_cards(http_request: Request, status: str = Query("all", de
     limit: int = Query(50, le=200)
 ):
     """Get failure cards for knowledge management"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -264,7 +264,7 @@ async def get_failure_cards(http_request: Request, status: str = Query("all", de
 @router.get("/failure-cards/{card_id}")
 async def get_failure_card(card_id: str, http_request: Request):
     """Get a specific failure card"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -286,7 +286,7 @@ async def create_failure_card(
     http_request: Request
 ):
     """Create a new failure card (requires approval)"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "unknown")
     
     if not org_id:
@@ -352,7 +352,7 @@ async def update_failure_card(
     http_request: Request
 ):
     """Update a failure card"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     # user_id available for audit but not currently used
     _ = http_request.headers.get("X-User-ID", "unknown")
     
@@ -378,7 +378,7 @@ async def update_failure_card(
 @router.put("/failure-cards/{card_id}/approve")
 async def approve_failure_card(card_id: str, http_request: Request):
     """Approve a draft failure card (supervisor action)"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "unknown")
     
     if not org_id:
@@ -415,7 +415,7 @@ async def capture_ticket_closure(
     Capture learning data when ticket is closed.
     Called automatically by ticket closure flow.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -438,7 +438,7 @@ async def capture_ticket_closure(
 async def process_pending_learning(http_request: Request, batch_size: int = Query(50, le=100)
 ):
     """Process pending learning events (background job trigger)"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -451,7 +451,7 @@ async def process_pending_learning(http_request: Request, batch_size: int = Quer
 @router.get("/learning/stats")
 async def get_learning_stats(http_request: Request):
     """Get learning statistics for supervisor dashboard"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -469,7 +469,7 @@ async def rank_probable_causes(http_request: Request, vehicle_make: Optional[str
     Get ranked probable causes for given context.
     Used by guidance generation.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -521,7 +521,7 @@ async def get_dashboard_summary(http_request: Request):
     Get intelligence engine summary for supervisor dashboard.
     Includes risk alerts, learning stats, and failure card counts.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     

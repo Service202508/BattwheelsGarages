@@ -59,7 +59,7 @@ async def list_escalations(http_request: Request, status: Optional[str] = None, 
     List escalations in the expert queue.
     Filter by status, priority, or assigned expert.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -222,7 +222,7 @@ async def request_info(
 @router.get("/stats")
 async def get_queue_stats(http_request: Request):
     """Get expert queue statistics for the organization"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -235,7 +235,7 @@ async def get_queue_stats(http_request: Request):
 @router.get("/workload")
 async def get_expert_workload(http_request: Request):
     """Get workload summary per expert"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -249,7 +249,7 @@ async def get_expert_workload(http_request: Request):
 async def get_my_queue(http_request: Request, status: Optional[str] = None, limit: int = Query(20, le=100)
 ):
     """Get escalations assigned to the current expert"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     expert_id = http_request.headers.get("X-User-ID")
     
     if not org_id or not expert_id:
@@ -282,7 +282,7 @@ async def add_expert_to_roster(
     http_request: Request
 ):
     """Add an expert to the roster"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -310,7 +310,7 @@ async def add_expert_to_roster(
 @router.get("/experts")
 async def list_experts(http_request: Request):
     """List all experts in the roster"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -330,7 +330,7 @@ async def remove_expert_from_roster(
     http_request: Request
 ):
     """Remove an expert from the roster"""
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     

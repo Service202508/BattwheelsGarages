@@ -1485,7 +1485,7 @@ async def get_inventory_valuation(
     db = get_db()
 
     # Get org from header
-    raw_org_id = request.headers.get("X-Organization-ID", "")
+    raw_org_id = getattr(request.state, "tenant_org_id", "")
 
     query: dict = {}
     if raw_org_id:
@@ -1548,9 +1548,9 @@ async def get_trial_balance(request: Request, as_of_date: str = Query(None, desc
     """
     db = get_db()
 
-    org_id = request.headers.get("X-Organization-ID", "")
+    org_id = getattr(request.state, "tenant_org_id", "")
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        raise HTTPException(status_code=400, detail="Organization context required")
 
     # Determine cut-off date
     if as_of_date:

@@ -82,28 +82,10 @@ class JournalEntryReverse(BaseModel):
 # ==================== HELPER ====================
 
 async def get_org_id(request: Request) -> str:
-    """Get organization ID from request"""
-    org_id = request.headers.get("X-Organization-ID")
-    if not org_id:
-        # Try to get from session/auth
-        from server import db
-        session_token = request.cookies.get("session_token")
-        if session_token:
-            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-            if session:
-                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-                if user:
-                    # Get first organization
-                    membership = await db.organization_users.find_one(
-                        {"user_id": user["user_id"], "status": "active"},
-                        {"organization_id": 1}
-                    )
-                    if membership:
-                        org_id = membership["organization_id"]
-    
+    """Get org_id from request state (validated by TenantGuardMiddleware)"""
+    org_id = getattr(request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
-    
     return org_id
 
 

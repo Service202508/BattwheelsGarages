@@ -16,14 +16,14 @@ db = client[DB_NAME]
 
 
 def extract_org_id(request) -> Optional[str]:
-    """Extract organization_id from request headers.
+    """Extract organization_id from request state (set by TenantGuardMiddleware).
     This is the canonical way to get org context in route handlers.
-    Every DB query on tenant data MUST use this."""
-    org_id = request.headers.get("X-Organization-ID") or request.headers.get("x-organization-id")
-    if not org_id:
-        # Fallback: check request state (set by tenant middleware)
-        org_id = getattr(getattr(request, "state", None), "tenant_org_id", None)
-    return org_id
+    Every DB query on tenant data MUST use this.
+    
+    SECURITY: Always reads from request.state.tenant_org_id which has been
+    validated against the user's org membership by TenantGuardMiddleware.
+    Never trusts client-provided headers/cookies directly."""
+    return getattr(getattr(request, "state", None), "tenant_org_id", None)
 
 
 def org_query(org_id: str, extra: dict = None) -> dict:

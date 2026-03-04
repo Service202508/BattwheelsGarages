@@ -42,10 +42,16 @@ class OrganizationMiddleware:
         """
         service = get_organization_service()
         
-        # Priority 1: Explicit org_id parameter
-        resolved_org_id = org_id
+        # Priority 0: Use middleware-validated org_id if available
+        validated_org_id = getattr(getattr(request, "state", None), "tenant_org_id", None)
+        if validated_org_id:
+            resolved_org_id = validated_org_id
         
-        # Priority 2: Header
+        # Priority 1: Explicit org_id parameter
+        if not resolved_org_id:
+            resolved_org_id = org_id
+        
+        # Priority 2: Header (fallback, validated against membership below)
         if not resolved_org_id:
             resolved_org_id = request.headers.get("X-Organization-ID")
         

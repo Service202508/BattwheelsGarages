@@ -1,84 +1,82 @@
 # Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-Battwheels OS is an EV service workshop management SaaS platform. After a stability audit, the codebase was reverted, and a "REBUILD SESSION 1 — P0: EFI + FLOW BLOCKERS" was initiated to restore high-priority features.
+EV service platform for the electric vehicle industry. Full-stack FastAPI + React + MongoDB application with multi-tenant architecture, financial management, ticket management, inventory, GST compliance, and AI-powered features.
 
-## Architecture
-- **Frontend**: React + Vite (craco), shadcn/ui, Tailwind CSS
-- **Backend**: FastAPI + MongoDB (motor async)
-- **DB**: MongoDB (`battwheels_dev` for dev, `battwheels` for production)
-- **Auth**: JWT-based, RBAC with roles (platform_admin, owner, technician, etc.)
+## Core Architecture
+- **Backend:** FastAPI with Motor (async MongoDB)
+- **Frontend:** React with Shadcn UI
+- **Database:** MongoDB (battwheels_dev for development)
+- **Multi-Tenancy:** TenantGuardMiddleware → RBAC → CSRF → Sanitization → RateLimit
+- **Auth:** JWT-based with session cookie fallback
 
-## Credentials
-- Demo User: `demo@voltmotors.in` / `Demo@12345`
-- Dev Admin: `platform-admin@battwheels.in` / `DevTest@123`
-- Owner User: `dev@battwheels.internal` / `DevTest@123`
+## What's Been Implemented
 
-## Completed Tasks (Session 1A - 2026-03-04)
+### P0 Security Fix: org_id Trust Chain (2026-03-04)
+- **COMPLETED**: Secured org_id resolution across entire codebase
+- All 25 files with direct header/cookie reads patched to use middleware-validated `request.state.tenant_org_id`
+- Eliminated `extract_org_id` header trust in `utils/database.py`
+- Fixed 3 local `get_org_id` functions (finance_dashboard, banking, expenses)
+- Fixed 16+ additional route files with inline header reads
+- Added defense-in-depth `tenant_org_id` priority in core/org utilities
+- Created comprehensive cross-tenant isolation test suite (7 tests)
+- **Verification**: 54 tests pass, production untouched, normal flow preserved
 
-### Task 0: Verification Scripts — DONE
-- `/app/scripts/verify_platform.sh` — exists, executable
-- `/app/scripts/verify_prod_org.py` — exists, valid Python
-
-### Task 1: Vehicle Category Dropdown Fix — DONE
-- **Root cause**: 218 duplicate entries in `vehicle_categories` collection (seed script ran multiple times without idempotency)
-- **Fix**: Cleaned duplicates (kept 5 unique: 2W_EV, 3W_EV, 4W_EV, COMM_EV, LEV), added unique index on `code`
-- Also cleaned 882 duplicate `vehicle_models` (35 unique remain), added unique index on `model_id`
-- Made seed function idempotent (uses upsert instead of insert_many)
-
-### Task 2: Platform Admin Fixes — DONE
-- **Back arrow**: Added back button (`data-testid="platform-admin-back-btn"`) to PlatformAdmin header using `navigate(-1)`
-- **Logout button**: Already existed (`data-testid="platform-admin-logout-btn"`) with `onLogout` prop properly passed from App.js
-
-## Completed Tasks (Session 3B - 2026-03-04)
-
-### Task 1: Homepage Redesign (10 sections) — DONE
-- Rewrote SaaSLanding.jsx (795 lines) with 10 sections: Hero, Pain Stories (Hinglish), Four Audiences (tabbed), EFI Intelligence (outcomes only), Complete Platform (16 modules), Social Proof (animated counters), Pricing (4 cards with correct prices), Intelligence Flywheel, Final CTA, Footer
-- Zero em dashes, zero EFI architecture leaks, all brand rules followed
-- Responsive across all breakpoints (sm/md/lg/xl)
-
-### Task 2: ProductTour Component — DONE
-- Created ProductTour.jsx (255 lines) with 6 interactive steps
-- Static mockups of dashboard, AI diagnosis, GST invoice, payments, inventory, module grid
-- Keyboard navigation (arrows + Escape), dot indicators, slide transitions
-- Integrated via hero "See It In Action" button
-
-## Completed Tasks (Session 3A - 2026-03-04)
-
-### Task 1: AI Diagnostic Token System — DONE
-- Created `backend/services/ai_token_service.py` with get_token_status, consume_token, lazy monthly reset
-- Created `backend/routes/ai_usage.py` with GET /api/v1/ai-usage/status
-- Integrated token consumption in `efi_guided.py` /session/start (HTTP 429 on limit)
-- Added token badge to EFI panel in TicketDetail.jsx (color-coded: green/amber/red)
-- Button disabled when tokens exhausted
-- 8 unit tests all passing
-
-### Task 2: Plan Sync — DONE
-- Professional price synced to ₹5,999/mo across models.py, platform_admin.py, Docs.jsx, Terms.jsx
-- Token allocations: Free Trial 10, Starter 25, Professional 100, Enterprise unlimited
-
-## Completed Tasks (Session - 2026-03-04, Fork)
-
-### Fix reports_advanced.py Collection Names + DB Fallback — DONE
-- **Root cause**: `backend/routes/reports_advanced.py` queried `_enhanced` collections (`invoices_enhanced`, `estimates_enhanced`, `salesorders_enhanced`, `contacts_enhanced`) which had 0-3 docs, instead of canonical collections (`invoices`: 1637, `contacts`: 513, `estimates`: 1253, `salesorders`: 667)
-- **Fix**: Changed collection references on lines 28-31 to canonical names. Changed DB fallback from `zoho_books_clone` to `battwheels_dev`.
-- **Verification**: All 4 advanced report endpoints return non-zero multi-month data. Regression check passed (receivables: 142,177.55, total_invoiced: 573,509.60, cash_flow: 390,208.40, AMC active: 7).
-
-### Audit: Untested Dashboard Endpoints — DONE (Report Only)
-- `/dashboard/financial/bank-accounts`: Working (HTTP 200). Returns default placeholder. **Data gap** — no seeded bank accounts.
-- `/dashboard/financial/projects-watchlist`: Working (HTTP 200). Returns 5 test projects. Sparse data (unbilled_amount = 0).
+### Existing Features (Pre-Audit)
+- Ticket management system with 7128 records
+- Invoice system (canonical + enhanced) with 1655 records
+- GST/statutory compliance module
+- HR module
+- Inventory management with serial/batch tracking
+- AI/EFI intelligence services
+- Customer/business/technician portals
+- Financial dashboard with receivables/payables
+- PDF template system
+- Notification system
+- SLA management
+- Knowledge brain
+- Banking module
+- Expense management
 
 ## Prioritized Backlog
 
-### P1 — Upcoming
-- Seed bank account records for demo org to populate `/bank-accounts` dashboard
-- Seed `customerpayments` and `expenses` records for richer cash-flow reporting
+### P0 — Critical (Completed)
+- [x] Tenant Isolation Bypass — org_id trust chain secured
 
-### P2 — Future
-- Refactor DB connections: centralize into shared utility (currently duplicated per route file)
-- Resolve dual-collection architecture: CRUD routes write to `_enhanced` collections, analytics read from canonical collections
-- Remove stale `zoho_books_clone` fallback strings from other route files
+### P0 — Critical (Remaining)
+- [ ] Risk of Writing to Production Database — Add env/DB mismatch guard in server.py
+- [ ] Broken Financial Audit Trail — Fix invoice→journal_entry reference_id linkage
 
-### P3 — Backlog
-- Fix skipped password reset tests (state pollution in `test_password_reset.py`)
-- Investigate failed API spot-checks (404s on `items/search`, `efi-guided/failure-cards`)
+### P1 — High Priority
+- [ ] Inefficient DoS Protection — Reorder middleware chain (rate limiter first)
+- [ ] No Frontend Error Boundaries — Add ErrorBoundary wrapping entire React app
+- [ ] Non-Functional Deployment Pipeline — CI/CD workflows have placeholder TODOs
+
+### P2 — Architectural Debt
+- [ ] Refactor `_enhanced` file duplication pattern
+- [ ] Break down 16+ god files (>1500 lines)
+- [ ] Fix `plan` vs `plan_type` inconsistency in organizations collection
+- [ ] Centralize database connection logic
+
+### P3 — Testing & Quality
+- [ ] Frontend test coverage (96 pages, 0 tests)
+- [ ] Improve seed data quality and staging DB
+
+## Environment
+- **Development DB**: battwheels_dev
+- **Staging DB**: battwheels_staging
+- **Production DB**: battwheels (READ-ONLY for agent)
+- **Credentials**: demo@voltmotors.in / Demo@12345
+
+## Key API Endpoints
+- POST /api/auth/login
+- GET /api/v1/tickets
+- GET /api/v1/invoices-enhanced/summary
+- GET /api/v1/dashboard/financial/summary
+- GET /api/health
+
+## 3rd Party Integrations
+- Sentry: Configured for error monitoring
+- Razorpay: Integrated but disabled (test keys)
+- Gemini: API key NOT SET
+- Resend: API key SET

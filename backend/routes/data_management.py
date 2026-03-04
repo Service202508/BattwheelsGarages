@@ -25,10 +25,10 @@ def get_db():
 
 
 async def get_org_id(request: Request) -> str:
-    """Get organization ID from request header"""
-    org_id = request.headers.get("X-Organization-ID")
+    """Get organization ID from request state (validated by TenantGuardMiddleware)"""
+    org_id = getattr(request.state, "tenant_org_id", None)
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        raise HTTPException(status_code=400, detail="Organization context required")
     return org_id
 
 

@@ -72,7 +72,7 @@ async def get_guidance_status(http_request: Request):
     Check if EFI Guidance Layer is enabled for the organization.
     Returns feature flag status and configuration.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -110,7 +110,7 @@ async def generate_guidance(
     - Estimate suggestions
     - Sources cited
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
@@ -186,7 +186,7 @@ async def submit_ask_back_answers(
     """
     Submit answers to ask-back questions and regenerate guidance.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -215,7 +215,7 @@ async def submit_guidance_feedback(
     Submit feedback on guidance quality.
     Used to improve AI guidance over time.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "anonymous")
     
     if not org_id:
@@ -242,7 +242,7 @@ async def get_guidance_for_ticket(http_request: Request, ticket_id: str, mode: s
     """
     Get existing guidance for a ticket (or generate if not exists).
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -272,7 +272,7 @@ async def add_suggestions_to_estimate(
     Add suggested parts/labour to the linked estimate.
     One-click integration from guidance panel.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     if not org_id:
@@ -466,7 +466,7 @@ async def get_snapshot_info(http_request: Request, ticket_id: str, mode: str = "
     Get snapshot info for a ticket.
     Used to show "Regenerate" button only when context changed.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -500,7 +500,7 @@ async def check_context_changed(
     Use this before calling generate to determine if
     "Regenerate" button should be shown.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -547,7 +547,7 @@ async def get_feedback_summary(
     """
     Get feedback summary for a guidance snapshot.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -563,7 +563,7 @@ async def get_guidance_metrics(http_request: Request, days: int = Query(7, le=30
     """
     Get AI guidance usage metrics.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = getattr(http_request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     

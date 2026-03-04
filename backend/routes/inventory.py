@@ -245,7 +245,7 @@ async def get_reorder_suggestions(request: Request):
     service = get_service()
     await get_current_user(request, service.db)
 
-    org_id = request.headers.get("X-Organization-ID", "")
+    org_id = getattr(request.state, "tenant_org_id", "")
     query: dict = {"$expr": {"$lte": ["$quantity", "$reorder_level"]}}
     if org_id:
         query["organization_id"] = org_id
@@ -311,7 +311,7 @@ async def list_stocktakes(request: Request, status: Optional[str] = None, ):
     service = get_service()
     await get_current_user(request, service.db)
 
-    org_id = request.headers.get("X-Organization-ID", "")
+    org_id = getattr(request.state, "tenant_org_id", "")
     query: dict = {}
     if org_id:
         query["organization_id"] = org_id
@@ -335,7 +335,7 @@ async def create_stocktake(request: Request, data: StocktakeCreateRequest):
     service = get_service()
     await get_current_user(request, service.db)
 
-    org_id = request.headers.get("X-Organization-ID", "")
+    org_id = getattr(request.state, "tenant_org_id", "")
     now_iso = datetime.now(timezone.utc).isoformat()
     stocktake_id = f"ST-{_uuid.uuid4().hex[:12].upper()}"
 

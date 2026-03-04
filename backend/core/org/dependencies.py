@@ -45,10 +45,9 @@ async def get_org_id_from_request(request: Request) -> str:
     """
     Get organization ID from request context.
     
-    Resolution order:
-    1. X-Organization-ID header
-    2. org_id query parameter
-    3. User's default (first active) organization
+    SECURITY: Reads from request.state.tenant_org_id first (already validated
+    by TenantGuardMiddleware against user's org membership). Falls back to
+    DB lookup + membership validation only if middleware hasn't run.
     
     Returns:
         str: Organization ID
@@ -59,18 +58,22 @@ async def get_org_id_from_request(request: Request) -> str:
     if _db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
+    # Priority 1: Use middleware-validated org_id (already membership-checked)
+    validated_org_id = getattr(getattr(request, "state", None), "tenant_org_id", None)
+    if validated_org_id:
+        return validated_org_id
+    
+    # Fallback: Full validation (for routes not covered by TenantGuardMiddleware)
     user_id = await get_user_id_from_request(request)
     if not user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
-    # Priority 1: Header
+    # Client hint: header or query param — treated as a HINT, validated below
     org_id = request.headers.get("X-Organization-ID")
-    
-    # Priority 2: Query parameter
     if not org_id:
         org_id = request.query_params.get("org_id")
     
-    # Priority 3: User's default organization
+    # No hint provided — use user's default organization
     if not org_id:
         membership = await _db.organization_users.find_one({
             "user_id": user_id,
@@ -86,7 +89,7 @@ async def get_org_id_from_request(request: Request) -> str:
             detail="Organization context required. Use X-Organization-ID header or org_id parameter."
         )
     
-    # Verify user is member of this org
+    # CRITICAL: Validate user is member of the resolved org
     is_member = await _db.organization_users.find_one({
         "user_id": user_id,
         "organization_id": org_id,
@@ -94,6 +97,9 @@ async def get_org_id_from_request(request: Request) -> str:
     })
     
     if not is_member:
+        logger.warning(
+            f"SECURITY: get_org_id_from_request denied user={user_id} access to org={org_id}"
+        )
         raise HTTPException(
             status_code=403,
             detail="Access denied. You are not a member of this organization."

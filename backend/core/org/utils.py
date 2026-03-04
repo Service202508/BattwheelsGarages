@@ -44,7 +44,12 @@ async def get_user_org_id(request: Request, db: AsyncIOMotorDatabase) -> str:
     else:
         user_id = user.user_id if hasattr(user, 'user_id') else user.get('user_id')
     
-    # Priority 1: Header
+    # Priority 0: Use middleware-validated org_id if available
+    validated_org_id = getattr(getattr(request, "state", None), "tenant_org_id", None)
+    if validated_org_id:
+        return validated_org_id
+    
+    # Fallback: Header (validated against membership below)
     org_id = request.headers.get("X-Organization-ID")
     
     # Priority 2: Query parameter

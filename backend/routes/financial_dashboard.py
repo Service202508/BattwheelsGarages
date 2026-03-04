@@ -19,8 +19,8 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 async def get_org_id(request: Request) -> Optional[str]:
-    """Get organization ID from request state (set by TenantGuardMiddleware) or header fallback"""
-    return getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
+    """Get organization ID from request state (validated by TenantGuardMiddleware)"""
+    return getattr(request.state, "tenant_org_id", None)
 
 
 @router.get("/summary")

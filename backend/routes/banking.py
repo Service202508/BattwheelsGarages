@@ -100,29 +100,11 @@ async def get_current_user_id(request: Request) -> str:
 
 
 async def get_org_id(request: Request) -> str:
-    org_id = request.headers.get("X-Organization-ID")
+    """Extract org_id from request state (validated by TenantGuardMiddleware).
+    SECURITY: Never reads from client-controlled headers/cookies directly."""
+    org_id = getattr(request.state, "tenant_org_id", None)
     if org_id:
         return org_id
-    
-    org_id = request.cookies.get("org_id")
-    if org_id:
-        return org_id
-    
-    user = getattr(request.state, "user", None)
-    if user and user.get("org_id"):
-        return user.get("org_id")
-    
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        try:
-            token = auth_header.split(" ")[1]
-            from utils.auth import decode_token
-            payload = decode_token(token)
-            if payload.get("org_id"):
-                return payload.get("org_id")
-        except:
-            pass
-    
     raise HTTPException(status_code=400, detail="Organization ID required")
 
 

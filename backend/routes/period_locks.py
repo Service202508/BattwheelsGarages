@@ -48,19 +48,11 @@ async def _get_user_from_request(request: Request) -> dict:
 
 
 async def _get_org_id(request: Request) -> str:
-    user = getattr(request.state, "user", None)
-    if user and user.get("org_id"):
-        return user["org_id"]
-    org_id = request.headers.get("X-Organization-ID")
-    if org_id:
-        return org_id
-    from utils.auth import decode_token_safe
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        payload = decode_token_safe(auth_header.split(" ")[1])
-        if payload and payload.get("org_id"):
-            return payload["org_id"]
-    raise HTTPException(status_code=400, detail="Organization context required")
+    """Get org_id from request state (validated by TenantGuardMiddleware)"""
+    org_id = getattr(request.state, "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
+    return org_id
 
 
 # ==================== ROUTES ====================

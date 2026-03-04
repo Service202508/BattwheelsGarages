@@ -97,14 +97,8 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
 
 
 async def get_org_id(request: Request) -> str:
-    """Extract organization ID from request"""
-    org_id = request.headers.get("X-Organization-ID")
-    if not org_id:
-        # Try from JWT user
-        user = await get_current_user_from_token(request)
-        if user:
-            org_id = user.get("organization_id")
-    
+    """Get org_id from request state (validated by TenantGuardMiddleware)"""
+    org_id = getattr(request.state, "tenant_org_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     return org_id
