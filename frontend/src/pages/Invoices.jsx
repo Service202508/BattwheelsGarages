@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ const statusColors = {
 };
 
 export default function Invoices() {
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [services, setServices] = useState([]);
@@ -225,15 +227,29 @@ export default function Invoices() {
                 <div>
                   <Label>Customer *</Label>
                   <Select onValueChange={handleSelectCustomer}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select customer" />
+                    <SelectTrigger data-testid="invoice-customer-select">
+                      <SelectValue placeholder="Search customers..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {customers.map(c => (
-                        <SelectItem key={c.customer_id} value={c.customer_id}>
-                          {c.display_name}
-                        </SelectItem>
-                      ))}
+                      {customers.length === 0 ? (
+                        <div className="px-3 py-4 text-center space-y-2">
+                          <p className="text-sm text-muted-foreground">No customers yet</p>
+                          <button
+                            type="button"
+                            className="text-sm text-bw-volt hover:underline font-medium"
+                            onClick={() => { setShowCreateDialog(false); navigate("/contacts"); }}
+                            data-testid="add-customer-link"
+                          >
+                            + Add customer
+                          </button>
+                        </div>
+                      ) : (
+                        customers.map(c => (
+                          <SelectItem key={c.customer_id} value={c.customer_id}>
+                            {c.display_name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -265,29 +281,57 @@ export default function Invoices() {
                   </TabsList>
                   <TabsContent value="services">
                     <Select onValueChange={(v) => handleSelectItem(v, 'service')}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a service" />
+                      <SelectTrigger data-testid="invoice-service-select">
+                        <SelectValue placeholder="Search services..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {services.map(s => (
-                          <SelectItem key={s.item_id} value={s.item_id}>
-                            {s.name} - ₹{s.rate}
-                          </SelectItem>
-                        ))}
+                        {services.length === 0 ? (
+                          <div className="px-3 py-4 text-center space-y-2">
+                            <p className="text-sm text-muted-foreground">No services yet</p>
+                            <button
+                              type="button"
+                              className="text-sm text-bw-volt hover:underline font-medium"
+                              onClick={() => { setShowCreateDialog(false); navigate("/items"); }}
+                              data-testid="add-service-link"
+                            >
+                              + Add your first item
+                            </button>
+                          </div>
+                        ) : (
+                          services.map(s => (
+                            <SelectItem key={s.item_id} value={s.item_id}>
+                              {s.name} - ₹{s.rate}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </TabsContent>
                   <TabsContent value="parts">
                     <Select onValueChange={(v) => handleSelectItem(v, 'part')}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a part" />
+                      <SelectTrigger data-testid="invoice-part-select">
+                        <SelectValue placeholder="Search parts..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {parts.map(p => (
-                          <SelectItem key={p.item_id} value={p.item_id}>
-                            {p.name} - ₹{p.rate}
-                          </SelectItem>
-                        ))}
+                        {parts.length === 0 ? (
+                          <div className="px-3 py-4 text-center space-y-2">
+                            <p className="text-sm text-muted-foreground">No parts yet</p>
+                            <button
+                              type="button"
+                              className="text-sm text-bw-volt hover:underline font-medium"
+                              onClick={() => { setShowCreateDialog(false); navigate("/items"); }}
+                              data-testid="add-part-link"
+                            >
+                              + Add your first item
+                            </button>
+                          </div>
+                        ) : (
+                          parts.map(p => (
+                            <SelectItem key={p.item_id} value={p.item_id}>
+                              {p.name} - ₹{p.rate}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </TabsContent>
@@ -484,17 +528,17 @@ export default function Invoices() {
                         {invoice.status.replace('_', ' ')}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-bw-white/[0.45]">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-bw-white/[0.45]">
                       <span className="flex items-center gap-1">
-                        <User className="h-3.5 w-3.5" />
-                        {invoice.customer_name}
+                        <User className="h-3.5 w-3.5 flex-shrink-0" />
+                        <span className="truncate max-w-[150px] sm:max-w-none">{invoice.customer_name}</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3.5 w-3.5" />
+                      <span className="flex items-center gap-1 whitespace-nowrap min-w-[100px]">
+                        <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
                         {invoice.invoice_date}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <FileText className="h-3.5 w-3.5" />
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <FileText className="h-3.5 w-3.5 flex-shrink-0" />
                         {invoice.line_items?.length || 0} items
                       </span>
                     </div>

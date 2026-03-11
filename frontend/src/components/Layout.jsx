@@ -332,11 +332,11 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
                   isActive && accessible
                     ? "bg-bw-volt/[0.12] text-bw-volt font-semibold border-l-2 border-bw-volt rounded-l-none"
                     : accessible
-                      ? "text-bw-white/[0.65] hover:text-bw-white hover:bg-bw-volt/[0.06]"
+                      ? "text-bw-white/[0.75] hover:text-bw-white hover:bg-bw-volt/[0.06]"
                       : "text-bw-white/[0.30] cursor-pointer hover:bg-white/[0.03]"
                 }`}
               >
-                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive && accessible ? "text-bw-volt" : !accessible ? "text-bw-white/25" : "text-bw-white/40"}`} strokeWidth={1.5} />
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive && accessible ? "text-bw-volt" : !accessible ? "text-bw-white/25" : "text-bw-white/50"}`} strokeWidth={1.5} />
                 <span className="text-sm flex-1">{item.name}</span>
                 {!accessible && (
                   <Lock className="h-3 w-3 text-amber-500/60 flex-shrink-0 ml-auto" strokeWidth={2} data-testid={`lock-icon-${item.path.slice(1)}`} />

@@ -881,7 +881,7 @@ export default function ItemsEnhanced() {
           fetchValuationReport();
         }
       }}>
-        <TabsList className="w-full overflow-x-auto flex whitespace-nowrap">
+        <TabsList className="w-full overflow-x-auto flex whitespace-nowrap" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
           <TabsTrigger value="items" className="flex-shrink-0">Items</TabsTrigger>
           <TabsTrigger value="groups" className="flex-shrink-0">Groups</TabsTrigger>
           <TabsTrigger value="warehouses" className="flex-shrink-0">Warehouses</TabsTrigger>

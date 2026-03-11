@@ -115,11 +115,11 @@ export default function EFIResponseCard({
   const timeDisplay = parsed.estimatedTime || externalTime || "";
 
   return (
-    <div className="space-y-3 max-w-full overflow-hidden" data-testid="efi-response-card">
+    <div className="space-y-3 w-full max-w-full md:max-w-4xl md:mx-auto overflow-hidden" data-testid="efi-response-card">
       {/* Branded Header */}
       <div className="relative bg-slate-900 border border-[#CBFF00]/20 rounded-xl overflow-hidden" data-testid="efi-branded-header">
         <div className="absolute inset-0 bg-gradient-to-br from-[#CBFF00]/[0.04] to-transparent pointer-events-none" />
-        <div className="relative p-3 sm:p-4 space-y-2">
+        <div className="relative px-3 py-3 sm:px-6 sm:py-4 space-y-2">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <Zap className="h-5 w-5 text-[#CBFF00] flex-shrink-0" />
@@ -152,7 +152,7 @@ export default function EFIResponseCard({
 
       {/* Safety Precautions */}
       {parsed.safety && (
-        <div className="p-3 sm:p-4 bg-red-900/20 border border-red-500/40 rounded-xl" data-testid="efi-safety-section">
+        <div className="px-3 py-3 sm:px-6 sm:py-4 bg-red-900/20 border border-red-500/40 rounded-xl" data-testid="efi-safety-section">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="h-5 w-5 text-red-400" />
             <span className="text-sm font-semibold text-red-300">Safety Precautions</span>
@@ -175,12 +175,12 @@ export default function EFIResponseCard({
               // Try to split "Action — Expected: Result"
               const parts = step.split(/\s*—\s*Expected:\s*/i);
               return (
-                <div key={i} className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-slate-800/60 rounded-lg border border-slate-700/50">
+                <div key={i} className="flex items-start gap-2 sm:gap-3 px-3 py-2 sm:px-4 sm:py-3 bg-slate-800/60 rounded-lg border border-slate-700/50">
                   <span className="w-6 h-6 rounded-full bg-[#CBFF00]/10 text-[#CBFF00] text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/90 break-words">{parts[0]}</p>
+                    <p className="text-sm text-white/90 break-words" style={{ overflowWrap: "break-word" }}>{parts[0]}</p>
                     {parts[1] && (
                       <p className="text-xs text-slate-400 mt-1">
                         Expected: <span className="text-emerald-400">{parts[1]}</span>
@@ -196,7 +196,7 @@ export default function EFIResponseCard({
 
       {/* Root Causes */}
       {parsed.rootCauses.length > 0 && (
-        <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/40" data-testid="efi-root-causes">
+        <div className="px-3 py-3 sm:px-6 sm:py-4 bg-slate-800/50 rounded-xl border border-slate-700/40" data-testid="efi-root-causes">
           <div className="flex items-center gap-2 mb-3">
             <Wrench className="h-4 w-4 text-amber-400" />
             <span className="text-sm font-medium text-slate-300">Probable Root Causes</span>
@@ -207,7 +207,7 @@ export default function EFIResponseCard({
                 <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
                   {i + 1}
                 </span>
-                <span className="text-sm text-white/80 break-words">{cause}</span>
+                <span className="text-sm text-white/80 break-words min-w-0 flex-1" style={{ overflowWrap: "break-word" }}>{cause}</span>
               </div>
             ))}
           </div>
@@ -216,16 +216,16 @@ export default function EFIResponseCard({
 
       {/* Parts Needed */}
       {parsed.parts.length > 0 && (
-        <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/40" data-testid="efi-parts-section">
+        <div className="px-3 py-3 sm:px-6 sm:py-4 bg-slate-800/50 rounded-xl border border-slate-700/40" data-testid="efi-parts-section">
           <div className="flex items-center gap-2 mb-3">
             <Package className="h-4 w-4 text-blue-400" />
             <span className="text-sm font-medium text-slate-300">Parts That May Be Needed</span>
           </div>
           <div className="space-y-1.5">
             {parsed.parts.map((part, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-white/70">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60 flex-shrink-0" />
-                {part}
+              <div key={i} className="flex items-start gap-2 text-sm text-white/70">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60 flex-shrink-0 mt-1.5" />
+                <span className="break-words min-w-0 flex-1" style={{ overflowWrap: "break-word" }}>{part}</span>
               </div>
             ))}
           </div>
@@ -241,7 +241,7 @@ export default function EFIResponseCard({
 
       {/* Fallback: if no sections parsed, show raw text */}
       {!parsed.safety && parsed.steps.length === 0 && parsed.rootCauses.length === 0 && (
-        <div className="p-3 sm:p-4 bg-slate-800/50 rounded-xl text-sm text-white/70 whitespace-pre-line leading-relaxed break-words">
+        <div className="px-3 py-3 sm:px-6 sm:py-4 bg-slate-800/50 rounded-xl text-sm text-white/70 whitespace-pre-line leading-relaxed break-words overflow-x-auto" style={{ overflowWrap: "break-word" }}>
           {parsed.rawText}
         </div>
       )}

@@ -1569,6 +1569,12 @@ export default function EstimatesEnhanced() {
                         ))}
                       </div>
                     )}
+                    {contactSearch.length >= 2 && contacts.length === 0 && !selectedContact && (
+                      <div className="absolute z-10 w-full mt-1 bg-bw-panel border border-white/[0.13] rounded px-3 py-4 text-center space-y-2">
+                        <p className="text-sm text-muted-foreground">No customers found</p>
+                        <a href="/contacts" className="text-sm text-bw-volt hover:underline font-medium" data-testid="add-customer-from-estimate">+ Add customer</a>
+                      </div>
+                    )}
                   </div>
                   {selectedContact && (
                     <div className="mt-2 p-2 bg-bw-panel rounded text-xs">
@@ -1591,11 +1597,11 @@ export default function EstimatesEnhanced() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Date</Label>
-                    <Input type="date" value={newEstimate.date} onChange={(e) => setNewEstimate({...newEstimate, date: e.target.value})} />
+                    <Input type="date" className="min-w-[140px]" value={newEstimate.date} onChange={(e) => setNewEstimate({...newEstimate, date: e.target.value})} />
                   </div>
                   <div>
                     <Label>Expiry Date</Label>
-                    <Input type="date" value={newEstimate.expiry_date} onChange={(e) => setNewEstimate({...newEstimate, expiry_date: e.target.value})} />
+                    <Input type="date" className="min-w-[140px]" value={newEstimate.expiry_date} onChange={(e) => setNewEstimate({...newEstimate, expiry_date: e.target.value})} />
                   </div>
                 </div>
               </div>

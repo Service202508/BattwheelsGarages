@@ -234,7 +234,7 @@ export default function Dashboard({ user }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 rounded-lg flex overflow-x-auto w-full">
+        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 rounded-lg flex overflow-x-auto w-full" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
           <TabsTrigger 
             value="workshop" 
             className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap"

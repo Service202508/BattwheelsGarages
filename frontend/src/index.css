@@ -214,12 +214,21 @@ code, .mono {
 
 /* Section labels */
 .nav-section-label {
-  color: rgba(244,246,240,0.25);
+  color: rgba(244,246,240,0.50);
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* Scrollable tab bars — hide scrollbar but keep scroll */
+[style*="scrollbarWidth"] {
+  scrollbar-width: none;
+}
+[style*="scrollbarWidth"]::-webkit-scrollbar {
+  display: none;
+}
+
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    KPI / METRIC CARD STYLES

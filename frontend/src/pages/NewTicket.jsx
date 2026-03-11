@@ -348,7 +348,7 @@ export default function NewTicket({ user }) {
                     <SelectContent>
                       {categories.length === 0 ? (
                         <div className="px-3 py-4 text-center text-sm text-muted-foreground">
-                          Loading categories...
+                          No vehicle categories available. Contact admin.
                         </div>
                       ) : (
                         categories.map((cat) => {
