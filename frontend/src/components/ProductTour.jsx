@@ -105,7 +105,7 @@ const STEPS = [
     ),
   },
   {
-    title: 'EVFI™ AI Diagnosis',
+    title: 'EVFI™ AI Diagnosis & Resolution',
     badge: 'TECHNICIAN',
     icon: Zap,
     section: 1,
@@ -168,7 +168,7 @@ const STEPS = [
     badge: 'TECHNICIAN',
     icon: ClipboardCheck,
     section: 1,
-    caption: 'Step-by-step guided diagnosis. Pass/fail per step. 10x faster than manual troubleshooting.',
+    caption: '10x faster diagnosis & resolution than manual troubleshooting.',
     mockup: () => (
       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between mb-1">
@@ -257,7 +257,7 @@ const STEPS = [
     badge: 'ACCOUNTANT',
     icon: FileText,
     section: 2,
-    caption: 'Estimate converts to invoice with one click. HSN codes validated. CGST/SGST auto-split. Ready for GSTR-1 filing. GST on EVs is just 5%.',
+    caption: 'Estimate \u2192 customer approved \u2192 one-click invoice \u2192 GST auto-calculated with HSN/SAC \u2192 GSTR-1 & 3B ready \u2192 filed. The complete digital billing chain.',
     mockup: () => (
       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
@@ -469,7 +469,7 @@ const STEPS = [
     icon: LayoutGrid,
     section: 4,
     isFinal: true,
-    caption: '₹25,000 Cr EV aftermarket by 2030. Be ready. 16 modules. 3 portals. One subscription.',
+    caption: '₹25,000 Cr EV aftermarket by 2030. Is your service & maintenance business ready? 16 modules. 3 portals. One subscription.',
     mockup: () => {
       const mods = [
         'Tickets & SLA', 'Invoicing', 'Estimates', 'Inventory',

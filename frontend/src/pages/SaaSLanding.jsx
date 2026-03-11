@@ -155,10 +155,10 @@ const SaaSLanding = () => {
   const audiences = [
     {
       tab: 'Service Center Owners',
-      body: 'Run your entire EV service center from one dashboard. Tickets, invoicing, inventory, payroll, GST filing. EVFI\u2122 guides your technicians to fix it right the first time. No more guesswork.',
+      body: 'Run your entire EV service & maintenance business from one dashboard. Tickets, invoicing, inventory, payroll, GST filing. EVFI\u2122 guides your technicians to fix it right the first time. No more guesswork.',
       features: [
-        { name: 'AI Diagnostics' },
-        { name: 'GST Compliance' },
+        { name: 'EVFI\u2122 AI Diagnosis & Resolution' },
+        { name: 'Digital Billing (Estimate \u2192 Invoice \u2192 GST)' },
         { name: 'Inventory + COGS' },
         { name: 'HR & Payroll' },
         { name: 'Customer Portal' },
@@ -168,6 +168,7 @@ const SaaSLanding = () => {
       tab: 'OEMs (Ola, Ather, TVS)',
       body: 'Manage your authorized service network at scale. Track warranty claims, distribute parts, monitor dealer performance. Every repair across every dealer feeds your reliability intelligence.',
       features: [
+        { name: 'EVFI\u2122 Standardized Diagnostics', roadmap: true },
         { name: 'Dealer Network Management', roadmap: true },
         { name: 'Warranty Claims', roadmap: true },
         { name: 'Parts Distribution', roadmap: true },
@@ -175,10 +176,20 @@ const SaaSLanding = () => {
       ],
     },
     {
+      tab: 'Dealers',
+      body: 'Manage your after-sales service operations with the same platform that powers your sales. Track vehicles from delivery to every service visit. EVFI\u2122 helps your service team handle warranty repairs efficiently.',
+      features: [
+        { name: 'Vehicle Lifecycle Tracking', roadmap: true },
+        { name: 'EVFI\u2122 Warranty Diagnostics', roadmap: true },
+        { name: 'Service Revenue Management', roadmap: true },
+        { name: 'Customer Communication Portal', roadmap: true },
+      ],
+    },
+    {
       tab: 'Fleet Operators',
       body: 'Delivery fleets, ride-sharing, corporate vehicles. Predictive maintenance before breakdowns happen. Cost-per-km analytics. Fleet-wide health monitoring.',
       features: [
-        { name: 'Predictive Maintenance', roadmap: true },
+        { name: 'EVFI\u2122 Predictive Maintenance', roadmap: true },
         { name: 'Fleet Health Dashboard', roadmap: true },
         { name: 'Uptime Optimization', roadmap: true },
         { name: 'Cost Analytics', roadmap: true },
@@ -188,7 +199,7 @@ const SaaSLanding = () => {
       tab: 'EV Technicians',
       body: 'Access EVFI\u2122 diagnostic intelligence on every job. Build your verified service record. Get matched with the right work. Your skills have value here.',
       features: [
-        { name: 'AI-Guided Diagnosis' },
+        { name: 'EVFI\u2122 Step-by-Step Guidance' },
         { name: 'Skill Verification', roadmap: true },
         { name: 'Job Matching', roadmap: true },
         { name: 'Service Portfolio', roadmap: true },
@@ -310,12 +321,12 @@ const SaaSLanding = () => {
           </p>
 
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-none mb-8 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            India's First AI-Powered<br />
-            <em className="italic text-[#CBFF00]">EV Service Platform</em>
+            Stop Guessing.<br />
+            <em className="italic text-[#CBFF00]">Start Fixing.</em>
           </h1>
 
           <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            From a single service center to a national OEM network. One platform runs it all.
+            Your technicians get EVFI{'\u2122'} AI diagnosis & resolution in seconds. Your billing runs on auto — from ticket to GST filing. Your customers track their vehicle status in real-time. You run a smarter, faster, more profitable EV service & maintenance business.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.3s' }}>
@@ -344,13 +355,16 @@ const SaaSLanding = () => {
               </div>
             ))}
           </div>
-          <div className="text-xs text-white/15 tracking-wider mb-10 animate-fade-up" style={{ animationDelay: '0.36s' }}>Source: VAHAN Portal, Ministry of Road Transport</div>
+          <div className="text-xs text-white/15 tracking-wider mb-4 animate-fade-up" style={{ animationDelay: '0.36s' }}>Source: VAHAN Portal, Ministry of Road Transport</div>
+          <p className="text-sm text-white/40 italic mb-10 animate-fade-up" style={{ animationDelay: '0.37s' }}>
+            Every one of these vehicles will need servicing. Is your business ready?
+          </p>
 
           <div className="flex border border-white/[0.07] max-w-lg animate-fade-up" style={{ animationDelay: '0.4s' }}>
             {[
               { val: '16', label: 'Modules' },
               { val: '3', label: 'Portals' },
-              { val: 'AI', label: 'Powered Diagnostics' },
+              { val: 'EVFI\u2122', label: 'AI Diagnosis & Resolution' },
             ].map((s, i) => (
               <div key={i} className={`flex-1 p-5 ${i < 2 ? 'border-r border-white/[0.07]' : ''}`}>
                 <div className="text-2xl sm:text-3xl font-bold text-[#CBFF00] mb-1">{s.val}</div>
@@ -370,7 +384,7 @@ const SaaSLanding = () => {
 
         <div className="max-w-5xl">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-12">
-            Every EV service business owner knows these problems
+            Every EV service & maintenance business owner<br />knows these problems
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -392,10 +406,10 @@ const SaaSLanding = () => {
                 statColor: 'text-amber-400',
               },
               {
-                label: 'GST Compliance Chaos',
-                quote: '"Tax filing mein har mahina 2 din jaate hain. HSN code galat ho gaya toh notice aa jaata hai."',
-                translation: 'Tax filing takes 2 days every month. Wrong HSN code and you get a notice.',
-                stat: 'Manual GST filing costs 24+ days per year',
+                label: 'Billing & GST Chaos',
+                quote: '"Estimate banao, phir invoice banao, phir GST calculate karo, phir filing karo — sab manually. Galti hone ka dar rehta hai."',
+                translation: 'Create estimate, then invoice, then calculate GST, then file returns — all manually. Always worried about making mistakes.',
+                stat: 'Manual billing & GST filing costs 24+ days per year',
                 accent: 'border-blue-500/40',
                 statColor: 'text-blue-400',
               },
@@ -457,9 +471,10 @@ const SaaSLanding = () => {
             </div>
           ))}
         </div>
+        <p className="text-sm md:text-base leading-relaxed text-white/40 max-w-4xl mt-8">
+          The EV market is exploding. Service centers that diagnose faster with EVFI{'\u2122'}, bill correctly with digital invoicing, and manage professionally will capture this ₹25,000 Cr opportunity. Battwheels OS gives you that edge — from day one.
+        </p>
       </section>
-
-      {/* ========== SECTION 3: FOUR AUDIENCES ========== */}
       <section ref={s3.ref} className={`py-20 px-6 md:px-12 ${revealClass(s3.visible)}`} id="segments">
         <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           02 . Built for the Entire EV Ecosystem
@@ -468,7 +483,7 @@ const SaaSLanding = () => {
 
         <div className="max-w-5xl">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-10">
-            One Platform. Four Roles. Complete Coverage.
+            One Platform. Five Audiences. Complete Coverage.
           </h2>
 
           {/* Tabs */}
@@ -525,6 +540,12 @@ const SaaSLanding = () => {
               EVFI analyses symptoms, identifies root causes, and guides technicians through step-by-step
               repairs — learning from every resolution to get smarter over time.
             </p>
+            <p className="text-sm md:text-base italic leading-relaxed text-[#CBFF00]/70 max-w-2xl mx-auto mt-4">
+              "Aapka best technician har problem nahi dekh sakta. EVFI{'\u2122'} ne 990+ problems dekhe hain — aur har nayi repair se aur smart hota hai."
+            </p>
+            <p className="text-xs text-white/30 max-w-2xl mx-auto mt-1">
+              (Your best technician can't see every problem. EVFI{'\u2122'} has seen 990+ problems — and gets smarter with every new repair.)
+            </p>
 
             {/* Patent + Make in India badges */}
             <div className="flex flex-wrap justify-center gap-3 mt-6">
@@ -542,7 +563,7 @@ const SaaSLanding = () => {
             {/* Pillar 1 */}
             <div className="bg-[#0f1419] rounded-2xl border border-white/5 p-8">
               <Zap className="w-10 h-10 text-[#CBFF00] mb-5" />
-              <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Diagnoses Like Your Best Technician</h3>
+              <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Diagnoses & Resolves Like Your Best Technician</h3>
               <ul className="text-white/60 text-sm leading-relaxed space-y-3">
                 <li>Analyses vehicle model, symptoms, and historical fault patterns to pinpoint the root cause</li>
                 <li>Returns step-by-step diagnostic guidance with pass/fail checkpoints at every stage</li>
@@ -651,13 +672,14 @@ const SaaSLanding = () => {
             { ref: c1.ref, val: c1.count, suffix: '+', label: 'Integrated Modules' },
             { ref: c2.ref, val: '', suffix: '', label: 'EV Form Factors', text: '2W, 3W & 4W' },
             { ref: c3.ref, val: c3.count, suffix: '%', label: 'GST Compliant' },
-            { ref: c4.ref, val: '', suffix: '', label: 'Data Isolation', text: 'Multi-Tenant' },
+            { ref: c4.ref, val: '', suffix: '', label: 'Your Data, Only Yours', text: 'Secure', sub: 'Aapka data sirf aapka' },
           ].map((item, i) => (
             <div key={i} ref={item.ref} className={`p-6 sm:p-8 text-center ${i < 3 ? 'border-r border-white/[0.07]' : ''}`}>
               <div className="text-3xl sm:text-4xl font-bold text-[#CBFF00] mb-2">
                 {item.text || `${item.val}${item.suffix}`}
               </div>
               <div className="text-xs text-white/40 uppercase tracking-widest leading-tight">{item.label}</div>
+              {item.sub && <div className="text-[10px] text-white/20 mt-1 italic">{item.sub}</div>}
             </div>
           ))}
         </div>
@@ -686,7 +708,7 @@ const SaaSLanding = () => {
                   'Up to 20 tickets',
                   'Up to 10 contacts',
                   'Basic estimates & invoices',
-                  '10 EVFI AI diagnostic tokens',
+                  '10 EVFI\u2122 AI diagnoses',
                   'Up to 3 team members',
                   '14-day trial period',
                 ],
@@ -705,7 +727,7 @@ const SaaSLanding = () => {
                   'Stock Management',
                   'Expenses & Chart of Accounts',
                   'Documents & Analytics',
-                  '25 EVFI tokens/month',
+                  '25 EVFI\u2122 AI diagnoses/month',
                   'Up to 5 team members',
                 ],
                 cta: 'Start Now', action: () => setShowSignup(true), style: 'ghost',
@@ -726,7 +748,7 @@ const SaaSLanding = () => {
                   'Recurring Invoices & Bills',
                   'Advanced Inventory (Serial/Batch)',
                   'Invoice Automation',
-                  '100 EVFI tokens/month',
+                  '100 EVFI\u2122 AI diagnoses/month',
                   'Up to 15 team members',
                 ],
                 cta: 'Start Now', action: () => setShowSignup(true), style: 'primary',
@@ -736,7 +758,7 @@ const SaaSLanding = () => {
                 name: 'Enterprise', price: '₹4,999', period: '/mo', badge: null,
                 features: [
                   'Everything in Professional',
-                  'Unlimited EVFI tokens',
+                  'Unlimited EVFI\u2122 AI diagnoses',
                   'Business / Fleet Portal',
                   'Data Management & Backups',
                   'Unlimited team members',
@@ -807,16 +829,19 @@ const SaaSLanding = () => {
               Every ticket makes the platform smarter. Every repair makes the next one faster. This compounding loop is not a feature. It is the structural advantage.
             </p>
             <p className="text-lg font-semibold italic text-[#CBFF00]">
-              "This is our moat."
+              "Yeh aapka competitive advantage hai."
+            </p>
+            <p className="text-xs text-white/30 mt-1">
+              (This is your competitive advantage.)
             </p>
           </div>
 
           <div className="border border-white/[0.07]">
             {[
-              'More repairs completed',
-              'More structured failure data captured',
-              'Smarter EVFI diagnostics',
-              'Faster resolution times',
+              'You service more vehicles',
+              'Every repair\'s data is automatically captured',
+              'EVFI\u2122 diagnosis & resolution gets more accurate',
+              'Jobs completed faster, fewer repeat visits',
               'Happier customers, more referrals',
             ].map((step, idx) => (
               <div key={idx} className="flex items-center gap-5 p-5 border-b border-white/[0.07] last:border-b-0 hover:bg-[#CBFF00]/[0.03] transition">
@@ -827,9 +852,12 @@ const SaaSLanding = () => {
             ))}
             <div className="flex items-center gap-5 p-5 bg-[#CBFF00]/10 border-t border-[#CBFF00]/20">
               <span className="text-xs text-[#CBFF00] font-mono w-5">{'\u221E'}</span>
-              <span className="text-sm font-semibold text-[#CBFF00]">Stronger intelligence. Deeper moat.</span>
+              <span className="text-sm font-semibold text-[#CBFF00]">Your business grows. Automatically.</span>
             </div>
           </div>
+          <p className="text-sm text-white/40 italic mt-6 lg:col-span-2 text-center">
+            This is not just software. It's a system that gets better every day you use it.
+          </p>
         </div>
       </section>
 
@@ -838,11 +866,16 @@ const SaaSLanding = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_100%,rgba(203,255,0,0.06)_0%,transparent_60%)]" />
 
         <div className="relative z-10 max-w-3xl mx-auto">
+          <p className="text-sm md:text-base italic leading-relaxed text-[#CBFF00]/60 mb-8">
+            Diagnosis mein time waste band karo.<br />
+            Invoice pe GST galat hona band karo.<br />
+            Customer complaints miss hona band karo.
+          </p>
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none mb-6">
-            Ready to run India's smartest<br /><em className="italic text-[#CBFF00]">EV service center?</em>
+            EVFI{'\u2122'} se apna EV service & maintenance<br /><em className="italic text-[#CBFF00]">business smart banao.</em>
           </h2>
           <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mx-auto mb-12">
-            Join the platform that gets better with every repair.
+            Aaj hi shuru karo — 14 din free.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2" data-testid="cta-start-trial-btn">

@@ -106,7 +106,13 @@ function OperationsPanel({ onOpen }) {
 
       </div>
       <Animate show={vis} delay={2.8}>
-        <p className="text-white/35 text-sm mt-5 leading-relaxed">Complaint to assignment in under 60 seconds</p>
+        <p className="text-white/35 text-sm mt-5 leading-relaxed">Complaint to assignment in under 60 seconds.</p>
+      </Animate>
+      <Animate show={vis} delay={3.0}>
+        <div className="mt-4 space-y-2 text-xs leading-relaxed">
+          <p className="text-white/25"><span className="text-red-400/60">Without Battwheels:</span> WhatsApp message → forgotten → customer calls back → 2 days wasted</p>
+          <p className="text-white/25"><span className="text-teal-400/60">With Battwheels:</span> Complaint → assigned → tracked → 60 seconds</p>
+        </div>
       </Animate>
       <Animate show={vis} delay={3.0}>
         <button onClick={onOpen} className="text-[#CBFF00] text-sm mt-2 hover:underline transition" data-testid="showcase-link-operations">
@@ -203,7 +209,10 @@ function DiagnosisPanel({ onOpen }) {
 
       </div>
       <Animate show={vis} delay={4.8}>
-        <p className="text-white/35 text-sm mt-5 leading-relaxed">10x faster than manual troubleshooting. 84% first-visit fix rate.</p>
+        <p className="text-white/50 text-sm mt-5 leading-relaxed italic">Your technician opens the ticket. EVFI{'\u2122'} tells them exactly what to check, in what order, with safety warnings built in. No guessing. No wasted hours.</p>
+      </Animate>
+      <Animate show={vis} delay={4.8}>
+        <p className="text-white/35 text-sm mt-2 leading-relaxed">10x faster diagnosis & resolution than manual troubleshooting. 84% first-visit fix rate.</p>
       </Animate>
       <Animate show={vis} delay={4.8}>
         <button onClick={onOpen} className="text-[#CBFF00] text-sm mt-2 hover:underline transition" data-testid="showcase-link-efi">
@@ -306,7 +315,7 @@ function BillingPanel({ onOpen }) {
 
       </div>
       <Animate show={vis} delay={4.3}>
-        <p className="text-white/35 text-sm mt-5 leading-relaxed">GST-compliant invoice in one click. GSTR-1 and GSTR-3B ready. HSN validated.</p>
+        <p className="text-white/35 text-sm mt-5 leading-relaxed">Estimate → customer approved → one-click invoice → GST auto-calculated with HSN/SAC → GSTR-1 & 3B ready → filed. The complete digital billing chain.</p>
       </Animate>
       <Animate show={vis} delay={4.3}>
         <button onClick={onOpen} className="text-[#CBFF00] text-sm mt-2 hover:underline transition" data-testid="showcase-link-billing">
@@ -470,6 +479,10 @@ function IntelligencePanel({ onOpen }) {
       </div>
       <Animate show={vis} delay={5.0}>
         <p className="text-white/35 text-sm mt-5 leading-relaxed">Every resolved ticket makes EVFI smarter. Your technicians get better every day.</p>
+      </Animate>
+      <Animate show={vis} delay={5.2}>
+        <p className="text-white/40 text-sm mt-2 italic leading-relaxed">"Har repair ke baad EVFI{'\u2122'} aur smart hota hai. Aapke technicians ko har baar better guidance milti hai."</p>
+        <p className="text-xs text-white/20 mt-1">(After every repair, EVFI{'\u2122'} gets smarter. Your technicians get better guidance every time.)</p>
       </Animate>
       <Animate show={vis} delay={5.0}>
         <button onClick={onOpen} className="text-[#CBFF00] text-sm mt-2 hover:underline transition" data-testid="showcase-link-intelligence">
