@@ -16,7 +16,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://security-scan-54.preview.emergentagent.com")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://tenant-audit.preview.emergentagent.com")
 
 # Test credentials
 TEST_EMAIL = "demo@voltmotors.in"
