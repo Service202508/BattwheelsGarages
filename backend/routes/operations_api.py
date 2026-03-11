@@ -156,8 +156,6 @@ Schedule a workshop inspection for detailed diagnosis. Our technicians are train
 # ==================== DASHBOARD & ANALYTICS ====================
 
 @router.get("/dashboard/stats")
-
-@router.get("/dashboard/stats")
 async def get_dashboard_stats(request: Request):
     await require_auth(request)
 

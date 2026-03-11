@@ -193,10 +193,9 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ CONFIG/ANALYTICS (previously unmapped) ============
     r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
     r"^/api/dashboard(/.*)?$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
-    r"^/api/v1/dashboard(/.*)?$":           ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
     r"^/api/ai-usage(/.*)?$":                ["org_admin", "admin", "owner", "manager", "technician"],
-    r"^/api/v1/operations(/.*)?$":          ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+    r"^/api/operations(/.*)?$":          ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
 
     # ============ PERIOD LOCKING ============
     r"^/api/finance/period-locks(/.*)?$":   ["org_admin", "admin", "owner", "accountant"],
