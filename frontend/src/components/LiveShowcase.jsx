@@ -54,7 +54,7 @@ function Counter({ to, show, delay = 0, prefix = '', suffix = '' }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   PANEL 1 — Operations (Ticket Flow)
+   PANEL 1 - Operations (Ticket Flow)
    ═══════════════════════════════════════════════════════ */
 function OperationsPanel({ onOpen }) {
   const [ref, vis] = useScrollAnimation();
@@ -124,7 +124,7 @@ function OperationsPanel({ onOpen }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   PANEL 2 — EVFI™ Diagnosis (AI Working)
+   PANEL 2 - EVFI™ Diagnosis (AI Working)
    ═══════════════════════════════════════════════════════ */
 function DiagnosisPanel({ onOpen }) {
   const [ref, vis] = useScrollAnimation();
@@ -224,7 +224,7 @@ function DiagnosisPanel({ onOpen }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   PANEL 3 — Billing (Invoice with GST)
+   PANEL 3 - Billing (Invoice with GST)
    ═══════════════════════════════════════════════════════ */
 function BillingPanel({ onOpen }) {
   const [ref, vis] = useScrollAnimation();
@@ -327,7 +327,7 @@ function BillingPanel({ onOpen }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   PANEL 4 — Fleet Management
+   PANEL 4 - Fleet Management
    ═══════════════════════════════════════════════════════ */
 function FleetPanel({ onOpen }) {
   const [ref, vis] = useScrollAnimation();
@@ -407,7 +407,7 @@ function FleetPanel({ onOpen }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   PANEL 5 — EVFI Intelligence (Brain Learning)
+   PANEL 5 - EVFI Intelligence (Brain Learning)
    ═══════════════════════════════════════════════════════ */
 function IntelligencePanel({ onOpen }) {
   const [ref, vis] = useScrollAnimation();
@@ -494,7 +494,7 @@ function IntelligencePanel({ onOpen }) {
 }
 
 /* ═══════════════════════════════════════════════════════
-   MAIN: LiveShowcase — EXACTLY 5 Panels
+   MAIN: LiveShowcase - EXACTLY 5 Panels
    ═══════════════════════════════════════════════════════ */
 export default function LiveShowcase({ onOpenTour }) {
   return (

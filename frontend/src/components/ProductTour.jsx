@@ -54,7 +54,7 @@ const STEPS = [
         <div className="text-xs font-bold text-white/70 uppercase tracking-wider mb-1">New Service Ticket</div>
         {[
           { l: 'Customer', v: 'Rajesh Kumar' },
-          { l: 'Vehicle', v: 'Ola S1 Pro (2W) — DL01AB1234' },
+          { l: 'Vehicle', v: 'Ola S1 Pro (2W) - DL01AB1234' },
           { l: 'Issue', v: 'Vehicle not charging after firmware update' },
         ].map((f, i) => (
           <div key={i}>
@@ -142,7 +142,7 @@ const STEPS = [
           {/* Diagnostic Steps */}
           <div className="p-2.5 space-y-1.5">
             <div className="text-[9px] text-[#CBFF00] uppercase tracking-wider mb-1">Diagnostic Steps</div>
-            {["Check 12V auxiliary — Expected: 12.6V+", "DC-DC converter output — Expected: 13.2-14.4V", "BMS communication check via CAN"].map((step, i) => (
+            {["Check 12V auxiliary - Expected: 12.6V+", "DC-DC converter output - Expected: 13.2-14.4V", "BMS communication check via CAN"].map((step, i) => (
               <div key={i} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded border border-slate-700/50">
                 <span className="w-4 h-4 rounded-full bg-[#CBFF00]/10 text-[#CBFF00] text-[9px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i+1}</span>
                 <span className="text-[10px] text-white/70">{step}</span>
@@ -284,7 +284,7 @@ const STEPS = [
     mockup: () => (
       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between mb-1">
-          <div className="text-xs font-bold text-white/70">Payment — INV-2026-0398</div>
+          <div className="text-xs font-bold text-white/70">Payment - INV-2026-0398</div>
           <span className="text-[9px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">PAID</span>
         </div>
         <div className="space-y-2">
@@ -375,7 +375,7 @@ const STEPS = [
     mockup: () => (
       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-2">
         <div className="flex items-center justify-between mb-1">
-          <div className="text-xs font-bold text-white/70">Payroll Summary — March 2026</div>
+          <div className="text-xs font-bold text-white/70">Payroll Summary - March 2026</div>
           <span className="text-[10px] text-white/30">5 employees</span>
         </div>
         <Row label="Gross Salary" value={'₹' + '2,00,000'} />
@@ -397,7 +397,7 @@ const STEPS = [
     caption: 'GSTR-1 and GSTR-3B auto-generated. HSN validated. One-click Tally export. Save 24+ days per year on GST filing.',
     mockup: () => (
       <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
-        <div className="text-xs font-bold text-white/70 mb-1">GST Dashboard — March 2026</div>
+        <div className="text-xs font-bold text-white/70 mb-1">GST Dashboard - March 2026</div>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-zinc-900/60 border border-zinc-700/40 rounded p-2.5">
             <div className="text-[9px] text-white/30 uppercase tracking-wider mb-1">GSTR-1</div>
@@ -426,7 +426,7 @@ const STEPS = [
     badge: 'PLATFORM',
     icon: Brain,
     section: 4,
-    caption: 'Every resolved ticket makes EVFI smarter. 5 Lakh+ EV technicians needed in India — EVFI gives them expert-level intelligence from day one.',
+    caption: 'Every resolved ticket makes EVFI smarter. 5 Lakh+ EV technicians needed in India - EVFI gives them expert-level intelligence from day one.',
     mockup: () => (
       <div className="space-y-2.5">
         <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
@@ -453,11 +453,11 @@ const STEPS = [
         <div className="flex gap-2">
           <div className="flex-1 bg-purple-500/10 border border-purple-500/20 rounded p-2.5 text-center">
             <div className="text-[9px] text-purple-400 uppercase tracking-wider">Patterns</div>
-            <div className="text-lg font-bold text-purple-300">990+</div>
+            <div className="text-lg font-bold text-purple-300">1990+</div>
           </div>
           <div className="flex-1 bg-purple-500/10 border border-purple-500/20 rounded p-2.5 text-center">
             <div className="text-[9px] text-purple-400 uppercase tracking-wider">Knowledge</div>
-            <div className="text-lg font-bold text-purple-300">795+</div>
+            <div className="text-lg font-bold text-purple-300">12195+</div>
           </div>
         </div>
       </div>

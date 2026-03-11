@@ -15,35 +15,36 @@ BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provid
 ## What's Been Implemented
 
 ### Security (Session 15)
-- 37 cross-tenant data leak endpoints fixed (23 LEAK, 14 PARTIAL)
+- 37 cross-tenant data leak endpoints fixed
 - RBAC middleware regex patterns fixed for owner role access
-- All summary/stats endpoints enforce organization_id scoping
 
 ### UX Fixes (Session 16)
-- EVFI Diagnosis Readability: Responsive padding, break-words, max-w-4xl desktop
-- Dropdown Empty States: Customer, item, service, parts show helpful empty states
-- Sidebar Contrast: Section labels 50% opacity, nav items 75% opacity
-- Dashboard & Inventory Tabs: Horizontally scrollable on mobile
-- Invoice Date Display: No truncation with whitespace-nowrap
+- EVFI Diagnosis Readability, Dropdown Empty States, Sidebar Contrast
+- Dashboard & Inventory Tabs scrollable, Invoice Date Display fix
 
-### Homepage Content Rewrite v2.0 (Session 17 — Current)
-- **TASK 1**: Hero → "Stop Guessing. Start Fixing." + 4-benefit subtitle + VAHAN connecting line
-- **TASK 2**: Problem section → "Billing & GST Chaos" with new Hinglish quote
-- **TASK 3**: LiveShowcase → Without/With comparisons, EVFI context lines, billing chain, Hinglish
-- **TASK 4**: Opportunity → Closing paragraph with ₹25,000 Cr + EVFI
-- **TASK 5**: Five Audiences → Added Dealers tab, updated all feature pills
-- **TASK 6**: EVFI section → Hinglish emotional hook, "Diagnoses & Resolves"
-- **TASK 7**: Built for Scale → "Your Data, Only Yours" replacing "Multi-Tenant"
-- **TASK 8**: Pricing → "tokens" → "diagnoses" in all 4 tiers
-- **TASK 9**: Flywheel → User-focused language, "Yeh aapka competitive advantage hai"
-- **TASK 10**: CTA → Pain-focused Hinglish CTA
-- **TASK 11**: ProductTour → Updated titles, captions, final CTA
-- **TASK 12**: Global sweep verified (0 "workshop owner", 0 "tokens", 30+ EVFI mentions)
+### Homepage Content Rewrite v2.0 (Session 17)
+- Hero: "Stop Guessing. Start Fixing." + EVFI tagline + 4-benefit subtitle
+- Problem section: "Billing & GST Chaos" with Hinglish quote
+- LiveShowcase: Without/With comparisons, EVFI context, billing chain, Hinglish
+- Five Audiences: Dealers tab added, all feature pills updated with EVFI
+- EVFI section: Hinglish emotional hook, "Diagnoses & Resolves"
+- Built for Scale: "Your Data, Only Yours" replacing "Multi-Tenant"
+- Pricing: "tokens" -> "diagnoses" in all 4 tiers
+- Flywheel: User-focused language
+- CTA: Pain-focused Hinglish
+- ProductTour: Updated titles, captions, final CTA
 
-### Files Modified (Session 17)
-- `frontend/src/pages/SaaSLanding.jsx` — All landing page content
-- `frontend/src/components/LiveShowcase.jsx` — 5 showcase panels enhanced
-- `frontend/src/components/ProductTour.jsx` — Tour step titles/captions updated
+### Homepage Polish (Session 18 - Current)
+- EVFI tagline "Battwheels EVFI™ AI Diagnosis & Troubleshooting" below hero heading
+- All em dashes (—) replaced with hyphens (-) across 3 files (13+6+6=25 total)
+- Stats updated: 990+ -> 1990+ patterns, 795+ -> 12195+ knowledge articles
+- Product Tour: All 15 steps verified functional with correct content
+- Build clean, DB_NAME=battwheels confirmed
+
+### Files Modified (Session 18)
+- `frontend/src/pages/SaaSLanding.jsx` — EVFI tagline, em dashes, stats
+- `frontend/src/components/LiveShowcase.jsx` — em dashes replaced
+- `frontend/src/components/ProductTour.jsx` — em dashes, stats updated
 
 ## Prioritized Backlog
 
@@ -59,7 +60,7 @@ BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provid
 
 ### P2
 - Implement Payslip PDF generation
-- Fix Trial Balance Report (shows ₹0.00)
+- Fix Trial Balance Report (shows 0.00)
 - Refactor _enhanced file duplication
 - Decompose "God Files" (reports_advanced.py)
 - Unify invoices and ticket_invoices collections
@@ -70,4 +71,4 @@ BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provid
 ## Key Credentials
 - Demo Org: demo@voltmotors.in / Demo@12345
 - DB: battwheels (production), battwheels_dev (testing)
-- EVFI™ branding is trademarked — always use EVFI™, never EFI
+- EVFI™ is trademarked — always use EVFI™, never EFI

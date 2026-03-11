@@ -11,7 +11,7 @@ import {
 import ProductTour from '../components/ProductTour';
 import LiveShowcase from '../components/LiveShowcase';
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
 
 // Animated counter hook
@@ -151,7 +151,7 @@ const SaaSLanding = () => {
   const c3 = useCountUp(100);
   const c4 = useCountUp(0);
 
-  // Audience data — roadmap items tagged for honesty
+  // Audience data - roadmap items tagged for honesty
   const audiences = [
     {
       tab: 'Service Center Owners',
@@ -320,13 +320,16 @@ const SaaSLanding = () => {
             Battwheels OS
           </p>
 
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-none mb-8 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-none mb-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
             Stop Guessing.<br />
             <em className="italic text-[#CBFF00]">Start Fixing.</em>
           </h1>
+          <p className="text-lg md:text-xl font-normal text-gray-400 tracking-wide mb-8 animate-fade-up" style={{ animationDelay: '0.15s' }}>
+            Battwheels EVFI{'\u2122'} AI Diagnosis & Troubleshooting
+          </p>
 
           <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            Your technicians get EVFI{'\u2122'} AI diagnosis & resolution in seconds. Your billing runs on auto — from ticket to GST filing. Your customers track their vehicle status in real-time. You run a smarter, faster, more profitable EV service & maintenance business.
+            Your technicians get EVFI{'\u2122'} AI diagnosis & resolution in seconds. Your billing runs on auto - from ticket to GST filing. Your customers track their vehicle status in real-time. You run a smarter, faster, more profitable EV service & maintenance business.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.3s' }}>
@@ -407,8 +410,8 @@ const SaaSLanding = () => {
               },
               {
                 label: 'Billing & GST Chaos',
-                quote: '"Estimate banao, phir invoice banao, phir GST calculate karo, phir filing karo — sab manually. Galti hone ka dar rehta hai."',
-                translation: 'Create estimate, then invoice, then calculate GST, then file returns — all manually. Always worried about making mistakes.',
+                quote: '"Estimate banao, phir invoice banao, phir GST calculate karo, phir filing karo - sab manually. Galti hone ka dar rehta hai."',
+                translation: 'Create estimate, then invoice, then calculate GST, then file returns - all manually. Always worried about making mistakes.',
                 stat: 'Manual billing & GST filing costs 24+ days per year',
                 accent: 'border-blue-500/40',
                 statColor: 'text-blue-400',
@@ -472,7 +475,7 @@ const SaaSLanding = () => {
           ))}
         </div>
         <p className="text-sm md:text-base leading-relaxed text-white/40 max-w-4xl mt-8">
-          The EV market is exploding. Service centers that diagnose faster with EVFI{'\u2122'}, bill correctly with digital invoicing, and manage professionally will capture this ₹25,000 Cr opportunity. Battwheels OS gives you that edge — from day one.
+          The EV market is exploding. Service centers that diagnose faster with EVFI{'\u2122'}, bill correctly with digital invoicing, and manage professionally will capture this ₹25,000 Cr opportunity. Battwheels OS gives you that edge - from day one.
         </p>
       </section>
       <section ref={s3.ref} className={`py-20 px-6 md:px-12 ${revealClass(s3.visible)}`} id="segments">
@@ -538,13 +541,13 @@ const SaaSLanding = () => {
             <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-2xl mx-auto mt-4">
               India's first patented AI diagnostic engine built exclusively for electric vehicles.
               EVFI analyses symptoms, identifies root causes, and guides technicians through step-by-step
-              repairs — learning from every resolution to get smarter over time.
+              repairs - learning from every resolution to get smarter over time.
             </p>
             <p className="text-sm md:text-base italic leading-relaxed text-[#CBFF00]/70 max-w-2xl mx-auto mt-4">
-              "Aapka best technician har problem nahi dekh sakta. EVFI{'\u2122'} ne 990+ problems dekhe hain — aur har nayi repair se aur smart hota hai."
+              "Aapka best technician har problem nahi dekh sakta. EVFI{'\u2122'} ne 1990+ problems dekhe hain - aur har nayi repair se aur smart hota hai."
             </p>
             <p className="text-xs text-white/30 max-w-2xl mx-auto mt-1">
-              (Your best technician can't see every problem. EVFI{'\u2122'} has seen 990+ problems — and gets smarter with every new repair.)
+              (Your best technician can't see every problem. EVFI{'\u2122'} has seen 1990+ problems - and gets smarter with every new repair.)
             </p>
 
             {/* Patent + Make in India badges */}
@@ -568,7 +571,7 @@ const SaaSLanding = () => {
                 <li>Analyses vehicle model, symptoms, and historical fault patterns to pinpoint the root cause</li>
                 <li>Returns step-by-step diagnostic guidance with pass/fail checkpoints at every stage</li>
                 <li>Mandatory high-voltage safety warnings for battery, charging, and motor systems</li>
-                <li>Works in Hinglish — designed for the Indian workshop floor, not a Silicon Valley lab</li>
+                <li>Works in Hinglish - designed for the Indian workshop floor, not a Silicon Valley lab</li>
               </ul>
               <div className="mt-6 pt-4 border-t border-white/5">
                 <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">84%</span>
@@ -582,12 +585,12 @@ const SaaSLanding = () => {
               <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Learns From Every Repair</h3>
               <ul className="text-white/60 text-sm leading-relaxed space-y-3">
                 <li>Every resolved service ticket feeds anonymized diagnostic patterns back into the EVFI intelligence core</li>
-                <li>Your workshop's diagnostic accuracy improves with every job completed — no manual training required</li>
+                <li>Your workshop's diagnostic accuracy improves with every job completed - no manual training required</li>
                 <li>Cross-ecosystem learning: anonymized insights from thousands of EV repairs across India strengthen every technician's capabilities</li>
                 <li>Failure pattern recognition that no individual technician could build alone</li>
               </ul>
               <div className="mt-6 pt-4 border-t border-white/5">
-                <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">990+</span>
+                <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">1990+</span>
                 <p className="text-xs md:text-sm font-medium text-white/40 mt-1">Diagnostic patterns learned and growing daily</p>
               </div>
             </div>
@@ -599,7 +602,7 @@ const SaaSLanding = () => {
               <ul className="text-white/60 text-sm leading-relaxed space-y-3">
                 <li>Model-specific diagnostic intelligence for Ola, Ather, TVS, Bajaj, Tata, Mahindra, Hero, and every major Indian EV brand</li>
                 <li>Understands Indian road conditions, tropical climate impact on batteries, and local charging infrastructure realities</li>
-                <li>Trained exclusively on Indian EV workshop data — not adapted from foreign automotive datasets</li>
+                <li>Trained exclusively on Indian EV workshop data - not adapted from foreign automotive datasets</li>
                 <li>Supports 100+ EV models across two-wheelers, three-wheelers, and four-wheelers</li>
               </ul>
               <div className="mt-6 pt-4 border-t border-white/5">
@@ -875,7 +878,7 @@ const SaaSLanding = () => {
             EVFI{'\u2122'} se apna EV service & maintenance<br /><em className="italic text-[#CBFF00]">business smart banao.</em>
           </h2>
           <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mx-auto mb-12">
-            Aaj hi shuru karo — 14 din free.
+            Aaj hi shuru karo - 14 din free.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2" data-testid="cta-start-trial-btn">
