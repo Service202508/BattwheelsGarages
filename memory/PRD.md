@@ -1,72 +1,62 @@
-# Battwheels OS — Product Requirements Document
+# BattWheels OS — Product Requirements Document
 
-## Original Problem Statement
-Build and maintain Battwheels OS, a multi-tenant SaaS platform for EV service businesses. The platform includes CRM, invoicing, inventory, ticketing, HR, AI diagnostics (EVFI™), and reporting modules.
+## Overview
+BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provides service ticket management, EVFI (diagnostic AI), invoicing, inventory, HR, and comprehensive reporting for EV workshops.
 
-## Architecture
-- **Frontend:** React + Shadcn/UI + TailwindCSS (port 3000)
-- **Backend:** FastAPI + MongoDB (port 8001)
-- **Database:** MongoDB (battwheels = production, battwheels_dev = testing)
-- **Auth:** JWT + TenantGuard middleware
-- **3rd Party:** Sentry, Razorpay, Resend, Gemini (EVFI), ZXing
+## Core Architecture
+- **Frontend**: React + Tailwind CSS + Shadcn/UI (dark theme, "bw-volt" green accent)
+- **Backend**: FastAPI + MongoDB (via Motor async driver)
+- **Auth**: JWT-based, multi-tenant with organization_id scoping
+- **AI**: Gemini via Emergent LLM Key (EVFI diagnostic engine)
+- **Payments**: Razorpay
+- **Email**: Resend
+- **Monitoring**: Sentry
 
 ## What's Been Implemented
 
-### Subscription Plan Gating (Complete)
-- 4-tier plans: free_trial, starter, professional, enterprise
-- Frontend: planConfig.js, UpgradePrompt.jsx, lock icons in Layout.jsx
-- Backend: plan_enforcement.py middleware, record limits in routes
+### Security (Session 15)
+- 37 cross-tenant data leak endpoints fixed (23 LEAK, 14 PARTIAL)
+- RBAC middleware regex patterns fixed for owner role access
+- All summary/stats endpoints now enforce organization_id scoping
 
-### Open Registration (Complete)
-- Beta code removed from frontend forms
-- invite_code made optional in backend
+### UX Fixes (Session 16 — Current)
+- **EVFI Diagnosis Readability**: Responsive padding (px-3 mobile / px-6 desktop), break-words, flex-shrink-0 badges, max-w-4xl desktop width
+- **Dropdown Empty States**: All major dropdowns (customer, item, service, parts) show helpful empty states with navigation links when no data exists
+- **Sidebar Contrast**: Section labels at 50% opacity (up from 25%), nav items at 75% opacity (up from 65%), icons at 50% (up from 40%)
+- **Single Close Mechanism**: Mobile Sheet X button styled for dark theme with z-10, no duplicate close buttons
+- **Dashboard Tabs Scrollable**: overflow-x-auto with touch scrolling, hidden scrollbar, flex-shrink-0 on each tab
+- **Inventory Tabs Scrollable**: Same pattern applied to ItemsEnhanced tabs
+- **Invoice Date Display**: whitespace-nowrap + min-w-[100px] prevents date truncation on mobile
+- **Estimate Date Inputs**: min-w-[140px] prevents truncation
 
-### Homepage UX (Complete)
-- Mobile hamburger menu on SaaSLanding.jsx
-- 4-tier pricing section matching planConfig.js
-
-### Mobile UX Bug Fixes — 11 total (Complete)
-- EVFI diagnosis panel responsive layout
-- Scrollable tab bars, sidebar fixes, empty-state handling
-- Barcode scanner camera, vehicle category seeding
-
-### Cross-Tenant Data Leak Fix — Wave 4 (Complete, Mar 11 2026)
-- **37 endpoints fixed** across 17 files
-- 23 LEAK endpoints: added org_id to all queries
-- 14 PARTIAL endpoints: removed `if org_id else {}` pattern
-- Verification: 33/33 endpoints clean (zero suspicious data in new org)
+### Testing Status
+- All 11 UX fixes verified at 390px (mobile) and 1920px (desktop) — 100% pass rate
+- Build passes successfully
 
 ## Prioritized Backlog
 
-### P0 — Blocking
-- [x] Cross-tenant leak investigation (complete)
-- [x] Cross-tenant fixes — 37 endpoints (complete)
-- [ ] First Customer Journey Audit (full UI/UX walkthrough)
-- [ ] RBAC permission map — operations/dashboard routes returning 403
+### P0
+- First Customer Journey Audit (new user onboarding walkthrough)
 
-### P1 — High
-- [ ] Fix CI/CD pipeline
-- [ ] Migrate remaining mocked emails to Resend
-- [ ] Backend test suite fix (conftest.py fixture issue)
-- [ ] Orphaned tenant records cleanup (org_56469233873f, org_90677017dafe)
+### P1
+- Fix backend test suite (conftest.py fixture issue)
+- Clean orphaned tenant records in production DB
+- Automate vehicle category seeding for new orgs
+- Verify production email service (Resend)
+- Fix CI/CD pipeline
 
-### P2 — Medium/Backlog
-- [ ] Trial Balance Report ₹0.00
-- [ ] Payslip PDF generation
-- [ ] Collection consolidation (invoices + ticket_invoices)
-- [ ] God file decomposition (reports_advanced.py)
-- [ ] _enhanced file duplication refactor
-- [ ] Vehicle categories automated seeding in deployment script
+### P2
+- Implement Payslip PDF generation
+- Fix Trial Balance Report (shows 0.00)
+- Refactor _enhanced file duplication
+- Decompose "God Files" (reports_advanced.py)
+- Unify invoices and ticket_invoices collections
+- Migrate mocked emails to real EmailService
+- Fix React hydration warnings (span in tbody)
+- Demo data naming convention (Pvt Ltd)
+- Technician report "Avg Response N/A"
 
-## Known Issues
-- Backend test suite fails (dev@battwheels.internal fixture missing)
-- RBAC_UNMAPPED_ROUTE for some operations endpoints
-- Email verification status unclear in production
-- pre-commit hook false positives on multi-line `import {` blocks
-
-## Credentials
-- Platform Admin: platform-admin@battwheels.in / v4Nx6^3Xh&uPWwxK9HOs
-- Demo Org Owner: demo@voltmotors.in / Demo@12345
-
-## Rollback Point
-- Checkpoint: 4f2f7227 (pre-cross-tenant-fix)
+## Key Credentials
+- Demo Org: demo@voltmotors.in / Demo@12345
+- DB: battwheels (production), battwheels_dev (testing)
+- EVFI branding is trademarked — always use EVFI, never EFI
