@@ -535,16 +535,16 @@ export default function GSTReports() {
                         <TableBody>
                           <TableRow className="border-b border-white/[0.07]">
                             <TableCell className="text-bw-white">Outward taxable supplies</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.taxable_value)}</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.taxable_value)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.cgst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.sgst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.igst)}</TableCell>
                           </TableRow>
                           <TableRow className="bg-white/[0.03] font-semibold border-b border-white/[0.07]">
                             <TableCell className="text-bw-white">Total Output Tax</TableCell>
                             <TableCell></TableCell>
                             <TableCell colSpan={3} className="text-right text-bw-white">
-                              {formatCurrency(gstr3bData.section_3_1?.total_tax)}
+                              {formatCurrency(gstr3bData.section_3_1?.a?.total_tax)}
                             </TableCell>
                           </TableRow>
                         </TableBody>
@@ -599,25 +599,25 @@ export default function GSTReports() {
                         <TableBody>
                           <TableRow className="border-b border-white/[0.07]">
                             <TableCell className="text-bw-white">CGST</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.cgst)}</TableCell>
                             <TableCell className="text-right text-bw-green">{formatCurrency(gstr3bData.section_4?.cgst)}</TableCell>
                             <TableCell className="text-right font-medium text-bw-white">{formatCurrency(gstr3bData.section_6?.net_cgst)}</TableCell>
                           </TableRow>
                           <TableRow className="border-b border-white/[0.07]">
                             <TableCell className="text-bw-white">SGST</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.sgst)}</TableCell>
                             <TableCell className="text-right text-bw-green">{formatCurrency(gstr3bData.section_4?.sgst)}</TableCell>
                             <TableCell className="text-right font-medium text-bw-white">{formatCurrency(gstr3bData.section_6?.net_sgst)}</TableCell>
                           </TableRow>
                           <TableRow className="border-b border-white/[0.07]">
                             <TableCell className="text-bw-white">IGST</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.igst)}</TableCell>
                             <TableCell className="text-right text-bw-green">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
                             <TableCell className="text-right font-medium text-bw-white">{formatCurrency(gstr3bData.section_6?.net_igst)}</TableCell>
                           </TableRow>
                           <TableRow className="bg-bw-volt/10 font-bold">
                             <TableCell className="text-bw-volt">TOTAL</TableCell>
-                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.total_tax)}</TableCell>
+                            <TableCell className="text-right text-bw-white">{formatCurrency(gstr3bData.section_3_1?.a?.total_tax)}</TableCell>
                             <TableCell className="text-right text-bw-green">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
                             <TableCell className="text-right text-bw-volt">{formatCurrency(gstr3bData.section_6?.total_liability)}</TableCell>
                           </TableRow>

@@ -5,23 +5,15 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-import motor.motor_asyncio
-import os
 import uuid
 import logging
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import db, extract_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/data-migration", tags=["Data Migration"])
-
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 # Collections
 contacts_enhanced_collection = db["contacts_enhanced"]

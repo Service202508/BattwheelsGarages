@@ -21,7 +21,7 @@ const Section = ({ icon: Icon, num, title, children }) => (
 const plans = [
   { name: 'Free Trial', price: '₹0', duration: '14 days', features: 'All Professional features' },
   { name: 'Starter', price: '₹2,999', duration: '/month', features: 'Core operations, basic reports, 5 users' },
-  { name: 'Professional', price: '₹5,999', duration: '/month', features: 'HR & Payroll, E-Invoice, EFI AI, 25 users' },
+  { name: 'Professional', price: '₹5,999', duration: '/month', features: 'HR & Payroll, E-Invoice, EVFI AI, 25 users' },
   { name: 'Enterprise', price: 'Custom', duration: 'annual', features: 'Unlimited users, SLA, custom onboarding, dedicated support' },
 ];
 
@@ -59,7 +59,7 @@ export default function Terms() {
         </div>
 
         <Section icon={FileText} num="01" title="The Service">
-          <p>Battwheels OS is a cloud-based SaaS platform for electric vehicle service management. It includes: service ticketing, EFI AI diagnostics, invoicing (GST-compliant), HR and payroll, inventory management, and analytics.</p>
+          <p>Battwheels OS is a cloud-based SaaS platform for electric vehicle service management. It includes: service ticketing, EVFI AI diagnostics, invoicing (GST-compliant), HR and payroll, inventory management, and analytics.</p>
           <p>The platform is operated from India and is designed primarily for the Indian EV services market. Enterprise customers outside India may contact us for custom arrangements.</p>
           <p>We may update, modify, or discontinue features with reasonable notice. Material removals will be communicated via email to registered admin users at least 30 days in advance.</p>
         </Section>
@@ -99,39 +99,48 @@ export default function Terms() {
 
         <Section icon={Lock} num="04" title="Data Ownership & Intellectual Property">
           <p><span className="text-white/80 font-medium">Your data is yours.</span> All operational data created by your organisation (tickets, invoices, employees, vehicles, customers) remains your property. You may export it at any time. We do not claim ownership of your data.</p>
-          <p><span className="text-white/80 font-medium">EFI knowledge base.</span> Failure Cards created from your tickets are scoped to your organisation. We do not use your resolution data to train models shared with other organisations.</p>
-          <p><span className="text-white/80 font-medium">Platform IP.</span> The Battwheels OS platform, EFI Engine, and all associated code, algorithms, designs, and trademarks are owned by Battwheels Services Private Limited. You receive a limited, non-exclusive, non-transferable licence to use the platform during your subscription.</p>
+          <p><span className="text-white/80 font-medium">EVFI knowledge base.</span> Failure Cards created from your tickets are scoped to your organisation. We do not use your resolution data to train models shared with other organisations.</p>
+          <p><span className="text-white/80 font-medium">Platform IP.</span> The Battwheels OS platform, EVFI Engine, and all associated code, algorithms, designs, and trademarks are owned by Battwheels Services Private Limited. You receive a limited, non-exclusive, non-transferable licence to use the platform during your subscription.</p>
           <p><span className="text-white/80 font-medium">Feedback.</span> If you submit feature requests or feedback, you grant us the right to use that feedback without compensation.</p>
         </Section>
 
-        <Section icon={AlertTriangle} num="05" title="Acceptable Use">
+        <Section icon={AlertTriangle} num="05" title="EVFI™ Diagnostic Advisory Disclaimer">
+          <p><span className="text-white/80 font-medium">Advisory only.</span> Battwheels EVFI™ diagnostic suggestions are provided as advisory guidance only and do not constitute professional engineering, electrical, or safety advice. All EVFI outputs — including root cause analysis, diagnostic steps, parts recommendations, and confidence scores — are AI-generated and must be independently verified by a qualified EV technician before any repair work is performed.</p>
+          <p><span className="text-white/80 font-medium">No liability.</span> Battwheels Services Private Limited accepts no liability for damages arising from reliance on EVFI diagnostic suggestions without independent professional verification.</p>
+          <p><span className="text-white/80 font-medium">Evolving intelligence.</span> Users acknowledge that EVFI intelligence improves over time through anonymised pattern learning and that early-stage suggestions may have lower accuracy than mature datasets.</p>
+        </Section>
+
+        <Section icon={AlertTriangle} num="06" title="Acceptable Use">
           <p>You agree not to:</p>
           {[
             'Use the platform for any purpose that violates applicable Indian law or regulations',
             'Attempt to access another organisation\'s data or probe the multi-tenant isolation boundary',
             'Reverse-engineer, decompile, or attempt to extract source code from the platform',
-            'Use automated tools to scrape data from the platform beyond the official API',
+            'Use automated tools to scrape, crawl, or extract data from the platform beyond the official API',
+            'Copy, reproduce, or create derivative works of the platform\'s user interface, visual design, or workflow architecture',
+            'Use EVFI™ diagnostic outputs commercially outside the platform — including reselling, redistributing, or incorporating EVFI intelligence into competing products or services',
             'Upload malicious code, scripts, or payloads to any input field',
             'Share API credentials or JWT tokens across organisations',
             'Resell or sublicense access to the platform without written permission',
+            'Remove, obscure, or alter any proprietary notices, watermarks, or attribution embedded in platform outputs',
           ].map(r => (
             <p key={r} className="flex items-start gap-2"><span className="text-white/30 font-mono shrink-0">—</span>{r}</p>
           ))}
           <p>Violation of acceptable use may result in immediate suspension without refund.</p>
         </Section>
 
-        <Section icon={AlertTriangle} num="06" title="Limitation of Liability">
+        <Section icon={AlertTriangle} num="07" title="Limitation of Liability">
           <p>Battwheels OS is provided "as is". We make reasonable efforts to ensure availability and data integrity but do not guarantee 100% uptime or error-free operation.</p>
           <p>To the maximum extent permitted by Indian law, Battwheels' total liability to you for any claim arising from use of the platform shall not exceed the amount you paid in subscription fees in the 3 months preceding the claim.</p>
           <p>We are not liable for: loss of revenue, indirect or consequential damages, data loss resulting from your failure to export backups, or downtime caused by third-party services (Razorpay, Resend, etc.).</p>
         </Section>
 
-        <Section icon={Scale} num="07" title="Governing Law & Disputes">
+        <Section icon={Scale} num="08" title="Governing Law & Disputes">
           <p>These Terms are governed by the laws of India. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka, India.</p>
           <p>Before initiating legal proceedings, you agree to first contact us at <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a> and allow 30 days for good-faith resolution.</p>
         </Section>
 
-        <Section icon={FileText} num="08" title="Changes to These Terms">
+        <Section icon={FileText} num="09" title="Changes to These Terms">
           <p>We may update these Terms as the platform and applicable regulations evolve. Material changes will be communicated to registered admin users by email at least 14 days before they take effect.</p>
           <p>Continued use of Battwheels OS after the effective date of changes constitutes acceptance of the updated Terms.</p>
           <p>Questions? Email <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a></p>
@@ -140,7 +149,7 @@ export default function Terms() {
 
       {/* Footer */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="text-xs text-white/20 font-mono">© 2026 Battwheels Services Private Limited · EFI Engine v2 · India</div>
+        <div className="text-xs text-white/20 font-mono">&copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved</div>
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>

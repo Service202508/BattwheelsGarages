@@ -1,6 +1,6 @@
 """
 Battwheels Knowledge Brain - AI Guidance Routes
-API endpoints for EFI Guidance Layer
+API endpoints for EVFI Guidance Layer
 """
 
 from fastapi import APIRouter, HTTPException, Request, Query, Body
@@ -9,13 +9,17 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import logging
 
-from services.ai_guidance_service import AIGuidanceService, GuidanceContext, GuidanceMode
+from services.ai_guidance_service import (
+    AIGuidanceService, GuidanceContext, GuidanceMode,
+    inject_safety_warning, classify_efi_response,
+    EFI_DAILY_LIMITS, sanitize_efi_response, inject_watermark,
+)
 from services.visual_spec_service import VisualSpecService, EVDiagnosticTemplates
 from services.feature_flags import FeatureFlagService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/ai/guidance", tags=["AI Guidance - Technician EFI Layer"])
+router = APIRouter(prefix="/ai/guidance", tags=["AI Guidance - Technician EVFI Layer"])
 
 
 def get_db():
@@ -69,7 +73,7 @@ class AddToEstimateRequest(BaseModel):
 @router.get("/status")
 async def get_guidance_status(http_request: Request):
     """
-    Check if EFI Guidance Layer is enabled for the organization.
+    Check if EVFI Guidance Layer is enabled for the organization.
     Returns feature flag status and configuration.
     """
     org_id = getattr(http_request.state, "tenant_org_id", None)
@@ -100,17 +104,11 @@ async def generate_guidance(
     http_request: Request
 ):
     """
-    Generate EFI guidance for a Job Card/Ticket.
-    
-    Returns structured Hinglish guidance with:
-    - Safety block
-    - Step-by-step diagnostic guide
-    - Visual diagram spec (Mermaid)
-    - Micro-charts
-    - Estimate suggestions
-    - Sources cited
+    Generate EVFI guidance for a Job Card/Ticket.
+    Rate-limited by plan, audit-logged, watermarked, and sanitized.
     """
     org_id = getattr(http_request.state, "tenant_org_id", None)
+    user_id = http_request.headers.get("X-User-ID", "anonymous")
     
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
@@ -122,8 +120,27 @@ async def generate_guidance(
     if not await service.is_enabled(org_id):
         raise HTTPException(
             status_code=403,
-            detail="EFI Guidance Layer is not enabled for your organization."
+            detail="EVFI Guidance Layer is not enabled for your organization."
         )
+    
+    # ── Rate Limit (per day by plan) ──
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    org_doc = await db.organizations.find_one(
+        {"organization_id": org_id}, {"_id": 0, "plan_type": 1}
+    )
+    plan_code = (org_doc or {}).get("plan_type", "starter")
+    daily_limit = EFI_DAILY_LIMITS.get(plan_code, 20)
+
+    if daily_limit != -1:
+        usage = await db.ai_usage.find_one(
+            {"organization_id": org_id, "date": today}, {"_id": 0, "guidance_count": 1}
+        )
+        current_count = (usage or {}).get("guidance_count", 0)
+        if current_count >= daily_limit:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Daily EVFI limit reached ({daily_limit}/day on {plan_code} plan). Upgrade for more."
+            )
     
     # Get ticket context from database
     ticket = await db.tickets.find_one(
@@ -164,16 +181,32 @@ async def generate_guidance(
     
     # Track usage
     await db.ai_usage.update_one(
-        {
-            "organization_id": org_id,
-            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        },
+        {"organization_id": org_id, "date": today},
         {
             "$inc": {"guidance_count": 1},
             "$setOnInsert": {"created_at": datetime.now(timezone.utc).isoformat()}
         },
         upsert=True
     )
+    
+    # ── Audit Log ──
+    await db.efi_audit_log.insert_one({
+        "user_id": user_id,
+        "organization_id": org_id,
+        "ticket_id": data.ticket_id,
+        "mode": data.mode,
+        "query": (data.description or ticket.get("description", ""))[:500],
+        "guidance_id": result.get("guidance_id"),
+        "from_cache": result.get("from_cache", False),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+    
+    # ── Watermark guidance text with org_id ──
+    if result.get("guidance_text"):
+        result["guidance_text"] = inject_watermark(result["guidance_text"], org_id)
+    
+    # ── Sanitize: strip internal data before returning ──
+    return sanitize_efi_response(result)
     
     return result
 
@@ -254,6 +287,13 @@ async def get_guidance_for_ticket(http_request: Request, ticket_id: str, mode: s
     )
     
     if cached:
+        # Ensure efi_classification is present on cached results
+        if "efi_classification" not in cached:
+            ticket = await db.tickets.find_one(
+                {"ticket_id": ticket_id}, {"_id": 0}
+            )
+            if ticket:
+                cached["efi_classification"] = classify_efi_response(ticket)
         return cached
     
     # Generate new guidance

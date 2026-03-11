@@ -28,8 +28,7 @@ import {
   Settings, ClipboardList, BarChart3, AlertTriangle, Paperclip,
   FileDown, FileUp, Printer, Link2, ArrowUpDown
 } from "lucide-react";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { API } from "@/App";
 
 const STATUS_STYLES = {
   draft: "bg-yellow-100 text-yellow-800",
@@ -121,8 +120,14 @@ export default function InventoryAdjustments() {
         fetch(`${API}/items-enhanced/?per_page=500`, { headers }),
         fetch(`${API}/inventory-enhanced/warehouses`, { headers })
       ]);
+
+      const safeParse = async (res) => {
+        if (!res.ok) return {};
+        return res.json();
+      };
+
       const [adjData, sumData, reasonsData, itemsData, whData] = await Promise.all([
-        adjRes.json(), sumRes.json(), reasonsRes.json(), itemsRes.json(), whRes.json()
+        safeParse(adjRes), safeParse(sumRes), safeParse(reasonsRes), safeParse(itemsRes), safeParse(whRes)
       ]);
       setAdjustments(adjData.adjustments || []);
       setPagination({ page: adjData.page, per_page: adjData.per_page, total: adjData.total, total_pages: adjData.total_pages });

@@ -4,15 +4,10 @@
 
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-import motor.motor_asyncio
 import os
 import uuid
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 # Collections
 activity_log_collection = db["activity_logs"]

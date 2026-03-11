@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { FileText, TrendingUp, TrendingDown, Equal, Calendar } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
 
 export default function BalanceSheet() {
   const [data, setData] = useState(null);
@@ -19,7 +19,7 @@ export default function BalanceSheet() {
       const token = localStorage.getItem('token');
       const orgId = localStorage.getItem('organization_id') || '';
       const res = await fetch(
-        `${API}/api/v1/journal-entries/reports/balance-sheet?as_of_date=${date}`,
+        `${API}/journal-entries/reports/balance-sheet?as_of_date=${date}`,
         { headers: { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId } }
       );
       if (!res.ok) throw new Error('Failed to load balance sheet');

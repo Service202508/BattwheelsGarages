@@ -5,20 +5,12 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
-import os
 import uuid
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import db, extract_org_id, org_query
 
 
 router = APIRouter(prefix="/serial-batch", tags=["Serial & Batch Tracking"])
-
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 # Collections
 items_collection = db["items"]
@@ -507,6 +499,7 @@ async def get_expiring_batches(request: Request, days: int = 30):
     today = get_today()
     
     batches = await batch_numbers_collection.find({
+        "organization_id": org_id,
         "expiry_date": {"$lte": future_date, "$gte": today},
         "available_quantity": {"$gt": 0}
     }, {"_id": 0}).sort("expiry_date", 1).to_list(100)

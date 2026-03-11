@@ -37,8 +37,8 @@ export default function RecurringTransactions() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [riRes, custRes] = await Promise.all([
-        fetch(`${API}/zoho/recurring-invoices`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=customer&per_page=200`, { headers })
+        fetch(`${API}/recurring-invoices`, { headers }),
+        fetch(`${API}/contacts-enhanced?contact_type=customer&per_page=200`, { headers })
       ]);
       const [riData, custData] = await Promise.all([riRes.json(), custRes.json()]);
       setRecurringInvoices(riData.recurring_invoices || []);
@@ -62,7 +62,7 @@ export default function RecurringTransactions() {
     if (!newRI.line_items.length) return toast.error("Add at least one item");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-invoices`, {
+      const res = await fetch(`${API}/recurring-invoices`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newRI)
@@ -79,7 +79,7 @@ export default function RecurringTransactions() {
   const handleStop = async (riId) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/recurring-invoices/${riId}/stop`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`${API}/recurring-invoices/${riId}/stop`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       toast.success("Recurring invoice stopped");
       fetchData();
     } catch { toast.error("Error stopping"); }
@@ -88,7 +88,7 @@ export default function RecurringTransactions() {
   const handleResume = async (riId) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/recurring-invoices/${riId}/resume`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`${API}/recurring-invoices/${riId}/resume`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       toast.success("Recurring invoice resumed");
       fetchData();
     } catch { toast.error("Error resuming"); }
@@ -97,7 +97,7 @@ export default function RecurringTransactions() {
   const handleGenerateNow = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-invoices/generate`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API}/recurring-invoices/generate`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       toast.success(data.message);
       fetchData();

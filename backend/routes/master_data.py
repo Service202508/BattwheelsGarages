@@ -257,7 +257,7 @@ async def get_issue_suggestions(request: Request, category_code: Optional[str] =
     
     suggestions = await db.ev_issue_suggestions.find(query, {"_id": 0}).sort("usage_count", -1).to_list(50)
     
-    # Also get suggestions from historical ticket data (EFI)
+    # Also get suggestions from historical ticket data (EVFI)
     if category_code or model_id:
         efi_query = {"is_active": True}
         if category_code:
@@ -271,7 +271,7 @@ async def get_issue_suggestions(request: Request, category_code: Optional[str] =
             {"_id": 0, "failure_id": 1, "title": 1, "subsystem_category": 1, "symptoms": 1, "confidence_score": 1}
         ).sort("confidence_score", -1).limit(10).to_list(10)
         
-        # Convert EFI cards to suggestion format
+        # Convert EVFI cards to suggestion format
         for card in efi_cards:
             suggestions.append({
                 "suggestion_id": card.get("failure_id"),

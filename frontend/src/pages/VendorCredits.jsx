@@ -36,9 +36,9 @@ export default function VendorCredits() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [vcRes, vendorsRes, billsRes] = await Promise.all([
-        fetch(`${API}/zoho/vendorcredits?per_page=100`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=vendor&per_page=200`, { headers }),
-        fetch(`${API}/zoho/bills?per_page=200`, { headers })
+        fetch(`${API}/vendor-credits?per_page=100`, { headers }),
+        fetch(`${API}/contacts-enhanced?contact_type=vendor&per_page=200`, { headers }),
+        fetch(`${API}/bills?per_page=200`, { headers })
       ]);
       const [vcData, vendorsData, billsData] = await Promise.all([vcRes.json(), vendorsRes.json(), billsRes.json()]);
       setCredits(vcData.vendorcredits || []);
@@ -62,7 +62,7 @@ export default function VendorCredits() {
     if (!newVC.line_items.length) return toast.error("Add at least one item");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/vendorcredits`, {
+      const res = await fetch(`${API}/vendor-credits`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newVC)
@@ -80,7 +80,7 @@ export default function VendorCredits() {
     if (!selectedVC || !selectedBill || applyAmount <= 0) return toast.error("Select bill and enter amount");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/vendorcredits/${selectedVC.vendorcredit_id}/bills/${selectedBill}/apply?amount=${applyAmount}`, {
+      const res = await fetch(`${API}/vendor-credits/${selectedVC.vendorcredit_id}/bills/${selectedBill}/apply?amount=${applyAmount}`, {
         method: "POST", headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

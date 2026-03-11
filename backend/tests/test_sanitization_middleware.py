@@ -98,14 +98,14 @@ class TestSanitizationUnitLogic:
     def test_strips_script_tags(self):
         from middleware.sanitization import _sanitize_value
 
-        result = _sanitize_value('<script>alert("xss")</script>Hello')
+        result, count = _sanitize_value('<script>alert("xss")</script>Hello')
         assert result == 'alert("xss")Hello'
         print(f"✓ Script tags stripped: {result}")
 
     def test_strips_img_onerror(self):
         from middleware.sanitization import _sanitize_value
 
-        result = _sanitize_value('<img src=x onerror=alert(1)>')
+        result, count = _sanitize_value('<img src=x onerror=alert(1)>')
         assert "<img" not in result
         print(f"✓ img onerror stripped: {result}")
 
@@ -113,7 +113,7 @@ class TestSanitizationUnitLogic:
         from middleware.sanitization import _sanitize_value
 
         payload = {"email": "<b>user</b>@test.com", "password": "P@ss<word>&123"}
-        result = _sanitize_value(payload)
+        result, count = _sanitize_value(payload)
         assert result["email"] == "user@test.com"  # HTML stripped
         assert result["password"] == "P@ss<word>&123"  # Password preserved
         print(f"✓ email sanitized, password exempt")
@@ -122,7 +122,7 @@ class TestSanitizationUnitLogic:
         from middleware.sanitization import _sanitize_value
 
         payload = {"current_password": "Old<Pass>", "new_password": "New<Pass>&1"}
-        result = _sanitize_value(payload)
+        result, count = _sanitize_value(payload)
         assert result["current_password"] == "Old<Pass>"
         assert result["new_password"] == "New<Pass>&1"
         print("✓ current_password and new_password exempt")
@@ -134,7 +134,7 @@ class TestSanitizationUnitLogic:
             "name": "<b>Test</b>",
             "details": {"note": "<script>x</script>ok", "password": "Keep<Me>"},
         }
-        result = _sanitize_value(payload)
+        result, count = _sanitize_value(payload)
         assert result["name"] == "Test"
         assert result["details"]["note"] == "xok"
         assert result["details"]["password"] == "Keep<Me>"
@@ -144,7 +144,7 @@ class TestSanitizationUnitLogic:
         from middleware.sanitization import _sanitize_value
 
         payload = ["<b>bold</b>", "<script>x</script>clean", "normal"]
-        result = _sanitize_value(payload)
+        result, count = _sanitize_value(payload)
         assert result[0] == "bold"
         assert result[1] == "xclean"
         assert result[2] == "normal"

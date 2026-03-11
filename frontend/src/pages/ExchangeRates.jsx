@@ -53,7 +53,7 @@ export default function ExchangeRates() {
   const fetchRates = async () => {
     setLoading(true);
     try {
-      const url = `${API}/zoho/settings/exchange-rates${fromCurrencyFilter ? `?from_currency=${fromCurrencyFilter}` : ''}`;
+      const url = `${API}/settings/exchange-rates${fromCurrencyFilter ? `?from_currency=${fromCurrencyFilter}` : ''}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       setRates(data.exchange_rates || []);
@@ -77,7 +77,7 @@ export default function ExchangeRates() {
     }
 
     try {
-      const res = await fetch(`${API}/zoho/settings/exchange-rates`, {
+      const res = await fetch(`${API}/settings/exchange-rates`, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(formData)

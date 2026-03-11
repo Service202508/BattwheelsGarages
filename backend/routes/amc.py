@@ -5,19 +5,16 @@ Admin routes for managing AMC plans and subscriptions.
 Based on official Battwheels Garages subscription plans.
 """
 from fastapi import APIRouter, HTTPException, Depends, Request, Query
-from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Optional, List
+from utils.database import db as _amc_db, extract_org_id, org_query
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone, timedelta
 import os
 import uuid
-from utils.database import extract_org_id, org_query
 
-
-# MongoDB connection — deferred to avoid module-level env var access at import time
 def get_db():
-    from server import db as _db
-    return _db
+    return _amc_db
+
+from typing import Optional, List
 
 router = APIRouter(prefix="/amc", tags=["AMC Management"])
 
@@ -114,7 +111,8 @@ async def require_admin(request: Request):
     user = await get_current_user_from_request(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if user.get("role") not in ("admin", "owner"):
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
 
@@ -124,7 +122,8 @@ async def require_admin_or_technician(request: Request):
     user = await get_current_user_from_request(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if user.get("role") not in ["admin", "owner", "technician"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "technician"):
         raise HTTPException(status_code=403, detail="Admin or technician access required")
     return user
 
@@ -138,6 +137,7 @@ async def create_amc_plan(request: Request, plan_data: AMCPlanCreate):
     
     plan = {
         "plan_id": f"amc_plan_{uuid.uuid4().hex[:8]}",
+        "organization_id": org_id,
         "name": plan_data.name,
         "description": plan_data.description,
         "tier": plan_data.tier,
@@ -167,6 +167,7 @@ async def get_amc_plans(request: Request, include_inactive: bool = False):
     user = await require_admin_or_technician(request)
     
     query = {} if include_inactive else {"is_active": True}
+    query["organization_id"] = org_id
     plans = await get_db().amc_plans.find(query, {"_id": 0}).to_list(100)
     
     # Add subscription count for each plan
@@ -259,6 +260,7 @@ async def create_amc_subscription(request: Request, sub_data: AMCSubscriptionCre
     
     subscription = {
         "subscription_id": f"amc_sub_{uuid.uuid4().hex[:12]}",
+        "organization_id": org_id,
         "plan_id": plan["plan_id"],
         "plan_name": plan["name"],
         "plan_tier": plan.get("tier", "basic"),
@@ -301,8 +303,9 @@ async def get_amc_subscriptions(request: Request, customer_id: Optional[str] = N
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     user = await require_admin_or_technician(request)
+    org_id = extract_org_id(request)
 
-    query = {}
+    query = {"organization_id": org_id}
     if customer_id:
         query["customer_id"] = customer_id
     if vehicle_id:
@@ -345,9 +348,10 @@ async def get_amc_subscription(request: Request, subscription_id: str):
     org_id = extract_org_id(request)
     """Get AMC subscription details"""
     user = await require_admin_or_technician(request)
+    org_id = extract_org_id(request)
     
     subscription = await get_db().amc_subscriptions.find_one(
-        {"subscription_id": subscription_id},
+        {"subscription_id": subscription_id, "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -356,7 +360,8 @@ async def get_amc_subscription(request: Request, subscription_id: str):
     
     # Get usage history
     services_used = await get_db().tickets.find({
-        "amc_subscription_id": subscription_id
+        "amc_subscription_id": subscription_id,
+        "organization_id": org_id
     }, {"_id": 0, "ticket_id": 1, "title": 1, "created_at": 1, "status": 1}).to_list(100)
     
     subscription["usage_history"] = services_used
@@ -434,7 +439,7 @@ async def renew_amc_subscription(request: Request, subscription_id: str):
     body = await request.json()
     
     old_subscription = await get_db().amc_subscriptions.find_one(
-        {"subscription_id": subscription_id},
+        {"subscription_id": subscription_id, "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -454,6 +459,7 @@ async def renew_amc_subscription(request: Request, subscription_id: str):
     
     new_subscription = {
         "subscription_id": f"amc_sub_{uuid.uuid4().hex[:12]}",
+        "organization_id": org_id,
         "plan_id": plan["plan_id"],
         "plan_name": plan["name"],
         "plan_tier": plan.get("tier", "basic"),
@@ -504,22 +510,26 @@ async def get_amc_analytics(request: Request):
     expiring_threshold = (datetime.now(timezone.utc) + timedelta(days=15)).strftime("%Y-%m-%d")
     
     # Counts
+    org_f = {"organization_id": org_id} if org_id else {}
     total_active = await get_db().amc_subscriptions.count_documents({
+        **org_f,
         "status": "active",
         "end_date": {"$gte": today}
     })
     
     expiring_soon = await get_db().amc_subscriptions.count_documents({
+        **org_f,
         "end_date": {"$gte": today, "$lte": expiring_threshold}
     })
     
     expired = await get_db().amc_subscriptions.count_documents({
+        **org_f,
         "end_date": {"$lt": today}
     })
     
     # Revenue
     pipeline = [
-        {"$match": {"payment_status": "paid"}},
+        {"$match": {**org_f, "payment_status": "paid"}},
         {"$group": {"_id": None, "total": {"$sum": "$amount_paid"}}}
     ]
     revenue_result = await get_db().amc_subscriptions.aggregate(pipeline).to_list(1)
@@ -527,21 +537,21 @@ async def get_amc_analytics(request: Request):
     
     # Plan distribution
     plan_pipeline = [
-        {"$match": {"status": {"$in": ["active", "expiring"]}}},
+        {"$match": {**org_f, "status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$plan_name", "count": {"$sum": 1}}}
     ]
     plan_dist = await get_db().amc_subscriptions.aggregate(plan_pipeline).to_list(100)
     
     # Vehicle category distribution
     vehicle_pipeline = [
-        {"$match": {"status": {"$in": ["active", "expiring"]}}},
+        {"$match": {**org_f, "status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$vehicle_category", "count": {"$sum": 1}}}
     ]
     vehicle_dist = await get_db().amc_subscriptions.aggregate(vehicle_pipeline).to_list(10)
     
     # Billing frequency distribution
     billing_pipeline = [
-        {"$match": {"status": {"$in": ["active", "expiring"]}}},
+        {"$match": {**org_f, "status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$billing_frequency", "count": {"$sum": 1}}}
     ]
     billing_dist = await get_db().amc_subscriptions.aggregate(billing_pipeline).to_list(10)
@@ -788,6 +798,7 @@ async def seed_official_battwheels_plans(request: Request):
             
             if not existing:
                 plan["plan_id"] = f"amc_plan_{uuid.uuid4().hex[:8]}"
+                plan["organization_id"] = org_id
                 plan["created_at"] = datetime.now(timezone.utc).isoformat()
                 plan["created_by"] = user["user_id"]
                 await get_db().amc_plans.insert_one(plan)
@@ -808,6 +819,8 @@ async def get_plans_by_category(request: Request, vehicle_category: Optional[str
     user = await require_admin_or_technician(request)
     
     query = {"is_active": True}
+    if org_id:
+        query["organization_id"] = org_id
     if vehicle_category:
         query["vehicle_category"] = vehicle_category
     if billing_frequency:

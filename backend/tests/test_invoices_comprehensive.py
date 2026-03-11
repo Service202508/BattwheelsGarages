@@ -63,7 +63,7 @@ def test_invoice(base_url, _headers, test_customer_id):
             "rate": 500.0,
             "tax_percentage": 18.0,
             "tax_name": "GST @18%",
-            "hsn_sac": "998719"
+            "hsn_sac_code": "998719"
         }],
         "terms": "Payment due within 30 days",
         "notes": "Test invoice for comprehensive testing"
@@ -88,7 +88,7 @@ class TestCreateInvoice:
             "customer_id": test_customer_id,
             "invoice_date": today,
             "due_date": "2026-12-31",
-            "line_items": [{"name": "Motor Repair", "quantity": 1, "rate": 2000.0, "tax_percentage": 18.0, "tax_name": "GST"}]
+            "line_items": [{"name": "Motor Repair", "quantity": 1, "rate": 2000.0, "tax_percentage": 18.0, "tax_name": "GST", "hsn_sac_code": "998719"}]
         })
         assert resp.status_code == 200, f"Create failed: {resp.status_code} {resp.text}"
         data = resp.json()
@@ -255,7 +255,7 @@ class TestVoidInvoice:
             "customer_id": test_customer_id,
             "invoice_date": today,
             "due_date": "2026-12-31",
-            "line_items": [{"name": "Void Test", "quantity": 1, "rate": 100.0, "tax_percentage": 18.0, "tax_name": "GST"}]
+            "line_items": [{"name": "Void Test", "quantity": 1, "rate": 100.0, "tax_percentage": 18.0, "tax_name": "GST", "hsn_sac_code": "998719"}]
         })
         if resp.status_code != 200:
             pytest.skip("Cannot create invoice for void test")

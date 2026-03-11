@@ -117,7 +117,7 @@ export default function TechnicianDashboard({ user }) {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-900 border border-green-500/20 p-6">
         <div className="absolute top-0 right-0 w-64 h-64 bg-bw-green/[0.08]0/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-white mb-1">
                 Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}, {dashboard?.technician?.name?.split(' ')[0] || 'Technician'}!

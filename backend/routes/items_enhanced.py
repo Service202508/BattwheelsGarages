@@ -17,7 +17,6 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-from motor.motor_asyncio import AsyncIOMotorClient
 import uuid
 import os
 import re
@@ -28,15 +27,13 @@ import base64
 
 # Import tenant context for multi-tenant scoping
 from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
-from utils.database import extract_org_id
+from utils.database import extract_org_id, db as _items_db
 
 router = APIRouter(prefix="/items-enhanced", tags=["Items Enhanced"])
 
 # Database connection
 def get_db():
-    mongo_url = os.environ['MONGO_URL']
-    client = AsyncIOMotorClient(mongo_url)
-    return client[os.environ['DB_NAME']]
+    return _items_db
 
 # Multi-tenant helpers (Phase F migration - using TenantContext)
 async def get_org_id(request: Request) -> Optional[str]:
@@ -737,6 +734,10 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
     """Create item with full Zoho Books-style features and CSV compatibility"""
     db = get_db()
     org_id = extract_org_id(request)
+    
+    # Plan record limit enforcement
+    from utils.plan_limits import check_record_limit
+    await check_record_limit(org_id, "items")
     
     # Check unique name/SKU
     if item.sku:

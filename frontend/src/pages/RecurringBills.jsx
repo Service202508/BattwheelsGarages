@@ -59,8 +59,8 @@ export default function RecurringBills() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [billsRes, vendorsRes] = await Promise.all([
-        fetch(`${API}/zoho/recurring-bills`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=vendor&per_page=200`, { headers })
+        fetch(`${API}/recurring-bills`, { headers }),
+        fetch(`${API}/contacts-enhanced?contact_type=vendor&per_page=200`, { headers })
       ]);
       const [billsData, vendorsData] = await Promise.all([
         billsRes.json(), vendorsRes.json()
@@ -103,7 +103,7 @@ export default function RecurringBills() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-bills`, {
+      const res = await fetch(`${API}/recurring-bills`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newBill)
@@ -130,7 +130,7 @@ export default function RecurringBills() {
   const handleAction = async (billId, action) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-bills/${billId}/${action}`, {
+      const res = await fetch(`${API}/recurring-bills/${billId}/${action}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -147,7 +147,7 @@ export default function RecurringBills() {
     if (!confirm("Delete this recurring bill?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-bills/${billId}`, {
+      const res = await fetch(`${API}/recurring-bills/${billId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -163,7 +163,7 @@ export default function RecurringBills() {
   const handleGenerateDue = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/recurring-bills/generate`, {
+      const res = await fetch(`${API}/recurring-bills/generate`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

@@ -10,15 +10,11 @@ from datetime import datetime, timezone
 import uuid
 import os
 import base64
-from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
 # Database connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 # Document storage path
 UPLOAD_DIR = "/app/uploads/documents"

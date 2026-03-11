@@ -1,6 +1,6 @@
 """
 Battwheels OS - Failure Intelligence Event Handlers
-Handles EFI-specific events for failure card lifecycle
+Handles EVFI-specific events for failure card lifecycle
 
 Event Flow:
 NEW_FAILURE_DETECTED -> Auto-create draft failure card

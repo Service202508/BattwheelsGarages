@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import mermaid from "mermaid";
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
+import EVFIResponseCard from "./EVFIResponseCard";
 
 // Initialize Mermaid
 mermaid.initialize({
@@ -269,7 +269,7 @@ const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
   </div>
 );
 
-// Main EFI Guidance Panel Component
+// Main EVFI Guidance Panel Component
 export default function EFIGuidancePanel({ 
   ticketId, 
   user, 
@@ -291,7 +291,7 @@ export default function EFIGuidancePanel({
   const orgId = user?.organization_id;
   
   // Role-based visibility
-  const isSupervisorOrAdmin = user?.role === "admin" || user?.role === "supervisor";
+  const isSupervisorOrAdmin = user?.role === "admin" || user?.role === "supervisor" || user?.role === "owner";
   
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -303,7 +303,7 @@ export default function EFIGuidancePanel({
     if (!ticketId || !orgId) return;
     
     try {
-      const res = await fetch(`${API}/api/ai/guidance/check-context`, {
+      const res = await fetch(`${API}/ai/guidance/check-context`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
@@ -337,7 +337,7 @@ export default function EFIGuidancePanel({
     
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/ai/guidance/generate`, {
+      const res = await fetch(`${API}/ai/guidance/generate`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
@@ -369,7 +369,7 @@ export default function EFIGuidancePanel({
           await checkContextChanged();
         }
       } else if (res.status === 403) {
-        setGuidance({ enabled: false, message: "EFI Guidance not enabled" });
+        setGuidance({ enabled: false, message: "EVFI Guidance not enabled" });
       } else {
         throw new Error("Failed to fetch guidance");
       }
@@ -389,7 +389,7 @@ export default function EFIGuidancePanel({
   const submitAskBack = async (answers) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/ai/guidance/ask-back`, {
+      const res = await fetch(`${API}/ai/guidance/ask-back`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
@@ -418,7 +418,7 @@ export default function EFIGuidancePanel({
   // Add to estimate
   const addToEstimate = async (items) => {
     try {
-      const res = await fetch(`${API}/api/ai/guidance/add-to-estimate`, {
+      const res = await fetch(`${API}/ai/guidance/add-to-estimate`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
@@ -447,7 +447,7 @@ export default function EFIGuidancePanel({
     if (!guidance?.guidance_id) return;
     
     try {
-      await fetch(`${API}/api/ai/guidance/feedback`, {
+      await fetch(`${API}/ai/guidance/feedback`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
@@ -484,14 +484,14 @@ export default function EFIGuidancePanel({
       <Card className="bg-slate-900/50 border-white/[0.07] border-700">
         <CardContent className="p-6 text-center text-slate-400">
           <Shield className="h-10 w-10 mx-auto mb-3 text-slate-500" />
-          <p>EFI Guidance Layer is not enabled for your organization.</p>
+          <p>EVFI Guidance Layer is not enabled for your organization.</p>
         </CardContent>
       </Card>
     );
   }
   
   return (
-    <Card className="bg-slate-900 border-white/[0.07] border-700 overflow-hidden" data-testid="efi-guidance-panel">
+    <Card className="bg-slate-900 border-white/[0.07] border-700 overflow-visible" data-testid="evfi-guidance-panel">
       {/* Header */}
       <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-white/[0.07] border-700 pb-4">
         <div className="flex items-center justify-between">
@@ -501,7 +501,7 @@ export default function EFIGuidancePanel({
             </div>
             <div>
               <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
-                EFI Guidance
+                Battwheels EVFI&trade; Guidance
                 <Badge variant="outline" className="text-xs border-bw-volt/50/50 text-bw-volt text-400">
                   Hinglish
                 </Badge>
@@ -631,82 +631,39 @@ export default function EFIGuidancePanel({
             </TabsList>
             
             {/* STEPS TAB */}
-            <TabsContent value="steps" className="p-4 space-y-4 m-0">
-              {/* Safety Block */}
-              {guidance?.safety_block && (
-                <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-lg">
-                  <div className="flex items-center gap-2 text-rose-400 mb-2">
-                    <AlertTriangle className="h-5 w-5" />
-                    <span className="font-semibold">Safety First - Pehle ye karo!</span>
-                  </div>
-                  <div className="text-sm text-rose-200 whitespace-pre-line">
-                    {guidance.safety_block.replace("## 🛡️ Safety First", "").trim()}
-                  </div>
-                </div>
-              )}
+            <TabsContent value="steps" className="p-2 sm:p-4 space-y-4 m-0">
+              {/* Branded EVFI Response Card with parsed sections */}
+              <EVFIResponseCard
+                responseText={guidance?.guidance_text || ""}
+                classification={guidance?.efi_classification}
+                vehicleInfo={vehicleInfo}
+                category={category}
+                description={description}
+              />
               
-              {/* Symptom Summary */}
-              {guidance?.symptom_summary && (
-                <div className="p-3 bg-slate-800/50 rounded-lg">
-                  <h4 className="text-xs font-medium text-slate-400 mb-1">Symptom Summary</h4>
-                  <p className="text-sm text-white">{guidance.symptom_summary}</p>
-                </div>
-              )}
-              
-              {/* Diagnostic Steps */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-bw-volt text-400" />
-                    Diagnostic Steps ({mode === "quick" ? "Quick Mode" : "Deep Mode"})
-                  </h4>
-                  <span className="text-xs text-slate-500">
-                    {completedSteps.length}/{guidance?.diagnostic_steps?.length || 0} done
-                  </span>
-                </div>
-                
+              {/* Interactive Diagnostic Steps Checklist */}
+              {guidance?.diagnostic_steps?.length > 0 && (
                 <div className="space-y-2">
-                  {guidance?.diagnostic_steps?.map((step, i) => (
-                    <DiagnosticStep
-                      key={i}
-                      step={step}
-                      index={i}
-                      onMarkDone={markStepDone}
-                      isDone={completedSteps.includes(i)}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              {/* Probable Causes - Top 3 only (simplified for technicians) */}
-              {guidance?.probable_causes?.length > 0 && (
-                <div className="p-3 bg-slate-800/50 rounded-lg">
-                  <h4 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-amber-400" />
-                    Top Probable Causes
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                      <ClipboardList className="h-4 w-4 text-bw-volt text-400" />
+                      Interactive Checklist ({mode === "quick" ? "Quick" : "Deep"})
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      {completedSteps.length}/{guidance.diagnostic_steps.length} done
+                    </span>
+                  </div>
                   <div className="space-y-2">
-                    {guidance.probable_causes.slice(0, 3).map((cause, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs flex items-center justify-center">
-                          {i + 1}
-                        </span>
-                        <span className="text-sm text-white flex-1">{cause.cause}</span>
-                        <span className="text-xs text-slate-400">{cause.confidence}%</span>
-                      </div>
+                    {guidance.diagnostic_steps.map((step, i) => (
+                      <DiagnosticStep
+                        key={i}
+                        step={step}
+                        index={i}
+                        onMarkDone={markStepDone}
+                        isDone={completedSteps.includes(i)}
+                      />
                     ))}
                   </div>
-                </div>
-              )}
-              
-              {/* Recommended Fix */}
-              {guidance?.recommended_fix && (
-                <div className="p-3 bg-bw-volt/[0.08]0/10 border border-bw-volt/50/30 rounded-lg">
-                  <h4 className="text-sm font-medium text-bw-volt text-400 mb-2 flex items-center gap-2">
-                    <Wrench className="h-4 w-4" />
-                    Recommended Fix
-                  </h4>
-                  <p className="text-sm text-bw-volt text-200">{guidance.recommended_fix}</p>
                 </div>
               )}
               

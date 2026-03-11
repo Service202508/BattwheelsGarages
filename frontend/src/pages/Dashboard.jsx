@@ -234,31 +234,31 @@ export default function Dashboard({ user }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 rounded-lg">
+        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 rounded-lg flex overflow-x-auto w-full">
           <TabsTrigger 
             value="workshop" 
-            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap"
             data-testid="workshop-tab"
           >
             Workshop Overview
           </TabsTrigger>
           <TabsTrigger 
             value="service-tickets" 
-            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap"
             data-testid="service-tickets-tab"
           >
             Service Tickets
           </TabsTrigger>
           <TabsTrigger 
             value="receivables" 
-            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap"
             data-testid="receivables-tab"
           >
             Receivables Overview
           </TabsTrigger>
           <TabsTrigger 
             value="technicians" 
-            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45]"
+            className="data-[state=active]:bg-bw-volt/[0.12] data-[state=active]:text-bw-volt data-[state=active]:border-t-2 data-[state=active]:border-t-bw-volt rounded px-4 py-2 text-sm font-medium text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap"
             data-testid="technicians-tab"
           >
             <Trophy className="h-3.5 w-3.5 mr-1.5 inline" />

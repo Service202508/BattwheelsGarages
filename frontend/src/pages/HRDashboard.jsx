@@ -204,7 +204,7 @@ export default function HRDashboard({ user }) {
                       <tr key={emp.employee_id || i} className="border-b border-zinc-800/30">
                         <td className="py-2 text-zinc-200">{emp.full_name || emp.name || "—"}</td>
                         <td className="py-2 text-zinc-400">{emp.department || "—"}</td>
-                        <td className="py-2 text-zinc-200 text-right font-mono">{emp.salary ? `₹${Number(emp.salary).toLocaleString("en-IN")}` : "—"}</td>
+                        <td className="py-2 text-zinc-200 text-right font-mono">{emp.salary ? `₹${(typeof emp.salary === 'object' ? (emp.salary.basic || 0) + (emp.salary.hra || 0) + (emp.salary.da || 0) : Number(emp.salary)).toLocaleString("en-IN")}` : "—"}</td>
                         <td className="py-2 text-center">
                           <Badge variant="outline" className={`text-xs ${processed ? "text-emerald-400 border-emerald-400/30" : "text-amber-400 border-amber-400/30"}`}>
                             {processed ? "Processed" : "Pending"}

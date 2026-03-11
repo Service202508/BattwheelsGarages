@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
-  Zap, ArrowRight, Check, ChevronRight, X,
+  Zap, ArrowRight, Check, ChevronRight, X, Mail, Menu,
   Clock, TrendingUp, Shield, Eye,
   Ticket, FileText, Calculator, Package, Receipt,
-  BookOpen, Users, Brain, CreditCard, Lock,
+  BookOpen, Users, Brain, CreditCard, Lock, Flag,
   BarChart3, Briefcase, Monitor, Settings, FolderOpen
 } from 'lucide-react';
 import ProductTour from '../components/ProductTour';
+import LiveShowcase from '../components/LiveShowcase';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API_URL = window.location.origin;
 
 // Animated counter hook
 function useCountUp(target, duration = 1800) {
@@ -63,8 +65,10 @@ function useScrollReveal() {
 const SaaSLanding = () => {
   const navigate = useNavigate();
   const [showSignup, setShowSignup] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const [showBookDemo, setShowBookDemo] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [tourStartStep, setTourStartStep] = useState(0);
   const [bookDemoSubmitted, setBookDemoSubmitted] = useState(false);
   const [bookDemoLoading, setBookDemoLoading] = useState(false);
   const [bookDemoData, setBookDemoData] = useState({
@@ -76,6 +80,7 @@ const SaaSLanding = () => {
     industry_type: 'ev_garage', city: '', state: ''
   });
   const [activeAudience, setActiveAudience] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -111,19 +116,15 @@ const SaaSLanding = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/organizations/signup`, {
+      const response = await fetch(`${API_URL}/api/v1/organizations/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       const data = await response.json();
       if (response.ok) {
-        toast.success('Organization created successfully!');
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('organization_id', data.organization.organization_id);
-        localStorage.setItem('organization', JSON.stringify(data.organization));
-        window.location.href = '/dashboard';
+        toast.success('Account created! Check your email to verify.');
+        setSignupSuccess(true);
       } else {
         toast.error(data.detail || 'Signup failed');
       }
@@ -146,31 +147,52 @@ const SaaSLanding = () => {
 
   // Animated counters for Section 6
   const c1 = useCountUp(16);
-  const c2 = useCountUp(10000);
-  const c3 = useCountUp(99);
-  const c4 = useCountUp(100);
+  const c2 = useCountUp(3);
+  const c3 = useCountUp(100);
+  const c4 = useCountUp(0);
 
-  // Audience data
+  // Audience data — roadmap items tagged for honesty
   const audiences = [
     {
-      tab: 'Workshop Owners',
-      body: 'Run your entire EV workshop from one dashboard. Tickets, invoicing, inventory, payroll, GST filing. EFI\u2122 guides your technicians to fix it right the first time. No more guesswork.',
-      features: ['AI Diagnostics', 'GST Compliance', 'Inventory + COGS', 'HR & Payroll', 'Customer Portal'],
+      tab: 'Service Center Owners',
+      body: 'Run your entire EV service center from one dashboard. Tickets, invoicing, inventory, payroll, GST filing. EVFI\u2122 guides your technicians to fix it right the first time. No more guesswork.',
+      features: [
+        { name: 'AI Diagnostics' },
+        { name: 'GST Compliance' },
+        { name: 'Inventory + COGS' },
+        { name: 'HR & Payroll' },
+        { name: 'Customer Portal' },
+      ],
     },
     {
       tab: 'OEMs (Ola, Ather, TVS)',
       body: 'Manage your authorized service network at scale. Track warranty claims, distribute parts, monitor dealer performance. Every repair across every dealer feeds your reliability intelligence.',
-      features: ['Dealer Network Management', 'Warranty Claims', 'Parts Distribution', 'Field Failure Intelligence'],
+      features: [
+        { name: 'Dealer Network Management', roadmap: true },
+        { name: 'Warranty Claims', roadmap: true },
+        { name: 'Parts Distribution', roadmap: true },
+        { name: 'Field Failure Intelligence', roadmap: true },
+      ],
     },
     {
       tab: 'Fleet Operators',
       body: 'Delivery fleets, ride-sharing, corporate vehicles. Predictive maintenance before breakdowns happen. Cost-per-km analytics. Fleet-wide health monitoring.',
-      features: ['Predictive Maintenance', 'Fleet Health Dashboard', 'Uptime Optimization', 'Cost Analytics'],
+      features: [
+        { name: 'Predictive Maintenance', roadmap: true },
+        { name: 'Fleet Health Dashboard', roadmap: true },
+        { name: 'Uptime Optimization', roadmap: true },
+        { name: 'Cost Analytics', roadmap: true },
+      ],
     },
     {
       tab: 'EV Technicians',
-      body: 'Access EFI\u2122 diagnostic intelligence on every job. Build your verified service record. Get matched with the right work. Your skills have value here.',
-      features: ['AI-Guided Diagnosis', 'Skill Verification', 'Job Matching', 'Service Portfolio'],
+      body: 'Access EVFI\u2122 diagnostic intelligence on every job. Build your verified service record. Get matched with the right work. Your skills have value here.',
+      features: [
+        { name: 'AI-Guided Diagnosis' },
+        { name: 'Skill Verification', roadmap: true },
+        { name: 'Job Matching', roadmap: true },
+        { name: 'Service Portfolio', roadmap: true },
+      ],
     },
   ];
 
@@ -183,7 +205,7 @@ const SaaSLanding = () => {
     { icon: Receipt, name: 'GST Compliance' },
     { icon: BookOpen, name: 'Accounting' },
     { icon: Users, name: 'HR & Payroll' },
-    { icon: Brain, name: 'EFI\u2122 AI' },
+    { icon: Brain, name: 'EVFI\u2122 AI' },
     { icon: CreditCard, name: 'Credit Notes' },
     { icon: Lock, name: 'Period Locking' },
     { icon: BarChart3, name: 'Reports' },
@@ -204,30 +226,65 @@ const SaaSLanding = () => {
       }} />
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-zinc-950/85 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 bg-[#CBFF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-zinc-900" />
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.07] bg-zinc-950/85 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-4 md:px-12 py-4 md:py-5">
+          {/* Logo */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-7 h-7 bg-[#CBFF00] rounded flex items-center justify-center">
+              <Zap className="w-4 h-4 text-zinc-900" />
+            </div>
+            <span className="text-white font-bold text-sm md:text-lg whitespace-nowrap">Battwheels OS</span>
           </div>
-          <span className="text-lg font-extrabold tracking-tight">Battwheels OS</span>
+
+          {/* Desktop nav links */}
+          <ul className="hidden md:flex gap-9 text-xs font-medium tracking-wider uppercase text-white/45">
+            <li><a href="#solution" className="hover:text-white transition">EVFI Engine</a></li>
+            <li><a href="#platform" className="hover:text-white transition">Platform</a></li>
+            <li><a href="#pricing" className="hover:text-white transition">Pricing</a></li>
+            <li><a href="#vision" className="hover:text-white transition">Vision</a></li>
+          </ul>
+
+          {/* Desktop CTA buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            <button onClick={() => navigate('/login')} className="px-3 py-2 text-xs text-white/45 hover:text-white/80 transition tracking-wide" data-testid="nav-login-link">
+              Login
+            </button>
+            <button onClick={() => setShowBookDemo(true)} className="px-5 py-2.5 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#CBFF00] hover:text-[#CBFF00] transition rounded-sm" data-testid="nav-book-demo-btn">
+              Book Demo
+            </button>
+            <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-sm font-semibold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm" data-testid="nav-free-trial-btn">
+              Free Trial
+            </button>
+          </div>
+
+          {/* Mobile: Login + Hamburger */}
+          <div className="flex md:hidden items-center gap-3">
+            <button onClick={() => navigate('/login')} className="text-xs text-white/50 hover:text-white transition" data-testid="mobile-login-link">
+              Login
+            </button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white p-1.5" data-testid="mobile-menu-toggle">
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
-        <ul className="hidden md:flex gap-9 text-[13px] font-medium tracking-wider uppercase text-white/45">
-          <li><a href="#solution" className="hover:text-white transition">EFI Engine</a></li>
-          <li><a href="#platform" className="hover:text-white transition">Platform</a></li>
-          <li><a href="#pricing" className="hover:text-white transition">Pricing</a></li>
-          <li><a href="#vision" className="hover:text-white transition">Vision</a></li>
-        </ul>
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/login')} className="px-3 py-2 text-[12px] text-white/45 hover:text-white/80 transition tracking-wide" data-testid="nav-login-link">
-            Login
-          </button>
-          <button onClick={() => setShowBookDemo(true)} className="px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide border border-white/10 hover:border-[#CBFF00] hover:text-[#CBFF00] transition rounded-sm" data-testid="nav-book-demo-btn">
-            Book Demo
-          </button>
-          <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm" data-testid="nav-free-trial-btn">
-            Free Trial
-          </button>
-        </div>
+
+        {/* Mobile dropdown menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-white/10 bg-[#0a0e12] px-4 py-4 space-y-1" data-testid="mobile-menu-dropdown">
+            <a href="#solution" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-gray-300 py-2.5 hover:text-white transition">EVFI Engine</a>
+            <a href="#platform" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-gray-300 py-2.5 hover:text-white transition">Platform</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-gray-300 py-2.5 hover:text-white transition">Pricing</a>
+            <a href="#vision" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-gray-300 py-2.5 hover:text-white transition">Vision</a>
+            <div className="pt-3 space-y-2 border-t border-white/10 mt-2">
+              <button onClick={() => { setMobileMenuOpen(false); setShowBookDemo(true); }} className="w-full py-3 text-sm font-semibold uppercase tracking-wide border border-white/10 text-white rounded-lg hover:border-[#CBFF00] hover:text-[#CBFF00] transition" data-testid="mobile-book-demo-btn">
+                Book Demo
+              </button>
+              <button onClick={() => { setMobileMenuOpen(false); setShowSignup(true); }} className="w-full py-3 text-sm font-bold uppercase tracking-wide bg-[#CBFF00] text-[#0a0e12] rounded-lg hover:bg-[#d4ff33] transition" data-testid="mobile-free-trial-btn">
+                Start Free Trial &rarr;
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ========== SECTION 1: HERO ========== */}
@@ -242,46 +299,62 @@ const SaaSLanding = () => {
         </div>
 
         <div className="relative z-10 max-w-6xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-12 text-[10px] tracking-widest text-[#CBFF00] border border-[#CBFF00]/20 bg-[#CBFF00]/5 rounded-sm font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-12 text-xs tracking-widest text-[#CBFF00] border border-[#CBFF00]/20 bg-[#CBFF00]/5 rounded-sm font-mono">
             <span className="w-1.5 h-1.5 bg-[#CBFF00] rounded-full animate-pulse" />
-            EFI Engine Active
+            EVFI Engine Active
           </div>
 
-          <p className="flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#CBFF00] mb-7 font-mono animate-fade-up">
+          <p className="flex items-center gap-3 text-xs tracking-[0.2em] uppercase text-[#CBFF00] mb-7 font-mono animate-fade-up">
             <span className="w-8 h-px bg-[#CBFF00]" />
             Battwheels OS
           </p>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-none font-serif tracking-tight mb-8 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-none mb-8 animate-fade-up" style={{ animationDelay: '0.1s' }}>
             India's First AI-Powered<br />
             <em className="italic text-[#CBFF00]">EV Service Platform</em>
           </h1>
 
-          <p className="text-base sm:text-lg text-white/45 max-w-xl mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            From a single workshop to a national OEM network. One platform runs it all.
+          <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mb-12 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+            From a single service center to a national OEM network. One platform runs it all.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-            <button onClick={() => setShowSignup(true)} className="px-8 py-4 text-sm font-bold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center gap-2" data-testid="hero-start-trial-btn">
+            <button onClick={() => setShowSignup(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center gap-2" data-testid="hero-start-trial-btn">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </button>
             <button onClick={() => setShowBookDemo(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#CBFF00] hover:text-[#CBFF00] transition rounded-sm" data-testid="hero-book-demo-btn">
               Book a Demo
             </button>
             <button onClick={() => setShowTour(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white/60 hover:text-[#CBFF00] transition flex items-center gap-2" data-testid="hero-see-tour-btn">
-              <Eye className="w-4 h-4" /> See It In Action
+              <Eye className="w-4 h-4" /> See Battwheels OS in Action
             </button>
           </div>
 
+          {/* EV Registration Odometer */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.04] border border-white/[0.06] max-w-2xl mb-8 animate-fade-up" style={{ animationDelay: '0.35s' }}>
+            {[
+              { val: '12.8L', label: 'e-2 Wheelers', color: '#CBFF00' },
+              { val: '8L', label: 'e-3 Wheelers', color: '#14b8a6' },
+              { val: '1.75L', label: 'e-4 Wheelers', color: '#f59e0b' },
+              { val: '23L+', label: 'Total EVs in 2025', color: '#ffffff' },
+            ].map((s, i) => (
+              <div key={i} className="bg-zinc-950/80 px-5 py-4 text-center">
+                <div className="text-xl sm:text-2xl font-bold mb-0.5" style={{ color: s.color }}>{s.val}</div>
+                <div className="text-xs text-white/35 uppercase tracking-widest">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="text-xs text-white/15 tracking-wider mb-10 animate-fade-up" style={{ animationDelay: '0.36s' }}>Source: VAHAN Portal, Ministry of Road Transport</div>
+
           <div className="flex border border-white/[0.07] max-w-lg animate-fade-up" style={{ animationDelay: '0.4s' }}>
             {[
-              { val: '16+', label: 'Modules' },
-              { val: '4', label: 'Audience Tiers' },
+              { val: '16', label: 'Modules' },
+              { val: '3', label: 'Portals' },
               { val: 'AI', label: 'Powered Diagnostics' },
             ].map((s, i) => (
               <div key={i} className={`flex-1 p-5 ${i < 2 ? 'border-r border-white/[0.07]' : ''}`}>
-                <div className="text-2xl sm:text-3xl font-serif text-[#CBFF00] mb-1">{s.val}</div>
-                <div className="text-[10px] text-white/40 uppercase tracking-widest">{s.label}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#CBFF00] mb-1">{s.val}</div>
+                <div className="text-xs text-white/40 uppercase tracking-widest">{s.label}</div>
               </div>
             ))}
           </div>
@@ -290,17 +363,17 @@ const SaaSLanding = () => {
 
       {/* ========== SECTION 2: PAIN STORIES ========== */}
       <section ref={s2.ref} className={`py-20 px-6 md:px-12 bg-zinc-900 border-y border-white/[0.07] ${revealClass(s2.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           01 . The Real Problem
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
 
         <div className="max-w-5xl">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-12 tracking-tight">
-            Every EV workshop owner knows these problems
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-12">
+            Every EV service business owner knows these problems
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
                 label: 'Misdiagnosis',
@@ -326,9 +399,17 @@ const SaaSLanding = () => {
                 accent: 'border-blue-500/40',
                 statColor: 'text-blue-400',
               },
+              {
+                label: 'The Knowledge Gap',
+                quote: '"Naye EV models aate hain, par training kahan se milegi? Sab trial-and-error pe chal raha hai."',
+                translation: 'New EV models launch every month but technicians have no structured training or repair manuals. Every diagnosis is trial and error.',
+                stat: '92% of EV technicians learn only through trial and error',
+                accent: 'border-purple-500/40',
+                statColor: 'text-purple-400',
+              },
             ].map((card, i) => (
               <div key={i} className={`bg-zinc-950 border-l-2 ${card.accent} border border-white/[0.05] p-6 flex flex-col`}>
-                <div className="text-[10px] uppercase tracking-widest text-white/40 mb-4 font-mono">{card.label}</div>
+                <div className="text-xs uppercase tracking-widest text-white/40 mb-4 font-mono">{card.label}</div>
                 <p className="text-sm text-white/80 italic leading-relaxed mb-2">{card.quote}</p>
                 <p className="text-xs text-white/30 mb-auto leading-relaxed">{card.translation}</p>
                 <div className={`mt-5 pt-4 border-t border-white/[0.07] text-xs font-mono ${card.statColor}`}>
@@ -340,15 +421,53 @@ const SaaSLanding = () => {
         </div>
       </section>
 
+      {/* ========== LIVE SHOWCASE: Animated Product Panels ========== */}
+      <section className="pt-24 pb-20 px-6 max-w-4xl mx-auto">
+        <h2 className="text-center text-2xl md:text-3xl font-semibold tracking-tight text-white mb-3 px-4">
+          See Battwheels OS Working
+        </h2>
+        <p className="text-center text-sm md:text-base font-normal leading-relaxed text-white/45 mb-16 px-4">
+          Real workflows. Real data. Real results.
+        </p>
+        <LiveShowcase
+          onOpenTour={(stepIndex) => {
+            setTourStartStep(stepIndex);
+            setShowTour(true);
+          }}
+        />
+      </section>
+
+      {/* ========== SECTION 2B: THE OPPORTUNITY ========== */}
+      <section className="py-16 px-6 md:px-12 border-y border-white/[0.04]">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-10 font-mono">
+          The Opportunity
+          <span className="flex-1 max-w-20 h-px bg-white/10" />
+        </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.05] border border-white/[0.07] max-w-4xl">
+          {[
+            { val: '23 Lakh+', label: 'EVs Sold in India in 2025', ctx: '8% of all new vehicle registrations (VAHAN)' },
+            { val: '₹25,000 Cr', label: 'EV Aftermarket by 2030', ctx: 'Service, parts, and maintenance opportunity' },
+            { val: '5 Lakh+', label: 'EV Technicians Needed', ctx: "India's biggest skill gap in automotive" },
+            { val: '100+', label: 'EV Models in India', ctx: 'Across 20+ brands in 2W, 3W, and 4W categories' },
+          ].map((s, i) => (
+            <div key={i} className="bg-zinc-950 p-6 sm:p-8 text-center">
+              <div className="text-2xl sm:text-3xl font-bold text-[#CBFF00] mb-2">{s.val}</div>
+              <div className="text-xs text-white/50 uppercase tracking-widest leading-tight mb-2">{s.label}</div>
+              <div className="text-xs text-white/25 leading-snug">{s.ctx}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ========== SECTION 3: FOUR AUDIENCES ========== */}
       <section ref={s3.ref} className={`py-20 px-6 md:px-12 ${revealClass(s3.visible)}`} id="segments">
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           02 . Built for the Entire EV Ecosystem
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
 
         <div className="max-w-5xl">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-10 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-10">
             One Platform. Four Roles. Complete Coverage.
           </h2>
 
@@ -370,11 +489,16 @@ const SaaSLanding = () => {
 
           {/* Active tab content */}
           <div className="bg-zinc-900 border border-white/[0.07] p-6 sm:p-8">
-            <p className="text-sm sm:text-base text-white/60 leading-relaxed mb-6">{audiences[activeAudience].body}</p>
+            <p className="text-sm md:text-base font-normal leading-relaxed text-white/60 mb-6">{audiences[activeAudience].body}</p>
             <div className="flex flex-wrap gap-2">
               {audiences[activeAudience].features.map((f, i) => (
-                <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#CBFF00]/5 border border-[#CBFF00]/20 text-[#CBFF00] rounded-sm font-mono">
-                  <Check className="w-3 h-3" /> {f}
+                <span key={i} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm font-mono ${
+                  f.roadmap
+                    ? 'bg-white/[0.03] border border-white/10 text-white/35'
+                    : 'bg-[#CBFF00]/5 border border-[#CBFF00]/20 text-[#CBFF00]'
+                }`}>
+                  {f.roadmap ? null : <Check className="w-3 h-3" />} {f.name}
+                  {f.roadmap && <span className="ml-1 text-xs uppercase tracking-wider text-white/25">Roadmap</span>}
                 </span>
               ))}
             </div>
@@ -382,50 +506,118 @@ const SaaSLanding = () => {
         </div>
       </section>
 
-      {/* ========== SECTION 4: EFI INTELLIGENCE ========== */}
+      {/* ========== SECTION 4: EVFI INTELLIGENCE ========== */}
       <section ref={s4.ref} id="solution" className={`py-20 px-6 md:px-12 bg-zinc-900 border-y border-white/[0.07] ${revealClass(s4.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
-          03 . Battwheels EFI{'\u2122'}
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
-        </p>
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center">
+            <p className="text-xs tracking-[0.25em] uppercase text-[#CBFF00] mb-4 font-mono">
+              CORE TECHNOLOGY
+            </p>
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+              Battwheels EVFI{'\u2122'}
+            </h2>
+            <p className="text-sm md:text-base font-normal leading-relaxed text-white/60 mt-2">
+              Electric Vehicle Failure Intelligence
+            </p>
+            <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-2xl mx-auto mt-4">
+              India's first patented AI diagnostic engine built exclusively for electric vehicles.
+              EVFI analyses symptoms, identifies root causes, and guides technicians through step-by-step
+              repairs — learning from every resolution to get smarter over time.
+            </p>
 
-        <div className="max-w-5xl">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-4 tracking-tight">
-            Electrified Fault Intelligence
-          </h2>
-          <p className="text-base text-white/45 max-w-xl mb-12 leading-relaxed">
-            The AI engine that learns from every repair.
-          </p>
+            {/* Patent + Make in India badges */}
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <span className="inline-flex items-center gap-1.5 bg-[#CBFF00]/10 border border-[#CBFF00]/30 rounded-full px-4 py-1.5 text-[#CBFF00] text-xs md:text-sm font-medium">
+                <Lock className="w-3.5 h-3.5" /> Patented Technology · Indian Patent Office
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-white/5 border border-white/20 rounded-full px-4 py-1.5 text-white text-xs md:text-sm font-medium">
+                <Flag className="w-3.5 h-3.5" /> Designed & Built in India
+              </span>
+            </div>
+          </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: Clock, title: 'Hours to Minutes', desc: 'Reduces diagnostic time from hours to minutes.' },
-              { icon: TrendingUp, title: '90%+ Fix Rate', desc: 'First-time fix rate improves to 90%+ with guided workflows.' },
-              { icon: Brain, title: 'Gets Smarter', desc: 'Every resolved ticket makes the next diagnosis smarter.' },
-              { icon: Shield, title: 'All EV Brands', desc: 'Works across all EV brands. 2W, 3W, 4W.' },
-            ].map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="bg-zinc-950 border border-white/[0.05] p-6 hover:border-[#CBFF00]/30 hover:bg-[#CBFF00]/[0.02] transition group">
-                  <Icon className="w-7 h-7 text-[#CBFF00] mb-4 group-hover:scale-110 transition-transform" />
-                  <div className="text-sm font-bold mb-2">{item.title}</div>
-                  <p className="text-xs text-white/40 leading-relaxed">{item.desc}</p>
-                </div>
-              );
-            })}
+          {/* 3 Pillar Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+            {/* Pillar 1 */}
+            <div className="bg-[#0f1419] rounded-2xl border border-white/5 p-8">
+              <Zap className="w-10 h-10 text-[#CBFF00] mb-5" />
+              <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Diagnoses Like Your Best Technician</h3>
+              <ul className="text-white/60 text-sm leading-relaxed space-y-3">
+                <li>Analyses vehicle model, symptoms, and historical fault patterns to pinpoint the root cause</li>
+                <li>Returns step-by-step diagnostic guidance with pass/fail checkpoints at every stage</li>
+                <li>Mandatory high-voltage safety warnings for battery, charging, and motor systems</li>
+                <li>Works in Hinglish — designed for the Indian workshop floor, not a Silicon Valley lab</li>
+              </ul>
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">84%</span>
+                <p className="text-xs md:text-sm font-medium text-white/40 mt-1">First-visit fix rate with EVFI-assisted diagnosis</p>
+              </div>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="bg-[#0f1419] rounded-2xl border border-white/5 border-l-4 border-l-[#CBFF00] p-8">
+              <Brain className="w-10 h-10 text-[#CBFF00] mb-5" />
+              <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Learns From Every Repair</h3>
+              <ul className="text-white/60 text-sm leading-relaxed space-y-3">
+                <li>Every resolved service ticket feeds anonymized diagnostic patterns back into the EVFI intelligence core</li>
+                <li>Your workshop's diagnostic accuracy improves with every job completed — no manual training required</li>
+                <li>Cross-ecosystem learning: anonymized insights from thousands of EV repairs across India strengthen every technician's capabilities</li>
+                <li>Failure pattern recognition that no individual technician could build alone</li>
+              </ul>
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">990+</span>
+                <p className="text-xs md:text-sm font-medium text-white/40 mt-1">Diagnostic patterns learned and growing daily</p>
+              </div>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="bg-[#0f1419] rounded-2xl border border-white/5 border-r-4 border-r-[#CBFF00] p-8">
+              <Flag className="w-10 h-10 text-[#CBFF00] mb-5" />
+              <h3 className="text-lg md:text-xl font-semibold text-white mb-4">Built for Indian EVs</h3>
+              <ul className="text-white/60 text-sm leading-relaxed space-y-3">
+                <li>Model-specific diagnostic intelligence for Ola, Ather, TVS, Bajaj, Tata, Mahindra, Hero, and every major Indian EV brand</li>
+                <li>Understands Indian road conditions, tropical climate impact on batteries, and local charging infrastructure realities</li>
+                <li>Trained exclusively on Indian EV workshop data — not adapted from foreign automotive datasets</li>
+                <li>Supports 100+ EV models across two-wheelers, three-wheelers, and four-wheelers</li>
+              </ul>
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <span className="text-2xl md:text-3xl font-semibold text-[#CBFF00]">100+</span>
+                <p className="text-xs md:text-sm font-medium text-white/40 mt-1">Indian EV models with dedicated diagnostic data</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Trust Row */}
+          <div className="flex flex-wrap justify-center gap-6 mt-12">
+            <span className="flex items-center gap-2 text-white/40 text-xs font-medium"><Lock className="w-3 h-3" /> Patented Technology</span>
+            <span className="flex items-center gap-2 text-white/40 text-xs font-medium"><Brain className="w-3 h-3" /> Continuously Learning AI</span>
+            <span className="flex items-center gap-2 text-white/40 text-xs font-medium"><Zap className="w-3 h-3" /> HV Safety Compliant</span>
+            <span className="flex items-center gap-2 text-white/40 text-xs font-medium"><Shield className="w-3 h-3" /> Data Anonymized & Encrypted</span>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-10">
+            <button
+              onClick={() => { setTourStartStep(3); setShowTour(true); }}
+              className="text-[#CBFF00] font-semibold hover:underline cursor-pointer text-sm"
+              data-testid="efi-see-action-cta"
+            >
+              See EVFI{'\u2122'} in Action <ArrowRight className="inline w-4 h-4 ml-1" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* ========== SECTION 5: COMPLETE PLATFORM ========== */}
       <section ref={s5.ref} id="platform" className={`py-20 px-6 md:px-12 ${revealClass(s5.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           04 . Complete EV-Specific ERP
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
 
         <div className="max-w-5xl">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-10 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-10">
             Everything to run an EV service operation
           </h2>
 
@@ -435,7 +627,7 @@ const SaaSLanding = () => {
               return (
                 <div key={i} className="bg-zinc-950 p-5 flex flex-col items-center text-center hover:bg-[#CBFF00]/[0.03] transition group" data-testid={`module-${i}`}>
                   <Icon className="w-5 h-5 text-white/30 mb-2 group-hover:text-[#CBFF00] transition" />
-                  <span className="text-[11px] text-white/50 group-hover:text-white transition leading-tight">{mod.name}</span>
+                  <span className="text-xs text-white/50 group-hover:text-white transition leading-tight">{mod.name}</span>
                 </div>
               );
             })}
@@ -445,23 +637,27 @@ const SaaSLanding = () => {
 
       {/* ========== SECTION 6: SOCIAL PROOF ========== */}
       <section ref={s6.ref} className={`py-20 px-6 md:px-12 bg-zinc-900 border-y border-white/[0.07] ${revealClass(s6.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           05 . Built for Scale
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
 
+        <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-10 max-w-4xl">
+          Built for India's EV Scale
+        </h2>
+
         <div className="grid grid-cols-2 lg:grid-cols-4 border border-white/[0.07] max-w-4xl">
           {[
-            { ref: c1.ref, val: c1.count, suffix: '+', label: 'Modules' },
-            { ref: c2.ref, val: c2.count >= 10000 ? '10,000' : c2.count.toLocaleString(), suffix: '+', label: 'Fault Patterns in EFI Knowledge Base' },
-            { ref: c3.ref, val: c3.count, suffix: '.9%', label: 'Uptime Target' },
-            { ref: c4.ref, val: c4.count, suffix: '%', label: 'GST Compliant' },
+            { ref: c1.ref, val: c1.count, suffix: '+', label: 'Integrated Modules' },
+            { ref: c2.ref, val: '', suffix: '', label: 'EV Form Factors', text: '2W, 3W & 4W' },
+            { ref: c3.ref, val: c3.count, suffix: '%', label: 'GST Compliant' },
+            { ref: c4.ref, val: '', suffix: '', label: 'Data Isolation', text: 'Multi-Tenant' },
           ].map((item, i) => (
             <div key={i} ref={item.ref} className={`p-6 sm:p-8 text-center ${i < 3 ? 'border-r border-white/[0.07]' : ''}`}>
-              <div className="text-3xl sm:text-4xl font-serif text-[#CBFF00] mb-2">
-                {typeof item.val === 'string' ? item.val : item.val}{item.suffix}
+              <div className="text-3xl sm:text-4xl font-bold text-[#CBFF00] mb-2">
+                {item.text || `${item.val}${item.suffix}`}
               </div>
-              <div className="text-[10px] text-white/40 uppercase tracking-widest leading-tight">{item.label}</div>
+              <div className="text-xs text-white/40 uppercase tracking-widest leading-tight">{item.label}</div>
             </div>
           ))}
         </div>
@@ -469,73 +665,125 @@ const SaaSLanding = () => {
 
       {/* ========== SECTION 7: PRICING ========== */}
       <section ref={s7.ref} id="pricing" className={`py-20 px-6 md:px-12 ${revealClass(s7.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
-          06 . Simple, Transparent Pricing
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-6 font-mono">
+          06 . Pricing
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
+        <p className="text-xs tracking-[0.25em] uppercase text-[#CBFF00] font-mono mb-4">PRICING</p>
 
-        <div className="max-w-5xl">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-10 tracking-tight">
-            Start free. Scale as you grow.
+        <div className="max-w-6xl">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">
+            Simple, Transparent Pricing
           </h2>
+          <p className="text-sm text-white/40 mb-10">Start free. Upgrade as you grow.</p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Mobile: Professional first, then others */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
-                name: 'Free Trial', price: '\u20B90', period: 'for 14 days',
-                features: ['10 AI diagnostic tokens', 'Core modules', '1 user'],
-                cta: 'Start Free Trial', action: () => setShowSignup(true), highlight: false,
+                name: 'Free Trial', price: '₹0', period: '14 days', badge: null,
+                features: [
+                  'Up to 20 tickets',
+                  'Up to 10 contacts',
+                  'Basic estimates & invoices',
+                  '10 EVFI AI diagnostic tokens',
+                  'Up to 3 team members',
+                  '14-day trial period',
+                ],
+                cta: 'Start Trial', action: () => setShowSignup(true), style: 'ghost',
+                order: 'order-2 md:order-1',
               },
               {
-                name: 'Starter', price: '\u20B92,999', period: '/month',
-                features: ['25 AI diagnostic tokens/mo', 'Core modules + Reports', 'Up to 3 users'],
-                cta: 'Start Free Trial', action: () => setShowSignup(true), highlight: false,
+                name: 'Starter', price: '₹999', period: '/mo', badge: null,
+                features: [
+                  'Everything in Free Trial',
+                  'Unlimited tickets & contacts',
+                  'AMC Management',
+                  'Sales Orders & Credit Notes',
+                  'Purchase Orders & Bills',
+                  'GST Returns (GSTR-1/3B)',
+                  'Stock Management',
+                  'Expenses & Chart of Accounts',
+                  'Documents & Analytics',
+                  '25 EVFI tokens/month',
+                  'Up to 5 team members',
+                ],
+                cta: 'Start Now', action: () => setShowSignup(true), style: 'ghost',
+                order: 'order-3 md:order-2',
               },
               {
-                name: 'Professional', price: '\u20B95,999', period: '/month',
-                features: ['100 AI diagnostic tokens/mo', 'All modules', 'Up to 10 users'],
-                cta: 'Start Free Trial', action: () => setShowSignup(true), highlight: true,
+                name: 'Professional', price: '₹2,499', period: '/mo', badge: 'MOST POPULAR',
+                features: [
+                  'Everything in Starter',
+                  'Full EVFI Intelligence Suite',
+                  'HR, Payroll & Attendance',
+                  'Banking & Reconciliation',
+                  'Financial Reports (P&L, Balance Sheet)',
+                  'Journal Entries & Period Locks',
+                  'Projects Management',
+                  'Customer Portal',
+                  'Custom Branding',
+                  'Recurring Invoices & Bills',
+                  'Advanced Inventory (Serial/Batch)',
+                  'Invoice Automation',
+                  '100 EVFI tokens/month',
+                  'Up to 15 team members',
+                ],
+                cta: 'Start Now', action: () => setShowSignup(true), style: 'primary',
+                order: 'order-1 md:order-3',
               },
               {
-                name: 'Enterprise', price: 'Custom', period: 'pricing',
-                features: ['Unlimited AI tokens', 'All modules + API access', 'Unlimited users', 'Dedicated support'],
-                cta: 'Book a Demo', action: () => setShowBookDemo(true), highlight: false,
+                name: 'Enterprise', price: '₹4,999', period: '/mo', badge: null,
+                features: [
+                  'Everything in Professional',
+                  'Unlimited EVFI tokens',
+                  'Business / Fleet Portal',
+                  'Data Management & Backups',
+                  'Unlimited team members',
+                  'Priority support',
+                  'Custom integrations',
+                  'Dedicated account manager',
+                ],
+                cta: 'Contact Sales', action: () => setShowBookDemo(true), style: 'outline',
+                order: 'order-4',
               },
             ].map((plan, i) => (
               <div
                 key={i}
-                className={`relative bg-zinc-900 border p-6 flex flex-col ${
-                  plan.highlight ? 'border-[#CBFF00]/40 ring-1 ring-[#CBFF00]/20' : 'border-white/[0.07]'
+                className={`relative bg-[#0f1419] rounded-2xl p-6 flex flex-col ${plan.order} ${
+                  plan.badge ? 'border-2 border-[#CBFF00]' : 'border border-white/5'
                 }`}
-                data-testid={`pricing-card-${i}`}
+                data-testid={`pricing-card-${plan.name.toLowerCase().replace(/\s/g, '-')}`}
               >
-                {plan.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#CBFF00] text-zinc-900 text-[10px] font-bold uppercase tracking-wider rounded-sm">
-                    Most Popular
+                {plan.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#CBFF00] text-[#0a0e12] text-[10px] font-bold uppercase tracking-wider rounded-full whitespace-nowrap">
+                    {plan.badge}
                   </div>
                 )}
                 <div className="text-xs uppercase tracking-widest text-white/40 mb-3 font-mono">{plan.name}</div>
                 <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-3xl font-serif text-white">{plan.price}</span>
-                  <span className="text-xs text-white/30">{plan.period}</span>
+                  <span className="text-3xl font-bold text-white">{plan.price}</span>
+                  <span className="text-sm text-gray-500">{plan.period}</span>
                 </div>
                 <ul className="space-y-2 mt-5 mb-6 flex-1">
                   {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-start gap-2 text-xs text-white/50">
+                    <li key={j} className="flex items-start gap-2 text-sm text-gray-400">
                       <Check className="w-3.5 h-3.5 text-[#CBFF00] mt-0.5 shrink-0" /> {f}
                     </li>
                   ))}
                 </ul>
                 <button
                   onClick={plan.action}
-                  className={`w-full py-2.5 text-xs font-bold uppercase tracking-wide rounded-sm transition ${
-                    plan.highlight
-                      ? 'bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33]'
-                      : 'border border-white/10 text-white/60 hover:border-[#CBFF00] hover:text-[#CBFF00]'
+                  className={`w-full py-3 text-sm font-semibold uppercase tracking-wide rounded-lg transition ${
+                    plan.style === 'primary'
+                      ? 'bg-[#CBFF00] text-[#0a0e12] hover:bg-[#d4ff33]'
+                      : plan.style === 'outline'
+                        ? 'border border-white/20 text-white hover:border-[#CBFF00] hover:text-[#CBFF00]'
+                        : 'bg-white/10 text-white hover:bg-white/15'
                   }`}
-                  data-testid={`pricing-cta-${i}`}
+                  data-testid={`pricing-cta-${plan.name.toLowerCase().replace(/\s/g, '-')}`}
                 >
-                  {plan.cta}
+                  {plan.cta} &rarr;
                 </button>
               </div>
             ))}
@@ -545,20 +793,20 @@ const SaaSLanding = () => {
 
       {/* ========== SECTION 8: INTELLIGENCE FLYWHEEL ========== */}
       <section ref={s8.ref} className={`py-20 px-6 md:px-12 bg-zinc-900 border-y border-white/[0.07] ${revealClass(s8.visible)}`}>
-        <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
+        <p className="flex items-center gap-4 text-xs tracking-[0.25em] uppercase text-white/45 mb-14 font-mono">
           07 . Compounding Intelligence
           <span className="flex-1 max-w-20 h-px bg-white/10" />
         </p>
 
         <div className="grid lg:grid-cols-2 gap-16 max-w-5xl items-center">
           <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif leading-tight mb-6 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6">
               The Intelligence Flywheel
             </h2>
-            <p className="text-sm text-white/45 leading-relaxed mb-6">
+            <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 mb-6">
               Every ticket makes the platform smarter. Every repair makes the next one faster. This compounding loop is not a feature. It is the structural advantage.
             </p>
-            <p className="text-lg font-serif italic text-[#CBFF00]">
+            <p className="text-lg font-semibold italic text-[#CBFF00]">
               "This is our moat."
             </p>
           </div>
@@ -567,18 +815,18 @@ const SaaSLanding = () => {
             {[
               'More repairs completed',
               'More structured failure data captured',
-              'Smarter EFI diagnostics',
+              'Smarter EVFI diagnostics',
               'Faster resolution times',
               'Happier customers, more referrals',
             ].map((step, idx) => (
               <div key={idx} className="flex items-center gap-5 p-5 border-b border-white/[0.07] last:border-b-0 hover:bg-[#CBFF00]/[0.03] transition">
-                <span className="text-[10px] text-[#CBFF00] font-mono w-5">0{idx + 1}</span>
+                <span className="text-xs text-[#CBFF00] font-mono w-5">0{idx + 1}</span>
                 <span className="text-sm font-medium flex-1">{step}</span>
                 <span className="text-xs text-[#CBFF00] font-mono opacity-60">{'\u2193'}</span>
               </div>
             ))}
             <div className="flex items-center gap-5 p-5 bg-[#CBFF00]/10 border-t border-[#CBFF00]/20">
-              <span className="text-[10px] text-[#CBFF00] font-mono w-5">{'\u221E'}</span>
+              <span className="text-xs text-[#CBFF00] font-mono w-5">{'\u221E'}</span>
               <span className="text-sm font-semibold text-[#CBFF00]">Stronger intelligence. Deeper moat.</span>
             </div>
           </div>
@@ -590,14 +838,14 @@ const SaaSLanding = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_100%,rgba(203,255,0,0.06)_0%,transparent_60%)]" />
 
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif leading-none mb-6 tracking-tight">
-            Ready to run India's smartest<br /><em className="italic text-[#CBFF00]">EV workshop?</em>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none mb-6">
+            Ready to run India's smartest<br /><em className="italic text-[#CBFF00]">EV service center?</em>
           </h2>
-          <p className="text-base text-white/45 max-w-xl mx-auto mb-12 leading-relaxed">
+          <p className="text-sm md:text-base font-normal leading-relaxed text-white/45 max-w-xl mx-auto mb-12">
             Join the platform that gets better with every repair.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-bold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2" data-testid="cta-start-trial-btn">
+            <button onClick={() => setShowSignup(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide bg-[#CBFF00] text-zinc-900 hover:bg-[#d4ff33] hover:shadow-[0_0_24px_rgba(203,255,0,0.3)] transition rounded-sm flex items-center justify-center gap-2" data-testid="cta-start-trial-btn">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </button>
             <button onClick={() => setShowBookDemo(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#CBFF00] hover:text-[#CBFF00] transition rounded-sm" data-testid="cta-book-demo-btn">
@@ -607,22 +855,58 @@ const SaaSLanding = () => {
         </div>
       </section>
 
+      {/* ========== TRUST & COMPLIANCE STRIP ========== */}
+      <section className="py-16 px-6 border-t border-white/[0.05]" data-testid="trust-section">
+        <p className="text-center text-xs font-mono tracking-[0.2em] text-gray-500 mb-10">
+          TRUSTED & CERTIFIED
+        </p>
+        <div className="max-w-4xl mx-auto grid grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 items-center">
+          <div className="bg-white rounded-lg p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-iso">
+            <img src="/images/trust/iso-27001.png" alt="ISO 27001 Certified" className="max-h-14 object-contain" />
+          </div>
+          <div className="bg-white rounded-lg p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-asdc">
+            <img src="/images/trust/asdc.jpg" alt="ASDC Certified" className="max-h-14 object-contain" />
+          </div>
+          <div className="bg-white rounded-lg p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-make-in-india">
+            <img src="/images/trust/make-in-india.jpg" alt="Make in India" className="max-h-14 object-contain" />
+          </div>
+          <div className="bg-white/5 rounded-lg border border-white/[0.06] p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-dpdpa">
+            <Shield className="w-5 h-5 text-[#CBFF00] mb-1" />
+            <span className="text-xs font-medium text-white">DPDPA 2023</span>
+            <span className="text-xs text-gray-400">Compliant</span>
+          </div>
+          <div className="bg-white/5 rounded-lg border border-white/[0.06] p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-data-india">
+            <Lock className="w-5 h-5 text-[#CBFF00] mb-1" />
+            <span className="text-xs font-medium text-white">Data Hosted</span>
+            <span className="text-xs text-gray-400">Mumbai, India</span>
+          </div>
+          <div className="bg-white/5 rounded-lg border border-white/[0.06] p-3 flex flex-col items-center justify-center h-20 sm:h-24" data-testid="trust-gst">
+            <BarChart3 className="w-5 h-5 text-[#CBFF00] mb-1" />
+            <span className="text-xs font-medium text-white">GST Compliant</span>
+            <span className="text-xs text-gray-400">GSTR-1 / 3B Ready</span>
+          </div>
+        </div>
+      </section>
+
       {/* ========== SECTION 10: FOOTER ========== */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-xs text-white/20 font-mono">
-          {'\u00A9'} 2026 Battwheels Technologies Pvt. Ltd.
+          {'\u00A9'} 2026 Battwheels Services Private Limited - India - All Rights Reserved
+        </div>
+        <div className="text-xs text-white/15 font-mono">
+          Battwheels Engine Beta v2.00.26
         </div>
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>
-              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#CBFF00] transition font-mono">{label}</button>
+              <button onClick={() => navigate(href)} className="text-xs text-white/45 uppercase tracking-wider hover:text-[#CBFF00] transition font-mono">{label}</button>
             </li>
           ))}
         </ul>
       </footer>
 
       {/* Product Tour */}
-      <ProductTour isOpen={showTour} onClose={() => setShowTour(false)} onStartTrial={() => setShowSignup(true)} />
+      <ProductTour isOpen={showTour} onClose={() => { setShowTour(false); setTourStartStep(0); }} onStartTrial={() => setShowSignup(true)} startStep={tourStartStep} />
 
       {/* Book Demo Modal */}
       {showBookDemo && (
@@ -630,7 +914,7 @@ const SaaSLanding = () => {
           <div className="bg-zinc-900 rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-bold">Book a Demo</h2>
+                <h2 className="text-lg md:text-xl font-semibold">Book a Demo</h2>
                 <p className="text-white/40 text-sm mt-1">We'll call you within 1 business day.</p>
               </div>
               <button onClick={() => { setShowBookDemo(false); setBookDemoSubmitted(false); }} className="text-white/40 hover:text-white transition" data-testid="close-book-demo-modal">
@@ -643,7 +927,7 @@ const SaaSLanding = () => {
                 <div className="w-12 h-12 bg-[#CBFF00]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check className="w-6 h-6 text-[#CBFF00]" />
                 </div>
-                <h3 className="text-lg font-bold mb-2">Request Received</h3>
+                <h3 className="text-lg md:text-xl font-semibold mb-2">Request Received</h3>
                 <p className="text-white/50 text-sm leading-relaxed">
                   Our team will call <strong className="text-white">{bookDemoData.phone}</strong> within 1 business day to schedule your demo.
                 </p>
@@ -664,7 +948,7 @@ const SaaSLanding = () => {
                     data-testid="demo-name-input" />
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-1.5">Workshop / Company Name *</label>
+                  <label className="block text-sm text-white/60 mb-1.5">Service Center / Company Name *</label>
                   <input type="text" required placeholder="Mumbai EV Service Center" value={bookDemoData.workshop_name}
                     onChange={(e) => setBookDemoData({ ...bookDemoData, workshop_name: e.target.value })}
                     className="w-full px-4 py-3 bg-zinc-950 border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#CBFF00]/50 focus:border-transparent transition"
@@ -699,7 +983,7 @@ const SaaSLanding = () => {
                   </select>
                 </div>
                 <button type="submit" disabled={bookDemoLoading}
-                  className="w-full bg-[#CBFF00] hover:bg-[#d4ff33] text-zinc-900 py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                  className="w-full bg-[#CBFF00] hover:bg-[#d4ff33] text-zinc-900 py-3 rounded-sm font-semibold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
                   data-testid="demo-submit-btn">
                   {bookDemoLoading ? (
                     <><div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin" /> Submitting...</>
@@ -721,11 +1005,24 @@ const SaaSLanding = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-zinc-900 rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Create Your Organization</h2>
-              <button onClick={() => setShowSignup(false)} className="text-white/40 hover:text-white transition">
+              <h2 className="text-lg md:text-xl font-semibold">{signupSuccess ? "Check Your Email" : "Create Your Organization"}</h2>
+              <button onClick={() => { setShowSignup(false); setSignupSuccess(false); }} className="text-white/40 hover:text-white transition">
                 <X className="w-5 h-5" />
               </button>
             </div>
+            {signupSuccess ? (
+              <div className="text-center py-4" data-testid="signup-verify-email-msg">
+                <div className="w-16 h-16 rounded-full bg-[#CBFF00]/10 flex items-center justify-center mx-auto mb-5">
+                  <Mail className="w-7 h-7 text-[#CBFF00]" />
+                </div>
+                <p className="text-white/60 text-sm leading-relaxed mb-6">
+                  We've sent a verification email to <strong className="text-[#CBFF00]">{formData.admin_email}</strong>.
+                  <br />Please click the link to activate your account.
+                </p>
+                <p className="text-white/30 text-xs mb-4">Didn't receive it? Check your spam folder.</p>
+                <button onClick={() => { setShowSignup(false); setSignupSuccess(false); navigate('/login'); }} className="bg-[#CBFF00] text-black px-6 py-3 rounded-sm font-semibold text-sm hover:bg-[#CBFF00]/90 transition">Go to Login</button>
+              </div>
+            ) : (
             <form onSubmit={handleSignup} className="space-y-4">
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Organization Name</label>
@@ -760,7 +1057,7 @@ const SaaSLanding = () => {
                 </div>
               </div>
               <button type="submit" disabled={isLoading}
-                className="w-full bg-[#CBFF00] hover:bg-[#d4ff33] text-zinc-900 py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-6">
+                className="w-full bg-[#CBFF00] hover:bg-[#d4ff33] text-zinc-900 py-3 rounded-sm font-semibold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-6">
                 {isLoading ? (
                   <><div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin" /> Creating...</>
                 ) : (
@@ -774,14 +1071,13 @@ const SaaSLanding = () => {
                 </button>
               </p>
             </form>
+            )}
           </div>
         </div>
       )}
 
       {/* Custom Styles */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
-        .font-serif { font-family: 'DM Serif Display', serif; }
         @keyframes fade-up {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }

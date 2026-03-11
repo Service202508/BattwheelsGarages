@@ -859,14 +859,16 @@ export default function Home({ user }) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-lg border">
-                <div className="h-10 w-10 rounded-full bg-bw-green/10 flex items-center justify-center">
-                  <span className="text-bw-green font-bold">✓</span>
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary font-bold">1</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Connect Zoho Books</p>
-                  <p className="text-sm text-muted-foreground">Sync your accounting data</p>
+                  <p className="font-medium">Add Your First Vehicle</p>
+                  <p className="text-sm text-muted-foreground">Register a customer vehicle to start tracking service history</p>
                 </div>
-                <Badge variant="outline" className="text-bw-green">Complete</Badge>
+                <Link to="/contacts">
+                  <Button size="sm">Add Vehicle</Button>
+                </Link>
               </div>
               
               <div className="flex items-center gap-4 p-4 rounded-lg border">
@@ -874,11 +876,11 @@ export default function Home({ user }) {
                   <span className="text-primary font-bold">2</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Add Bank Accounts</p>
-                  <p className="text-sm text-muted-foreground">Connect your bank for automatic feeds</p>
+                  <p className="font-medium">Create Your First Ticket</p>
+                  <p className="text-sm text-muted-foreground">Open a service ticket to start using AI-powered diagnostics</p>
                 </div>
-                <Link to="/banking">
-                  <Button size="sm">Set Up</Button>
+                <Link to="/tickets">
+                  <Button size="sm">Create Ticket</Button>
                 </Link>
               </div>
               
@@ -887,10 +889,10 @@ export default function Home({ user }) {
                   <span className="text-primary font-bold">3</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Configure Tax Settings</p>
-                  <p className="text-sm text-muted-foreground">Set up GST and tax compliance</p>
+                  <p className="font-medium">Configure GST Settings</p>
+                  <p className="text-sm text-muted-foreground">Set up GSTIN and tax compliance for invoicing</p>
                 </div>
-                <Link to="/all-settings">
+                <Link to="/organization-settings">
                   <Button size="sm">Configure</Button>
                 </Link>
               </div>

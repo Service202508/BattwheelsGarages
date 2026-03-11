@@ -15,8 +15,8 @@ Run: python migrations/add_org_id_to_collections.py
 
 import asyncio
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
+from utils.database import db as _org_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ TENANT_DATA_COLLECTIONS = [
     "recurring_invoices", "recurring_expenses", "delivery_challans",
     "fixed_assets", "shipments", "projects", "project_tasks",
     
-    # EFI/AI data
+    # EVFI/AI data
     "efi_sessions", "efi_events", "efi_decision_trees", "ev_issue_suggestions",
     "ai_queries",
     
@@ -130,11 +130,7 @@ async def create_indexes(db, collection_name: str) -> dict:
 async def run_migration():
     """Run the full migration"""
     
-    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-    db_name = os.environ.get('DB_NAME', 'test_database')
-    
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[db_name]
+    db = _org_db
     
     # Get the default organization
     org = await db.organizations.find_one({}, {"organization_id": 1})

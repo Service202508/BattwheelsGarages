@@ -13,6 +13,7 @@ import {
   RotateCcw, Brain, Target, Shield, Clock, Cpu
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
+import EVFIResponseCard from "@/components/ai/EVFIResponseCard";
 
 // Issue categories - clean single-color design
 const ISSUE_CATEGORIES = [
@@ -165,7 +166,8 @@ Please provide:
         content: data.response,
         timestamp: new Date().toISOString(),
         ai_enabled: data.ai_enabled,
-        confidence: data.confidence
+        confidence: data.confidence,
+        efi_classification: data.efi_classification
       });
       toast.success("Diagnosis generated successfully");
     } catch (error) {
@@ -186,55 +188,6 @@ Please provide:
     toast.success("Form cleared");
   };
 
-  const formatDiagnosis = (content) => {
-    if (!content) return null;
-    
-    return content.split('\n').map((line, i) => {
-      if (line.startsWith('### ')) {
-        return (
-          <h3 key={i} className="text-sm font-semibold text-bw-volt mt-4 mb-2">
-            {line.substring(4)}
-          </h3>
-        );
-      }
-      if (line.startsWith('## ')) {
-        return (
-          <h2 key={i} className="text-base font-bold text-bw-white mt-5 mb-2 pb-2 border-b border-white/[0.07]">
-            {line.substring(3)}
-          </h2>
-        );
-      }
-      if (line.includes('**')) {
-        const parts = line.split(/\*\*(.*?)\*\*/g);
-        return (
-          <p key={i} className="mb-1.5 text-bw-white/70 text-sm leading-relaxed">
-            {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-bw-volt font-medium">{part}</strong> : part
-            )}
-          </p>
-        );
-      }
-      if (line.startsWith('- ') || line.startsWith('• ')) {
-        return (
-          <li key={i} className="ml-4 mb-1.5 list-disc text-bw-white/70 text-sm">
-            {line.substring(2)}
-          </li>
-        );
-      }
-      if (/^\d+\.\s/.test(line)) {
-        return (
-          <li key={i} className="ml-4 mb-2 list-decimal text-bw-white/70 text-sm">
-            {line.substring(line.indexOf('.') + 2)}
-          </li>
-        );
-      }
-      if (line.trim() === '') {
-        return <div key={i} className="h-2" />;
-      }
-      return <p key={i} className="mb-1.5 text-bw-white/70 text-sm leading-relaxed">{line}</p>;
-    });
-  };
-
   return (
     <div className="space-y-6">
       {/* Clean Header with Volt Theme */}
@@ -253,7 +206,7 @@ Please provide:
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-bw-white">{`AI Diagnosis \u2014 Battwheels EFI\u2122`}</h1>
+              <h1 className="text-2xl font-bold text-bw-white">{`Battwheels EVFI\u2122 AI Assistant`}</h1>
               <span className="px-3 py-1 text-[10px] font-semibold bg-bw-volt/10 text-bw-volt border border-bw-volt/25 rounded-full font-mono uppercase tracking-[0.1em]">
                 AI Diagnostics
               </span>
@@ -417,7 +370,7 @@ Please provide:
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-bw-volt" />
-                <CardTitle className="text-lg text-bw-white">Battwheels EFI™ Diagnosis</CardTitle>
+                <CardTitle className="text-lg text-bw-white">Battwheels EVFI™ Diagnosis</CardTitle>
               </div>
               {diagnosis && (
                 <div className="flex items-center gap-2">
@@ -451,7 +404,7 @@ Please provide:
                   <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-bw-volt to-transparent animate-pulse" />
                 </div>
                 <p className="text-bw-white font-semibold text-lg">Analyzing your issue...</p>
-                <p className="text-sm text-bw-white/[0.45] mt-1.5">EFI Intelligence is processing</p>
+                <p className="text-sm text-bw-white/[0.45] mt-1.5">EVFI Intelligence is processing</p>
                 {/* Loading dots */}
                 <div className="flex gap-1.5 mt-4">
                   <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
@@ -461,30 +414,14 @@ Please provide:
               </div>
             ) : diagnosis ? (
               <ScrollArea className="h-[500px] pr-4">
-                {/* Confidence Indicator */}
-                {diagnosis.confidence && (
-                  <div className="flex items-center gap-2 mb-4 p-3 bg-bw-volt/[0.08] rounded-lg border border-bw-volt/20">
-                    <CheckCircle className="h-5 w-5 text-bw-volt" />
-                    <span className="text-sm text-bw-volt font-medium">
-                      AI Confidence: {Math.round(diagnosis.confidence * 100)}%
-                    </span>
-                  </div>
-                )}
-                
-                {/* Diagnosis Content */}
-                <div className="prose prose-sm prose-invert max-w-none">
-                  {formatDiagnosis(diagnosis.content)}
-                </div>
-
-                {/* Disclaimer */}
-                <div className="mt-6 p-3 bg-bw-amber/[0.08] rounded-lg border border-bw-amber/20">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-bw-amber mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-bw-amber">
-                      This AI diagnosis is for reference only. Always verify with proper diagnostic tools and follow manufacturer guidelines.
-                    </p>
-                  </div>
-                </div>
+                {/* Branded EVFI Response Card */}
+                <EVFIResponseCard
+                  responseText={diagnosis.content}
+                  classification={diagnosis.efi_classification}
+                  vehicleInfo={{ make: selectedModel?.split(" ")[0], model: selectedModel }}
+                  category={ISSUE_CATEGORIES.find(c => c.id === selectedCategory)?.label}
+                  description={issueDescription}
+                />
 
                 {/* Timestamp */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-bw-white/35">
@@ -527,7 +464,7 @@ Please provide:
           <div className="flex items-start gap-3">
             <Lightbulb className="h-5 w-5 text-bw-volt mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-bw-volt mb-1">{`Tips for better diagnosis \u2014 Battwheels EFI\u2122`}</h4>
+              <h4 className="font-medium text-bw-volt mb-1">{`Tips for better diagnosis \u2014 Battwheels EVFI\u2122`}</h4>
               <ul className="text-sm text-bw-white/60 space-y-1">
                 <li>• Be specific about symptoms (sounds, warning lights, behavior)</li>
                 <li>• Include any DTC/error codes if available</li>

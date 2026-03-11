@@ -15,8 +15,8 @@ import {
   ChevronRight, RefreshCw, History, Receipt
 } from "lucide-react";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// HARDCODED for production — Emergent overrides env vars during build
+const API = `${window.location.origin}/api`;
 
 // Resolve workshop slug from subdomain or ?org query param
 function getOrgSlug() {
@@ -636,7 +636,7 @@ export default function TrackTicket() {
 
         {/* Footer */}
         <div className="text-center text-sm text-slate-500 mt-8">
-          <p>© 2026 Battwheels Services Pvt Ltd. All rights reserved.</p>
+          <p>&copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved</p>
         </div>
       </div>
     </div>

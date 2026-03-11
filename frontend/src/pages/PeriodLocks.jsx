@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Lock, Unlock, AlertTriangle, Calendar, Shield } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -20,7 +20,7 @@ export default function PeriodLocks({ user }) {
 
   const fetchLocks = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/api/v1/finance/period-locks`, {
+      const res = await fetch(`${API}/finance/period-locks`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       const data = await res.json();
@@ -38,7 +38,7 @@ export default function PeriodLocks({ user }) {
     setLocking(true);
     setError('');
     try {
-      const res = await fetch(`${API}/api/v1/finance/period-locks`, {
+      const res = await fetch(`${API}/finance/period-locks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ period_month: selectedMonth, period_year: selectedYear, lock_reason: lockReason })

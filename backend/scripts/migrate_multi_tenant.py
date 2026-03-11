@@ -13,7 +13,7 @@ from pathlib import Path
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from utils.database import db as _migrate_db
 from dotenv import load_dotenv
 import uuid
 
@@ -23,10 +23,8 @@ load_dotenv(Path(__file__).parent.parent / '.env')
 async def migrate():
     """Run the multi-tenant migration"""
     
-    # Connect to MongoDB
-    mongo_url = os.environ['MONGO_URL']
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[os.environ['DB_NAME']]
+    # Use centralized DB connection
+    db = _migrate_db
     
     print("=" * 60)
     print("BATTWHEELS OS - MULTI-TENANT MIGRATION")

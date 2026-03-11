@@ -9,7 +9,6 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
 import os
 import uuid
 import base64
@@ -22,11 +21,7 @@ from utils.database import extract_org_id, org_query
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/inv-adjustments", tags=["Inventory Adjustments V2"])
 

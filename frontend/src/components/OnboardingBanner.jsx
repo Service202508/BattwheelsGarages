@@ -166,7 +166,7 @@ export function OnboardingBanner() {
               marginBottom: 0,
             }}
           >
-            Your workshop is fully configured.
+            Your service center is fully configured.
           </p>
         </div>
         <CheckCircle2 style={{ width: "32px", height: "32px", color: "rgb(var(--bw-green))", flexShrink: 0 }} />

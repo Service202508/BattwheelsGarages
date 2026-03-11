@@ -11,7 +11,6 @@ Implements Indian GST (Goods and Services Tax) features:
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, validator, Field
 from typing import Optional, List
 from io import BytesIO
@@ -20,7 +19,7 @@ import re
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import extract_org_id, org_query, db as _gst_db
 
 
 # Soft import for PDF service (may not be available in all environments)
@@ -34,11 +33,18 @@ except Exception:
 
 router = APIRouter(prefix="/gst", tags=["GST Compliance"])
 
+
+async def _is_trial_plan_gst(org_id: str) -> bool:
+    """Check if org is on free/trialing plan (for PDF watermark)."""
+    db = _gst_db
+    org = await db.organizations.find_one(
+        {"organization_id": org_id}, {"_id": 0, "plan_type": 1}
+    )
+    return (org or {}).get("plan_type", "starter") in ("free", "trialing", "starter")
+
 # Database connection
 def get_db():
-    mongo_url = os.environ['MONGO_URL']
-    client = AsyncIOMotorClient(mongo_url)
-    return client[os.environ['DB_NAME']]
+    return _gst_db
 
 # ============== INDIAN STATES ==============
 INDIAN_STATES = {
@@ -234,7 +240,7 @@ async def get_gst_summary(request: Request):
     
     # Get sales tax from invoices
     sales_pipeline = [
-        {"$match": {"invoice_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
+        {"$match": {"organization_id": org_id, "invoice_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
         {"$group": {
             "_id": None,
             "total_sales": {"$sum": "$sub_total"},
@@ -248,7 +254,7 @@ async def get_gst_summary(request: Request):
     
     # Get purchase tax from bills  
     purchase_pipeline = [
-        {"$match": {"bill_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
+        {"$match": {"organization_id": org_id, "bill_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
         {"$group": {
             "_id": None,
             "total_purchases": {"$sum": "$sub_total"},
@@ -554,24 +560,46 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         entry["count"] += 1
     
     # HSN summary by hsn_code + gst_rate (P1-09 — Table 12 GSTR-1)
+    # Build from original invoice line_items (not the summarised inv_data dicts)
     hsn_by_code_rate = {}
-    all_invoices_for_hsn = b2b_invoices + b2c_large + b2c_small
-    for inv in all_invoices_for_hsn:
-        hsn = inv.get("hsn_code", inv.get("hsn_sac", "9987"))
-        rate = inv.get("gst_rate", 0)
-        key = f"{hsn}_{rate}"
-        if key not in hsn_by_code_rate:
-            hsn_by_code_rate[key] = {
-                "hsn_code": hsn, "gst_rate": rate,
-                "taxable_value": 0, "cgst": 0, "sgst": 0, "igst": 0,
-                "total_quantity": 0, "uom": "NOS"
-            }
-        entry = hsn_by_code_rate[key]
-        entry["taxable_value"] += inv.get("taxable_value", 0)
-        entry["cgst"] += inv.get("cgst", 0)
-        entry["sgst"] += inv.get("sgst", 0)
-        entry["igst"] += inv.get("igst", 0)
-        entry["total_quantity"] += 1
+    for inv in all_invoices:
+        customer_gstin = inv.get("customer_gstin", "") or inv.get("gst_no", "")
+        customer_state = inv.get("place_of_supply", org_state)
+        if customer_gstin and len(customer_gstin) >= 2:
+            customer_state = customer_gstin[:2]
+        is_intra = customer_state == org_state
+
+        for li in inv.get("line_items", []):
+            hsn = (li.get("hsn_sac_code") or li.get("hsn_or_sac") or
+                   li.get("hsn_sac") or li.get("hsn_code") or "9987")
+            rate = li.get("tax_rate", 0) or 0
+            qty = li.get("quantity", 1) or 1
+            li_amount = (li.get("amount") or li.get("taxable_amount") or
+                         (qty * (li.get("rate", 0) or 0)))
+            li_tax = li.get("tax_amount", 0) or round(li_amount * rate / 100, 2)
+
+            if is_intra:
+                li_cgst = round(li_tax / 2, 2)
+                li_sgst = li_tax - li_cgst
+                li_igst = 0
+            else:
+                li_cgst = 0
+                li_sgst = 0
+                li_igst = li_tax
+
+            key = f"{hsn}_{rate}"
+            if key not in hsn_by_code_rate:
+                hsn_by_code_rate[key] = {
+                    "hsn_code": hsn, "gst_rate": rate,
+                    "taxable_value": 0, "cgst": 0, "sgst": 0, "igst": 0,
+                    "total_quantity": 0, "uom": li.get("unit", "NOS")
+                }
+            entry = hsn_by_code_rate[key]
+            entry["taxable_value"] += li_amount
+            entry["cgst"] += li_cgst
+            entry["sgst"] += li_sgst
+            entry["igst"] += li_igst
+            entry["total_quantity"] += qty
     
     # Net adjustments: grand_total should subtract credit note amounts
     cn_taxable = cdnr_summary["taxable_value"] + cdnr_unreg_summary["taxable_value"]
@@ -625,7 +653,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     if format == "excel":
         return generate_gstr1_excel(report_data, month)
     elif format == "pdf":
-        return generate_gstr1_pdf(report_data, month, org_settings)
+        return await generate_gstr1_pdf(report_data, month, org_settings)
     
     return {"code": 0, "report": "gstr1", **report_data}
 
@@ -707,7 +735,7 @@ def generate_gstr1_excel(data: dict, month: str) -> Response:
         headers={"Content-Disposition": f"attachment; filename=gstr1_{month}.xlsx"}
     )
 
-def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
+async def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
     """Generate GSTR-1 PDF report"""
     company = org_settings.get("company_name", "Battwheels")
     gstin = org_settings.get("gstin", "")
@@ -778,7 +806,7 @@ def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
     </html>
     """
     
-    pdf_bytes = generate_pdf_from_html(html)
+    pdf_bytes = generate_pdf_from_html(html, is_trial=await _is_trial_plan_gst(org_id))
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
@@ -1146,23 +1174,43 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         "period": month,
         "filing_status": "draft",
         "section_3_1": {
-            "description": "Outward taxable supplies (net of credit notes)",
-            "taxable_value": round(outward_taxable - cn_taxable, 2),
-            "cgst": round(outward_cgst - cn_cgst, 2),
-            "sgst": round(outward_sgst - cn_sgst, 2),
-            "igst": round(outward_igst - cn_igst, 2),
-            "total_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
-            "gross_outward": round(outward_taxable, 2),
-            "cn_adjustment": round(cn_taxable, 2)
-        },
-        "section_3_1_d": {
-            "description": "Inward supplies liable to reverse charge",
-            "taxable_value": round(rcm_taxable, 2),
-            "cgst": round(rcm_cgst, 2),
-            "sgst": round(rcm_sgst, 2),
-            "igst": round(rcm_igst, 2),
-            "total_tax": round(rcm_total_tax, 2),
-            "bill_count": len(rcm_bills)
+            "a": {
+                "description": "Outward taxable supplies (net of credit notes)",
+                "taxable_value": round(outward_taxable - cn_taxable, 2),
+                "cgst": round(outward_cgst - cn_cgst, 2),
+                "sgst": round(outward_sgst - cn_sgst, 2),
+                "igst": round(outward_igst - cn_igst, 2),
+                "cess": 0,
+                "total_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
+                "gross_outward": round(outward_taxable, 2),
+                "cn_adjustment": round(cn_taxable, 2)
+            },
+            "b": {
+                "description": "Outward taxable supplies (zero rated)",
+                "taxable_value": 0,
+                "cgst": 0,
+                "sgst": 0,
+                "igst": 0,
+                "cess": 0
+            },
+            "c": {
+                "description": "Other outward supplies (nil rated, exempt)",
+                "taxable_value": 0,
+                "cgst": 0,
+                "sgst": 0,
+                "igst": 0,
+                "cess": 0
+            },
+            "d": {
+                "description": "Inward supplies liable to reverse charge",
+                "taxable_value": round(rcm_taxable, 2),
+                "cgst": round(rcm_cgst, 2),
+                "sgst": round(rcm_sgst, 2),
+                "igst": round(rcm_igst, 2),
+                "cess": 0,
+                "total_tax": round(rcm_total_tax, 2),
+                "bill_count": len(rcm_bills)
+            }
         },
         "section_3_2": {
             "description": "Inter-state supplies to unregistered persons (Table 3.2)",
@@ -1243,7 +1291,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     if format == "excel":
         return generate_gstr3b_excel(report_data, month)
     elif format == "pdf":
-        return generate_gstr3b_pdf(report_data, month, org_settings)
+        return await generate_gstr3b_pdf(report_data, month, org_settings)
     
     return {"code": 0, "report": "gstr3b", **report_data}
 
@@ -1261,10 +1309,10 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
     ws.append(["3.1 Outward Supplies"])
     ws['A3'].font = Font(bold=True)
     ws.append(["Description", "Taxable Value", "CGST", "SGST", "IGST"])
-    ws.append(["Outward taxable supplies", data["section_3_1"]["taxable_value"],
-               data["section_3_1"]["cgst"], data["section_3_1"]["sgst"], data["section_3_1"]["igst"]])
-    ws.append(["(d) Inward supplies (reverse charge)", data["section_3_1_d"]["taxable_value"],
-               data["section_3_1_d"]["cgst"], data["section_3_1_d"]["sgst"], data["section_3_1_d"]["igst"]])
+    ws.append(["Outward taxable supplies", data["section_3_1"]["a"]["taxable_value"],
+               data["section_3_1"]["a"]["cgst"], data["section_3_1"]["a"]["sgst"], data["section_3_1"]["a"]["igst"]])
+    ws.append(["(d) Inward supplies (reverse charge)", data["section_3_1"]["d"]["taxable_value"],
+               data["section_3_1"]["d"]["cgst"], data["section_3_1"]["d"]["sgst"], data["section_3_1"]["d"]["igst"]])
     ws.append([])
     
     # Section 4 - ITC
@@ -1278,10 +1326,10 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
     ws.append(["6.1 Payment of Tax"])
     ws['A11'].font = Font(bold=True)
     ws.append(["Tax", "Liability", "ITC Available", "Net Payable"])
-    ws.append(["CGST", data["section_3_1"]["cgst"], data["section_4"]["table_4C"]["cgst"], data["section_6"]["net_cgst"]])
-    ws.append(["SGST", data["section_3_1"]["sgst"], data["section_4"]["table_4C"]["sgst"], data["section_6"]["net_sgst"]])
-    ws.append(["IGST", data["section_3_1"]["igst"], data["section_4"]["table_4C"]["igst"], data["section_6"]["net_igst"]])
-    ws.append(["Total", data["section_3_1"]["total_tax"], data["section_4"]["table_4C"]["total_itc"], data["section_6"]["total_liability"]])
+    ws.append(["CGST", data["section_3_1"]["a"]["cgst"], data["section_4"]["table_4C"]["cgst"], data["section_6"]["net_cgst"]])
+    ws.append(["SGST", data["section_3_1"]["a"]["sgst"], data["section_4"]["table_4C"]["sgst"], data["section_6"]["net_sgst"]])
+    ws.append(["IGST", data["section_3_1"]["a"]["igst"], data["section_4"]["table_4C"]["igst"], data["section_6"]["net_igst"]])
+    ws.append(["Total", data["section_3_1"]["a"]["total_tax"], data["section_4"]["table_4C"]["total_itc"], data["section_6"]["total_liability"]])
     
     ws.column_dimensions['A'].width = 25
     ws.column_dimensions['B'].width = 18
@@ -1298,7 +1346,7 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
         headers={"Content-Disposition": f"attachment; filename=gstr3b_{month}.xlsx"}
     )
 
-def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
+async def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
     """Generate GSTR-3B PDF report"""
     company = org_settings.get("company_name", "Battwheels")
     gstin = org_settings.get("gstin", "")
@@ -1335,8 +1383,8 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
             <div class="section-title">3.1 Outward Supplies (Taxable)</div>
             <table>
                 <tr><th>Description</th><th class="amount">Taxable Value</th><th class="amount">CGST</th><th class="amount">SGST</th><th class="amount">IGST</th></tr>
-                <tr><td>Outward taxable supplies</td><td class="amount">₹{data['section_3_1']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['igst']:,.2f}</td></tr>
-                <tr><td>(d) Inward supplies (reverse charge)</td><td class="amount">₹{data['section_3_1_d']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['igst']:,.2f}</td></tr>
+                <tr><td>Outward taxable supplies</td><td class="amount">₹{data['section_3_1']['a']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1']['a']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['a']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['a']['igst']:,.2f}</td></tr>
+                <tr><td>(d) Inward supplies (reverse charge)</td><td class="amount">₹{data['section_3_1']['d']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1']['d']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['d']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['d']['igst']:,.2f}</td></tr>
             </table>
         </div>
         
@@ -1352,10 +1400,10 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
             <div class="section-title">6.1 Payment of Tax</div>
             <table>
                 <tr><th>Tax</th><th class="amount">Output Tax</th><th class="amount">ITC Used</th><th class="amount">Net Payable</th></tr>
-                <tr><td>CGST</td><td class="amount">₹{data['section_3_1']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['cgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_cgst']:,.2f}</td></tr>
-                <tr><td>SGST</td><td class="amount">₹{data['section_3_1']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['sgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_sgst']:,.2f}</td></tr>
-                <tr><td>IGST</td><td class="amount">₹{data['section_3_1']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['igst']:,.2f}</td><td class="amount">₹{data['section_6']['net_igst']:,.2f}</td></tr>
-                <tr class="total"><td>Total</td><td class="amount">₹{data['section_3_1']['total_tax']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['total_itc']:,.2f}</td><td class="amount">₹{data['section_6']['total_liability']:,.2f}</td></tr>
+                <tr><td>CGST</td><td class="amount">₹{data['section_3_1']['a']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['cgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_cgst']:,.2f}</td></tr>
+                <tr><td>SGST</td><td class="amount">₹{data['section_3_1']['a']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['sgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_sgst']:,.2f}</td></tr>
+                <tr><td>IGST</td><td class="amount">₹{data['section_3_1']['a']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['igst']:,.2f}</td><td class="amount">₹{data['section_6']['net_igst']:,.2f}</td></tr>
+                <tr class="total"><td>Total</td><td class="amount">₹{data['section_3_1']['a']['total_tax']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['total_itc']:,.2f}</td><td class="amount">₹{data['section_6']['total_liability']:,.2f}</td></tr>
             </table>
         </div>
         
@@ -1374,7 +1422,7 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
     </html>
     """
     
-    pdf_bytes = generate_pdf_from_html(html)
+    pdf_bytes = generate_pdf_from_html(html, is_trial=await _is_trial_plan_gst(org_id))
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

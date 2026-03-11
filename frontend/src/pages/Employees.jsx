@@ -168,7 +168,7 @@ export default function Employees({ user }) {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let url = `${API}/employees`;
+      let url = `${API}/hr/employees`;
       const params = new URLSearchParams();
       if (departmentFilter && departmentFilter !== "all") params.append("department", departmentFilter);
       if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
@@ -180,13 +180,15 @@ export default function Employees({ user }) {
       });
       
       if (response.ok) {
-        let data = await response.json();
+        const result = await response.json();
+        let data = result.data || result || [];
+        if (!Array.isArray(data)) data = [];
         if (searchTerm) {
           const search = searchTerm.toLowerCase();
           data = data.filter(e => 
-            e.full_name?.toLowerCase().includes(search) ||
+            (e.full_name || e.name || '')?.toLowerCase().includes(search) ||
             e.employee_code?.toLowerCase().includes(search) ||
-            e.work_email?.toLowerCase().includes(search) ||
+            (e.work_email || e.email || '')?.toLowerCase().includes(search) ||
             e.phone?.includes(search)
           );
         }
@@ -203,7 +205,7 @@ export default function Employees({ user }) {
   const fetchManagers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/employees/managers/list`, {
+      const response = await fetch(`${API}/hr/employees/managers/list`, {
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -320,8 +322,8 @@ export default function Employees({ user }) {
     try {
       const token = localStorage.getItem("token");
       const url = isEditing 
-        ? `${API}/employees/${selectedEmployee.employee_id}`
-        : `${API}/employees`;
+        ? `${API}/hr/employees/${selectedEmployee.employee_id}`
+        : `${API}/hr/employees`;
       
       // Create a proper copy of the form data, mapping fields to backend expected names
       const body = {
@@ -408,7 +410,7 @@ export default function Employees({ user }) {
     
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/employees/${employeeId}`, {
+      const response = await fetch(`${API}/hr/employees/${employeeId}`, {
         method: "DELETE",
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -438,7 +440,7 @@ export default function Employees({ user }) {
     setResettingPassword(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/employees/${resetPasswordTarget.employee_id}/reset-password`, {
+      const res = await fetch(`${API}/hr/employees/${resetPasswordTarget.employee_id}/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

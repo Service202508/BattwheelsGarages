@@ -268,7 +268,7 @@ export default function Tickets({ user }) {
         </div>
         <div className="flex gap-2">
           {statusFilter && (
-            <Button variant="ghost" onClick={() => { setStatusFilter(null); setPage(1); }}>
+            <Button variant="ghost" onClick={() => { setStatusFilter(null); setNextCursor(null); }}>
               Clear Filter: {statusLabels[statusFilter] || statusFilter.replace("_", " ")}
             </Button>
           )}
@@ -296,7 +296,7 @@ export default function Tickets({ user }) {
             key={tab.key || "all"}
             variant={ticketTypeFilter === tab.key ? "default" : "outline"}
             size="sm"
-            onClick={() => { setTicketTypeFilter(tab.key); setPage(1); }}
+            onClick={() => { setTicketTypeFilter(tab.key); setNextCursor(null); }}
             data-testid={`filter-${tab.key || "all"}`}
             className={ticketTypeFilter === tab.key ? "" : "border-white/10 text-muted-foreground"}
           >
@@ -380,7 +380,7 @@ export default function Tickets({ user }) {
           <Input
             placeholder="Search by ticket ID, customer, vehicle..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            onChange={(e) => { setSearchTerm(e.target.value); setNextCursor(null); }}
             className="pl-10"
             data-testid="search-input"
           />
@@ -588,7 +588,7 @@ export default function Tickets({ user }) {
 
       {/* Job Card Dialog */}
       <Dialog open={!!selectedTicket} onOpenChange={(open) => !open && handleCloseDialog()}>
-        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0" data-testid="job-card-dialog">
+        <DialogContent className="w-full h-full max-w-full max-h-full md:max-w-[95vw] md:max-h-[90vh] md:h-auto rounded-none md:rounded-lg flex flex-col p-0" data-testid="job-card-dialog">
           <DialogHeader className="px-6 pt-6 pb-4 border-b flex-shrink-0">
             <div className="flex items-center justify-between">
               <div>

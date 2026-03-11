@@ -23,9 +23,9 @@ class TestCSRFCookieIssuance:
         """GET /api/v1/health sets csrf_token cookie"""
         res = requests.get(f"{BASE_URL}/api/health")
         assert res.status_code == 200
-        assert "csrf_token" in res.cookies, "csrf_token cookie not set on GET"
-        assert len(res.cookies["csrf_token"]) >= 32, "csrf_token too short"
-        print(f"✓ GET sets csrf_token cookie ({len(res.cookies['csrf_token'])} chars)")
+        assert "csrftoken" in res.cookies, "csrftoken cookie not set on GET"
+        assert len(res.cookies["csrftoken"]) >= 32, "csrftoken too short"
+        print(f"✓ GET sets csrftoken cookie ({len(res.cookies['csrftoken'])} chars)")
 
 
 class TestCSRFBypassBearerToken:
@@ -87,8 +87,8 @@ class TestCSRFEnforcement:
         # POST with a fake session cookie (simulating cookie auth) but NO CSRF header
         session.cookies.set("session_token", "fake_session_for_csrf_test")
         # Remove csrf cookie to force missing CSRF scenario
-        if "csrf_token" in session.cookies:
-            del session.cookies["csrf_token"]
+        if "csrftoken" in session.cookies:
+            del session.cookies["csrftoken"]
 
         res = session.post(
             f"{BASE_URL}/api/v1/hr/employees",
@@ -108,7 +108,7 @@ class TestCSRFEnforcement:
         session.get(f"{BASE_URL}/api/health")
 
         # Set mismatched CSRF values
-        session.cookies.set("csrf_token", "cookie_value_abc")
+        session.cookies.set("csrftoken", "cookie_value_abc")
         session.cookies.set("session_token", "fake_session_for_csrf_test")
         res = session.post(
             f"{BASE_URL}/api/v1/hr/employees",

@@ -5,7 +5,7 @@ Core business logic for ticket lifecycle management
 Service responsibilities:
 - Ticket CRUD operations
 - State machine for ticket lifecycle
-- EFI integration (AI matching, failure card linking)
+- EVFI integration (AI matching, failure card linking)
 - Event emission for all ticket operations
 
 Event Flow:
@@ -230,7 +230,7 @@ class TicketService:
             "attachments": [],
             "attachments_count": data.attachments_count,
             
-            # EFI Integration - to be populated by AI matching
+            # EVFI Integration - to be populated by AI matching
             "suggested_failure_cards": [],
             "selected_failure_card": None,
             "ai_match_performed": False,
@@ -478,7 +478,7 @@ class TicketService:
         """
         Close a ticket with resolution details
         
-        This is a CRITICAL EFI touchpoint:
+        This is a CRITICAL EVFI touchpoint:
         1. Validates resolution outcome is captured
         2. Ensures failure card is linked (or triggers draft creation)
         3. Emits TICKET_CLOSED (triggers confidence engine)
@@ -600,10 +600,56 @@ class TicketService:
         
         logger.info(f"Closed ticket {ticket_id} with outcome: {data.resolution_outcome}")
         
-        # EFI FEEDBACK LOOP: Update platform patterns with confirmed fault data
+        # COGS: Deduct parts from inventory and post journal entries
+        org_id = organization_id or existing.get("organization_id", "")
+        try:
+            estimate = await self.db.ticket_estimates.find_one(
+                {"ticket_id": ticket_id, "organization_id": org_id})
+            if estimate:
+                est_id = estimate.get("estimate_id", "")
+                line_items = await self.db.ticket_estimate_line_items.find(
+                    {"estimate_id": est_id, "type": "part"}).to_list(100)
+                parts_total = 0
+                for li in line_items:
+                    item_id = li.get("item_id")
+                    qty = li.get("qty", li.get("quantity", 1))
+                    if item_id and qty > 0:
+                        item_doc = await self.db.items.find_one(
+                            {"item_id": item_id}, {"_id": 0})
+                        if item_doc:
+                            purchase_rate = item_doc.get("purchase_rate",
+                                item_doc.get("purchase_price", li.get("unit_price", 0)))
+                            await self.db.items.update_one(
+                                {"item_id": item_id},
+                                {"$inc": {"stock_on_hand": -qty}})
+                            parts_total += round(purchase_rate * qty, 2)
+                            logger.info(f"Deducted {qty} x {item_doc.get('name','')} from inventory for {ticket_id}")
+                if parts_total > 0:
+                    from services.double_entry_service import DoubleEntryService
+                    de = DoubleEntryService(self.db)
+                    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                    await de.create_journal_entry(
+                        organization_id=org_id,
+                        entry_date=today,
+                        description=f"COGS for ticket {ticket_id}",
+                        lines=[
+                            {"account_code": "5100", "debit_amount": parts_total, "credit_amount": 0,
+                             "description": f"Cost of parts consumed"},
+                            {"account_code": "1300", "debit_amount": 0, "credit_amount": parts_total,
+                             "description": f"Inventory reduction for parts consumed"}
+                        ],
+                        source_document_id=ticket_id,
+                        source_document_type="ticket_close",
+                        created_by=user_id
+                    )
+                    logger.info(f"Posted COGS journal entry for {ticket_id}: Rs.{parts_total}")
+        except Exception as cogs_err:
+            logger.warning(f"COGS posting failed for {ticket_id}: {cogs_err}")
+        
+        # EVFI FEEDBACK LOOP: Update platform patterns with confirmed fault data
         await self._update_efi_platform_patterns(existing, data)
         
-        # Sprint 3B-02: Auto-trigger EFI learning capture — non-blocking
+        # Sprint 3B-02: Auto-trigger EVFI learning capture — non-blocking
         try:
             from services.continuous_learning_service import ContinuousLearningService
             learning_service = ContinuousLearningService(self.db)
@@ -620,7 +666,7 @@ class TicketService:
                 }
             )
         except Exception as efi_err:
-            logger.warning(f"EFI learning capture failed for {ticket_id}: {efi_err}")
+            logger.warning(f"EVFI learning capture failed for {ticket_id}: {efi_err}")
         
         # Generate satisfaction survey token
         try:
@@ -645,11 +691,11 @@ class TicketService:
         
         return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
-    # ==================== EFI FEEDBACK LOOP ====================
+    # ==================== EVFI FEEDBACK LOOP ====================
     
     async def _update_efi_platform_patterns(self, ticket: dict, close_data) -> None:
         """Write anonymised confirmed-fault data to efi_platform_patterns.
-        This feeds back into the EFI intelligence engine across the platform."""
+        This feeds back into the EVFI intelligence engine across the platform."""
         confirmed_fault = getattr(close_data, 'confirmed_fault', None) or ticket.get('confirmed_fault')
         if not confirmed_fault:
             return
@@ -704,9 +750,9 @@ class TicketService:
                     {"$set": {"confidence_score": round(confidence, 3)}}
                 )
             
-            logger.info(f"EFI pattern updated: {pattern_key} (correct={was_correct})")
+            logger.info(f"EVFI pattern updated: {pattern_key} (correct={was_correct})")
         except Exception as e:
-            logger.warning(f"EFI pattern update failed: {e}")
+            logger.warning(f"EVFI pattern update failed: {e}")
     
     # ==================== TICKET ASSIGNMENT ====================
     
@@ -1076,7 +1122,7 @@ class TicketService:
             "skip": skip
         }
     
-    # ==================== EFI INTEGRATION ====================
+    # ==================== EVFI INTEGRATION ====================
     
     async def get_ticket_matches(self, ticket_id: str) -> Dict[str, Any]:
         """

@@ -2,7 +2,7 @@
 Battwheels OS - Failure Cards API
 ==================================
 Auto-generated failure cards on ticket close.
-Feeds anonymised data to the EFI platform brain.
+Feeds anonymised data to the EVFI platform brain.
 """
 
 import uuid
@@ -98,7 +98,7 @@ async def create_failure_card(request: Request, ctx: TenantContext = Depends(ten
         "labour_hours": ticket.get("labor_hours"),
         "resolution_successful": True,
         
-        # EFI AI context
+        # EVFI AI context
         "efi_suggested_fault": ticket.get("efi_suggested_fault"),
         "efi_confidence": ticket.get("efi_confidence"),
         "efi_was_correct": None,
@@ -219,7 +219,7 @@ async def get_failure_card_by_ticket(request: Request, ticket_id: str, ctx: Tena
     return card
 
 
-# ==================== EFI BRAIN FEEDING ====================
+# ==================== EVFI BRAIN FEEDING ====================
 
 def hash_symptoms(text: str) -> str:
     """Create a deterministic hash of symptom text for pattern matching"""
@@ -239,6 +239,7 @@ async def feed_efi_brain(db, card: dict):
     
     pattern = {
         "pattern_id": f"pat_{uuid.uuid4().hex[:12]}",
+        "source_card_id": card.get("card_id"),
         "vehicle_category": card.get("vehicle_category"),
         "vehicle_make": card.get("vehicle_make"),
         "vehicle_model": card.get("vehicle_model"),
@@ -254,7 +255,13 @@ async def feed_efi_brain(db, card: dict):
         # NO org_id, NO ticket_id, NO customer data, NO technician_id
     }
     
-    await db.efi_platform_patterns.insert_one(pattern)
+    # Upsert guard: prevent duplicates from the two trigger paths
+    # (card creation in tickets.py AND card update in failure_cards.py)
+    await db.efi_platform_patterns.update_one(
+        {"source_card_id": card["card_id"]},
+        {"$set": pattern},
+        upsert=True
+    )
     await db.failure_cards.update_one(
         {"card_id": card["card_id"]},
         {"$set": {

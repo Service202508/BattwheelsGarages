@@ -105,20 +105,31 @@ export default function InventoryEnhanced() {
         fetch(`${API}/inventory-enhanced/reports/low-stock`, { headers })
       ]);
 
+      // Handle each response individually — 403 means enterprise-gated
+      const parse = async (res) => {
+        if (res.status === 403) return { _gated: true };
+        if (!res.ok) return {};
+        return res.json();
+      };
+
       const [summaryData, warehouseData, variantsData, bundlesData, serialData, shipmentsData, returnsData, itemsData, lowStockData] = await Promise.all([
-        summaryRes.json(), warehouseRes.json(), variantsRes.json(), bundlesRes.json(), 
-        serialRes.json(), shipmentsRes.json(), returnsRes.json(), itemsRes.json(), lowStockRes.json()
+        parse(summaryRes), parse(warehouseRes), parse(variantsRes), parse(bundlesRes), 
+        parse(serialRes), parse(shipmentsRes), parse(returnsRes), parse(itemsRes), parse(lowStockRes)
       ]);
 
-      setSummary(summaryData.summary || {});
-      setWarehouses(warehouseData.warehouses || []);
-      setVariants(variantsData.variants || []);
-      setBundles(bundlesData.bundles || []);
-      setSerialBatches(serialData.serial_batches || []);
-      setShipments(shipmentsData.shipments || []);
-      setReturns(returnsData.returns || []);
-      setItems(itemsData.items || []);
-      setLowStockItems(lowStockData.report?.low_stock_items || []);
+      setSummary(summaryData._gated ? { _gated: true } : (summaryData.summary || {}));
+      setWarehouses(warehouseData._gated ? [] : (warehouseData.warehouses || []));
+      setVariants(variantsData._gated ? [] : (variantsData.variants || []));
+      setBundles(bundlesData._gated ? [] : (bundlesData.bundles || []));
+      setSerialBatches(serialData._gated ? [] : (serialData.serial_batches || []));
+      setShipments(shipmentsData._gated ? [] : (shipmentsData.shipments || []));
+      setReturns(returnsData._gated ? [] : (returnsData.returns || []));
+      setItems(itemsData._gated ? [] : (itemsData.items || []));
+      setLowStockItems(lowStockData._gated ? [] : (lowStockData.report?.low_stock_items || []));
+
+      if (warehouseData._gated || variantsData._gated || serialData._gated) {
+        toast.info("Some features require an Enterprise plan upgrade");
+      }
 
       // Fetch transfers and stocktakes
       const [transfersRes, stocktakesRes] = await Promise.all([

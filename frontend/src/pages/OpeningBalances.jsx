@@ -45,7 +45,7 @@ export default function OpeningBalances() {
   const fetchBalances = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/zoho/opening-balances?entity_type=${activeTab}`, { headers });
+      const res = await fetch(`${API}/opening-balances?entity_type=${activeTab}`, { headers });
       const data = await res.json();
       setBalances(data.opening_balances || []);
     } catch (error) {
@@ -59,17 +59,17 @@ export default function OpeningBalances() {
   const fetchEntities = async () => {
     try {
       // Fetch customers
-      const custRes = await fetch(`${API}/zoho/contacts?contact_type=customer`, { headers });
+      const custRes = await fetch(`${API}/contacts-enhanced?contact_type=customer`, { headers });
       const custData = await custRes.json();
       setCustomers(custData.contacts || []);
       
       // Fetch vendors
-      const vendRes = await fetch(`${API}/zoho/contacts?contact_type=vendor`, { headers });
+      const vendRes = await fetch(`${API}/contacts-enhanced?contact_type=vendor`, { headers });
       const vendData = await vendRes.json();
       setVendors(vendData.contacts || []);
       
       // Fetch accounts
-      const accRes = await fetch(`${API}/zoho/chartofaccounts`, { headers });
+      const accRes = await fetch(`${API}/chart-of-accounts`, { headers });
       const accData = await accRes.json();
       setAccounts(accData.accounts || []);
     } catch (error) {
@@ -99,7 +99,7 @@ export default function OpeningBalances() {
         entity_name: entityName
       };
 
-      const res = await fetch(`${API}/zoho/opening-balances`, {
+      const res = await fetch(`${API}/opening-balances`, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(payload)

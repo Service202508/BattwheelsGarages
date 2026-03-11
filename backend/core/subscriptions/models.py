@@ -86,7 +86,7 @@ class PlanFeatures(BaseModel):
     hr_leave: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
     hr_payroll: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
     
-    # Intelligence (EFI) Module
+    # Intelligence (EVFI) Module
     efi_failure_intelligence: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
     efi_ai_guidance: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
     efi_knowledge_brain: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))

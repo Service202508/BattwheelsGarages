@@ -45,7 +45,7 @@ export default function Items() {
   const fetchItems = async () => {
     try {
       const token = localStorage.getItem("token");
-      let url = `${API}/zoho/items?per_page=500`;
+      let url = `${API}/items-enhanced?per_page=500`;
       if (search) url += `&search_text=${encodeURIComponent(search)}`;
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
@@ -57,7 +57,7 @@ export default function Items() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/items/export?format=csv`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API}/items-enhanced/export?format=csv`, { headers: { Authorization: `Bearer ${token}` } });
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -72,7 +72,7 @@ export default function Items() {
   const handleDownloadTemplate = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/items/import-template`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API}/items-enhanced/import-template`, { headers: { Authorization: `Bearer ${token}` } });
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -93,7 +93,7 @@ export default function Items() {
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(`${API}/zoho/items/bulk-import`, {
+      const res = await fetch(`${API}/items-enhanced/bulk-import`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
@@ -126,7 +126,7 @@ export default function Items() {
     if (newItem.rate <= 0) return toast.error("Enter valid rate");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/items`, {
+      const res = await fetch(`${API}/items-enhanced`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newItem)
@@ -144,7 +144,7 @@ export default function Items() {
     if (!editItem) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/items/${editItem.item_id}`, {
+      const res = await fetch(`${API}/items-enhanced/${editItem.item_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(editItem)
@@ -161,7 +161,7 @@ export default function Items() {
     if (!confirm("Delete this item?")) return;
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/items/${itemId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`${API}/items-enhanced/${itemId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       toast.success("Item deleted");
       fetchItems();
     } catch { toast.error("Error deleting item"); }

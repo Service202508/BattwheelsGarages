@@ -1523,8 +1523,28 @@ def generate_credit_note_html(
     return html
 
 
-def generate_pdf_from_html(html_content: str) -> bytes:
-    """Convert HTML to PDF using WeasyPrint"""
+_TRIAL_WATERMARK_CSS = """
+<style>
+  .trial-watermark-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9999; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .trial-watermark-overlay span {
+    font-size: 80px; font-weight: bold; color: rgba(200,0,0,0.08);
+    transform: rotate(-35deg); white-space: nowrap;
+    letter-spacing: 20px; font-family: Arial, sans-serif;
+  }
+</style>
+<div class="trial-watermark-overlay"><span>TRIAL</span></div>
+"""
+
+
+def generate_pdf_from_html(html_content: str, is_trial: bool = False) -> bytes:
+    """Convert HTML to PDF using WeasyPrint. Adds TRIAL watermark for free/trialing plans."""
+    if is_trial:
+        # Inject watermark just after <body> tag
+        html_content = html_content.replace('<body>', '<body>' + _TRIAL_WATERMARK_CSS, 1)
     html = HTML(string=html_content)
     pdf_buffer = BytesIO()
     html.write_pdf(pdf_buffer)

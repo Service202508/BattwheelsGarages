@@ -65,6 +65,17 @@ def get_db():
     from server import db
     return db
 
+async def find_invoice(db, invoice_id: str, org_id: str):
+    """Search for an invoice across all invoice collections."""
+    for coll in ("invoices", "invoices_enhanced", "ticket_invoices"):
+        doc = await db[coll].find_one(
+            {"invoice_id": invoice_id, "organization_id": org_id},
+            {"_id": 0}
+        )
+        if doc:
+            return doc
+    return None
+
 # ==================== CONFIGURATION ENDPOINTS ====================
 
 @router.get("/config")
@@ -140,10 +151,7 @@ async def generate_irn(
         }
     
     # Get invoice
-    invoice = await db.invoices.find_one(
-        {"invoice_id": data.invoice_id, "organization_id": ctx.org_id},
-        {"_id": 0}
-    )
+    invoice = await find_invoice(db, data.invoice_id, ctx.org_id)
     
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
@@ -315,10 +323,7 @@ async def validate_invoice_for_einvoice(
     db = get_db()
     
     # Get invoice
-    invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "organization_id": ctx.org_id},
-        {"_id": 0}
-    )
+    invoice = await find_invoice(db, invoice_id, ctx.org_id)
     
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
@@ -353,10 +358,7 @@ async def get_qr_code(
     db = get_db()
     
     # Get invoice with IRN
-    invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "organization_id": ctx.org_id},
-        {"_id": 0, "irn_signed_qr": 1, "irn": 1, "irn_status": 1}
-    )
+    invoice = await find_invoice(db, invoice_id, ctx.org_id)
     
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
@@ -395,10 +397,7 @@ async def get_qr_code_image(
     
     db = get_db()
     
-    invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "organization_id": ctx.org_id},
-        {"_id": 0, "irn_signed_qr": 1}
-    )
+    invoice = await find_invoice(db, invoice_id, ctx.org_id)
     
     if not invoice or not invoice.get("irn_signed_qr"):
         raise HTTPException(status_code=404, detail="QR code not available")

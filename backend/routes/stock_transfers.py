@@ -9,7 +9,6 @@ from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone
-import motor.motor_asyncio
 import os
 import uuid
 import logging
@@ -18,11 +17,7 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(
     prefix="/stock-transfers",

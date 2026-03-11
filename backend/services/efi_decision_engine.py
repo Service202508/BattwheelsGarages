@@ -1,5 +1,5 @@
 """
-EFI Decision Tree Engine - Guided Diagnostic Execution
+EVFI Decision Tree Engine - Guided Diagnostic Execution
 Handles step-by-step diagnostics with PASS/FAIL branching
 """
 import logging
@@ -64,7 +64,7 @@ class StepOutcome(BaseModel):
 
 
 class EFISession(BaseModel):
-    """Active EFI diagnostic session for a job card"""
+    """Active EVFI diagnostic session for a job card"""
     session_id: str = Field(default_factory=lambda: f"efi_{uuid.uuid4().hex[:8]}")
     ticket_id: str
     job_card_id: Optional[str] = None
@@ -116,7 +116,7 @@ class EFIDecisionTreeEngine:
         technician_id: Optional[str] = None,
         technician_name: Optional[str] = None
     ) -> Dict:
-        """Start a new EFI diagnostic session"""
+        """Start a new EVFI diagnostic session"""
         
         # Get the decision tree (TIER 2 — no org_id)
         tree = await self.get_tree_for_card(failure_card_id)

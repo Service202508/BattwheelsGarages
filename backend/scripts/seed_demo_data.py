@@ -12,11 +12,9 @@ import os
 import uuid
 import random
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
+from utils.database import db as _seed_db, client as _seed_client
 
 # ── Config ──
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
 ORG_ID = "demo-volt-motors-001"
 OWNER_USER_ID = "user-demo-owner-001"
 SEED_TAG = "seed_demo_v2"  # Tag to identify seeded records for safe cleanup
@@ -187,13 +185,11 @@ RESOLUTIONS = [
 TICKETS_PER_MONTH = [3, 5, 6, 8, 10, 13]  # total = 45
 
 async def seed():
-    client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    db = _seed_db
 
     print(f"\n{'='*60}")
     print(f"  VOLT MOTORS DEMO DATA SEED")
     print(f"  Org: {ORG_ID}")
-    print(f"  DB:  {DB_NAME}")
     print(f"{'='*60}\n")
 
     # ── STEP 0: Clear previous demo-seeded data ──

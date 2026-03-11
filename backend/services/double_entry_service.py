@@ -458,7 +458,7 @@ class DoubleEntryService:
         # Build entry lines with account details
         entry_lines = []
         for line_data in lines:
-            account = await self.get_account_by_id(organization_id, line_data["account_id"])
+            account = await self.get_account_by_id(organization_id, line_data.get("account_id", ""))
             if not account:
                 # Try by code
                 account = await self.get_account_by_code(organization_id, line_data.get("account_code", ""))

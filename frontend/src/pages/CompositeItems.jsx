@@ -26,8 +26,7 @@ import {
   Trash2, Edit, Eye, MoreHorizontal, AlertTriangle,
   CheckCircle, XCircle, ArrowDown, ArrowUp, Wrench, BarChart3
 } from "lucide-react";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { API } from "@/App";
 
 export default function CompositeItems() {
   const [loading, setLoading] = useState(true);

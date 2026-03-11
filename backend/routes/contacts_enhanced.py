@@ -8,8 +8,6 @@ from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
-import motor.motor_asyncio
-import os
 import re
 import uuid
 import logging
@@ -21,11 +19,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/contacts-enhanced", tags=["Contacts Enhanced v2"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db
 
 # Collections - Use main contacts collection which has Zoho-synced data
 contacts_collection = db["contacts"]
@@ -550,9 +545,10 @@ async def get_indian_states():
 # ========================= SUMMARY ENDPOINT (Must be before /{contact_id}) =========================
 
 @router.get("/summary")
-async def get_contacts_summary(contact_type: Optional[str] = None):
+async def get_contacts_summary(request: Request, contact_type: Optional[str] = None):
     """Get contacts summary statistics"""
-    base_query = {}
+    org_id = await get_org_id(request)
+    base_query = {"organization_id": org_id}
     if contact_type:
         if contact_type == "customer":
             base_query["contact_type"] = {"$in": ["customer", "both"]}
@@ -607,9 +603,10 @@ async def get_contacts_summary(contact_type: Optional[str] = None):
 # ========================= CHECK SYNC ENDPOINT =========================
 
 @router.get("/check-sync")
-async def check_contacts_sync(contact_type: Optional[str] = None):
+async def check_contacts_sync(request: Request, contact_type: Optional[str] = None):
     """Audit contacts against Zoho-like features and check data quality"""
-    base_query = {}
+    org_id = await get_org_id(request)
+    base_query = {"organization_id": org_id}
     if contact_type:
         if contact_type == "customer":
             base_query["contact_type"] = {"$in": ["customer", "both"]}
@@ -666,9 +663,13 @@ async def check_contacts_sync(contact_type: Optional[str] = None):
 # ========================= TAGS ENDPOINTS =========================
 
 @router.get("/tags")
-async def list_contact_tags(include_inactive: bool = False):
+async def list_contact_tags(request: Request, include_inactive: bool = False):
     """List all contact tags"""
-    query = {} if include_inactive else {"is_active": {"$ne": False}}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id} if not include_inactive else {"organization_id": org_id, "is_active": {"$ne": False}}
+    query_for_inactive = {"organization_id": org_id}
+    if not include_inactive:
+        query["is_active"] = {"$ne": False}
     tags = await contact_tags_collection.find(query, {"_id": 0}).sort("name", 1).to_list(500)
     
     for tag in tags:
@@ -857,6 +858,10 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
     if not request:
         raise HTTPException(status_code=403, detail="Organization context required")
     org_id = await get_org_id(request)
+    
+    # Plan record limit enforcement
+    from utils.plan_limits import check_record_limit
+    await check_record_limit(org_id, "contacts")
     
     # Check for duplicate by GSTIN or email (org-scoped)
     if contact.gstin:

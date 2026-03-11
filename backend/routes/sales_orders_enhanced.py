@@ -6,8 +6,6 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
-import motor.motor_asyncio
-import os
 import uuid
 import logging
 
@@ -18,11 +16,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/sales-orders-enhanced", tags=["Sales Orders Enhanced"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db
 
 # Collections - Use main collections with Zoho-synced data
 salesorders_collection = db["salesorders"]
@@ -583,6 +578,7 @@ async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: Bac
 
 @router.get("/")
 async def list_sales_orders(
+    request: Request,
     status: Optional[str] = None,
     fulfillment_status: Optional[str] = None,
     customer_id: Optional[str] = None,
@@ -597,7 +593,8 @@ async def list_sales_orders(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    query = {}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id}
 
     if status:
         query["status"] = status
@@ -657,7 +654,7 @@ async def get_salesorders_summary(request: Request):
     
     # Calculate totals
     pipeline = [
-        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$match": {"status": {"$nin": ["void"]}, "organization_id": org_id}},
         {"$group": {
             "_id": None,
             "total_value": {"$sum": "$grand_total"},
@@ -1280,9 +1277,10 @@ Battwheels Team
 # ========================= REPORTING ENDPOINTS =========================
 
 @router.get("/reports/by-status")
-async def report_by_status(date_from: str = "", date_to: str = ""):
+async def report_by_status(request: Request, date_from: str = "", date_to: str = ""):
     """Report: Sales Orders by status"""
-    query = {}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id}
     if date_from:
         query["date"] = {"$gte": date_from}
     if date_to:
@@ -1309,10 +1307,11 @@ async def report_by_status(date_from: str = "", date_to: str = ""):
     }
 
 @router.get("/reports/by-customer")
-async def report_by_customer(limit: int = 20):
+async def report_by_customer(request: Request, limit: int = 20):
     """Report: Top customers by sales order value"""
+    org_id = await get_org_id(request)
     pipeline = [
-        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$match": {"status": {"$nin": ["void"]}, "organization_id": org_id}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
@@ -1334,16 +1333,18 @@ async def report_by_customer(limit: int = 20):
     return {"code": 0, "report": results}
 
 @router.get("/reports/fulfillment-summary")
-async def report_fulfillment_summary():
+async def report_fulfillment_summary(request: Request):
     """Report: Fulfillment summary"""
-    total = await salesorders_collection.count_documents({"status": {"$ne": "void"}})
-    unfulfilled = await salesorders_collection.count_documents({"fulfillment_status": "unfulfilled", "status": {"$nin": ["void", "draft"]}})
-    partially = await salesorders_collection.count_documents({"fulfillment_status": "partially_fulfilled"})
-    fulfilled = await salesorders_collection.count_documents({"fulfillment_status": "fulfilled"})
+    org_id = await get_org_id(request)
+    base = {"organization_id": org_id}
+    total = await salesorders_collection.count_documents({**base, "status": {"$ne": "void"}})
+    unfulfilled = await salesorders_collection.count_documents({**base, "fulfillment_status": "unfulfilled", "status": {"$nin": ["void", "draft"]}})
+    partially = await salesorders_collection.count_documents({**base, "fulfillment_status": "partially_fulfilled"})
+    fulfilled = await salesorders_collection.count_documents({**base, "fulfillment_status": "fulfilled"})
     
     # Value breakdown
     pipeline = [
-        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$match": {**base, "status": {"$nin": ["void"]}}},
         {"$group": {
             "_id": "$fulfillment_status",
             "total_value": {"$sum": "$grand_total"}

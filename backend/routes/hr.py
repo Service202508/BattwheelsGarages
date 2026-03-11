@@ -1261,6 +1261,7 @@ async def get_form16_data(request: Request, employee_id: str, fy: str, _: None =
     # Check if employee has payroll data for this FY
     payroll_records = await service.db.payroll.find({
         "employee_id": employee_id,
+        "organization_id": org_id,
         "$or": [
             {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
             {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
@@ -1449,6 +1450,7 @@ async def download_form16_pdf(request: Request, employee_id: str, fy: str, _: No
 
         payroll_records = await service.db.payroll.find({
             "employee_id": employee_id,
+            "organization_id": org_id,
             "$or": [
                 {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
                 {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
@@ -1789,6 +1791,7 @@ async def download_bulk_form16_zip(request: Request, fy: str, _: None = Depends(
             try:
                 payroll_records = await service.db.payroll.find({
                     "employee_id": employee_id,
+                    "organization_id": org_id,
                     "$or": [
                         {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
                         {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}

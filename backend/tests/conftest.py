@@ -267,6 +267,139 @@ def _seed_test_data(_db):
     _db.item_prices.delete_many({"price_list_id": "PL-B575D8BF"})
 
 
+# ── Guard: re-seed critical entities before each test MODULE ──
+# Some test files delete contacts/items via API calls during their execution.
+# This fixture detects missing seed data and restores it cheaply.
+_CRITICAL_CONTACTS = {
+    "CON-235065AEEC94": {
+        "contact_id": "CON-235065AEEC94",
+        "contact_number": "C-SEED-001",
+        "contact_type": "customer",
+        "name": "Rahul Sharma",
+        "display_name": "Rahul Sharma",
+        "email": "rahul.sharma@test.com",
+        "phone": "9876543210",
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+    },
+    "CUST-93AE14BE3618": {
+        "contact_id": "CUST-93AE14BE3618",
+        "contact_number": "C-SEED-002",
+        "contact_type": "customer",
+        "name": "Full Zoho Test Co",
+        "display_name": "Full Zoho Test Co",
+        "email": "zoho.test@test.com",
+        "phone": "9876543211",
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+        "price_list_id": "PL-B575D8BF",
+        "price_list_name": "Wholesale",
+        "sales_price_list_id": "PL-B575D8BF",
+    },
+    "1837096000000463081": {
+        "contact_id": "1837096000000463081",
+        "contact_number": "C-SEED-003",
+        "contact_type": "customer",
+        "name": "Integration Test Contact",
+        "display_name": "Integration Test Contact",
+        "email": "integration@test.com",
+        "phone": "9876543212",
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+    },
+}
+
+_CRITICAL_ITEMS = {
+    "I-DDC36534C55C": {
+        "item_id": "I-DDC36534C55C",
+        "name": "EV Battery Service",
+        "item_type": "service",
+        "sku": "SVC-BAT-001",
+        "unit_price": 5000,
+        "rate": 5000,
+        "sales_rate": 5000,
+        "quantity": 0,
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+    },
+    "1837096000000446195": {
+        "item_id": "1837096000000446195",
+        "name": "12V Battery replacement",
+        "item_type": "inventory",
+        "sku": "BAT-12V-001",
+        "unit_price": 200,
+        "rate": 200,
+        "sales_rate": 200,
+        "purchase_rate": 150,
+        "quantity": 100,
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+    },
+    "1837096000001141394": {
+        "item_id": "1837096000001141394",
+        "name": "2 Wheeler Seatcover-25",
+        "item_type": "inventory",
+        "sku": "SC-2W-025",
+        "unit_price": 200,
+        "rate": 200,
+        "sales_rate": 200,
+        "quantity": 50,
+        "organization_id": "dev-internal-testing-001",
+        "status": "active",
+    },
+}
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _reseed_if_missing(_db):
+    """Cheaply verify and re-seed critical test entities before each module.
+
+    This guards against state pollution where a prior test module deletes
+    contacts or items via API calls, causing later tests to receive 404.
+    """
+    for cid, doc in _CRITICAL_CONTACTS.items():
+        _db.contacts.update_one(
+            {"contact_id": cid},
+            {"$set": doc},
+            upsert=True,
+        )
+
+    for iid, doc in _CRITICAL_ITEMS.items():
+        _db.items.update_one(
+            {"item_id": iid},
+            {"$set": doc},
+            upsert=True,
+        )
+
+    # Ensure price list exists
+    _db.price_lists.update_one(
+        {"pricelist_id": "PL-B575D8BF"},
+        {"$set": {
+            "pricelist_id": "PL-B575D8BF",
+            "organization_id": "dev-internal-testing-001",
+            "name": "Wholesale",
+            "description": "Wholesale price list - 15% discount",
+            "discount_percentage": 15.0,
+            "markup_percentage": 0.0,
+            "is_active": True,
+        }},
+        upsert=True,
+    )
+
+    # Ensure item-price link exists
+    _db.item_prices.update_one(
+        {"item_id": "1837096000000446195", "price_list_id": "PL-B575D8BF"},
+        {"$set": {
+            "price_id": "IP-SEED-001",
+            "item_id": "1837096000000446195",
+            "item_name": "12V Battery replacement",
+            "organization_id": "dev-internal-testing-001",
+            "price_list_id": "PL-B575D8BF",
+            "price_list_name": "Wholesale",
+            "rate": 170.0,
+        }},
+        upsert=True,
+    )
 
 @pytest.fixture(autouse=True)
 def _clear_login_attempts_per_test(_db):

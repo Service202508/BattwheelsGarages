@@ -45,8 +45,8 @@ class FeatureNotAvailable(HTTPException):
         "inventory_stock_transfers": "Stock Transfers",
         "einvoice": "E-Invoice",
         "accounting_module": "Accounting Module",
-        "efi_failure_intelligence": "EFI Intelligence",
-        "efi_ai_guidance": "EFI AI Guidance",
+        "efi_failure_intelligence": "EVFI Intelligence",
+        "efi_ai_guidance": "EVFI AI Guidance",
         "efi_knowledge_brain": "Knowledge Brain",
         "efi_expert_escalation": "Expert Escalation",
     }
@@ -148,7 +148,7 @@ class EntitlementService:
         "hr_leave": PlanCode.PROFESSIONAL,
         "hr_payroll": PlanCode.PROFESSIONAL,
         
-        # EFI/Intelligence
+        # EVFI/Intelligence
         "efi_failure_intelligence": PlanCode.STARTER,
         "efi_ai_guidance": PlanCode.STARTER,
         "efi_knowledge_brain": PlanCode.PROFESSIONAL,

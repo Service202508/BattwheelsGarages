@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Download, Calendar, FileText, Check, X, AlertTriangle } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
+// HARDCODED for production — Emergent overrides env vars during build
+const API_URL = window.location.origin;
 
 // Design tokens — using CSS variables
 const colors = {
@@ -44,7 +46,7 @@ const TrialBalance = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_URL}/api/journal-entries/reports/trial-balance?as_of_date=${asOfDate}`,
+        `${API}/journal-entries/reports/trial-balance?as_of_date=${asOfDate}`,
         {
           headers: { 'X-Organization-ID': 'default' },
           credentials: 'include'

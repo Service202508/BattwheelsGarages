@@ -56,7 +56,7 @@ export default function RecurringExpenses() {
   const fetchExpenses = async () => {
     setLoading(true);
     try {
-      const url = `${API}/zoho/recurring-expenses${statusFilter ? `?status=${statusFilter}` : ''}`;
+      const url = `${API}/recurring-expenses${statusFilter ? `?status=${statusFilter}` : ''}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       setExpenses(data.recurring_expenses || []);
@@ -70,7 +70,7 @@ export default function RecurringExpenses() {
 
   const fetchVendors = async () => {
     try {
-      const res = await fetch(`${API}/zoho/contacts?contact_type=vendor`, { headers });
+      const res = await fetch(`${API}/contacts-enhanced?contact_type=vendor`, { headers });
       const data = await res.json();
       setVendors(data.contacts || []);
     } catch (error) {
@@ -80,7 +80,7 @@ export default function RecurringExpenses() {
 
   const fetchAccounts = async () => {
     try {
-      const res = await fetch(`${API}/zoho/chartofaccounts?account_type=expense`, { headers });
+      const res = await fetch(`${API}/chart-of-accounts?account_type=expense`, { headers });
       const data = await res.json();
       setAccounts(data.accounts || []);
     } catch (error) {
@@ -104,7 +104,7 @@ export default function RecurringExpenses() {
         account_name: account?.account_name || ""
       };
 
-      const res = await fetch(`${API}/zoho/recurring-expenses`, {
+      const res = await fetch(`${API}/recurring-expenses`, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -126,7 +126,7 @@ export default function RecurringExpenses() {
 
   const handleStop = async (reId) => {
     try {
-      const res = await fetch(`${API}/zoho/recurring-expenses/${reId}/stop`, {
+      const res = await fetch(`${API}/recurring-expenses/${reId}/stop`, {
         method: "POST",
         headers
       });
@@ -142,7 +142,7 @@ export default function RecurringExpenses() {
 
   const handleResume = async (reId) => {
     try {
-      const res = await fetch(`${API}/zoho/recurring-expenses/${reId}/resume`, {
+      const res = await fetch(`${API}/recurring-expenses/${reId}/resume`, {
         method: "POST",
         headers
       });
@@ -160,7 +160,7 @@ export default function RecurringExpenses() {
     if (!confirm("Are you sure you want to delete this recurring expense?")) return;
     
     try {
-      const res = await fetch(`${API}/zoho/recurring-expenses/${reId}`, {
+      const res = await fetch(`${API}/recurring-expenses/${reId}`, {
         method: "DELETE",
         headers
       });
@@ -177,7 +177,7 @@ export default function RecurringExpenses() {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const res = await fetch(`${API}/zoho/recurring-expenses/generate`, {
+      const res = await fetch(`${API}/recurring-expenses/generate`, {
         method: "POST",
         headers
       });

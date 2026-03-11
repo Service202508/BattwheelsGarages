@@ -56,6 +56,7 @@ async def get_monthly_revenue(request: Request, year: int = None, months: int = 
         # Get invoices
         pipeline = [
             {"$match": {
+                "organization_id": org_id,
                 "invoice_date": {"$gte": start_date, "$lte": end_date},
                 "status": {"$nin": ["draft", "void"]}
             }},
@@ -109,6 +110,7 @@ async def get_quarterly_revenue(request: Request, year: int = None):
     for q in quarters:
         pipeline = [
             {"$match": {
+                "organization_id": org_id,
                 "invoice_date": {"$gte": q["start"], "$lte": q["end"]},
                 "status": {"$nin": ["draft", "void"]}
             }},
@@ -154,6 +156,7 @@ async def get_yearly_comparison(request: Request, years: int = 3):
     for y in range(current_year - years + 1, current_year + 1):
         pipeline = [
             {"$match": {
+                "organization_id": org_id,
                 "invoice_date": {"$gte": f"{y}-01-01", "$lte": f"{y}-12-31"},
                 "status": {"$nin": ["draft", "void"]}
             }},
@@ -191,7 +194,7 @@ async def get_receivables_aging_chart(request: Request):
     today = datetime.now(timezone.utc).date()
     
     invoices = await invoices_collection.find(
-        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
+        {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
         {"_id": 0, "due_date": 1, "balance_due": 1, "amount_due": 1}
     ).to_list(2000)
     
@@ -267,6 +270,7 @@ async def get_receivables_trend(request: Request, months: int = 6):
         # Get outstanding as of end of month
         pipeline = [
             {"$match": {
+                "organization_id": org_id,
                 "invoice_date": {"$lte": as_of_date},
                 "status": {"$nin": ["draft", "void", "paid"]}
             }},
@@ -302,7 +306,7 @@ async def get_top_customers_by_revenue(request: Request, limit: int = 10):
     org_id = extract_org_id(request)
     """Get top customers by revenue for chart"""
     pipeline = [
-        {"$match": {"status": {"$nin": ["draft", "void"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
@@ -338,7 +342,7 @@ async def get_top_customers_by_outstanding(request: Request, limit: int = 10):
     org_id = extract_org_id(request)
     """Get customers with highest outstanding"""
     pipeline = [
-        {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]}},
+        {"$match": {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
@@ -388,6 +392,7 @@ async def get_customer_acquisition(request: Request, months: int = 12):
         end = f"{year}-{month:02d}-{last_day}"
         
         new_customers = await contacts_collection.count_documents({
+            "organization_id": org_id,
             "contact_type": {"$in": ["customer", "both"]},
             "created_time": {"$gte": start, "$lte": end}
         })
@@ -416,42 +421,42 @@ async def get_sales_funnel(request: Request):
     org_id = extract_org_id(request)
     """Get sales funnel data (estimates -> orders -> invoices)"""
     # Estimates
-    total_estimates = await estimates_collection.count_documents({"status": {"$ne": "draft"}})
+    total_estimates = await estimates_collection.count_documents({"organization_id": org_id, "status": {"$ne": "draft"}})
     estimates_value = 0
     est_data = await estimates_collection.aggregate([
-        {"$match": {"status": {"$ne": "draft"}}},
+        {"$match": {"organization_id": org_id, "status": {"$ne": "draft"}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if est_data:
         estimates_value = est_data[0].get("total", 0)
     
-    accepted_estimates = await estimates_collection.count_documents({"status": "accepted"})
+    accepted_estimates = await estimates_collection.count_documents({"organization_id": org_id, "status": "accepted"})
     
     # Sales Orders
-    total_orders = await salesorders_collection.count_documents({"status": {"$nin": ["draft", "void"]}})
+    total_orders = await salesorders_collection.count_documents({"organization_id": org_id, "status": {"$nin": ["draft", "void"]}})
     orders_value = 0
     so_data = await salesorders_collection.aggregate([
-        {"$match": {"status": {"$nin": ["draft", "void"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if so_data:
         orders_value = so_data[0].get("total", 0)
     
     # Invoices
-    total_invoices = await invoices_collection.count_documents({"status": {"$nin": ["draft", "void"]}})
+    total_invoices = await invoices_collection.count_documents({"organization_id": org_id, "status": {"$nin": ["draft", "void"]}})
     invoices_value = 0
     inv_data = await invoices_collection.aggregate([
-        {"$match": {"status": {"$nin": ["draft", "void"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if inv_data:
         invoices_value = inv_data[0].get("total", 0)
     
     # Paid
-    paid_invoices = await invoices_collection.count_documents({"status": "paid"})
+    paid_invoices = await invoices_collection.count_documents({"organization_id": org_id, "status": "paid"})
     paid_value = 0
     paid_data = await invoices_collection.aggregate([
-        {"$match": {"status": "paid"}},
+        {"$match": {"organization_id": org_id, "status": "paid"}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     if paid_data:
@@ -491,6 +496,7 @@ async def get_invoice_status_distribution(request: Request):
     org_id = extract_org_id(request)
     """Get invoice status distribution for pie chart"""
     pipeline = [
+        {"$match": {"organization_id": org_id}},
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1},
@@ -563,7 +569,7 @@ async def get_payment_trend(request: Request, months: int = 6):
         end = f"{year}-{month:02d}-{last_day}"
         
         pipeline = [
-            {"$match": {"payment_date": {"$gte": start, "$lte": end}}},
+            {"$match": {"organization_id": org_id, "payment_date": {"$gte": start, "$lte": end}}},
             {"$group": {
                 "_id": None,
                 "total_collected": {"$sum": "$amount"},
@@ -597,6 +603,7 @@ async def get_payments_by_mode(request: Request):
     org_id = extract_org_id(request)
     """Get payment distribution by mode"""
     pipeline = [
+        {"$match": {"organization_id": org_id}},
         {"$group": {
             "_id": "$payment_mode",
             "count": {"$sum": 1},
@@ -647,36 +654,37 @@ async def get_dashboard_summary(request: Request):
     
     # This month revenue
     month_revenue = await invoices_collection.aggregate([
-        {"$match": {"invoice_date": {"$gte": first_of_month}, "status": {"$nin": ["draft", "void"]}}},
+        {"$match": {"organization_id": org_id, "invoice_date": {"$gte": first_of_month}, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}, "count": {"$sum": 1}}}
     ]).to_list(1)
     
     # Year to date
     ytd_revenue = await invoices_collection.aggregate([
-        {"$match": {"invoice_date": {"$gte": first_of_year}, "status": {"$nin": ["draft", "void"]}}},
+        {"$match": {"organization_id": org_id, "invoice_date": {"$gte": first_of_year}, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$grand_total", "$total_amount"]}}}}
     ]).to_list(1)
     
     # Total outstanding
     outstanding = await invoices_collection.aggregate([
-        {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}}}
     ]).to_list(1)
     
     # Overdue
     overdue = await invoices_collection.aggregate([
-        {"$match": {"status": "overdue"}},
+        {"$match": {"organization_id": org_id, "status": "overdue"}},
         {"$group": {"_id": None, "total": {"$sum": {"$ifNull": ["$balance_due", "$amount_due"]}}, "count": {"$sum": 1}}}
     ]).to_list(1)
     
     # Active customers
     active_customers = await contacts_collection.count_documents({
+        "organization_id": org_id,
         "contact_type": {"$in": ["customer", "both"]},
         "is_active": True
     })
     
     # Pending estimates
-    pending_estimates = await estimates_collection.count_documents({"status": "sent"})
+    pending_estimates = await estimates_collection.count_documents({"organization_id": org_id, "status": "sent"})
     
     return {
         "code": 0,

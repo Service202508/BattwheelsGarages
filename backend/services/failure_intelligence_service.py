@@ -1,6 +1,6 @@
 """
-Battwheels OS - EFI Service
-Business logic for EV Failure Intelligence Platform
+Battwheels OS - EVFI Service
+Business logic for Electric Vehicle Failure Intelligence Platform
 
 Service responsibilities:
 - Failure card CRUD operations
@@ -12,7 +12,7 @@ Service responsibilities:
 
 Event Flow:
 ┌─────────────┐     ┌───────────────┐     ┌────────────────────┐
-│ Create/     │ --> │ EFI Service   │ --> │ Event Dispatcher   │
+│ Create/     │ --> │ EVFI Service  │ --> │ Event Dispatcher   │
 │ Update/     │     │ (business     │     │ - Confidence Eng   │
 │ Match       │     │  logic)       │     │ - Notifications    │
 └─────────────┘     └───────────────┘     │ - Pattern Detect   │
@@ -118,13 +118,13 @@ def compute_text_similarity(text1: str, text2: str) -> float:
     return len(intersection) / len(union)
 
 
-# ==================== EFI SERVICE ====================
+# ==================== EVFI SERVICE ====================
 
 class EFIService:
     """
-    Core EFI business logic service
+    Core EVFI business logic service
     
-    All EFI operations flow through this service.
+    All EVFI operations flow through this service.
     Service emits events - handlers process them.
     """
     
@@ -947,7 +947,7 @@ class EFIService:
     # ==================== ANALYTICS ====================
     
     async def get_analytics_overview(self) -> Dict[str, Any]:
-        """Get EFI system analytics"""
+        """Get EVFI system analytics"""
         # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1D
         total_cards = await self.db.failure_cards.count_documents({})
         approved_cards = await self.db.failure_cards.count_documents({"status": "approved"})
@@ -996,14 +996,14 @@ _efi_service: Optional[EFIService] = None
 
 
 def get_efi_service() -> EFIService:
-    """Get the EFI service singleton"""
+    """Get the EVFI service singleton"""
     if _efi_service is None:
-        raise ValueError("EFI Service not initialized")
+        raise ValueError("EVFI Service not initialized")
     return _efi_service
 
 
 def init_efi_service(db, event_processor=None) -> EFIService:
-    """Initialize the EFI service with database"""
+    """Initialize the EVFI service with database"""
     global _efi_service
     _efi_service = EFIService(db, event_processor)
     return _efi_service

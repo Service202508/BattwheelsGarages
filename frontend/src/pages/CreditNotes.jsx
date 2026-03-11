@@ -59,16 +59,17 @@ export default function CreditNotes() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [cnRes, custRes, invRes] = await Promise.all([
-        fetch(`${API}/zoho/creditnotes?per_page=100`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=customer&per_page=200`, { headers }),
-        fetch(`${API}/zoho/invoices?per_page=200`, { headers })
+        fetch(`${API}/credit-notes/?per_page=100`, { headers }),
+        fetch(`${API}/contacts-enhanced/?contact_type=customer&per_page=200`, { headers }),
+        fetch(`${API}/invoices-enhanced/?per_page=200`, { headers })
       ]);
+      const safeParse = async (res) => (!res.ok ? {} : res.json());
       const [cnData, custData, invData] = await Promise.all([
-        cnRes.json(), custRes.json(), invRes.json()
+        safeParse(cnRes), safeParse(custRes), safeParse(invRes)
       ]);
-      setCreditNotes(cnData.creditnotes || []);
+      setCreditNotes(cnData.credit_notes || []);
       setCustomers(custData.contacts || []);
-      setInvoices(invData.invoices || []);
+      setInvoices(invData.data || invData.invoices || []);
     } catch (error) {
       console.error("Failed to fetch:", error);
     } finally {
@@ -95,7 +96,7 @@ export default function CreditNotes() {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/creditnotes`, {
+      const res = await fetch(`${API}/credit-notes/`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newCN)
@@ -114,7 +115,7 @@ export default function CreditNotes() {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/creditnotes/${selectedCN.creditnote_id}/invoices/${selectedInvoice}/apply?amount=${applyAmount}`, {
+      const res = await fetch(`${API}/credit-notes/${selectedCN.credit_note_id}/apply?invoice_id=${selectedInvoice}&amount=${applyAmount}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });

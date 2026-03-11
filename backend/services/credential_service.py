@@ -28,7 +28,6 @@ from datetime import datetime, timezone
 import uuid
 
 from cryptography.fernet import Fernet
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -36,18 +35,20 @@ logger = logging.getLogger(__name__)
 _RAW_KEY = os.environ.get("CREDENTIAL_ENCRYPTION_KEY", "")
 if not _RAW_KEY:
     # Derive from JWT_SECRET so no new env var is required in dev/preview
-    _RAW_KEY = os.environ.get("JWT_SECRET", "battwheels-default-key-change-in-prod")
+    _RAW_KEY = os.environ.get("JWT_SECRET")
+    if not _RAW_KEY:
+        _RAW_KEY = "INSECURE-FALLBACK-SET-JWT-SECRET"
+        logging.warning(
+            "JWT_SECRET not set — credential encryption using insecure fallback. "
+            "Set JWT_SECRET in production."
+        )
 
 # Normalize to valid Fernet key (32 bytes base64url)
 _KEY_BYTES = base64.urlsafe_b64encode(hashlib.sha256(_RAW_KEY.encode()).digest())
 _CIPHER = Fernet(_KEY_BYTES)
 
 
-# DB connection (module-level, reused across calls)
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-_client = AsyncIOMotorClient(MONGO_URL)
-_db = _client[DB_NAME]
+from utils.database import db as _db
 
 
 # ==================== ENCRYPTION HELPERS ====================

@@ -62,8 +62,8 @@ export default function Payroll({ user }) {
         setMyPayroll(data);
       }
 
-      // Fetch all payroll (admin only)
-      if (user?.role === "admin") {
+      // Fetch all payroll (admin/owner only)
+      if (user?.role === "admin" || user?.role === "owner") {
         const allResponse = await fetch(
           `${API}/hr/payroll/records?month=${selectedMonth}&year=${selectedYear}`,
           { credentials: "include", headers }
@@ -250,7 +250,7 @@ export default function Payroll({ user }) {
           <h1 className="text-3xl font-bold tracking-tight">Payroll</h1>
           <p className="text-bw-white/[0.65]">Process payroll based on attendance and productivity.</p>
         </div>
-        {user?.role === "admin" && (
+        {(user?.role === "admin" || user?.role === "owner") && (
           <Button 
             onClick={handleGeneratePayroll} 
             disabled={generating}
@@ -293,15 +293,15 @@ export default function Payroll({ user }) {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue={user?.role === "admin" ? "all" : "my-payroll"}>
+      <Tabs defaultValue={(user?.role === "admin" || user?.role === "owner") ? "all" : "my-payroll"}>
         <TabsList className="bg-bw-off-black">
-          {user?.role === "admin" && <TabsTrigger value="all">All Employees</TabsTrigger>}
+          {(user?.role === "admin" || user?.role === "owner") && <TabsTrigger value="all">All Employees</TabsTrigger>}
           <TabsTrigger value="my-payroll">My Payslips</TabsTrigger>
-          {user?.role === "admin" && <TabsTrigger value="tds-summary">TDS Summary</TabsTrigger>}
+          {(user?.role === "admin" || user?.role === "owner") && <TabsTrigger value="tds-summary">TDS Summary</TabsTrigger>}
         </TabsList>
 
         {/* All Employees (Admin) */}
-        {user?.role === "admin" && (
+        {(user?.role === "admin" || user?.role === "owner") && (
           <TabsContent value="all" className="space-y-4">
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-4">
@@ -403,7 +403,7 @@ export default function Payroll({ user }) {
         )}
 
         {/* TDS Summary Tab (Admin Only) */}
-        {user?.role === "admin" && (
+        {(user?.role === "admin" || user?.role === "owner") && (
           <TabsContent value="tds-summary" className="space-y-4">
             {/* TDS Stat Cards */}
             <div className="grid gap-4 md:grid-cols-4">

@@ -5,18 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   Sparkles, Send, Loader2, Bot, User, Lightbulb, AlertTriangle,
   Wrench, Battery, Cpu, CircuitBoard, MessageSquare, Zap,
-  Copy, CheckCircle, RotateCcw, ThumbsUp, ThumbsDown, 
+  CheckCircle, RotateCcw, ThumbsUp, ThumbsDown, 
   ExternalLink, FileText, BookOpen, AlertCircle, ChevronRight,
   Shield, HelpCircle, List
 } from "lucide-react";
@@ -264,11 +258,6 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
-  };
-
   const resetChat = () => {
     const userName = user?.name?.split(' ')[0] || 'Technician';
     setMessages([{
@@ -327,7 +316,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
     <div className="space-y-4">
       <p className="text-lg">
         Hello <span className="text-bw-volt text-400 font-semibold">{userName}</span>! 
-        I'm your AI Diagnostic Assistant powered by Gemini.
+        I'm your Battwheels EVFI™ Knowledge Brain.
       </p>
       
       <div className="space-y-2">
@@ -390,8 +379,8 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">AI Diagnostic Assistant</h1>
-              <p className="text-sm text-slate-400">Powered by Gemini - Your EV repair companion</p>
+              <h1 className="text-xl font-bold text-white">Battwheels EVFI™ Knowledge Brain</h1>
+              <p className="text-sm text-slate-400">Your EV repair companion</p>
             </div>
           </div>
           
@@ -471,7 +460,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                     {message.isWelcome ? (
                       <WelcomeMessage userName={message.userName} />
                     ) : (
-                      <div className="text-sm leading-relaxed">
+                      <div className="text-sm leading-relaxed" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
                         {formatMarkdown(message.content)}
                       </div>
                     )}
@@ -531,13 +520,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                         )}
                       </span>
                       <span className="text-slate-700">•</span>
-                      <button
-                        onClick={() => copyToClipboard(message.content)}
-                        className="text-xs hover:text-slate-300 flex items-center gap-1 transition-colors"
-                      >
-                        <Copy className="h-3 w-3" />
-                        Copy
-                      </button>
+                      <span className="text-xs text-slate-600">Protected</span>
                       <button 
                         onClick={() => submitFeedback("helpful")}
                         className="text-xs hover:text-bw-volt text-400 flex items-center gap-1 transition-colors"

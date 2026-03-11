@@ -42,9 +42,9 @@ export default function DeliveryChallans() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [challansRes, customersRes, itemsRes] = await Promise.all([
-        fetch(`${API}/zoho/delivery-challans`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=customer&per_page=200`, { headers }),
-        fetch(`${API}/zoho/items?per_page=200`, { headers })
+        fetch(`${API}/delivery-challans`, { headers }),
+        fetch(`${API}/contacts-enhanced?contact_type=customer&per_page=200`, { headers }),
+        fetch(`${API}/items-enhanced?per_page=200`, { headers })
       ]);
       const [challansData, customersData, itemsData] = await Promise.all([
         challansRes.json(), customersRes.json(), itemsRes.json()
@@ -76,7 +76,7 @@ export default function DeliveryChallans() {
     if (!newChallan.line_items.length) return toast.error("Add at least one item");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/delivery-challans`, {
+      const res = await fetch(`${API}/delivery-challans`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newChallan)
@@ -93,7 +93,7 @@ export default function DeliveryChallans() {
   const handleMarkDelivered = async (dcId) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/delivery-challans/${dcId}/status/delivered`, {
+      await fetch(`${API}/delivery-challans/${dcId}/status/delivered`, {
         method: "POST", headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Marked as delivered");
@@ -104,7 +104,7 @@ export default function DeliveryChallans() {
   const handleConvertToInvoice = async (dcId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/delivery-challans/${dcId}/convert-to-invoice`, {
+      const res = await fetch(`${API}/delivery-challans/${dcId}/convert-to-invoice`, {
         method: "POST", headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

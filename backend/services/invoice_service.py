@@ -454,6 +454,22 @@ async def get_next_invoice_number() -> str:
 @router.post("")
 async def create_invoice(data: InvoiceCreate, request: Request):
     """Create a new invoice"""
+    # Validate HSN/SAC codes (blocking)
+    hsn_errors = []
+    for idx, item in enumerate(data.line_items, 1):
+        code = (item.hsn_sac or "").strip()
+        if not code:
+            hsn_errors.append(f"Line item {idx} ({item.description}): HSN/SAC code is required")
+            continue
+        if code.startswith("99"):
+            if not (len(code) == 6 and code.isdigit()):
+                hsn_errors.append(f"Line item {idx} ({item.description}): Invalid SAC code '{code}'")
+        else:
+            if not (len(code) in (4, 6, 8) and code.isdigit()):
+                hsn_errors.append(f"Line item {idx} ({item.description}): Invalid HSN code '{code}'")
+    if hsn_errors:
+        raise HTTPException(status_code=422, detail={"message": "HSN/SAC validation failed", "errors": hsn_errors})
+
     # Calculate totals
     sub_total = 0
     total_tax = 0

@@ -1,6 +1,6 @@
 """
 Battwheels OS - Failure Intelligence Models
-Core data models for the EV Failure Intelligence (EFI) Platform
+Core data models for the Electric Vehicle Failure Intelligence (EVFI) Platform
 
 Version: 2.0 - Enhanced with diagnostic reasoning, confidence history, and pattern detection
 """
@@ -103,7 +103,7 @@ class DiagnosticNode(BaseModel):
 class DiagnosticTree(BaseModel):
     """
     Structured step-by-step diagnostic logic tree
-    EFI is about reasoning, not just documentation
+    EVFI is about reasoning, not just documentation
     """
     tree_id: str = Field(default_factory=lambda: f"dt_{uuid.uuid4().hex[:8]}")
     root_node_id: str                      # Starting point of diagnosis
@@ -225,7 +225,7 @@ class VehicleCompatibility(BaseModel):
 
 class FailureCard(BaseModel):
     """
-    Core entity: EV Failure Intelligence Card
+    Core entity: Electric Vehicle Failure Intelligence Card
     This is the most important entity in the system.
     
     Enhanced v2.0:
@@ -626,7 +626,7 @@ class KnowledgeNode(BaseModel):
 class EmergingPattern(BaseModel):
     """
     Detected pattern for expert review
-    EFI must discover intelligence, not only react
+    EVFI must discover intelligence, not only react
     """
     pattern_id: str = Field(default_factory=lambda: f"pat_{uuid.uuid4().hex[:12]}")
     pattern_type: str       # symptom_cluster, part_anomaly, failure_trend
@@ -670,7 +670,7 @@ class PatternDetectionConfig(BaseModel):
 # ==================== SYSTEM EVENTS (ENHANCED) ====================
 
 class EFIEventType(str, Enum):
-    """All event types in the EFI system"""
+    """All event types in the EVFI system"""
     # Ticket lifecycle
     TICKET_CREATED = "ticket.created"
     TICKET_ASSIGNED = "ticket.assigned"

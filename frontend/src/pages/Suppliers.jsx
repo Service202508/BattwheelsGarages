@@ -145,7 +145,7 @@ export default function Suppliers({ user }) {
           <h1 className="text-4xl font-bold tracking-tight">Supplier Management</h1>
           <p className="text-muted-foreground mt-1">Manage vendors and supplier relationships.</p>
         </div>
-        {(user?.role === "admin" || user?.role === "technician") && (
+        {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
               <Button className="glow-primary" data-testid="add-supplier-btn">

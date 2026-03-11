@@ -5,7 +5,6 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Request, Header
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
 import os
 import uuid
 import logging
@@ -15,15 +14,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/customer-portal", tags=["Customer Portal"])
 
 # MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 # Collections - Use main collections with Zoho-synced data
 contacts_collection = db["contacts"]
 invoices_collection = db["invoices"]
+ticket_invoices_collection = db["ticket_invoices"]
 estimates_collection = db["estimates"]
+ticket_estimates_collection = db["ticket_estimates"]
 salesorders_collection = db["salesorders"]
 payments_collection = db["customerpayments"]
 portal_sessions_collection = db["portal_sessions"]
@@ -154,7 +152,7 @@ async def get_portal_dashboard(session_token: str = Depends(get_session_token_fr
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    # Get invoice stats - also check zoho_contact_id
+    # Get invoice stats - query both invoices and ticket_invoices collections
     query_filter = {
         "$or": [
             {"customer_id": contact_id},
@@ -163,17 +161,23 @@ async def get_portal_dashboard(session_token: str = Depends(get_session_token_fr
         ],
         "status": {"$ne": "void"}
     }
+    pending_filter = {**query_filter, "status": {"$in": ["sent", "overdue", "partially_paid"]}}
+    overdue_filter = {"customer_id": contact_id, "status": "overdue"}
+
+    total_invoices = (
+        await invoices_collection.count_documents(query_filter)
+        + await ticket_invoices_collection.count_documents(query_filter)
+    )
+    pending_invoices = (
+        await invoices_collection.count_documents(pending_filter)
+        + await ticket_invoices_collection.count_documents(pending_filter)
+    )
+    overdue_invoices = (
+        await invoices_collection.count_documents(overdue_filter)
+        + await ticket_invoices_collection.count_documents(overdue_filter)
+    )
     
-    total_invoices = await invoices_collection.count_documents(query_filter)
-    pending_invoices = await invoices_collection.count_documents({
-        **query_filter,
-        "status": {"$in": ["sent", "overdue", "partially_paid"]}
-    })
-    overdue_invoices = await invoices_collection.count_documents({
-        "customer_id": contact_id, "status": "overdue"
-    })
-    
-    # Get totals
+    # Get totals from both collections
     pipeline = [
         {"$match": {"customer_id": contact_id, "status": {"$ne": "void"}}},
         {"$group": {
@@ -183,20 +187,37 @@ async def get_portal_dashboard(session_token: str = Depends(get_session_token_fr
             "total_paid": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}}
         }}
     ]
-    totals = await invoices_collection.aggregate(pipeline).to_list(1)
-    values = totals[0] if totals else {"total_invoiced": 0, "total_outstanding": 0, "total_paid": 0}
+    totals_a = await invoices_collection.aggregate(pipeline).to_list(1)
+    totals_b = await ticket_invoices_collection.aggregate(pipeline).to_list(1)
+    vals_a = totals_a[0] if totals_a else {"total_invoiced": 0, "total_outstanding": 0, "total_paid": 0}
+    vals_b = totals_b[0] if totals_b else {"total_invoiced": 0, "total_outstanding": 0, "total_paid": 0}
+    values = {
+        "total_invoiced": vals_a.get("total_invoiced", 0) + vals_b.get("total_invoiced", 0),
+        "total_outstanding": vals_a.get("total_outstanding", 0) + vals_b.get("total_outstanding", 0),
+        "total_paid": vals_a.get("total_paid", 0) + vals_b.get("total_paid", 0),
+    }
     
-    # Get estimate stats
-    total_estimates = await estimates_collection.count_documents({"customer_id": contact_id})
-    pending_estimates = await estimates_collection.count_documents({
-        "customer_id": contact_id, "status": "sent"
-    })
+    # Get estimate stats from both collections
+    est_filter = {"customer_id": contact_id}
+    total_estimates = (
+        await estimates_collection.count_documents(est_filter)
+        + await ticket_estimates_collection.count_documents(est_filter)
+    )
+    est_pending_filter = {"customer_id": contact_id, "status": "sent"}
+    pending_estimates = (
+        await estimates_collection.count_documents(est_pending_filter)
+        + await ticket_estimates_collection.count_documents(est_pending_filter)
+    )
     
-    # Get recent activity
-    recent_invoices = await invoices_collection.find(
-        {"customer_id": contact_id, "status": {"$ne": "void"}},
-        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "grand_total": 1, "balance_due": 1, "status": 1}
+    # Get recent invoices from both collections, merge and sort
+    inv_projection = {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "grand_total": 1, "balance_due": 1, "status": 1}
+    recent_a = await invoices_collection.find(
+        {"customer_id": contact_id, "status": {"$ne": "void"}}, inv_projection
     ).sort("invoice_date", -1).limit(5).to_list(5)
+    recent_b = await ticket_invoices_collection.find(
+        {"customer_id": contact_id, "status": {"$ne": "void"}}, inv_projection
+    ).sort("invoice_date", -1).limit(5).to_list(5)
+    recent_invoices = sorted(recent_a + recent_b, key=lambda x: x.get("invoice_date", ""), reverse=True)[:5]
     
     return {
         "code": 0,
@@ -237,18 +258,20 @@ async def get_portal_invoices(
     if status:
         query["status"] = status
     
-    total = await invoices_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    invoices = await invoices_collection.find(
-        query,
-        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
+    inv_projection = {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
          "grand_total": 1, "balance_due": 1, "status": 1, "is_sent": 1}
-    ).sort("invoice_date", -1).skip(skip).limit(per_page).to_list(per_page)
+    
+    invoices_a = await invoices_collection.find(query, inv_projection).sort("invoice_date", -1).to_list(200)
+    invoices_b = await ticket_invoices_collection.find(query, inv_projection).sort("invoice_date", -1).to_list(200)
+    all_invoices = sorted(invoices_a + invoices_b, key=lambda x: x.get("invoice_date", ""), reverse=True)
+    
+    total = len(all_invoices)
+    skip = (page - 1) * per_page
+    paged = all_invoices[skip:skip + per_page]
     
     return {
         "code": 0,
-        "invoices": invoices,
+        "invoices": paged,
         "page_context": {"page": page, "per_page": per_page, "total": total}
     }
 
@@ -258,10 +281,10 @@ async def get_portal_invoice_detail(invoice_id: str, session_token: str = Depend
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    invoice = await invoices_collection.find_one(
-        {"invoice_id": invoice_id, "customer_id": contact_id, "status": {"$nin": ["draft", "void"]}},
-        {"_id": 0}
-    )
+    detail_query = {"invoice_id": invoice_id, "customer_id": contact_id, "status": {"$nin": ["draft", "void"]}}
+    invoice = await invoices_collection.find_one(detail_query, {"_id": 0})
+    if not invoice:
+        invoice = await ticket_invoices_collection.find_one(detail_query, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -305,18 +328,20 @@ async def get_portal_estimates(
     if status:
         query["status"] = status
     
-    total = await estimates_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    estimates = await estimates_collection.find(
-        query,
-        {"_id": 0, "estimate_id": 1, "estimate_number": 1, "estimate_date": 1, "expiry_date": 1,
+    est_projection = {"_id": 0, "estimate_id": 1, "estimate_number": 1, "estimate_date": 1, "expiry_date": 1,
          "grand_total": 1, "status": 1}
-    ).sort("estimate_date", -1).skip(skip).limit(per_page).to_list(per_page)
+    
+    estimates_a = await estimates_collection.find(query, est_projection).sort("estimate_date", -1).to_list(200)
+    estimates_b = await ticket_estimates_collection.find(query, est_projection).sort("created_at", -1).to_list(200)
+    all_estimates = sorted(estimates_a + estimates_b, key=lambda x: x.get("estimate_date", x.get("created_at", "")), reverse=True)
+    
+    total = len(all_estimates)
+    skip = (page - 1) * per_page
+    paged = all_estimates[skip:skip + per_page]
     
     return {
         "code": 0,
-        "estimates": estimates,
+        "estimates": paged,
         "page_context": {"page": page, "per_page": per_page, "total": total}
     }
 
@@ -326,10 +351,10 @@ async def get_portal_estimate_detail(estimate_id: str, session_token: str = Depe
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    estimate = await estimates_collection.find_one(
-        {"estimate_id": estimate_id, "customer_id": contact_id, "status": {"$ne": "draft"}},
-        {"_id": 0}
-    )
+    est_query = {"estimate_id": estimate_id, "customer_id": contact_id, "status": {"$ne": "draft"}}
+    estimate = await estimates_collection.find_one(est_query, {"_id": 0})
+    if not estimate:
+        estimate = await ticket_estimates_collection.find_one(est_query, {"_id": 0})
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
@@ -348,13 +373,16 @@ async def accept_portal_estimate(estimate_id: str, session_token: str = Depends(
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    estimate = await estimates_collection.find_one(
-        {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
-    )
+    accept_query = {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
+    estimate = await estimates_collection.find_one(accept_query)
+    target_collection = estimates_collection
+    if not estimate:
+        estimate = await ticket_estimates_collection.find_one(accept_query)
+        target_collection = ticket_estimates_collection
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found or not in sent status")
     
-    await estimates_collection.update_one(
+    await target_collection.update_one(
         {"estimate_id": estimate_id},
         {"$set": {
             "status": "accepted",
@@ -372,13 +400,16 @@ async def decline_portal_estimate(estimate_id: str, reason: str = "", session_to
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    estimate = await estimates_collection.find_one(
-        {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
-    )
+    decline_query = {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
+    estimate = await estimates_collection.find_one(decline_query)
+    target_collection = estimates_collection
+    if not estimate:
+        estimate = await ticket_estimates_collection.find_one(decline_query)
+        target_collection = ticket_estimates_collection
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found or not in sent status")
     
-    await estimates_collection.update_one(
+    await target_collection.update_one(
         {"estimate_id": estimate_id},
         {"$set": {
             "status": "declined",
@@ -413,12 +444,12 @@ async def get_portal_statement(
         else:
             query["invoice_date"] = {"$lte": end_date}
     
-    # Get invoices
-    invoices = await invoices_collection.find(
-        query,
-        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
+    # Get invoices from both collections
+    inv_projection = {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
          "grand_total": 1, "balance_due": 1, "status": 1}
-    ).sort("invoice_date", 1).to_list(500)
+    invoices_a = await invoices_collection.find(query, inv_projection).sort("invoice_date", 1).to_list(500)
+    invoices_b = await ticket_invoices_collection.find(query, inv_projection).sort("invoice_date", 1).to_list(500)
+    invoices = sorted(invoices_a + invoices_b, key=lambda x: x.get("invoice_date", ""))
     
     # Get payments
     payments = await payments_collection.find(

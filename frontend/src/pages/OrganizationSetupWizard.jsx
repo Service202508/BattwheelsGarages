@@ -292,7 +292,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                     <Label htmlFor="name">Organization Name *</Label>
                     <Input
                       id="name"
-                      placeholder="My EV Workshop"
+                      placeholder="My EV Service Center"
                       value={orgData.name}
                       onChange={(e) => setOrgData({ ...orgData, name: e.target.value })}
                       data-testid="org-name-input"
@@ -579,7 +579,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 </div>
                 <h2 className="text-2xl font-bold text-bw-white mb-2">You're All Set! 🎉</h2>
                 <p className="text-bw-white/35 mb-8 max-w-md mx-auto">
-                  Your organization is ready to go. Start managing your EV workshop with AI-powered diagnostics, 
+                  Your organization is ready to go. Start managing your EV service center with AI-powered diagnostics, 
                   invoicing, inventory, and more.
                 </p>
 

@@ -29,8 +29,7 @@ import {
   FileText, Send, ArrowUpRight, Wallet, Receipt, ChevronDown, X,
   CheckCircle2, AlertCircle, Clock, Banknote, User
 } from "lucide-react";
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
 
 export default function PaymentsReceived() {
   const navigate = useNavigate();
@@ -108,7 +107,7 @@ export default function PaymentsReceived() {
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       });
       
-      const res = await fetch(`${API}/api/payments-received/?${params}`, { headers });
+      const res = await fetch(`${API}/payments-received/?${params}`, { headers });
       const data = await res.json();
       
       if (data.code === 0) {
@@ -123,7 +122,7 @@ export default function PaymentsReceived() {
   // Fetch summary
   const fetchSummary = async () => {
     try {
-      const res = await fetch(`${API}/api/payments-received/summary?period=this_month`, { headers });
+      const res = await fetch(`${API}/payments-received/summary?period=this_month`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setSummary(data.summary || {});
@@ -136,7 +135,7 @@ export default function PaymentsReceived() {
   // Fetch all credits
   const fetchCredits = async () => {
     try {
-      const res = await fetch(`${API}/api/payments-received/credits?status=available`, { headers });
+      const res = await fetch(`${API}/payments-received/credits?status=available`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setAllCredits(data.credits || []);
@@ -173,7 +172,7 @@ export default function PaymentsReceived() {
   // Fetch customer invoices for payment
   const fetchCustomerInvoices = async (customerId) => {
     try {
-      const res = await fetch(`${API}/api/payments-received/customer/${customerId}/open-invoices`, { headers });
+      const res = await fetch(`${API}/payments-received/customer/${customerId}/open-invoices`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setCustomerInvoices(data.open_invoices || []);
@@ -248,7 +247,7 @@ export default function PaymentsReceived() {
     }
 
     try {
-      const res = await fetch(`${API}/api/payments-received/`, {
+      const res = await fetch(`${API}/payments-received/`, {
         method: "POST",
         headers,
         body: JSON.stringify(paymentForm)
@@ -299,7 +298,7 @@ export default function PaymentsReceived() {
   // View payment details
   const viewPayment = async (paymentId) => {
     try {
-      const res = await fetch(`${API}/api/payments-received/${paymentId}`, { headers });
+      const res = await fetch(`${API}/payments-received/${paymentId}`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setSelectedPayment({ ...data.payment, invoice_details: data.invoice_details, history: data.history });
@@ -317,7 +316,7 @@ export default function PaymentsReceived() {
     }
     
     try {
-      const res = await fetch(`${API}/api/payments-received/${paymentId}`, {
+      const res = await fetch(`${API}/payments-received/${paymentId}`, {
         method: "DELETE",
         headers
       });
@@ -342,7 +341,7 @@ export default function PaymentsReceived() {
     if (!selectedPayment) return;
     
     try {
-      const res = await fetch(`${API}/api/payments-received/${selectedPayment.payment_id}/refund`, {
+      const res = await fetch(`${API}/payments-received/${selectedPayment.payment_id}/refund`, {
         method: "POST",
         headers,
         body: JSON.stringify(refundForm)
@@ -375,7 +374,7 @@ export default function PaymentsReceived() {
     if (!window.confirm(`Delete ${selectedPayments.length} payments?`)) return;
     
     try {
-      const res = await fetch(`${API}/api/payments-received/bulk-action`, {
+      const res = await fetch(`${API}/payments-received/bulk-action`, {
         method: "POST",
         headers,
         body: JSON.stringify({ payment_ids: selectedPayments, action: "delete" })
@@ -399,7 +398,7 @@ export default function PaymentsReceived() {
       const params = new URLSearchParams(
         Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       );
-      const res = await fetch(`${API}/api/payments-received/export?${params}`, { headers });
+      const res = await fetch(`${API}/payments-received/export?${params}`, { headers });
       const data = await res.json();
       
       if (data.code === 0) {

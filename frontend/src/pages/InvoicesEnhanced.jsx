@@ -1426,19 +1426,31 @@ export default function InvoicesEnhanced() {
           
           <div className="space-y-6 py-4">
             {/* Customer & Basic Info */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <Label>Customer *</Label>
                 <Select value={newInvoice.customer_id} onValueChange={(v) => setNewInvoice({ ...newInvoice, customer_id: v })}>
-                  <SelectTrigger data-testid="customer-select"><SelectValue placeholder="Select customer" /></SelectTrigger>
+                  <SelectTrigger data-testid="customer-select"><SelectValue placeholder="Search customers..." /></SelectTrigger>
                   <SelectContent>
-                    {customers.map(c => <SelectItem key={c.contact_id} value={c.contact_id}>{c.name}</SelectItem>)}
+                    {customers.length === 0 ? (
+                      <div className="px-3 py-4 text-center">
+                        <p className="text-sm text-muted-foreground mb-2">No customers yet</p>
+                        <button
+                          onClick={() => window.location.href = '/contacts'}
+                          className="text-sm text-[#CBFF00] hover:underline font-medium"
+                        >
+                          + Add new customer
+                        </button>
+                      </div>
+                    ) : (
+                      customers.map(c => <SelectItem key={c.contact_id} value={c.contact_id}>{c.name}</SelectItem>)
+                    )}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Invoice Date</Label>
-                <Input type="date" value={newInvoice.invoice_date} onChange={(e) => setNewInvoice({ ...newInvoice, invoice_date: e.target.value })} />
+                <Input type="date" className="min-w-[140px]" value={newInvoice.invoice_date} onChange={(e) => setNewInvoice({ ...newInvoice, invoice_date: e.target.value })} />
               </div>
               <div>
                 <Label>Payment Terms (days)</Label>
@@ -1457,13 +1469,25 @@ export default function InvoicesEnhanced() {
               
               <div className="space-y-3">
                 {newInvoice.line_items.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-2 items-end bg-bw-panel p-3 rounded-lg">
-                    <div className="col-span-4">
+                  <div key={idx} className="grid grid-cols-2 sm:grid-cols-12 gap-2 items-end bg-bw-panel p-3 rounded-lg">
+                    <div className="col-span-2 sm:col-span-4">
                       <Label className="text-xs">Item</Label>
                       <Select onValueChange={(v) => selectItem(idx, v)}>
-                        <SelectTrigger><SelectValue placeholder="Select or type" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Search items..." /></SelectTrigger>
                         <SelectContent>
-                          {items.map(i => <SelectItem key={i.item_id} value={i.item_id}>{i.name}</SelectItem>)}
+                          {items.length === 0 ? (
+                            <div className="px-3 py-4 text-center">
+                              <p className="text-sm text-muted-foreground mb-2">No items yet</p>
+                              <button
+                                onClick={() => window.location.href = '/items'}
+                                className="text-sm text-[#CBFF00] hover:underline font-medium"
+                              >
+                                + Add your first item
+                              </button>
+                            </div>
+                          ) : (
+                            items.map(i => <SelectItem key={i.item_id} value={i.item_id}>{i.name}</SelectItem>)
+                          )}
                         </SelectContent>
                       </Select>
                       <Input 
@@ -1473,15 +1497,15 @@ export default function InvoicesEnhanced() {
                         onChange={(e) => updateLineItem(idx, "name", e.target.value)} 
                       />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-1 sm:col-span-2">
                       <Label className="text-xs">Qty</Label>
                       <Input type="number" value={item.quantity} onChange={(e) => updateLineItem(idx, "quantity", parseFloat(e.target.value) || 1)} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-1 sm:col-span-2">
                       <Label className="text-xs">Rate</Label>
                       <Input type="number" value={item.rate} onChange={(e) => updateLineItem(idx, "rate", parseFloat(e.target.value) || 0)} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-1 sm:col-span-2">
                       <Label className="text-xs">Tax %</Label>
                       <Select value={String(item.tax_rate)} onValueChange={(v) => updateLineItem(idx, "tax_rate", parseFloat(v))}>
                         <SelectTrigger><SelectValue /></SelectTrigger>

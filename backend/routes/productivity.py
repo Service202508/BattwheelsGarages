@@ -4,7 +4,6 @@ Technician Productivity Service
 Analytics and metrics for technician performance tracking based on service tickets.
 """
 from fastapi import APIRouter, HTTPException, Request
-from motor.motor_asyncio import AsyncIOMotorClient
 from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
@@ -12,10 +11,7 @@ import os
 from utils.database import extract_org_id, org_query
 
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+from utils.database import db
 
 router = APIRouter(prefix="/productivity", tags=["Technician Productivity"])
 
@@ -67,12 +63,15 @@ async def get_current_user_from_request(request: Request):
 
 async def require_admin_or_manager(request: Request):
     org_id = extract_org_id(request)
-    """Require admin or manager access"""
+    """Require admin or manager access (org-scoped from JWT)"""
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    if user_role not in ("admin", "owner", "org_admin", "manager"):
+        raise HTTPException(status_code=403, detail=f"Admin or manager access required. Your role: {user_role}")
     user = await get_current_user_from_request(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if user.get("role") not in ["admin", "manager"]:
-        raise HTTPException(status_code=403, detail="Admin or manager access required")
     return user
 
 # ==================== PRODUCTIVITY ENDPOINTS ====================
@@ -91,6 +90,7 @@ async def get_productivity_summary(request: Request):
     # Count active technicians (those with resolved tickets in last 30 days)
     pipeline = [
         {"$match": {
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed"]},
             "assigned_technician_id": {"$exists": True, "$ne": None}
         }},
@@ -101,12 +101,14 @@ async def get_productivity_summary(request: Request):
     
     # Total resolved tickets
     total_resolved = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$in": ["resolved", "closed"]}
     })
     
     # Average resolution time
     resolution_pipeline = [
         {"$match": {
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed"]},
             "created_at": {"$exists": True},
             "updated_at": {"$exists": True}
@@ -135,11 +137,13 @@ async def get_productivity_summary(request: Request):
     month_str = month_ago.isoformat()
     
     tickets_this_week = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$in": ["resolved", "closed"]},
         "created_at": {"$gte": week_str}
     })
     
     tickets_this_month = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$in": ["resolved", "closed"]},
         "created_at": {"$gte": month_str}
     })
@@ -168,13 +172,13 @@ async def get_technician_productivity(request: Request, period: str = "all", sor
     
     # Get all technicians from users collection
     technicians = await db.users.find(
-        {"role": "technician", "is_active": {"$ne": False}},
+        {"organization_id": org_id, "role": "technician", "is_active": {"$ne": False}},
         {"_id": 0, "user_id": 1, "name": 1, "email": 1}
     ).to_list(100)
     
     # Also check employees table for technicians
     employees = await db.employees.find(
-        {"department": "Technical"},
+        {"organization_id": org_id, "department": "Technical"},
         {"_id": 0, "employee_id": 1, "name": 1, "email": 1}
     ).to_list(100)
     
@@ -186,6 +190,7 @@ async def get_technician_productivity(request: Request, period: str = "all", sor
         
         # Query filter for this technician
         tech_filter = {
+            "organization_id": org_id,
             "$or": [
                 {"assigned_technician_id": tech_id},
                 {"assigned_technician_name": tech_name}
@@ -281,7 +286,7 @@ async def get_technician_detail(request: Request, technician_id: str):
     
     # Get technician info
     technician = await db.users.find_one(
-        {"user_id": technician_id},
+        {"organization_id": org_id, "user_id": technician_id},
         {"_id": 0}
     )
     
@@ -292,6 +297,7 @@ async def get_technician_detail(request: Request, technician_id: str):
     
     # Get all tickets for this technician
     tech_filter = {
+        "organization_id": org_id,
         "$or": [
             {"assigned_technician_id": technician_id},
             {"assigned_technician_name": tech_name}
@@ -396,6 +402,7 @@ async def get_productivity_trends(request: Request):
         week_end = now - timedelta(weeks=i)
         
         resolved = await db.tickets.count_documents({
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed"]},
             "created_at": {
                 "$gte": week_start.isoformat(),
@@ -422,25 +429,28 @@ async def get_productivity_kpis(request: Request):
     
     # Today's tickets
     tickets_today = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$in": ["resolved", "closed"]},
         "created_at": {"$gte": today_start.isoformat()}
     })
     
     # Pending tickets (open or assigned but not in progress)
     pending_tickets = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$in": ["open", "technician_assigned"]}
     })
     
     # Overdue tickets (open for more than 48 hours)
     overdue_threshold = (now - timedelta(hours=48)).isoformat()
     overdue_tickets = await db.tickets.count_documents({
+        "organization_id": org_id,
         "status": {"$nin": ["resolved", "closed"]},
         "created_at": {"$lt": overdue_threshold}
     })
     
     # SLA compliance (resolved within 24 hours)
     sla_pipeline = [
-        {"$match": {"status": {"$in": ["resolved", "closed"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$in": ["resolved", "closed"]}}},
         {"$addFields": {
             "created_date": {"$dateFromString": {"dateString": "$created_at", "onError": None}},
             "updated_date": {"$dateFromString": {"dateString": "$updated_at", "onError": None}}

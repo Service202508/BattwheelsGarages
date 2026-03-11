@@ -86,7 +86,7 @@ export default function CustomModules() {
   const fetchModules = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/custom-modules`, {
+      const res = await fetch(`${API}/custom-modules`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -105,7 +105,7 @@ export default function CustomModules() {
       const params = new URLSearchParams({ per_page: "100" });
       if (searchQuery) params.append("search", searchQuery);
       
-      const res = await fetch(`${API}/zoho/custom-modules/${moduleId}/records?${params}`, {
+      const res = await fetch(`${API}/custom-modules/${moduleId}/records?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -148,7 +148,7 @@ export default function CustomModules() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/custom-modules`, {
+      const res = await fetch(`${API}/custom-modules`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ ...newModule, module_name: moduleName })
@@ -171,7 +171,7 @@ export default function CustomModules() {
     if (!confirm("Deactivate this custom module?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/custom-modules/${moduleId}`, {
+      const res = await fetch(`${API}/custom-modules/${moduleId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -197,7 +197,7 @@ export default function CustomModules() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/custom-modules/${selectedModule.module_id}/records`, {
+      const res = await fetch(`${API}/custom-modules/${selectedModule.module_id}/records`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newRecord)
@@ -220,7 +220,7 @@ export default function CustomModules() {
     if (!selectedModule || !confirm("Delete this record?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/custom-modules/${selectedModule.module_id}/records/${recordId}`, {
+      const res = await fetch(`${API}/custom-modules/${selectedModule.module_id}/records/${recordId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });

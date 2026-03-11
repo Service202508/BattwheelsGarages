@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone
-import motor.motor_asyncio
 import os
 import uuid
 import logging
@@ -17,11 +16,7 @@ from utils.database import extract_org_id, org_query
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/composite-items", tags=["Composite Items"])
 

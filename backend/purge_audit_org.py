@@ -1,9 +1,9 @@
 """Purge audit org created during final walkthrough testing."""
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
+from utils.database import db
 
 AUDIT_ORG_ID = "org_545d5b59ccf8"
 
@@ -19,8 +19,6 @@ COLLECTIONS = [
 ]
 
 async def main():
-    client = AsyncIOMotorClient(os.environ['MONGO_URL'])
-    db = client[os.environ['DB_NAME']]
 
     total = 0
     print(f"Purging audit org: {AUDIT_ORG_ID}")

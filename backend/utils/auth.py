@@ -12,7 +12,6 @@ import bcrypt
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException, Request
 from typing import Optional
-from motor.motor_asyncio import AsyncIOMotorClient
 
 # ==================== JWT CONFIGURATION (SINGLE SOURCE) ====================
 JWT_SECRET = os.environ.get("JWT_SECRET")
@@ -22,11 +21,7 @@ JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "168"))  # 7 days defa
 # Legacy alias
 ALGORITHM = JWT_ALGORITHM
 
-# Module-level database connection (used by get_current_user_from_request)
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-_client = AsyncIOMotorClient(MONGO_URL)
-_db = _client[DB_NAME]
+from utils.database import db as _db
 
 def hash_password(password: str) -> str:
     """Hash password using bcrypt (correct — not SHA256)"""
@@ -182,23 +177,54 @@ async def require_auth(request: Request, db=None) -> UserContext:
     user_dict = await get_current_user(request, db or _db)
     return UserContext(user_dict)
 
-async def require_admin(request: Request, db) -> UserContext:
-    """Require admin role"""
-    user = await get_current_user(request, db)
-    if user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
+async def require_admin(request: Request, db=None) -> UserContext:
+    """Require admin-level role (uses org-scoped role from JWT, not global users.role)."""
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if user_role not in ("admin", "owner", "org_admin"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Admin access required. Your role: {user_role}"
+        )
+    user = await get_current_user(request, db or _db)
     return UserContext(user)
 
-async def require_technician_or_admin(request: Request, db) -> UserContext:
-    """Require technician or admin role"""
-    user = await get_current_user(request, db)
-    if user.get("role") not in ["admin", "technician", "manager"]:
-        raise HTTPException(status_code=403, detail="Technician or Admin access required")
+async def require_technician_or_admin(request: Request, db=None) -> UserContext:
+    """Require technician, manager, or admin role (org-scoped from JWT)."""
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if user_role not in ("admin", "owner", "org_admin", "manager", "technician"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Technician or Admin access required. Your role: {user_role}"
+        )
+    user = await get_current_user(request, db or _db)
     return UserContext(user)
 
-async def require_role(request: Request, db, roles: list) -> UserContext:
-    """Require specific role(s)"""
-    user = await get_current_user(request, db)
-    if user.get("role") not in roles:
-        raise HTTPException(status_code=403, detail=f"Required role: {', '.join(roles)}")
+async def require_admin_or_manager(request: Request, db=None) -> UserContext:
+    """Require admin or manager role (org-scoped from JWT)."""
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if user_role not in ("admin", "owner", "org_admin", "manager"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Admin or Manager access required. Your role: {user_role}"
+        )
+    user = await get_current_user(request, db or _db)
+    return UserContext(user)
+
+async def require_role(request: Request, db=None, roles: list = None) -> UserContext:
+    """Require specific role(s) (org-scoped from JWT)."""
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if roles and user_role not in roles:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Required role: {', '.join(roles)}. Your role: {user_role}"
+        )
+    user = await get_current_user(request, db or _db)
     return UserContext(user)

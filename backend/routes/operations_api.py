@@ -167,7 +167,7 @@ async def get_dashboard_stats(request: Request):
 
     vehicles_in_workshop = await db.vehicles.count_documents({**org_filter, "current_status": "in_workshop"})
     open_tickets = await db.tickets.count_documents({**org_filter, "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]}})
-    available_technicians = await db.users.count_documents({"role": "technician", "is_active": True})
+    available_technicians = await db.users.count_documents({**org_filter, "role": "technician", "is_active": True})
     
     # ==================== SERVICE TICKET STATS ====================
     # Count open tickets by ticket_type
@@ -267,9 +267,9 @@ async def get_dashboard_stats(request: Request):
     }
     
     # Vehicle status distribution
-    active_count = await db.vehicles.count_documents({"current_status": "active"})
+    active_count = await db.vehicles.count_documents({**org_filter, "current_status": "active"})
     workshop_count = vehicles_in_workshop
-    serviced_count = await db.vehicles.count_documents({"current_status": "serviced"})
+    serviced_count = await db.vehicles.count_documents({**org_filter, "current_status": "serviced"})
     
     # Monthly trends (calculate from actual data)
     months = []
@@ -279,6 +279,7 @@ async def get_dashboard_stats(request: Request):
         month_end = (month_start + timedelta(days=32)).replace(day=1) - timedelta(seconds=1)
         
         month_tickets = await db.tickets.find({
+            **org_filter,
             "status": {"$in": ["resolved", "closed"]},
             "resolved_at": {"$gte": month_start.isoformat(), "$lte": month_end.isoformat()}
         }, {"_id": 0, "created_at": 1, "resolved_at": 1}).to_list(100)
@@ -303,7 +304,7 @@ async def get_dashboard_stats(request: Request):
         avg_time = round(month_hours / month_count, 1) if month_count > 0 else 0
         months.append({
             "month": month_start.strftime("%b"),
-            "avgTime": avg_time if avg_time > 0 else round(6 + (i * 0.5), 1)
+            "avgTime": avg_time
         })
     
     monthly_trends = months[::-1]  # Reverse to show oldest to newest
@@ -312,14 +313,14 @@ async def get_dashboard_stats(request: Request):
     total_revenue = 0
     pending_invoices = 0
     revenue_result = await db.ledger.aggregate([
-        {"$match": {"account_type": "revenue"}},
+        {"$match": {**org_filter, "account_type": "revenue"}},
         {"$group": {"_id": None, "total": {"$sum": "$credit"}}}
     ]).to_list(1)
     if revenue_result:
         total_revenue = revenue_result[0]["total"]
     
     pending_result = await db.invoices.aggregate([
-        {"$match": {"payment_status": {"$ne": "paid"}}},
+        {"$match": {**org_filter, "payment_status": {"$ne": "paid"}}},
         {"$group": {"_id": None, "total": {"$sum": "$balance_due"}}}
     ]).to_list(1)
     if pending_result:
@@ -327,12 +328,13 @@ async def get_dashboard_stats(request: Request):
     
     inventory_value = 0
     inv_result = await db.inventory.aggregate([
+        {"$match": org_filter},
         {"$group": {"_id": None, "total": {"$sum": {"$multiply": ["$quantity", "$unit_price"]}}}}
     ]).to_list(1)
     if inv_result:
         inventory_value = inv_result[0]["total"]
     
-    pending_pos = await db.purchase_orders.count_documents({"status": {"$in": ["draft", "pending_approval", "approved", "ordered"]}})
+    pending_pos = await db.purchase_orders.count_documents({**org_filter, "status": {"$in": ["draft", "pending_approval", "approved", "ordered"]}})
     
     return DashboardStats(
         vehicles_in_workshop=vehicles_in_workshop or 0,
@@ -431,7 +433,8 @@ async def get_alerts(request: Request):
         })
     
     # Pending PO approvals
-    if user.get("role") == "admin":
+    role = getattr(request.state, "tenant_user_role", None)
+    if role in ("admin", "owner"):
         pending_pos = await db.purchase_orders.find(
             {"approval_status": "pending"},
             {"_id": 0}

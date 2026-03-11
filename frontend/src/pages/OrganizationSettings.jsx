@@ -146,7 +146,7 @@ export default function OrganizationSettings({ user }) {
   const exportSettings = async () => {
     setExporting(true);
     try {
-      const res = await fetch(`${API}/org/settings/export`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API}/organizations/me/settings/export`, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -179,7 +179,7 @@ export default function OrganizationSettings({ user }) {
       const text = await file.text();
       const data = JSON.parse(text);
       
-      const res = await fetch(`${API}/org/settings/import`, {
+      const res = await fetch(`${API}/organizations/me/settings/import`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(data),
@@ -204,11 +204,10 @@ export default function OrganizationSettings({ user }) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes, einvoiceRes, slaRes, emailRes] = await Promise.all([
-        fetch(`${API}/org`, { headers: getAuthHeaders() }),
-        fetch(`${API}/org/settings`, { headers: getAuthHeaders() }),
-        fetch(`${API}/org/users`, { headers: getAuthHeaders() }),
-        fetch(`${API}/org/roles`, { headers: getAuthHeaders() }),
+      const [orgRes, membersRes, rolesRes, razorpayRes, einvoiceRes, slaRes, emailRes] = await Promise.all([
+        fetch(`${API}/organizations/me`, { headers: getAuthHeaders() }),
+        fetch(`${API}/organizations/me/members`, { headers: getAuthHeaders() }),
+        fetch(`${API}/permissions/roles`, { headers: getAuthHeaders() }),
         fetch(`${API}/payments/config`, { headers: getAuthHeaders() }),
         fetch(`${API}/einvoice/config`, { headers: getAuthHeaders() }),
         fetch(`${API}/sla/config`, { headers: getAuthHeaders() }),
@@ -220,21 +219,20 @@ export default function OrganizationSettings({ user }) {
         orgData = await orgRes.json();
         setOrganization(orgData);
         setOrgForm(orgData);
+        // Settings are embedded in the org document
+        if (orgData.settings) {
+          setSettings(orgData.settings);
+          setSettingsForm(orgData.settings);
+        }
         // Set logo preview immediately
         if (orgData.logo_url) {
           setLogoPreview(orgData.logo_url);
         }
       }
 
-      if (settingsRes.ok) {
-        const settingsData = await settingsRes.json();
-        setSettings(settingsData);
-        setSettingsForm(settingsData);
-      }
-
       if (membersRes.ok) {
         const membersData = await membersRes.json();
-        setMembers(membersData.users || []);
+        setMembers(membersData.members || membersData.users || []);
       }
 
       if (rolesRes.ok) {
@@ -317,8 +315,8 @@ export default function OrganizationSettings({ user }) {
   const saveOrganization = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API}/org`, {
-        method: "PATCH",
+      const res = await fetch(`${API}/organizations/me`, {
+        method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({
           name: orgForm.name,
@@ -352,16 +350,25 @@ export default function OrganizationSettings({ user }) {
   const saveSettings = async (section, data) => {
     setSaving(true);
     try {
-      const res = await fetch(`${API}/org/settings`, {
+      // Backend expects { settings: { key: value } } format
+      const payload = section 
+        ? { settings: { [section]: data } } 
+        : { settings: data };
+      const res = await fetch(`${API}/organizations/me/settings`, {
         method: "PATCH",
         headers: getAuthHeaders(),
-        body: JSON.stringify(section ? { [section]: data } : data),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
-        const updatedSettings = await res.json();
-        setSettings(updatedSettings);
-        setSettingsForm(updatedSettings);
+        // Backend returns {success, message} — update local state optimistically
+        if (section) {
+          setSettings(prev => ({ ...prev, [section]: { ...(prev?.[section] || {}), ...data } }));
+          setSettingsForm(prev => ({ ...prev, [section]: { ...(prev?.[section] || {}), ...data } }));
+        } else {
+          setSettings(prev => ({ ...prev, ...data }));
+          setSettingsForm(prev => ({ ...prev, ...data }));
+        }
         toast.success("Settings saved successfully");
       } else {
         const error = await res.json();
@@ -383,7 +390,7 @@ export default function OrganizationSettings({ user }) {
 
     setAddingMember(true);
     try {
-      const res = await fetch(`${API}/org/users`, {
+      const res = await fetch(`${API}/organizations/me/invite`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -413,7 +420,7 @@ export default function OrganizationSettings({ user }) {
   // Update member role
   const updateMemberRole = async (userId, newRole) => {
     try {
-      const res = await fetch(`${API}/org/users/${userId}`, {
+      const res = await fetch(`${API}/organizations/me/members/${userId}/role`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify({ role: newRole }),
@@ -437,7 +444,7 @@ export default function OrganizationSettings({ user }) {
     }
 
     try {
-      const res = await fetch(`${API}/org/users/${userId}`, {
+      const res = await fetch(`${API}/organizations/me/members/${userId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -920,7 +927,7 @@ export default function OrganizationSettings({ user }) {
           </TabsTrigger>
           <TabsTrigger value="efi" className="gap-2">
             <Brain className="h-4 w-4" />
-            <span className="hidden sm:inline">EFI</span>
+            <span className="hidden sm:inline">EVFI</span>
           </TabsTrigger>
           <TabsTrigger value="integrations" className="gap-2">
             <Link2 className="h-4 w-4" />
@@ -992,7 +999,7 @@ export default function OrganizationSettings({ user }) {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Share this URL with customers so their tickets land directly in your workshop dashboard.
+                      Share this URL with customers so their tickets land directly in your service dashboard.
                     </p>
                   </div>
                 )}
@@ -1271,7 +1278,7 @@ export default function OrganizationSettings({ user }) {
                         <SelectContent>
                           {roles.filter(r => r.role !== 'owner').map((role) => (
                             <SelectItem key={role.role} value={role.role}>
-                              {role.name} ({role.permissions.length} permissions)
+                              {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1295,33 +1302,33 @@ export default function OrganizationSettings({ user }) {
                 <div className="space-y-3">
                   {members.map((member) => (
                     <div 
-                      key={member.membership?.membership_id}
+                      key={member.membership_id}
                       className="flex items-center justify-between p-3 rounded-lg border bg-card/50"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={member.user?.picture} />
+                          <AvatarImage src={member.picture} />
                           <AvatarFallback>
-                            {member.user?.name?.charAt(0) || member.user?.email?.charAt(0) || "?"}
+                            {member.name?.charAt(0) || member.email?.charAt(0) || "?"}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{member.user?.name || "Unknown"}</p>
-                          <p className="text-sm text-muted-foreground">{member.user?.email}</p>
+                          <p className="font-medium">{member.name || "Unknown"}</p>
+                          <p className="text-sm text-muted-foreground">{member.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge className={`${roleBadgeColors[member.membership?.role]} border`}>
-                          {member.membership?.role}
+                        <Badge className={`${roleBadgeColors[member.role]} border`}>
+                          {member.role}
                         </Badge>
-                        <Badge className={`${statusBadgeColors[member.membership?.status]} border`}>
-                          {member.membership?.status}
+                        <Badge className={`${statusBadgeColors[member.status]} border`}>
+                          {member.status}
                         </Badge>
-                        {member.membership?.role !== 'owner' && (
+                        {member.role !== 'owner' && (
                           <div className="flex items-center gap-1">
                             <Select 
-                              value={member.membership?.role}
-                              onValueChange={(v) => updateMemberRole(member.membership?.user_id, v)}
+                              value={member.role}
+                              onValueChange={(v) => updateMemberRole(member.user_id, v)}
                             >
                               <SelectTrigger className="w-[120px] h-8">
                                 <SelectValue />
@@ -1329,7 +1336,7 @@ export default function OrganizationSettings({ user }) {
                               <SelectContent>
                                 {roles.filter(r => r.role !== 'owner').map((role) => (
                                   <SelectItem key={role.role} value={role.role}>
-                                    {role.name}
+                                    {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1338,7 +1345,7 @@ export default function OrganizationSettings({ user }) {
                               variant="ghost" 
                               size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => removeMember(member.membership?.user_id)}
+                              onClick={() => removeMember(member.user_id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -1364,24 +1371,15 @@ export default function OrganizationSettings({ user }) {
                   <div key={role.role} className="p-3 rounded-lg border bg-card/50">
                     <div className="flex items-center justify-between mb-2">
                       <Badge className={`${roleBadgeColors[role.role]} border`}>
-                        {role.name}
+                        {role.role.charAt(0).toUpperCase() + role.role.slice(1)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        {role.permissions.length} permissions
+                        {role.is_system ? "System" : "Custom"}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                      {role.permissions.slice(0, 5).map((perm, i) => (
-                        <span key={i} className="text-xs px-1.5 py-0.5 bg-muted rounded">
-                          {perm.split(":")[0]}
-                        </span>
-                      ))}
-                      {role.permissions.length > 5 && (
-                        <span className="text-xs px-1.5 py-0.5 bg-muted rounded">
-                          +{role.permissions.length - 5} more
-                        </span>
-                      )}
-                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {role.description || "No description"}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -2431,13 +2429,13 @@ export default function OrganizationSettings({ user }) {
           </Card>
         </TabsContent>
 
-        {/* EFI Tab */}
+        {/* EVFI Tab */}
         <TabsContent value="efi" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Brain className="h-4 w-4" />
-                EV Failure Intelligence Settings
+                Electric Vehicle Failure Intelligence Settings
               </CardTitle>
               <CardDescription>Configure AI-powered diagnostics and learning</CardDescription>
             </CardHeader>

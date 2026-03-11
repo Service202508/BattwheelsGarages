@@ -11,7 +11,7 @@ const sections = [
     label: '01 · Getting Started',
     title: 'Sign up and go live in minutes',
     content: [
-      { heading: 'Create your organisation', body: 'Visit /register and complete the 3-step onboarding: workshop details, admin account, and confirmation. Your workspace is isolated — no data is shared with other organisations.' },
+      { heading: 'Create your organisation', body: 'Visit /register and complete the 3-step onboarding: service center details, admin account, and confirmation. Your workspace is isolated — no data is shared with other organisations.' },
       { heading: 'Onboarding checklist', body: 'After sign-in, Battwheels OS shows a guided checklist: add your first contact, register a vehicle, open a service ticket, add inventory, raise an invoice, and invite a team member. Each step unlocks the next layer of the platform.' },
       { heading: 'Subscription plans', body: 'Free 14-day trial includes all Professional features. Plans: Starter (₹2,999/mo), Professional (₹5,999/mo), Enterprise (custom). Features are enforced at API level — the platform shows an upgrade prompt when a gated feature is accessed on a lower plan.' },
     ]
@@ -19,13 +19,13 @@ const sections = [
   {
     id: 'efi-engine',
     icon: Brain,
-    label: '02 · EFI Engine',
-    title: 'EV Failure Intelligence — how it works',
+    label: '02 · EVFI Engine',
+    title: 'Electric Vehicle Failure Intelligence — how it works',
     content: [
-      { heading: 'What is EFI?', body: 'Battwheels EFI™ is a proprietary AI-powered engine trained exclusively on EV failure patterns. Unlike generic automotive AI, EFI maps fault codes to EV-specific fault trees, accounting for BMS architecture, motor controller variants, and firmware versions.' },
-      { heading: 'Failure Cards', body: 'Every resolved ticket creates a Failure Card — a structured knowledge entry with vehicle model, fault codes, root cause, resolution steps, and confidence score. Cards are org-scoped; your knowledge base does not merge with other workshops.' },
-      { heading: 'AI Diagnostics', body: 'When a ticket is created, EFI automatically matches the complaint against your Failure Card knowledge base. Technicians receive ranked root cause suggestions with step-by-step guidance in plain English (or Hinglish for field technicians).' },
-      { heading: 'Confidence scoring', body: 'Each EFI match returns a confidence level: High, Medium, or Low. Low-confidence matches automatically create a draft Failure Card so your team can document the new failure pattern for future reference.' },
+      { heading: 'What is EVFI?', body: 'Battwheels EVFI™ is a proprietary AI-powered engine trained exclusively on EV failure patterns. Unlike generic automotive AI, EVFI maps fault codes to EV-specific fault trees, accounting for BMS architecture, motor controller variants, and firmware versions.' },
+      { heading: 'Failure Cards', body: 'Every resolved ticket creates a Failure Card — a structured knowledge entry with vehicle model, fault codes, root cause, resolution steps, and confidence score. Cards are org-scoped; your knowledge base does not merge with other organisations.' },
+      { heading: 'AI Diagnostics', body: 'When a ticket is created, EVFI automatically matches the complaint against your Failure Card knowledge base. Technicians receive ranked root cause suggestions with step-by-step guidance in plain English (or Hinglish for field technicians).' },
+      { heading: 'Confidence scoring', body: 'Each EVFI match returns a confidence level: High, Medium, or Low. Low-confidence matches automatically create a draft Failure Card so your team can document the new failure pattern for future reference.' },
     ]
   },
   {
@@ -79,13 +79,11 @@ const sections = [
   {
     id: 'api',
     icon: FileText,
-    label: '07 · API Reference',
-    title: 'REST API — base URL and auth',
+    label: '07 · API & Integrations',
+    title: 'API & Integrations',
     content: [
-      { heading: 'Base URL', body: 'All API endpoints are prefixed with /api. Example: https://your-domain.com/api/health' },
-      { heading: 'Authentication', body: 'Bearer token in Authorization header. Obtain a token via POST /api/auth/login with {"email": "...", "password": "..."}. Tokens expire after 7 days.' },
-      { heading: 'Organisation context', body: 'All protected endpoints require the X-Organization-ID header. This is the organization_id returned on login.' },
-      { heading: 'Response format', body: 'Paginated endpoints return {"data": [...], "pagination": {"page", "limit", "total_count", "total_pages", "has_next", "has_prev"}}. Default limit: 25. Max: 100.' },
+      { heading: 'REST API', body: 'Battwheels OS provides a comprehensive REST API for custom integrations. API documentation is available to registered users in the developer portal.' },
+      { heading: 'Integration Support', body: 'Contact us at hello@battwheels.com for API access and integration support.' },
     ]
   },
   {
@@ -94,9 +92,9 @@ const sections = [
     label: '08 · FAQ',
     title: 'Frequently asked questions',
     content: [
-      { heading: 'Is my data isolated from other workshops?', body: 'Yes. Every piece of data — tickets, invoices, employees, vehicles, knowledge base entries — is scoped to your organisation_id. You cannot read or write another organisation\'s data, and neither can platform administrators (they can only see metadata like plan and member count).' },
+      { heading: 'Is my data isolated from other organisations?', body: 'Yes. Every piece of data — tickets, invoices, employees, vehicles, knowledge base entries — is scoped to your organisation_id. You cannot read or write another organisation\'s data, and neither can platform administrators (they can only see metadata like plan and member count).' },
       { heading: 'Can I export my data?', body: 'Yes. You can export journal entries as Tally XML, download payslips and Form 16 as PDFs, and request a full data export from Organisation Settings → Data Export.' },
-      { heading: 'Does EFI work without internet?', body: 'No. EFI diagnostics require an active internet connection to reach the AI backend. Service ticket creation, job cards, and invoicing work normally offline but syncing requires connectivity.' },
+      { heading: 'Does EVFI work without internet?', body: 'No. EVFI diagnostics require an active internet connection to reach the AI backend. Service ticket creation, job cards, and invoicing work normally offline but syncing requires connectivity.' },
       { heading: 'How do I integrate with Zoho Books?', body: 'Go to Organisation Settings → Integrations tab. Enter your Zoho OAuth credentials. Once connected, contacts, invoices, and bills sync bidirectionally. Zoho import is available in Finance → Import from Zoho.' },
       { heading: 'What happens when my trial ends?', body: 'After 14 days, you are moved to the Free plan. Features gated to Starter and above show an upgrade prompt. Your data is preserved — nothing is deleted. You can upgrade at any time to restore full access.' },
     ]
@@ -152,7 +150,7 @@ export default function Docs() {
           <div className="mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-[10px] tracking-widest text-bw-volt border border-bw-volt/20 bg-bw-volt/5 rounded-sm font-mono">
               <span className="w-1.5 h-1.5 bg-bw-volt rounded-full animate-pulse" />
-              EFI Engine · Active · India
+              EVFI Engine · Active · India
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
               Battwheels OS<br /><span className="text-bw-volt">Documentation</span>
@@ -187,7 +185,7 @@ export default function Docs() {
           {/* CTA */}
           <div className="mt-8 p-8 border border-bw-volt/20 bg-bw-volt/5 rounded">
             <p className="text-[10px] font-mono text-bw-volt uppercase tracking-widest mb-3">Ready to start?</p>
-            <h3 className="text-xl font-bold mb-2">Your first workshop, live in 10 minutes.</h3>
+            <h3 className="text-xl font-bold mb-2">Your first service center, live in 10 minutes.</h3>
             <p className="text-white/45 text-sm mb-5">No credit card required. 14-day free trial includes all Professional features.</p>
             <button onClick={() => navigate('/register')} className="inline-flex items-center gap-2 px-6 py-3 bg-bw-volt text-bw-black text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-bw-volt-hover transition">
               Start Free Trial <ArrowRight className="w-4 h-4" />
@@ -198,7 +196,7 @@ export default function Docs() {
 
       {/* Footer */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6 mt-10">
-        <div className="text-xs text-white/20 font-mono">© 2026 Battwheels Services Private Limited · EFI Engine v2 · India</div>
+        <div className="text-xs text-white/20 font-mono">&copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved</div>
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>

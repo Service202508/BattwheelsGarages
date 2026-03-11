@@ -10,7 +10,6 @@ import os
 from typing import Optional, Tuple, Dict, Any
 from datetime import datetime
 
-import motor.motor_asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -343,11 +342,7 @@ async def post_all_unposted_invoices(organization_id: str) -> Dict:
         return {"success": False, "message": "Service not available"}
     
     # Get invoices without journal entries
-    from motor.motor_asyncio import AsyncIOMotorClient
-    import os
-    
-    client = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-    db = client[os.environ.get("DB_NAME", "battwheels")]
+    from utils.database import db
     
     # Get posted invoice IDs
     posted_ids = await service.journal_entries.distinct("source_document_id", {

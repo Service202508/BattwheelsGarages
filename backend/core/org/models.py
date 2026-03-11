@@ -37,7 +37,9 @@ class IndustryType(str, Enum):
 class OrgUserRole(str, Enum):
     OWNER = "owner"
     ADMIN = "admin"
+    ORG_ADMIN = "org_admin"
     MANAGER = "manager"
+    HR = "hr"
     DISPATCHER = "dispatcher"
     TECHNICIAN = "technician"
     ACCOUNTANT = "accountant"
@@ -170,7 +172,7 @@ class NotificationSettings(BaseModel):
 
 
 class EFISettings(BaseModel):
-    """EV Failure Intelligence settings"""
+    """Electric Vehicle Failure Intelligence settings"""
     failure_learning_enabled: bool = True
     auto_suggest_diagnosis: bool = True
     min_confidence_threshold: float = 0.7
@@ -287,6 +289,14 @@ ROLE_PERMISSIONS = {
         "inventory:*", "payments:*", "contacts:*", "reports:*",
         "efi:*"
     ],
+    OrgUserRole.ORG_ADMIN: [
+        "org:read", "org:update",
+        "org:settings:read", "org:settings:update",
+        "org:users:read", "org:users:create", "org:users:update",
+        "vehicles:*", "tickets:*", "invoices:*", "estimates:*",
+        "inventory:*", "payments:*", "contacts:*", "reports:*",
+        "efi:*"
+    ],
     OrgUserRole.MANAGER: [
         "org:read",
         "org:settings:read",
@@ -296,6 +306,12 @@ ROLE_PERMISSIONS = {
         "estimates:*", "inventory:read",
         "payments:read", "contacts:*", "reports:read",
         "efi:read", "efi:use"
+    ],
+    OrgUserRole.HR: [
+        "org:read",
+        "org:users:read",
+        "hr:*", "payroll:*",
+        "reports:read"
     ],
     OrgUserRole.DISPATCHER: [
         "org:read",

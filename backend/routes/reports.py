@@ -11,13 +11,13 @@ Provides comprehensive financial reports with PDF and Excel export capabilities
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 from io import BytesIO
 import os
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 
+from utils.database import db as _reports_db, extract_org_id
 from core.subscriptions.entitlement import require_feature
 
 # Soft import for PDF service (may not be available in all environments)
@@ -31,11 +31,18 @@ except Exception:
 
 router = APIRouter(prefix="/reports", tags=["Financial Reports"])
 
+
+async def _is_trial_plan(org_id: str) -> bool:
+    """Check if org is on free/trialing plan (for PDF watermark)."""
+    db = get_db()
+    org = await db.organizations.find_one(
+        {"organization_id": org_id}, {"_id": 0, "plan_type": 1}
+    )
+    return (org or {}).get("plan_type", "starter") in ("free", "trialing", "starter")
+
 # Database connection
 def get_db():
-    mongo_url = os.environ['MONGO_URL']
-    client = AsyncIOMotorClient(mongo_url)
-    return client[os.environ['DB_NAME']]
+    return _reports_db
 
 # ============== HELPER FUNCTIONS ==============
 
@@ -745,6 +752,8 @@ async def get_profit_loss_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
+    org_id = extract_org_id(request) if request else None
+    org_filter = {"organization_id": org_id} if org_id else {}
     
     if not start_date:
         start_date = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
@@ -753,7 +762,7 @@ async def get_profit_loss_report(
     
     # Income: Sum from invoices
     income_pipeline = [
-        {"$match": {"date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {**org_filter, "date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {"_id": None, "total": {"$sum": "$total"}}}
     ]
     income_result = await db.invoices.aggregate(income_pipeline).to_list(1)
@@ -761,7 +770,7 @@ async def get_profit_loss_report(
     
     # COGS: Sum from bills
     cogs_pipeline = [
-        {"$match": {"date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {**org_filter, "date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {"_id": None, "total": {"$sum": "$total"}}}
     ]
     cogs_result = await db.bills.aggregate(cogs_pipeline).to_list(1)
@@ -771,7 +780,7 @@ async def get_profit_loss_report(
     
     # Operating Expenses: Group by category
     expense_pipeline = [
-        {"$match": {"expense_date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {**org_filter, "expense_date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {"_id": "$expense_account", "total": {"$sum": "$amount"}}}
     ]
     expenses_result = await db.expenses.aggregate(expense_pipeline).to_list(100)
@@ -797,7 +806,7 @@ async def get_profit_loss_report(
     if format == "pdf":
         org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
         html_content = generate_profit_loss_html(report_data, org_settings)
-        pdf_bytes = generate_pdf_from_html(html_content)
+        pdf_bytes = generate_pdf_from_html(html_content, is_trial=await _is_trial_plan(org_id))
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -816,6 +825,7 @@ async def get_profit_loss_report(
 
 @router.get("/balance-sheet")
 async def get_balance_sheet_report(
+    request: Request,
     as_of_date: str = "",
     format: str = Query("json", enum=["json", "pdf", "excel"])
 ):
@@ -825,13 +835,15 @@ async def get_balance_sheet_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
+    org_id = extract_org_id(request)
+    org_filter = {"organization_id": org_id} if org_id else {}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     # Assets - Accounts Receivable
     receivables_pipeline = [
-        {"$match": {"balance": {"$gt": 0}}},
+        {"$match": {**org_filter, "balance": {"$gt": 0}}},
         {"$group": {"_id": None, "total": {"$sum": "$balance"}}}
     ]
     receivables = await db.invoices.aggregate(receivables_pipeline).to_list(1)
@@ -839,7 +851,7 @@ async def get_balance_sheet_report(
     
     # Assets - Bank Balance
     bank_pipeline = [
-        {"$match": {"is_active": True}},
+        {"$match": {**org_filter, "is_active": True}},
         {"$group": {"_id": None, "total": {"$sum": "$balance"}}}
     ]
     bank_result = await db.bankaccounts.aggregate(bank_pipeline).to_list(1)
@@ -847,7 +859,7 @@ async def get_balance_sheet_report(
     
     # Assets - Inventory Value
     inventory_pipeline = [
-        {"$match": {"status": "active"}},
+        {"$match": {**org_filter, "status": "active"}},
         {"$group": {"_id": None, "total": {"$sum": {"$multiply": ["$stock_on_hand", "$rate"]}}}}
     ]
     inventory_result = await db.items.aggregate(inventory_pipeline).to_list(1)
@@ -855,7 +867,7 @@ async def get_balance_sheet_report(
     
     # Liabilities - Accounts Payable
     payables_pipeline = [
-        {"$match": {"balance": {"$gt": 0}}},
+        {"$match": {**org_filter, "balance": {"$gt": 0}}},
         {"$group": {"_id": None, "total": {"$sum": "$balance"}}}
     ]
     payables = await db.bills.aggregate(payables_pipeline).to_list(1)
@@ -886,7 +898,7 @@ async def get_balance_sheet_report(
     if format == "pdf":
         org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
         html_content = generate_balance_sheet_html(report_data, org_settings)
-        pdf_bytes = generate_pdf_from_html(html_content)
+        pdf_bytes = generate_pdf_from_html(html_content, is_trial=await _is_trial_plan(org_id))
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -905,6 +917,7 @@ async def get_balance_sheet_report(
 
 @router.get("/ar-aging")
 async def get_ar_aging_report(
+    request: Request,
     as_of_date: str = "",
     format: str = Query("json", enum=["json", "pdf", "excel"])
 ):
@@ -914,6 +927,8 @@ async def get_ar_aging_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
+    org_id = extract_org_id(request)
+    org_filter = {"organization_id": org_id} if org_id else {}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -922,7 +937,7 @@ async def get_ar_aging_report(
     
     # Get unpaid invoices (limited for performance)
     invoices = await db.invoices.find(
-        {"balance": {"$gt": 0}, "status": {"$in": ["sent", "partial", "overdue", "draft"]}},
+        {**org_filter, "balance": {"$gt": 0}, "status": {"$in": ["sent", "partial", "overdue", "draft"]}},
         {"_id": 0}
     ).to_list(length=1000)
     
@@ -980,7 +995,7 @@ async def get_ar_aging_report(
     if format == "pdf":
         org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
         html_content = generate_ar_aging_html(report_data, org_settings)
-        pdf_bytes = generate_pdf_from_html(html_content)
+        pdf_bytes = generate_pdf_from_html(html_content, is_trial=await _is_trial_plan(org_id))
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -999,6 +1014,7 @@ async def get_ar_aging_report(
 
 @router.get("/sales-by-customer")
 async def get_sales_by_customer_report(
+    request: Request,
     start_date: str = "",
     end_date: str = "",
     format: str = Query("json", enum=["json", "pdf", "excel"])
@@ -1009,6 +1025,8 @@ async def get_sales_by_customer_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
+    org_id = extract_org_id(request)
+    org_filter = {"organization_id": org_id} if org_id else {}
     
     if not start_date:
         start_date = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
@@ -1017,7 +1035,7 @@ async def get_sales_by_customer_report(
     
     # Aggregate sales by customer
     sales_pipeline = [
-        {"$match": {"date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {**org_filter, "date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {
             "_id": "$customer_name",
             "total_sales": {"$sum": "$total"},
@@ -1051,7 +1069,7 @@ async def get_sales_by_customer_report(
     if format == "pdf":
         org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
         html_content = generate_sales_by_customer_html(report_data, org_settings)
-        pdf_bytes = generate_pdf_from_html(html_content)
+        pdf_bytes = generate_pdf_from_html(html_content, is_trial=await _is_trial_plan(org_id))
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -1070,6 +1088,7 @@ async def get_sales_by_customer_report(
 
 @router.get("/ap-aging")
 async def get_ap_aging_report(
+    request: Request,
     as_of_date: str = "",
     format: str = Query("json", enum=["json", "pdf", "excel"])
 ):
@@ -1079,6 +1098,8 @@ async def get_ap_aging_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
+    org_id = extract_org_id(request)
+    org_filter = {"organization_id": org_id} if org_id else {}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1087,7 +1108,7 @@ async def get_ap_aging_report(
     
     # Get unpaid bills
     bills = await db.bills.find(
-        {"balance": {"$gt": 0}},
+        {**org_filter, "balance": {"$gt": 0}},
         {"_id": 0}
     ).to_list(length=10000)
     
@@ -1147,7 +1168,7 @@ async def get_ap_aging_report(
     elif format == "pdf":
         org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
         html_content = generate_ap_aging_html(report_data, org_settings)
-        pdf_bytes = generate_pdf_from_html(html_content)
+        pdf_bytes = generate_pdf_from_html(html_content, is_trial=await _is_trial_plan(org_id))
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
@@ -1330,12 +1351,15 @@ async def get_technician_performance(
     end_iso = end_dt.isoformat()
 
     db = get_db()
+    org_id = extract_org_id(request) if request else None
 
     # Build query
     query = {
         "assigned_technician_id": {"$exists": True, "$ne": None},
         "created_at": {"$gte": start_iso, "$lte": end_iso}
     }
+    if org_id:
+        query["organization_id"] = org_id
 
     tickets = await db.tickets.find(query, {
         "_id": 0,

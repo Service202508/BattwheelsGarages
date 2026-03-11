@@ -1,6 +1,6 @@
 """
 Battwheels OS - AI Guidance Models
-Database models for EFI Guidance Layer: Snapshots and Feedback
+Database models for EVFI Guidance Layer: Snapshots and Feedback
 
 P0.5 Foundation - Mandatory first implementation
 """

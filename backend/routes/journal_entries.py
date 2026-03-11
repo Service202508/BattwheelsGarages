@@ -511,7 +511,7 @@ async def get_chart_of_accounts(request: Request, account_type: str = Query(None
     # Group by type
     grouped = {}
     for acc in accounts:
-        acc_type = acc["account_type"]
+        acc_type = acc.get("account_type", "other")
         if acc_type not in grouped:
             grouped[acc_type] = []
         grouped[acc_type].append(acc)

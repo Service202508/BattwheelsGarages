@@ -3,7 +3,8 @@ import { Building2, ChevronDown, Check, Plus, Settings, Users, Shield } from 'lu
 import { toast } from 'sonner';
 import { useOrganization } from '@/App';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API_URL = window.location.origin;
 
 const PLAN_BADGE = {
   free:         { bg: "rgba(244,246,240,0.08)", text: "rgba(244,246,240,0.35)", label: "FREE" },

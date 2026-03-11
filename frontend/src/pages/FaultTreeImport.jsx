@@ -26,7 +26,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const API_BASE = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API_BASE = window.location.origin;
 
 const FaultTreeImport = () => {
   const [jobs, setJobs] = useState([]);
@@ -198,7 +199,7 @@ const FaultTreeImport = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-bw-white">EFI Master Fault Tree Import</h1>
+          <h1 className="text-2xl font-bold text-bw-white">Battwheels EVFI™ Master Fault Tree Import</h1>
           <p className="text-bw-white/[0.45]">Import EV failure intelligence from Excel files</p>
         </div>
         <div className="flex gap-2">

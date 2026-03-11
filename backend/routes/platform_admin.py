@@ -29,16 +29,12 @@ import logging
 import json
 import asyncio
 import time
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/platform", tags=["Platform Admin"])
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-_client = AsyncIOMotorClient(MONGO_URL)
-db = _client[DB_NAME]
+from utils.database import db
 
 
 # ==================== AUTH ====================
@@ -663,12 +659,12 @@ async def get_platform_version():
     }
 
 
-# ==================== EFI BRAIN SEEDING ====================
+# ==================== EVFI BRAIN SEEDING ====================
 
 @router.post("/efi/seed-brain")
 async def seed_efi_brain(request: Request, _=Depends(require_platform_admin)):
     """
-    Seed the EFI brain with initial failure card data.
+    Seed the EVFI brain with initial failure card data.
     Sprint 3B-SEED: Populates failure_cards + efi_decision_trees
     with common Indian EV failure patterns and generates embeddings.
     
@@ -680,18 +676,18 @@ async def seed_efi_brain(request: Request, _=Depends(require_platform_admin)):
         result = await seed_failure_cards_and_trees(db)
         return {
             "success": True,
-            "message": "EFI brain seeding complete",
+            "message": "EVFI brain seeding complete",
             **result
         }
     except Exception as e:
-        logger.error(f"EFI brain seeding failed: {e}")
+        logger.error(f"EVFI brain seeding failed: {e}")
         raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
 
 
 @router.post("/efi/process-queue")
 async def process_efi_learning_queue(request: Request, _=Depends(require_platform_admin)):
     """
-    Sprint 5B-02: Process pending EFI learning queue items.
+    Sprint 5B-02: Process pending EVFI learning queue items.
     Converts queued learning events into failure cards with embeddings.
     Requires platform_admin role.
     """
@@ -701,7 +697,7 @@ async def process_efi_learning_queue(request: Request, _=Depends(require_platfor
         result = await service.process_learning_queue(batch_size=100)
         return {"success": True, **result}
     except Exception as e:
-        logger.error(f"EFI queue processing failed: {e}")
+        logger.error(f"EVFI queue processing failed: {e}")
         raise HTTPException(status_code=500, detail=f"Queue processing failed: {str(e)}")
 
 
@@ -726,7 +722,7 @@ async def fix_empty_failure_cards_endpoint(request: Request, _=Depends(require_p
     """
     Sprint 6B-03: Fix failure cards with empty text content.
     For each empty card: check if source ticket exists, populate from it,
-    or mark as incomplete and exclude from EFI matching.
+    or mark as incomplete and exclude from EVFI matching.
     """
     try:
         from services.efi_embedding_service import EFIEmbeddingManager

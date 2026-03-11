@@ -1,6 +1,6 @@
 """
 Battwheels OS - Events Module
-Central event-driven architecture for EFI platform
+Central event-driven architecture for EVFI platform
 
 This module provides:
 - EventDispatcher: Central event routing

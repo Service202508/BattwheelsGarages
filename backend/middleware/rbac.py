@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Role hierarchy (higher roles inherit lower role permissions)
 ROLE_HIERARCHY = {
+    "platform_admin": ["platform_admin", "owner", "org_admin", "admin", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
     "org_admin": ["org_admin", "manager", "accountant", "technician", "dispatcher", "viewer"],
     "owner": ["owner", "org_admin", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
     "admin": ["admin", "org_admin", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
@@ -85,8 +86,8 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/suppliers(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
     r"^/api/customers(/.*)?$":         ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
-    # ============ EFI/AI (Operations) ============
-    r"^/api/efi(/.*)?$":               ["org_admin", "admin", "owner", "manager", "technician"],
+    # ============ EVFI/AI (Operations) ============
+    r"^/api/e?v?fi(/.*)?$":               ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/ai(/.*)?$":                ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/failure.*$":            ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/knowledge.*$":          ["org_admin", "admin", "owner", "manager", "technician"],
@@ -111,8 +112,8 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/technicians$":              ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
     # ============ PLATFORM ADMIN (Battwheels operator only) ============
-    r"^/api/platform(/.*)?$":              ["owner", "admin"],
-    r"^/api/v1/platform(/.*)?$":           ["owner", "admin"],
+    r"^/api/platform(/.*)?$":              ["platform_admin", "owner", "admin"],
+    r"^/api/v1/platform(/.*)?$":           ["platform_admin", "owner", "admin"],
     
     # ============ DOCUMENT MANAGEMENT ============
     r"^/api/documents(/.*)?$":         ["org_admin", "admin", "owner", "manager", "technician"],
@@ -122,6 +123,8 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ INTEGRATIONS ============
     r"^/api/razorpay(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
     r"^/api/einvoice(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/zoho(/.*)?$":              ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/v1/zoho(/.*)?$":           ["org_admin", "admin", "owner", "accountant", "manager"],
     
     # ============ SUBSCRIPTIONS/BILLING ============
     r"^/api/subscriptions(/.*)?$":     ["org_admin", "admin", "owner"],
@@ -159,6 +162,9 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ MASTER DATA ============
     r"^/api/master-data(/.*)?$":       ["org_admin", "admin", "owner", "manager"],
     
+    # ============ BOOKS MODULE ============
+    r"^/api/books(/.*)?$":                  ["org_admin", "admin", "owner", "accountant", "manager"],
+
     # ============ ENHANCED MODULES (P0 — previously unmapped) ============
     r"^/api/invoices-enhanced(/.*)?$":      ["org_admin", "admin", "owner", "accountant", "manager"],
     r"^/api/bills-enhanced(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
@@ -175,8 +181,8 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/invoice-payments(/.*)?$":       ["org_admin", "admin", "owner", "accountant"],
     r"^/api/vendor-credits(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
     
-    # ============ EFI/AI EXTENDED (previously unmapped) ============
-    r"^/api/efi-guided(/.*)?$":             ["org_admin", "admin", "owner", "manager", "technician"],
+    # ============ EVFI/AI EXTENDED (previously unmapped) ============
+    r"^/api/e?v?fi-guided(/.*)?$":             ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/ai-assist(/.*)?$":              ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/expert-queue(/.*)?$":           ["org_admin", "admin", "owner", "manager", "technician"],
     
@@ -187,8 +193,15 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ CONFIG/ANALYTICS (previously unmapped) ============
     r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
     r"^/api/dashboard(/.*)?$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+    r"^/api/v1/dashboard(/.*)?$":           ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
     r"^/api/ai-usage(/.*)?$":                ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/v1/operations(/.*)?$":          ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+
+    # ============ PERIOD LOCKING ============
+    r"^/api/finance/period-locks(/.*)?$":   ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/v1/finance/period-locks(/.*)?$": ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/v1/period-locks(/.*)?$":        ["org_admin", "admin", "owner", "accountant"],
 
     # ============ ACCOUNTING/FINANCE EXTENDED ============
     r"^/api/accounting(/.*)?$":             ["org_admin", "admin", "owner", "accountant"],
@@ -213,6 +226,14 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
 
     # ============ CUSTOMERS MODULE ============
     r"^/api/customers-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "dispatcher"],
+
+    # ============ TICKET INVOICES MODULE ============
+    r"^/api/ticket-invoices(/.*)?$":        ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+    r"^/api/v1/ticket-invoices(/.*)?$":     ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+
+    # ============ GST MODULE ============
+    r"^/api/gst(/.*)?$":                    ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/v1/gst(/.*)?$":                 ["org_admin", "admin", "owner", "accountant", "manager"],
 }
 
 # Compiled patterns for performance
@@ -264,13 +285,15 @@ class RBACMiddleware(BaseHTTPMiddleware):
     
     # Public endpoints that skip RBAC
     PUBLIC_ENDPOINTS = {
-        "/api/health", "/api/", "/", "/docs", "/redoc", "/openapi.json",
+        "/health", "/api/health", "/api/v1/health", "/api/", "/", "/docs", "/redoc", "/openapi.json",
         "/api/auth/login", "/api/auth/register", "/api/auth/session",
         "/api/auth/logout", "/api/auth/me", "/api/auth/google",
         "/api/auth/forgot-password", "/api/auth/reset-password",
         "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/session",
         "/api/v1/auth/logout", "/api/v1/auth/me",
         "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password",
+        "/api/v1/auth/verify-email", "/api/v1/auth/resend-verification",
+        "/api/auth/verify-email", "/api/auth/resend-verification",
     }
     
     PUBLIC_PATTERNS = [
@@ -281,18 +304,44 @@ class RBACMiddleware(BaseHTTPMiddleware):
         r"^/api/payments/webhook$",
         r"^/api/v1/payments/webhook$",
         r"^/api/v1/razorpay/webhook$",
-        r"^/api/customer-portal/auth.*",
-        r"^/api/v1/customer-portal/auth.*",
+        r"^/api/customer-portal/.*",
+        r"^/api/v1/customer-portal/.*",
+        r"^/api/business-portal/.*",
+        r"^/api/v1/business-portal/.*",
+        r"^/api/business/.*",
+        r"^/api/v1/business/.*",
         r"^/api/organizations/signup$",
         r"^/api/v1/organizations/signup$",
         r"^/api/organizations/register$",
         r"^/api/v1/organizations/register$",
         r"^/api/contact$",
+        r"^/api/v1/contact$",
         r"^/api/book-demo$",
+        r"^/api/v1/book-demo$",
+        r"^/api/contact-form$",
+        r"^/api/v1/contact-form$",
+        r"^/api/demo-request$",
+        r"^/api/v1/demo-request$",
         r"^/api/organizations/accept-invite$",
         r"^/api/v1/organizations/accept-invite$",
         r"^/api/v1/subscriptions/plans$",
         r"^/api/v1/subscriptions/plans/compare$",
+        r"^/api/v1/subscriptions/plans/[^/]+$",
+        # Platform version endpoint (public, exact path)
+        r"^/api/platform/version$",
+        r"^/api/v1/platform/version$",
+        # Public estimate/invoice share links (no JWT — accessed by customers)
+        r"^/api/estimates-enhanced/public/.*",
+        r"^/api/v1/estimates-enhanced/public/.*",
+        r"^/api/invoices-enhanced/public/.*",
+        r"^/api/v1/invoices-enhanced/public/.*",
+        r"^/api/estimates/public/.*",
+        r"^/api/v1/estimates/public/.*",
+        r"^/api/invoices/public/.*",
+        r"^/api/v1/invoices/public/.*",
+        # Master data (public read-only, matches TenantGuard config)
+        r"^/api/master-data/.*",
+        r"^/api/v1/master-data/.*",
     ]
     
     def __init__(self, app):
@@ -328,10 +377,23 @@ class RBACMiddleware(BaseHTTPMiddleware):
         logger.info(f"RBAC CHECK: path={path}, role={user_role}, user={user_id}")
         
         if not user_role:
-            # TenantGuardMiddleware should have set this
-            # If not, it means the request wasn't properly authenticated
-            logger.info(f"RBAC: No role found for path {path} - letting through for auth check")
-            return await call_next(request)  # Let other middleware handle auth
+            # No role means not authenticated through TenantGuard.
+            # Check if this path is in OUR public list.
+            if self._is_public(path):
+                return await call_next(request)
+            # Otherwise DENY — do not pass through silently.
+            logger.warning(
+                "RBAC DENIED: No role set for %s %s. "
+                "TenantGuard may have skipped auth.",
+                method, path,
+            )
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "detail": "Authentication required.",
+                    "code": "RBAC_NO_ROLE",
+                }
+            )
         
         # Normalize path: strip /v1 prefix so /api/v1/hr/... matches /api/hr/... patterns
         normalized_path = re.sub(r'^/api/v1/', '/api/', path)

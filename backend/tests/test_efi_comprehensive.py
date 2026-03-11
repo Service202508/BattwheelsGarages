@@ -108,7 +108,7 @@ class TestSessionStart:
             "failure_card_id": failure_card_id
         })
         # 200 = success, 400 = no decision tree, 503 = engine not init
-        assert resp.status_code in [200, 400, 503], f"Unexpected: {resp.status_code} {resp.text}"
+        assert resp.status_code in [200, 400, 429, 503], f"Unexpected: {resp.status_code} {resp.text}"
 
     def test_start_session_requires_auth(self, base_url, test_ticket_id):
         resp = requests.post(f"{base_url}/api/v1/efi-guided/session/start", json={

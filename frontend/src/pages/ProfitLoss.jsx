@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, Calendar } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
 
 export default function ProfitLoss() {
   const [data, setData] = useState(null);
@@ -20,7 +20,7 @@ export default function ProfitLoss() {
       const token = localStorage.getItem('token');
       const orgId = localStorage.getItem('organization_id') || '';
       const res = await fetch(
-        `${API}/api/v1/journal-entries/reports/profit-loss?start_date=${startDate}&end_date=${endDate}`,
+        `${API}/journal-entries/reports/profit-loss?start_date=${startDate}&end_date=${endDate}`,
         { headers: { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId } }
       );
       if (!res.ok) throw new Error('Failed to load P&L report');

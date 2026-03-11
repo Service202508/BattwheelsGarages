@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { AlertCircle, Lock, Plus, Trash2, Send, Check, Pencil, ExternalLink, RefreshCw, Package, Wrench, Receipt, Unlock, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { API } from "@/App";
+import { canEditEstimate, isOwnerOrAdmin } from "../utils/roles";
 
 // Status colors for estimate
 const estimateStatusColors = {
@@ -154,16 +156,13 @@ export default function EstimateItemsPanel({
   const [conflictData, setConflictData] = useState(null);
 
   const token = localStorage.getItem("token");
-  const isAdmin = user?.role === "admin";
-  const isManager = user?.role === "manager";
-  const isTechnician = user?.role === "technician";
   
   // Allow editing until estimate is locked (even when approved)
   // Only locked estimates cannot be edited
-  const canEdit = !estimate?.locked_at && (isAdmin || isManager || isTechnician);
-  const canApprove = isAdmin || isManager || isTechnician;
-  const canLock = isAdmin || isManager;
-  const canUnlock = isAdmin; // Only admin can unlock
+  const canEdit = !estimate?.locked_at && canEditEstimate(user);
+  const canApprove = canEditEstimate(user);
+  const canLock = isOwnerOrAdmin(user) || ["manager"].includes((user?.role || "").toLowerCase());
+  const canUnlock = isOwnerOrAdmin(user);
   
   // Fetch or create estimate
   const ensureEstimate = useCallback(async (showLoadingSpinner = true) => {
@@ -691,14 +690,12 @@ export default function EstimateItemsPanel({
             </CardTitle>
             <CardDescription className="flex items-center gap-2 mt-1">
               <span className="font-mono text-xs">{estimate.estimate_number}</span>
-              <a 
-                href={`/estimates/${estimate.estimate_id}`}
+              <Link 
+                to={`/estimates/${estimate.estimate_id}`}
                 className="text-xs text-primary flex items-center gap-1 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 Open in Estimates <ExternalLink className="h-3 w-3" />
-              </a>
+              </Link>
             </CardDescription>
           </div>
           
@@ -1018,6 +1015,7 @@ export default function EstimateItemsPanel({
         )}
         
         {/* Items Table */}
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -1113,6 +1111,7 @@ export default function EstimateItemsPanel({
             )}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
       
       <CardFooter className="flex-col">

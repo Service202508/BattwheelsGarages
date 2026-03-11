@@ -2,7 +2,7 @@
 Battwheels OS - Event Dispatcher
 Central event system for event-driven architecture
 
-This is the CORE of the EFI platform. All business workflows flow through events.
+This is the CORE of the EVFI platform. All business workflows flow through events.
 Routes emit events -> Dispatcher routes to handlers -> Services process
 
 Event Flow:
@@ -39,7 +39,7 @@ class EventType(str, Enum):
     TICKET_RESOLVED = "ticket.resolved"
     TICKET_CLOSED = "ticket.closed"
     
-    # EFI Events
+    # EVFI Events
     FAILURE_CARD_CREATED = "failure_card.created"
     FAILURE_CARD_UPDATED = "failure_card.updated"
     FAILURE_CARD_APPROVED = "failure_card.approved"
@@ -186,7 +186,7 @@ class EventHandler:
 
 class EventDispatcher:
     """
-    Central event dispatcher for the EFI platform
+    Central event dispatcher for the EVFI platform
     
     Usage:
         dispatcher = EventDispatcher(db)

@@ -1,7 +1,7 @@
 {
   "name": "Battwheels OS",
   "short_name": "Battwheels",
-  "description": "EV Workshop Intelligence Platform",
+  "description": "EV Service Intelligence Platform",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

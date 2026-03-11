@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEstimateCalculations } from "@/hooks/useEstimateCalculations";
 import { useEstimateFilters } from "@/hooks/useEstimateFilters";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -118,6 +118,7 @@ export default function EstimatesEnhanced() {
   // Items search
   const [items, setItems] = useState([]);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Quick Add Item state
   const [quickAddItem, setQuickAddItem] = useState({
@@ -1272,13 +1273,13 @@ export default function EstimatesEnhanced() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-bw-panel border border-white/[0.07] p-1">
-          <TabsTrigger value="estimates" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">Estimates</TabsTrigger>
-          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">
+        <TabsList className="bg-bw-panel border border-white/[0.07] p-1 flex overflow-x-auto w-full">
+          <TabsTrigger value="estimates" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap">Estimates</TabsTrigger>
+          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap">
             <Ticket className="h-4 w-4" />
             Ticket Estimates ({ticketEstimates.length})
           </TabsTrigger>
-          <TabsTrigger value="create" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45]">Create New</TabsTrigger>
+          <TabsTrigger value="create" className="data-[state=active]:bg-bw-volt/10 data-[state=active]:text-bw-volt data-[state=active]:border-b-2 data-[state=active]:border-b-bw-volt text-bw-white/[0.45] flex-shrink-0 whitespace-nowrap">Create New</TabsTrigger>
         </TabsList>
 
         {/* Estimates Tab */}
@@ -1464,7 +1465,7 @@ export default function EstimatesEnhanced() {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
-                                onClick={() => window.open(`/tickets?id=${est.ticket_id}`, '_blank')}
+                                onClick={() => navigate(`/tickets?id=${est.ticket_id}`)}
                                 title="View Job Card"
                               >
                                 <Wrench className="h-4 w-4" />
@@ -1872,7 +1873,7 @@ export default function EstimatesEnhanced() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => window.open(`/tickets?id=${selectedEstimate.ticket_id}`, '_blank')}
+                      onClick={() => navigate(`/tickets?id=${selectedEstimate.ticket_id}`)}
                       className="text-bw-blue border-bw-blue/35 hover:bg-bw-blue/[0.08]"
                     >
                       <Wrench className="h-4 w-4 mr-1" />

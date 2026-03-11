@@ -1,8 +1,8 @@
 """
-EFI Embedding Service - Provider-Agnostic Vector Embeddings
+EVFI Embedding Service - Provider-Agnostic Vector Embeddings
 
 This module provides a provider-agnostic interface for generating text embeddings
-used in the EV Failure Intelligence system for semantic similarity search.
+used in the Electric Vehicle Failure Intelligence system for semantic similarity search.
 
 Architecture:
 - BaseEmbeddingService: Abstract interface
@@ -406,11 +406,11 @@ async def find_similar_embeddings(
     return results[:top_k]
 
 
-# ==================== EFI EMBEDDING MANAGER ====================
+# ==================== EVFI EMBEDDING MANAGER ====================
 
 class EFIEmbeddingManager:
     """
-    Manager for EFI embedding operations - integrates with failure cards database.
+    Manager for EVFI embedding operations - integrates with failure cards database.
     Handles complaint classification, embedding generation, and similarity search.
     """
     
@@ -425,7 +425,7 @@ class EFIEmbeddingManager:
     def __init__(self, db, embedding_service: Optional[BaseEmbeddingService] = None):
         self.db = db
         self.embedding_service = embedding_service or EmbeddingServiceFactory.get_default()
-        logger.info(f"EFI Embedding Manager initialized with {type(self.embedding_service).__name__}")
+        logger.info(f"EVFI Embedding Manager initialized with {type(self.embedding_service).__name__}")
     
     def classify_subsystem(self, text: str) -> str:
         """Classify complaint text into subsystem category"""
@@ -591,13 +591,18 @@ class EFIEmbeddingManager:
         }
         
         for card in cards:
+            fid = card.get("failure_id")
+            if not fid:
+                results["failed"] += 1
+                results["errors"].append({"failure_id": None, "error": "Missing failure_id"})
+                continue
             try:
-                await self.embed_failure_card(card["failure_id"])
+                await self.embed_failure_card(fid)
                 results["success"] += 1
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append({
-                    "failure_id": card["failure_id"],
+                    "failure_id": fid,
                     "error": str(e)
                 })
         
@@ -610,7 +615,7 @@ _embedding_manager: Optional[EFIEmbeddingManager] = None
 
 
 def init_efi_embedding_manager(db) -> EFIEmbeddingManager:
-    """Initialize the EFI embedding manager with database"""
+    """Initialize the EVFI embedding manager with database"""
     global _embedding_manager
     _embedding_manager = EFIEmbeddingManager(db)
     return _embedding_manager

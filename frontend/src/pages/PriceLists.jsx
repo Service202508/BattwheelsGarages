@@ -78,8 +78,8 @@ export default function PriceLists() {
     try {
       const headers = getAuthHeaders();
       const [plRes, itemsRes] = await Promise.all([
-        fetch(`${API}/zoho/price-lists?include_items=true`, { headers }),
-        fetch(`${API}/zoho/items?per_page=500`, { headers })
+        fetch(`${API}/price-lists?include_items=true`, { headers }),
+        fetch(`${API}/items-enhanced?per_page=500`, { headers })
       ]);
       const [plData, itemsData] = await Promise.all([plRes.json(), itemsRes.json()]);
       setPriceLists(plData.price_lists || []);
@@ -97,7 +97,7 @@ export default function PriceLists() {
   const handleCreate = async () => {
     if (!newPriceList.price_list_name) return toast.error("Enter price list name");
     try {
-      const res = await fetch(`${API}/zoho/price-lists`, {
+      const res = await fetch(`${API}/price-lists`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(newPriceList)
@@ -118,7 +118,7 @@ export default function PriceLists() {
     if (!selectedPriceList) return;
     const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${plId}`, {
+      const res = await fetch(`${API}/price-lists/${plId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(newPriceList)
@@ -134,7 +134,7 @@ export default function PriceLists() {
   const handleDelete = async (plId) => {
     if (!confirm("Are you sure you want to delete this price list?")) return;
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${plId}`, {
+      const res = await fetch(`${API}/price-lists/${plId}`, {
         method: "DELETE",
         headers: getAuthHeaders()
       });
@@ -150,7 +150,7 @@ export default function PriceLists() {
     const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
       const res = await fetch(
-        `${API}/zoho/price-lists/${plId}/items?item_id=${newPriceItem.item_id}&pricelist_rate=${newPriceItem.pricelist_rate}&discount=${newPriceItem.discount}&discount_type=${newPriceItem.discount_type}`,
+        `${API}/price-lists/${plId}/items?item_id=${newPriceItem.item_id}&pricelist_rate=${newPriceItem.pricelist_rate}&discount=${newPriceItem.discount}&discount_type=${newPriceItem.discount_type}`,
         { method: "POST", headers: getAuthHeaders() }
       );
       if (res.ok) {
@@ -165,7 +165,7 @@ export default function PriceLists() {
   const handleUpdateItem = async (plId, itemId, rate, discount) => {
     try {
       const res = await fetch(
-        `${API}/zoho/price-lists/${plId}/items/${itemId}?pricelist_rate=${rate}&discount=${discount}`,
+        `${API}/price-lists/${plId}/items/${itemId}?pricelist_rate=${rate}&discount=${discount}`,
         { method: "PUT", headers: getAuthHeaders() }
       );
       if (res.ok) {
@@ -177,7 +177,7 @@ export default function PriceLists() {
 
   const handleRemoveItem = async (priceListId, itemId) => {
     try {
-      await fetch(`${API}/zoho/price-lists/${priceListId}/items/${itemId}`, {
+      await fetch(`${API}/price-lists/${priceListId}/items/${itemId}`, {
         method: "DELETE", headers: getAuthHeaders()
       });
       toast.success("Item removed from price list");
@@ -189,7 +189,7 @@ export default function PriceLists() {
     if (bulkAddItems.length === 0) return toast.error("Select at least one item");
     const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${plId}/bulk-add`, {
+      const res = await fetch(`${API}/price-lists/${plId}/bulk-add`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -212,7 +212,7 @@ export default function PriceLists() {
 
   const handleExport = async (plId) => {
     try {
-      window.open(`${API}/zoho/price-lists/${plId}/export`, '_blank');
+      window.open(`${API}/price-lists/${plId}/export`, '_blank');
       toast.success("Download started");
     } catch { toast.error("Error exporting"); }
   };
@@ -222,7 +222,7 @@ export default function PriceLists() {
     const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     setImporting(true);
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${plId}/import`, {
+      const res = await fetch(`${API}/price-lists/${plId}/import`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ csv_data: importCsvData })
@@ -244,7 +244,7 @@ export default function PriceLists() {
   const handleSync = async (plId) => {
     setSyncing(true);
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${plId}/sync-items`, {
+      const res = await fetch(`${API}/price-lists/${plId}/sync-items`, {
         method: "POST",
         headers: getAuthHeaders()
       });

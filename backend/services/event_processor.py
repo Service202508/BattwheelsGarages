@@ -1,5 +1,5 @@
 """
-Battwheels OS - EFI Event Processor Service
+Battwheels OS - EVFI Event Processor Service
 Handles all event-driven workflows for the Failure Intelligence system
 
 Workflows:
@@ -48,7 +48,7 @@ def calculate_effectiveness(success_count: int, failure_count: int, usage_count:
 
 class EFIEventProcessor:
     """
-    Central event processor for EFI workflows
+    Central event processor for EVFI workflows
     AI assists ranking. Human-approved FAILURE_CARD remains source of truth.
     """
     
@@ -891,7 +891,7 @@ class EFIEventProcessor:
         priority: int = 5,
         org_id: str = None
     ):
-        """Emit a new EFI event"""
+        """Emit a new EVFI event"""
         import uuid
         
         event = {

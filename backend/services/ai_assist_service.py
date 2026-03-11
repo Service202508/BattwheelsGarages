@@ -1,6 +1,7 @@
 """
 Battwheels Knowledge Brain - AI Assist Service
 RAG-based AI assistance with source citations and structured responses
+Uses Battwheels EVFI™ system prompt for consistency
 """
 
 import os
@@ -16,6 +17,7 @@ from models.knowledge_brain import (
     EscalationRequest, Severity
 )
 from services.knowledge_store_service import KnowledgeStoreService
+from services.ai_guidance_service import get_efi_system_prompt, inject_safety_warning, classify_efi_response
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +100,17 @@ class AIAssistService:
                 prompt, system_message, request.category, organization_id
             )
             
+            # Step 3.5: EVFI post-processing — safety injection + classification
+            ticket_data = {
+                "description": request.query,
+                "issue_type": request.category or "",
+                "category": request.category or "",
+                "vehicle_make": request.vehicle_make or "",
+                "vehicle_model": request.vehicle_model or "",
+            }
+            response_text = inject_safety_warning(response_text, ticket_data)
+            efi_classification = classify_efi_response(ticket_data)
+            
             # Step 4: Parse and structure response
             structured_response = self._parse_response(response_text, sources)
             
@@ -122,7 +135,8 @@ class AIAssistService:
                 escalation_reason=structured_response.get("escalation_reason"),
                 estimate_suggestions=structured_response.get("estimate_suggestions", []),
                 query_id=query_id,
-                response_time_ms=response_time
+                response_time_ms=response_time,
+                efi_classification=efi_classification
             )
             
         except Exception as e:
@@ -205,47 +219,15 @@ class AIAssistService:
         
         category_focus = category_prompts.get(request.category, category_prompts["general"])
         
-        # Build system message
-        system_message = f"""You are an expert EV Service Technician AI Assistant for Battwheels, India's leading EV service company.
+        # Build system message — use canonical Battwheels EVFI™ prompt
+        system_message = get_efi_system_prompt()
+        system_message += f"""
 
-**Your Role**: Provide technician-grade diagnostic assistance with actionable, step-by-step guidance.
-
-**Your Expertise**:
-- Electric 2-wheelers: Ola S1, Ather 450X, TVS iQube, Hero Electric, Bajaj Chetak
-- Electric 3-wheelers: Mahindra Treo, Piaggio Ape E-City, Euler HiLoad
-- Electric 4-wheelers: Tata Nexon EV, MG ZS EV, Hyundai Kona Electric
-- Battery Systems: Li-ion (NMC, LFP), BMS diagnostics, thermal management
-- Motor Systems: BLDC, PMSM, controllers, inverters
-- Charging: AC/DC chargers, CCS, CHAdeMO, Type 2
+**RAG CONTEXT**: You have access to knowledge base articles provided below. CITE them by reference when applicable.
 
 **Current Focus**: {category_focus}
 
-**CRITICAL RULES**:
-1. Always prioritize SAFETY - include high-voltage warnings when relevant
-2. Provide STEP-BY-STEP procedures with specific measurements and expected values
-3. CITE your sources - reference the knowledge base articles provided
-4. Include TOOLS and PPE required for each procedure
-5. Specify ESCALATION criteria - when the issue needs expert intervention
-6. Never guess - if uncertain, recommend further diagnosis or escalation
-
-**Response Structure** (use this format):
-## Diagnosis Summary
-[Brief hypothesis with confidence level]
-
-## Safety Precautions
-[Required PPE and safety checks]
-
-## Diagnostic Steps
-[Numbered step-by-step procedure]
-
-## Probable Causes
-[Ranked list with likelihood]
-
-## Recommended Fix
-[Solution steps with parts/tools]
-
-## Sources
-[Reference the knowledge articles used]"""
+When knowledge base context is provided, incorporate it into your diagnostic report. Reference source articles."""
 
         # Build user prompt with context
         context_parts = []

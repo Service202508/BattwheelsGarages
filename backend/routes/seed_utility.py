@@ -12,7 +12,6 @@ Features:
 from fastapi import APIRouter, HTTPException
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
 import os
 import uuid
 import random
@@ -20,11 +19,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/seed", tags=["Data Seeding"])
 

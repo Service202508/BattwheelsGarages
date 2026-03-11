@@ -471,6 +471,14 @@ export default function ItemsEnhanced() {
   // Phase 3: Barcode Scanner
   const startScanner = async () => {
     try {
+      // Request camera permission first (required on mobile)
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      } catch (permErr) {
+        toast.error("Camera permission denied. Please allow camera access in browser settings.");
+        return;
+      }
+
       const { BrowserMultiFormatReader } = await import('@zxing/browser');
       const codeReader = new BrowserMultiFormatReader();
       scannerRef.current = codeReader;
@@ -481,10 +489,18 @@ export default function ItemsEnhanced() {
         return;
       }
       
+      // Prefer rear camera on mobile
+      const rearCamera = videoInputDevices.find(d => 
+        d.label.toLowerCase().includes('back') || 
+        d.label.toLowerCase().includes('rear') || 
+        d.label.toLowerCase().includes('environment')
+      );
+      const selectedDevice = rearCamera || videoInputDevices[videoInputDevices.length - 1];
+      
       setIsScannerActive(true);
       
       codeReader.decodeFromVideoDevice(
-        videoInputDevices[0].deviceId,
+        selectedDevice.deviceId,
         videoRef.current,
         (result, error) => {
           if (result) {
@@ -497,7 +513,7 @@ export default function ItemsEnhanced() {
       );
     } catch (e) {
       console.error("Scanner error:", e);
-      toast.error("Failed to start camera");
+      toast.error("Failed to start camera. Check browser permissions.");
     }
   };
 
@@ -865,14 +881,14 @@ export default function ItemsEnhanced() {
           fetchValuationReport();
         }
       }}>
-        <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-flex">
-          <TabsTrigger value="items">Items</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-          <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
-          <TabsTrigger value="priceLists">Price Lists</TabsTrigger>
-          <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="w-full overflow-x-auto flex whitespace-nowrap">
+          <TabsTrigger value="items" className="flex-shrink-0">Items</TabsTrigger>
+          <TabsTrigger value="groups" className="flex-shrink-0">Groups</TabsTrigger>
+          <TabsTrigger value="warehouses" className="flex-shrink-0">Warehouses</TabsTrigger>
+          <TabsTrigger value="priceLists" className="flex-shrink-0">Price Lists</TabsTrigger>
+          <TabsTrigger value="adjustments" className="flex-shrink-0">Adjustments</TabsTrigger>
+          <TabsTrigger value="reports" className="flex-shrink-0">Reports</TabsTrigger>
+          <TabsTrigger value="history" className="flex-shrink-0">History</TabsTrigger>
         </TabsList>
 
         {/* Items Tab */}
@@ -1548,7 +1564,7 @@ export default function ItemsEnhanced() {
           )}
           
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-4">
+            <TabsList className="flex w-full overflow-x-auto whitespace-nowrap mb-4">
               <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
               <TabsTrigger value="sales" className="text-xs">Sales</TabsTrigger>
               <TabsTrigger value="purchase" className="text-xs">Purchase</TabsTrigger>

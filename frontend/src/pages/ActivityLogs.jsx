@@ -63,7 +63,7 @@ export default function ActivityLogs() {
       params.set("page", page.toString());
       params.set("per_page", "50");
       
-      const res = await fetch(`${API}/zoho/activity-logs?${params}`, { headers });
+      const res = await fetch(`${API}/activity-logs?${params}`, { headers });
       const data = await res.json();
       setLogs(data.activity_logs || []);
       setPageContext(data.page_context || { total: 0, per_page: 50 });

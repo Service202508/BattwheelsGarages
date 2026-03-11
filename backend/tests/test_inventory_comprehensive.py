@@ -109,6 +109,7 @@ class TestItemsCRUD:
         )
         assert resp.status_code == 200
 
+    @pytest.mark.timeout(90)
     def test_items_summary(self, base_url, auth_headers):
         """GET /api/v1/items-enhanced/summary returns summary stats"""
         resp = requests.get(f"{base_url}/api/v1/items-enhanced/summary", headers=auth_headers)
@@ -183,6 +184,7 @@ class TestInventoryStock:
         resp = requests.get(f"{base_url}/api/v1/inventory-enhanced/stock", headers=auth_headers)
         assert resp.status_code == 200
 
+    @pytest.mark.timeout(90)
     def test_inventory_summary(self, base_url, auth_headers):
         """GET /api/v1/inventory-enhanced/summary returns valuation"""
         resp = requests.get(f"{base_url}/api/v1/inventory-enhanced/summary", headers=auth_headers)

@@ -349,13 +349,15 @@ class TestInvoicesEnhancedCRUD:
                     "description": "Test service description",
                     "quantity": 2,
                     "rate": 1000,
-                    "tax_rate": 18
+                    "tax_rate": 18,
+                    "hsn_sac_code": "998812"
                 },
                 {
                     "name": "Test Product",
                     "quantity": 1,
                     "rate": 500,
-                    "tax_rate": 18
+                    "tax_rate": 18,
+                    "hsn_sac_code": "8501"
                 }
             ],
             "discount_type": "percentage",
@@ -432,7 +434,7 @@ class TestInvoicesEnhancedPayments:
             # Create invoice
             invoice_payload = {
                 "customer_id": self.test_contact_id,
-                "line_items": [{"name": "Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}]
+                "line_items": [{"name": "Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18, "hsn_sac_code": "998812"}]
             }
             invoice_response = requests.post(f"{API_URL}/invoices-enhanced/", json=invoice_payload)
             if invoice_response.status_code == 200:
@@ -520,7 +522,7 @@ class TestInvoicesEnhancedStatusTransitions:
             # Create invoice
             invoice_payload = {
                 "customer_id": self.test_contact_id,
-                "line_items": [{"name": "Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}]
+                "line_items": [{"name": "Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18, "hsn_sac_code": "998812"}]
             }
             invoice_response = requests.post(f"{API_URL}/invoices-enhanced/", json=invoice_payload)
             if invoice_response.status_code == 200:
@@ -583,7 +585,7 @@ class TestInvoicesEnhancedClone:
             # Create invoice
             invoice_payload = {
                 "customer_id": self.test_contact_id,
-                "line_items": [{"name": "Clone Test Item", "quantity": 2, "rate": 500, "tax_rate": 18}]
+                "line_items": [{"name": "Clone Test Item", "quantity": 2, "rate": 500, "tax_rate": 18, "hsn_sac_code": "998812"}]
             }
             invoice_response = requests.post(f"{API_URL}/invoices-enhanced/", json=invoice_payload)
             if invoice_response.status_code == 200:
@@ -639,7 +641,7 @@ class TestInvoicesEnhancedVoid:
             # Create invoice
             invoice_payload = {
                 "customer_id": self.test_contact_id,
-                "line_items": [{"name": "Void Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}]
+                "line_items": [{"name": "Void Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18, "hsn_sac_code": "998812"}]
             }
             invoice_response = requests.post(f"{API_URL}/invoices-enhanced/", json=invoice_payload)
             if invoice_response.status_code == 200:

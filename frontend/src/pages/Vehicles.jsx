@@ -232,7 +232,7 @@ export default function Vehicles({ user }) {
             <div>
               <p className="text-sm text-muted-foreground">In Workshop</p>
               <p className="text-2xl font-bold mono">
-                {vehicles.filter(v => v.current_status === "in_workshop").length}
+                {vehicles.filter(v => (v.status || v.current_status) === "in_workshop").length}
               </p>
             </div>
             <div className="h-10 w-10 rounded-lg bg-chart-2/10 flex items-center justify-center">
@@ -291,7 +291,7 @@ export default function Vehicles({ user }) {
                   <TableHead>Registration</TableHead>
                   <TableHead>Battery</TableHead>
                   <TableHead>Status</TableHead>
-                  {(user?.role === "admin" || user?.role === "technician") && (
+                  {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
                     <TableHead className="text-right">Actions</TableHead>
                   )}
                 </TableRow>
@@ -314,14 +314,14 @@ export default function Vehicles({ user }) {
                     <TableCell className="mono text-sm">{vehicle.registration_number}</TableCell>
                     <TableCell className="mono">{vehicle.battery_capacity} kWh</TableCell>
                     <TableCell>
-                      <Badge className={statusColors[vehicle.current_status]} variant="outline">
-                        {vehicle.current_status.replace("_", " ")}
+                      <Badge className={statusColors[vehicle.status || vehicle.current_status]} variant="outline">
+                        {(vehicle.status || vehicle.current_status || "unknown").replace("_", " ")}
                       </Badge>
                     </TableCell>
-                    {(user?.role === "admin" || user?.role === "technician") && (
+                    {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
                       <TableCell className="text-right">
                         <select
-                          value={vehicle.current_status}
+                          value={vehicle.status || vehicle.current_status}
                           onChange={(e) => updateStatus(vehicle.vehicle_id, e.target.value)}
                           className="bg-background/50 border border-white/10 rounded px-2 py-1 text-sm"
                         >

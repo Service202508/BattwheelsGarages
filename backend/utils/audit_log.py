@@ -10,14 +10,10 @@ from typing import Optional
 from fastapi import Request
 import logging
 import os
-import motor.motor_asyncio
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-_db = _client[DB_NAME]
+from utils.database import db as _db
 audit_collection = _db["audit_log"]
 
 

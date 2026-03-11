@@ -1,6 +1,6 @@
 """
 Battwheels OS - Ticket Event Handlers
-Handles all ticket-related events and triggers EFI workflows
+Handles all ticket-related events and triggers EVFI workflows
 
 Event Flow:
 TICKET_CREATED -> AI Matching -> Populate suggested_failure_cards
@@ -258,7 +258,7 @@ async def perform_ai_matching(
     """
     Perform 4-stage AI matching pipeline
     
-    Priority order (per EFI architecture):
+    Priority order (per EVFI architecture):
     1. Failure signature match
     2. Subsystem + vehicle filtering
     3. Semantic similarity

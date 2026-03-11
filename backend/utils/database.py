@@ -7,8 +7,22 @@ from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # MongoDB Connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels_os")
+MONGO_URL = os.environ.get("MONGO_URL")
+if not MONGO_URL:
+    MONGO_URL = "mongodb://localhost:27017"
+    import logging
+    logging.warning(
+        "MONGO_URL not set — falling back to localhost. "
+        "Set MONGO_URL for production."
+    )
+DB_NAME = os.environ.get("DB_NAME")
+if not DB_NAME:
+    DB_NAME = "battwheels_dev"
+    import logging
+    logging.warning(
+        "DB_NAME not set — falling back to battwheels_dev. "
+        "Set DB_NAME for production."
+    )
 
 # Create client and database
 client = AsyncIOMotorClient(MONGO_URL)

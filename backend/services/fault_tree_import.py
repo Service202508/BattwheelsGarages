@@ -1,6 +1,6 @@
 """
-Battwheels OS - EFI Master Fault Tree Import Engine
-Structured ingestion pipeline for importing EV Failure Intelligence from Excel
+Battwheels OS - EVFI Master Fault Tree Import Engine
+Structured ingestion pipeline for importing Electric Vehicle Failure Intelligence from Excel
 
 Features:
 - Excel parsing with section detection

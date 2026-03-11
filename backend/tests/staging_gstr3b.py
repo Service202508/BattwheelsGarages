@@ -102,9 +102,9 @@ def main():
     r_b = requests.get(f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH}",
                        headers={"Authorization": f"Bearer {tok_b}", "X-Organization-ID": ORG_B}).json()
 
-    s31a = r_a["section_3_1"]
+    s31a = r_a["section_3_1"]["a"]
     adja = r_a["adjustments"]["credit_notes"]
-    s31b = r_b["section_3_1"]
+    s31b = r_b["section_3_1"]["a"]
     adjb = r_b["adjustments"]["credit_notes"]
 
     print("=" * 60)

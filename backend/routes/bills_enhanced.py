@@ -1,12 +1,10 @@
 # Bills Enhanced Module - Full Purchase Side Accounting
 # Vendor bills, payment tracking, and purchase management
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
-import os
 import uuid
 import logging
 
@@ -18,11 +16,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bills-enhanced", tags=["Bills Enhanced"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db
 
 # Collections - Use main collections with Zoho-synced data
 bills_collection = db["bills"]
@@ -264,8 +259,12 @@ async def update_bill_status(bill_id: str):
 # ========================= SUMMARY =========================
 
 @router.get("/summary")
-async def get_bills_summary(period: str = "all"):
+async def get_bills_summary(request: Request, period: str = "all"):
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
     query = {"status": {"$ne": "void"}}
+    if org_id:
+        query["organization_id"] = org_id
     
     if period == "this_month":
         first = datetime.now(timezone.utc).replace(day=1).date().isoformat()
@@ -303,15 +302,18 @@ async def get_bills_summary(period: str = "all"):
 # NOTE: These routes MUST be defined before /{bill_id} routes to avoid path conflicts
 
 @router.get("/purchase-orders/summary")
-async def get_po_summary():
-    total = await purchase_orders_collection.count_documents({"status": {"$ne": "void"}})
-    draft = await purchase_orders_collection.count_documents({"status": "draft"})
-    issued = await purchase_orders_collection.count_documents({"status": "issued"})
-    received = await purchase_orders_collection.count_documents({"status": "received"})
-    billed = await purchase_orders_collection.count_documents({"status": "billed"})
+async def get_po_summary(request: Request):
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
+    base = {"organization_id": org_id} if org_id else {}
+    total = await purchase_orders_collection.count_documents({**base, "status": {"$ne": "void"}})
+    draft = await purchase_orders_collection.count_documents({**base, "status": "draft"})
+    issued = await purchase_orders_collection.count_documents({**base, "status": "issued"})
+    received = await purchase_orders_collection.count_documents({**base, "status": "received"})
+    billed = await purchase_orders_collection.count_documents({**base, "status": "billed"})
     
     pipeline = [
-        {"$match": {"status": {"$nin": ["draft", "void"]}}},
+        {"$match": {**base, "status": {"$nin": ["draft", "void"]}}},
         {"$group": {"_id": None, "total_ordered": {"$sum": "$grand_total"}}}
     ]
     totals = await purchase_orders_collection.aggregate(pipeline).to_list(1)
@@ -380,6 +382,7 @@ async def create_purchase_order(po: PurchaseOrderCreate, background_tasks: Backg
 
 @router.get("/purchase-orders")
 async def list_purchase_orders(
+    request: Request,
     vendor_id: Optional[str] = None,
     status: Optional[str] = None,
     page: int = Query(1, ge=1),
@@ -390,7 +393,11 @@ async def list_purchase_orders(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
     query = {"status": {"$ne": "void"}}
+    if org_id:
+        query["organization_id"] = org_id
     if vendor_id:
         query["vendor_id"] = vendor_id
     if status:
@@ -569,6 +576,7 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
 
 @router.get("/")
 async def list_bills(
+    request: Request,
     vendor_id: Optional[str] = None,
     status: Optional[str] = None,
     search: Optional[str] = None,
@@ -583,7 +591,9 @@ async def list_bills(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    query = {}
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     if vendor_id:
         query["vendor_id"] = vendor_id
     if status:
@@ -621,12 +631,14 @@ async def list_bills(
 # ========================= REPORTS (Before dynamic routes) =========================
 
 @router.get("/aging-report")
-async def get_payables_aging():
+async def get_payables_aging(request: Request):
     """Get payables aging report"""
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
     today = datetime.now(timezone.utc).date()
     
     bills = await bills_collection.find(
-        {"status": {"$in": ["open", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}},
+        {"organization_id": org_id, "status": {"$in": ["open", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}},
         {"_id": 0, "due_date": 1, "balance_due": 1}
     ).to_list(2000)
     
@@ -657,10 +669,12 @@ async def get_payables_aging():
     return {"code": 0, "report": {k: round_currency(v) for k, v in aging.items()}, "total": round_currency(sum(aging.values()))}
 
 @router.get("/vendor-wise")
-async def get_vendor_wise_report(limit: int = 20):
+async def get_vendor_wise_report(request: Request, limit: int = 20):
     """Get vendor-wise payables report"""
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
     pipeline = [
-        {"$match": {"status": {"$ne": "void"}}},
+        {"$match": {"organization_id": org_id, "status": {"$ne": "void"}}},
         {"$group": {"_id": "$vendor_id", "vendor_name": {"$first": "$vendor_name"}, "bill_count": {"$sum": 1}, "total_billed": {"$sum": "$grand_total"}, "total_payable": {"$sum": "$balance_due"}}},
         {"$sort": {"total_payable": -1}},
         {"$limit": limit}

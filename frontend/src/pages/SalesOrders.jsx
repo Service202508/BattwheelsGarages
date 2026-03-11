@@ -258,7 +258,7 @@ export default function SalesOrders({ user }) {
           <h1 className="text-4xl font-bold tracking-tight">Sales Orders</h1>
           <p className="text-muted-foreground mt-1">Manage service quotes and sales from tickets.</p>
         </div>
-        {(user?.role === "admin" || user?.role === "technician") && (
+        {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button className="glow-primary" data-testid="create-sales-btn">
@@ -532,7 +532,7 @@ export default function SalesOrders({ user }) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {user?.role === "admin" && order.approval_status === "pending" && (
+                        {(user?.role === "admin" || user?.role === "owner") && order.approval_status === "pending" && (
                           <>
                             <Button size="sm" variant="ghost" onClick={() => handleApprove(order.sales_id, "level1_approved")} className="text-bw-volt text-400">
                               <CheckCircle className="h-4 w-4" />
@@ -542,7 +542,7 @@ export default function SalesOrders({ user }) {
                             </Button>
                           </>
                         )}
-                        {order.approval_status === "level1_approved" && user?.role === "admin" && (
+                        {order.approval_status === "level1_approved" && (user?.role === "admin" || user?.role === "owner") && (
                           <Button size="sm" variant="outline" onClick={() => handleApprove(order.sales_id, "level2_approved")} className="border-white/10">
                             Final Approve
                           </Button>

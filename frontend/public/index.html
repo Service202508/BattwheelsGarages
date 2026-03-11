@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#C8FF00" />
-        <meta name="description" content="Battwheels OS — EV Workshop Intelligence Platform" />
+        <meta name="description" content="Battwheels OS is India's first AI-powered EV service ecosystem. Manage tickets, GST invoicing, inventory, fleet, payroll and AI diagnostics — built for EV workshops, fleets and OEMs." />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -13,7 +13,20 @@
         <meta name="apple-mobile-web-app-title" content="Battwheels OS" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <meta name="keywords" content="EV workshop management software India, electric vehicle service software, EV fleet management, GST billing EV garage, AI EV diagnostics, Battwheels OS" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Battwheels Services Private Limited" />
+        <link rel="canonical" href="https://battwheels.com/" />
+        <meta property="og:title" content="Battwheels OS — India's AI-Powered EV Service Platform" />
+        <meta property="og:description" content="The complete SaaS platform for EV workshops, fleets and OEMs. AI diagnostics, GST compliance, inventory and more." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://battwheels.com" />
+        <meta property="og:site_name" content="Battwheels OS" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Battwheels OS — India's AI-Powered EV Service Platform" />
+        <meta name="twitter:description" content="AI diagnostics, GST invoicing, fleet management — the complete EV service SaaS for India." />
         <!--
         manifest.json provides metadata used when your web app is installed on a
         user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -27,7 +40,7 @@
         work correctly both with client-side routing and a non-root public URL.
         Learn how to configure a non-root public URL by running `npm run build`.
         -->
-        <title>Battwheels OS | EV Service Platform</title>
+        <title>Battwheels OS — India's AI-Powered EV Service Management Platform</title>
         <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!--
@@ -137,6 +150,62 @@
                     capturePerformance: false,
                 },
             });
+        </script>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Battwheels OS",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "description": "India's first AI-powered EV service management platform for workshops, fleets, OEMs and technicians.",
+          "url": "https://battwheels.com",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "INR",
+            "description": "Free trial available"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Battwheels Services Private Limited",
+            "url": "https://battwheels.com",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "email": "hello@battwheels.com",
+              "contactType": "customer support"
+            }
+          },
+          "applicationSubCategory": "EV Service Management",
+          "featureList": [
+            "AI-Powered EV Diagnostics (Battwheels EFI™)",
+            "GST Invoicing and Compliance",
+            "Ticket and SLA Management",
+            "Inventory and COGS Tracking",
+            "Fleet Management",
+            "HR and Payroll",
+            "AMC Management",
+            "Customer and Technician Portals"
+          ],
+          "areaServed": "IN",
+          "inLanguage": "en-IN"
+        }
+        </script>
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (var i = 0; i < registrations.length; i++) {
+                        registrations[i].unregister().then(function(success) {
+                            if (success) console.log('SW unregistered');
+                        });
+                    }
+                });
+            }
+        </script>
+        <script>
+            if (window.location.hostname === 'battwheels.com' || window.location.hostname === 'app.battwheels.com') {
+                document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+            }
         </script>
     </body>
 </html>

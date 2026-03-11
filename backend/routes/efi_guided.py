@@ -1,5 +1,5 @@
 """
-EFI Guided Execution API Routes
+EVFI Guided Execution API Routes
 Integrates with Job Card workflow for step-by-step diagnostics
 """
 from fastapi import APIRouter, HTTPException, Request, Query, UploadFile, File, Form, Depends
@@ -28,8 +28,8 @@ from utils.database import extract_org_id, org_query
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/efi-guided",
-    tags=["EFI Guided Execution"],
+    prefix="/evfi-guided",
+    tags=["EVFI Guided Execution"],
     dependencies=[Depends(require_feature("efi_ai_guidance"))]
 )
 
@@ -50,7 +50,7 @@ def init_router(database):
     _db = database
     _embedding_manager = init_efi_embedding_manager(database)
     _decision_engine, _learning_engine = init_efi_engines(database)
-    logger.info("EFI Guided Execution router initialized")
+    logger.info("EVFI Guided Execution router initialized")
     return router
 
 
@@ -185,14 +185,14 @@ async def preprocess_complaint(
 @router.get("/suggestions/{ticket_id}")
 async def get_efi_suggestions(request: Request, ticket_id: str):
     """
-    FEATURE 2: Get EFI suggestions when Job Card opened
+    FEATURE 2: Get EVFI suggestions when Job Card opened
     Returns ranked failure cards with confidence scores
     """
     org_id = extract_org_id(request)
     await get_current_user(request)
     
-    # Get ticket with preprocessing data
-    ticket = await _db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    # Get ticket with preprocessing data — enforce tenant isolation
+    ticket = await _db.tickets.find_one({"ticket_id": ticket_id, "organization_id": org_id}, {"_id": 0})
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
@@ -287,7 +287,7 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
 @router.post("/session/start")
 async def start_diagnostic_session(request: Request, data: StartSessionRequest):
     """
-    Start EFI diagnostic session for a ticket
+    Start EVFI diagnostic session for a ticket
     Technician selects a failure card path to follow
     """
     org_id = extract_org_id(request)
@@ -433,8 +433,9 @@ async def get_pending_learning(request: Request, limit: int = Query(50, le=200))
     org_id = extract_org_id(request)
     user = await get_current_user(request)
     
-    # Require admin/engineer role
-    if user.get("role") not in ["admin", "manager"]:
+    # Require admin/owner/manager role
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "manager"):
         raise HTTPException(status_code=403, detail="Engineer access required")
     
     if not _learning_engine:
@@ -450,7 +451,8 @@ async def review_learning_item(request: Request, entry_id: str, action: str, not
     org_id = extract_org_id(request)
     user = await get_current_user(request)
     
-    if user.get("role") not in ["admin", "manager"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "manager"):
         raise HTTPException(status_code=403, detail="Engineer access required")
     
     if not _learning_engine:
@@ -478,7 +480,8 @@ async def create_decision_tree(request: Request, data: CreateDecisionTreeRequest
     org_id = extract_org_id(request)
     user = await get_current_user(request)
     
-    if user.get("role") not in ["admin", "manager"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "manager"):
         raise HTTPException(status_code=403, detail="Admin access required")
     
     if not _decision_engine:
@@ -522,7 +525,8 @@ async def generate_all_embeddings(request: Request):
     org_id = extract_org_id(request)
     user = await get_current_user(request)
     
-    if user.get("role") != "admin":
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Admin access required")
     
     if not _embedding_manager:
@@ -559,7 +563,8 @@ async def seed_failure_data(request: Request):
     org_id = extract_org_id(request)
     user = await get_current_user(request)
     
-    if user.get("role") != "admin":
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Admin access required")
     
     from services.efi_seed_data import seed_failure_cards_and_trees
@@ -568,7 +573,7 @@ async def seed_failure_data(request: Request):
     
     # Skip embedding generation during seeding to avoid timeouts
     # Embeddings will be generated on-demand or via separate endpoint
-    result["embeddings_note"] = "Use /api/efi-guided/embeddings/generate-all to generate embeddings"
+    result["embeddings_note"] = "Use /api/evfi-guided/embeddings/generate-all to generate embeddings"
     
     return {
         "status": "success",
@@ -668,20 +673,20 @@ async def upload_step_image(request: Request, failure_id: str, step_order: int =
     # Update decision tree step with image reference
     await _db.efi_decision_trees.update_one(
         {"failure_card_id": failure_id, "steps.order": step_order},
-        {"$set": {"steps.$.reference_image": f"/api/efi-guided/step-image/{image_id}"}}
+        {"$set": {"steps.$.reference_image": f"/api/evfi-guided/step-image/{image_id}"}}
     )
     
     # Also update failure card if decision tree is embedded
     await _db.failure_cards.update_one(
         {"failure_id": failure_id, "decision_tree.steps.order": step_order},
-        {"$set": {"decision_tree.steps.$.reference_image": f"/api/efi-guided/step-image/{image_id}"}}
+        {"$set": {"decision_tree.steps.$.reference_image": f"/api/evfi-guided/step-image/{image_id}"}}
     )
     
     return {
         "code": 0,
         "message": "Image uploaded successfully",
         "image_id": image_id,
-        "image_url": f"/api/efi-guided/step-image/{image_id}"
+        "image_url": f"/api/evfi-guided/step-image/{image_id}"
     }
 
 
@@ -729,12 +734,12 @@ async def delete_step_image(request: Request, image_id: str):
     
     # Remove image reference from decision tree
     await _db.efi_decision_trees.update_many(
-        {"steps.reference_image": f"/api/efi-guided/step-image/{image_id}"},
+        {"steps.reference_image": f"/api/evfi-guided/step-image/{image_id}"},
         {"$unset": {"steps.$.reference_image": ""}}
     )
     
     await _db.failure_cards.update_many(
-        {"decision_tree.steps.reference_image": f"/api/efi-guided/step-image/{image_id}"},
+        {"decision_tree.steps.reference_image": f"/api/evfi-guided/step-image/{image_id}"},
         {"$unset": {"decision_tree.steps.$.reference_image": ""}}
     )
     

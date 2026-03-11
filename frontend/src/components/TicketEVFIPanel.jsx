@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
-import api from '../services/api';
+import { API } from '../App';
 
 const ConfidenceBadge = ({ level }) => {
   const colors = {
@@ -16,7 +16,7 @@ const ConfidenceBadge = ({ level }) => {
   );
 };
 
-const TicketEFIPanel = ({ ticketId }) => {
+const TicketEFIPanel = ({ ticketId, orgId }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [matches, setMatches] = useState([]);
   const [session, setSession] = useState(null);
@@ -25,27 +25,32 @@ const TicketEFIPanel = ({ ticketId }) => {
 
   useEffect(() => {
     if (!ticketId) return;
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    };
+    const orgParam = orgId ? `?org_id=${encodeURIComponent(orgId)}` : "";
     const fetchEfiData = async () => {
       setLoading(true);
       try {
         const [matchRes, sessionRes] = await Promise.allSettled([
-          api.get(`/api/v1/tickets/${ticketId}/matches`),
-          api.get(`/api/v1/efi-guided/session/ticket/${ticketId}`),
+          fetch(`${API}/efi-guided/suggestions/${ticketId}${orgParam}`, { headers }).then(r => r.ok ? r.json() : null),
+          fetch(`${API}/efi-guided/session/ticket/${ticketId}${orgParam}`, { headers }).then(r => r.ok ? r.json() : null),
         ]);
-        if (matchRes.status === 'fulfilled') {
-          setMatches(matchRes.value?.data?.matches || matchRes.value?.data || []);
+        if (matchRes.status === 'fulfilled' && matchRes.value) {
+          setMatches(matchRes.value?.suggested_paths || matchRes.value?.matches || []);
         }
-        if (sessionRes.status === 'fulfilled') {
-          setSession(sessionRes.value?.data || null);
+        if (sessionRes.status === 'fulfilled' && sessionRes.value) {
+          setSession(sessionRes.value);
         }
       } catch (err) {
-        console.error('EFI panel error:', err);
+        console.error('EVFI panel error:', err);
       } finally {
         setLoading(false);
       }
     };
     fetchEfiData();
-  }, [ticketId]);
+  }, [ticketId, orgId]);
 
   return (
     <div className="mt-4 rounded-lg border border-zinc-700 bg-zinc-900 overflow-hidden">
@@ -55,7 +60,7 @@ const TicketEFIPanel = ({ ticketId }) => {
       >
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-teal-400" />
-          <span className="text-sm font-semibold text-teal-400">Battwheels EFI™</span>
+          <span className="text-sm font-semibold text-teal-400">Battwheels EVFI™</span>
           <span className="text-xs text-zinc-500">AI-powered diagnostic intelligence</span>
         </div>
         {collapsed ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronUp className="w-4 h-4 text-zinc-400" />}
@@ -63,11 +68,11 @@ const TicketEFIPanel = ({ ticketId }) => {
       {!collapsed && (
         <div className="p-4 space-y-4">
           {loading ? (
-            <div className="text-sm text-zinc-500 text-center py-4">Loading EFI intelligence...</div>
+            <div className="text-sm text-zinc-500 text-center py-4">Loading EVFI intelligence...</div>
           ) : (
             <>
               {matches.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-2" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
                   <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Matched Failure Patterns</h4>
                   {matches.map((match, idx) => (
                     <div key={match._id || idx} className="rounded border border-zinc-700 bg-zinc-800/50 p-3">
@@ -105,7 +110,7 @@ const TicketEFIPanel = ({ ticketId }) => {
                   </a>
                 ) : (
                   <a href={`/ai-diagnostic?ticket=${ticketId}`} className="flex items-center justify-center gap-2 w-full py-2 rounded bg-teal-600/20 text-teal-400 text-sm font-medium hover:bg-teal-600/30 transition-colors">
-                    <Zap className="w-4 h-4" />{`Start EFI™ Diagnosis`}<ArrowRight className="w-4 h-4" />
+                    <Zap className="w-4 h-4" />{`Start EVFI™ Diagnosis`}<ArrowRight className="w-4 h-4" />
                   </a>
                 )}
               </div>

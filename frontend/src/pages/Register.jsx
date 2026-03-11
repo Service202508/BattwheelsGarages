@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Check, Eye, EyeOff, ChevronRight, ChevronLeft, Zap } from "lucide-react";
+import { Check, Eye, EyeOff, ChevronRight, ChevronLeft, Zap, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { API } from "@/App";
 
 const FEATURES = [
-  "AI-powered EFI diagnostics",
+  "AI-powered EVFI diagnostics",
   "GST-compliant invoicing",
   "Multi-technician management",
   "Customer satisfaction tracking",
@@ -103,6 +103,7 @@ export default function Register({ onLogin }) {
     ownerName: "",
     email: "",
     password: "",
+    betaCode: "",
     agreed: false,
   });
   const [errors, setErrors] = useState({});
@@ -170,17 +171,9 @@ export default function Register({ onLogin }) {
         return;
       }
 
-      // Log in the new user
-      const token = data.token;
-      const org = data.organization;
-      if (token && org && onLogin) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("organization_id", org.organization_id);
-        localStorage.setItem("organization", JSON.stringify(org));
-        onLogin({ email: form.email, name: form.ownerName }, token, [org]);
-      }
-      toast.success(`Welcome to Battwheels OS, ${form.ownerName}!`);
-      navigate("/dashboard");
+      // Show verification email sent message instead of auto-login
+      setStep(3);
+      toast.success("Account created! Check your email to verify.");
     } catch {
       setErrors({ submit: "Something went wrong. Please try again or contact support@battwheels.com" });
     } finally {
@@ -279,7 +272,7 @@ export default function Register({ onLogin }) {
           </div>
 
           <p style={{ fontSize: "11px", color: "rgb(var(--bw-volt))", letterSpacing: "0.12em", marginBottom: "12px", fontFamily: "JetBrains Mono, monospace" }}>
-            JOIN 1,000+ EV WORKSHOPS
+            JOIN 1,000+ EV SERVICE CENTERS
           </p>
           <h1
             style={{
@@ -345,7 +338,7 @@ export default function Register({ onLogin }) {
                 Garage Details
               </h2>
               <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "28px" }}>
-                Step 1 of 3 — Tell us about your workshop
+                Step 1 of 3 — Tell us about your service center
               </p>
 
               <div style={{ marginBottom: "16px" }}>
@@ -467,7 +460,7 @@ export default function Register({ onLogin }) {
                 <input
                   type="email"
                   style={inputStyle(errors.email)}
-                  placeholder="you@yourworkshop.com"
+                  placeholder="you@yourcompany.com"
                   value={form.email}
                   onChange={(e) => { set("email", e.target.value); clearErr("email"); }}
                   data-testid="register-email"
@@ -674,6 +667,44 @@ export default function Register({ onLogin }) {
                   {submitting ? "Creating account…" : "Create My Account →"}
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Step 3: Email Verification Sent */}
+          {step === 3 && (
+            <div style={{ textAlign: "center", padding: "20px 0" }} data-testid="register-verify-email-step">
+              <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgb(var(--bw-volt) / 0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                <Mail style={{ width: "28px", height: "28px", color: "rgb(var(--bw-volt))" }} />
+              </div>
+              <h3 style={{ fontSize: "20px", fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: "8px" }}>
+                Check your email
+              </h3>
+              <p style={{ fontSize: "14px", color: "rgb(var(--bw-white) / 0.55)", lineHeight: 1.6, marginBottom: "24px" }}>
+                We've sent a verification email to <strong style={{ color: "rgb(var(--bw-volt))" }}>{form.email}</strong>.
+                <br />Please click the link to activate your account.
+              </p>
+              <div style={{ padding: "16px", background: "rgb(var(--bw-panel))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "8px", marginBottom: "20px" }}>
+                <p style={{ fontSize: "12px", color: "rgb(var(--bw-white) / 0.40)", margin: 0 }}>
+                  Didn't receive the email? Check your spam folder or{" "}
+                  <button
+                    onClick={async () => {
+                      await fetch(`${API}/auth/resend-verification`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: form.email }),
+                      });
+                      toast.success("Verification email resent!");
+                    }}
+                    style={{ color: "rgb(var(--bw-volt))", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontSize: "12px" }}
+                    data-testid="resend-verification-btn"
+                  >
+                    resend it
+                  </button>.
+                </p>
+              </div>
+              <Link to="/login" style={{ color: "rgb(var(--bw-volt))", textDecoration: "none", fontSize: "14px", fontWeight: 600 }}>
+                Go to Login →
+              </Link>
             </div>
           )}
 

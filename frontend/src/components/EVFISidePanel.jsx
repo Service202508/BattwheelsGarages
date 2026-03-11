@@ -52,7 +52,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
   const token = localStorage.getItem("token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // Fetch EFI suggestions when ticket changes
+  // Fetch EVFI suggestions when ticket changes
   const fetchSuggestions = useCallback(async () => {
     if (!ticket?.ticket_id) return;
     
@@ -74,7 +74,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
         }
       }
     } catch (error) {
-      console.error("Failed to fetch EFI suggestions:", error);
+      console.error("Failed to fetch EVFI suggestions:", error);
     } finally {
       setLoading(false);
     }
@@ -233,7 +233,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
         data-testid="efi-toggle-btn"
       >
         <Brain className="h-5 w-5" />
-        <span className="sr-only">Open EFI Assistant</span>
+        <span className="sr-only">Open EVFI Assistant</span>
       </button>
     );
   }
@@ -245,7 +245,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            <h2 className="font-semibold">EV Failure Intelligence</h2>
+            <h2 className="font-semibold">Electric Vehicle Failure Intelligence</h2>
           </div>
           <Button variant="ghost" size="icon" onClick={onToggle} className="text-white hover:bg-bw-panel/20">
             <ChevronRight className="h-5 w-5" />

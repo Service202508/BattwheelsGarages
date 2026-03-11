@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, List
 from datetime import datetime, timezone
-import motor.motor_asyncio
 import os
 import uuid
 from dotenv import load_dotenv
@@ -20,14 +19,9 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutStatusResponse, 
     CheckoutSessionRequest
 )
-from utils.database import extract_org_id, org_query
+from utils.database import extract_org_id, org_query, db
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels")
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 router = APIRouter(prefix="/invoice-payments", tags=["Invoice Payments"])
 
@@ -313,22 +307,22 @@ async def process_successful_payment(transaction: dict, session_id: str):
     )
     
     # Update customer balance
-    await update_customer_balance(customer_id)
+    await update_customer_balance(customer_id, org_id)
 
 
-async def update_customer_balance(customer_id: str):
+async def update_customer_balance(customer_id: str, org_id: str = None):
     """Update customer's receivable balance"""
-    invoices = await invoices_collection.find({
-        "customer_id": customer_id,
-        "status": {"$nin": ["void", "draft"]}
-    }).to_list(1000)
+    q = {"customer_id": customer_id, "status": {"$nin": ["void", "draft"]}}
+    if org_id:
+        q["organization_id"] = org_id
+    invoices = await invoices_collection.find(q).to_list(1000)
     
     total_receivable = sum(inv.get("balance_due", 0) for inv in invoices)
     
-    credits = await customer_credits_collection.find({
-        "customer_id": customer_id,
-        "status": "available"
-    }).to_list(1000)
+    cq = {"customer_id": customer_id, "status": "available"}
+    if org_id:
+        cq["organization_id"] = org_id
+    credits = await customer_credits_collection.find(cq).to_list(1000)
     
     total_credits = sum(c.get("amount", 0) for c in credits)
     

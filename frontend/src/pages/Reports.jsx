@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { 
   TrendingUp, TrendingDown, IndianRupee, Users, FileText,
   Calendar, Download, RefreshCw, BarChart3, PieChart, FileSpreadsheet,
-  Loader2, ArrowUp, ArrowDown, ShieldAlert, Trophy
+  Loader2, ArrowUp, ArrowDown, ShieldAlert, Trophy, Scale
 } from "lucide-react";
 import { API } from "@/App";
 
@@ -36,6 +36,7 @@ export default function Reports() {
   const [techReport, setTechReport] = useState(null);
   const [techPeriod, setTechPeriod] = useState("this_month");
   const [selectedTech, setSelectedTech] = useState(null);
+  const [trialBalance, setTrialBalance] = useState(null);
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
@@ -68,6 +69,9 @@ export default function Reports() {
           break;
         case "technician-performance":
           await fetchTechReport();
+          break;
+        case "trial-balance":
+          await fetchTrialBalance();
           break;
       }
     } catch (error) {
@@ -137,6 +141,16 @@ export default function Reports() {
       setTechReport(data);
     } else {
       toast.error("Failed to load technician report");
+    }
+  };
+
+  const fetchTrialBalance = async () => {
+    const res = await fetch(`${API}/journal-entries/reports/trial-balance?as_of_date=${asOfDate}`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      setTrialBalance(data);
+    } else {
+      toast.error("Failed to load trial balance");
     }
   };
 
@@ -308,7 +322,7 @@ export default function Reports() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7 h-auto">
+        <TabsList className="w-full overflow-x-auto flex h-auto">
           <TabsTrigger value="profit-loss" className="text-xs sm:text-sm py-2">
             <TrendingUp className="h-4 w-4 mr-1 hidden sm:block" />
             P&L
@@ -316,6 +330,10 @@ export default function Reports() {
           <TabsTrigger value="balance-sheet" className="text-xs sm:text-sm py-2">
             <BarChart3 className="h-4 w-4 mr-1 hidden sm:block" />
             Balance Sheet
+          </TabsTrigger>
+          <TabsTrigger value="trial-balance" className="text-xs sm:text-sm py-2" data-testid="trial-balance-tab">
+            <Scale className="h-4 w-4 mr-1 hidden sm:block" />
+            Trial Balance
           </TabsTrigger>
           <TabsTrigger value="ar-aging" className="text-xs sm:text-sm py-2">
             <ArrowUp className="h-4 w-4 mr-1 hidden sm:block" />
@@ -536,6 +554,96 @@ export default function Reports() {
                       </CardContent>
                     </Card>
                   </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+
+        {/* Trial Balance Tab */}
+        <TabsContent value="trial-balance" className="space-y-6">
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <CardTitle data-testid="trial-balance-title">Trial Balance</CardTitle>
+                  <CardDescription>As of {asOfDate}</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={fetchTrialBalance} disabled={loading}>
+                    <RefreshCw className={`h-4 w-4 mr-1 ${loading ? "animate-spin" : ""}`} />
+                    Refresh
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {trialBalance ? (
+                <>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <Card className="border-green-800/30">
+                      <CardContent className="pt-4 text-center">
+                        <p className="text-sm text-muted-foreground">Total Debit</p>
+                        <p className="text-2xl font-mono font-bold text-green-400" data-testid="tb-total-debit">
+                          {"\u20B9"}{(trialBalance.total_debit || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-red-800/30">
+                      <CardContent className="pt-4 text-center">
+                        <p className="text-sm text-muted-foreground">Total Credit</p>
+                        <p className="text-2xl font-mono font-bold text-red-400" data-testid="tb-total-credit">
+                          {"\u20B9"}{(trialBalance.total_credit || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <div className="mb-4">
+                    <Badge variant={trialBalance.is_balanced ? "default" : "destructive"} data-testid="tb-balanced-badge">
+                      {trialBalance.is_balanced ? "BALANCED" : "UNBALANCED"}
+                    </Badge>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Account Code</TableHead>
+                        <TableHead>Account Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Debit</TableHead>
+                        <TableHead className="text-right">Credit</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(trialBalance.accounts || []).map((acct, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-mono text-sm">{acct.account_code}</TableCell>
+                          <TableCell>{acct.account_name}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs capitalize">{acct.account_type}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {acct.debit > 0 ? `\u20B9${acct.debit.toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "-"}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {acct.credit > 0 ? `\u20B9${acct.credit.toLocaleString("en-IN", { minimumFractionDigits: 2 })}` : "-"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {(!trialBalance.accounts || trialBalance.accounts.length === 0) && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                            No accounts with balances found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Scale className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                  <p>Click Refresh to load Trial Balance</p>
                 </div>
               )}
             </CardContent>

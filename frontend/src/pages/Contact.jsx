@@ -5,7 +5,8 @@ import { toast } from 'sonner';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`;
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API_URL = window.location.origin;
 
 const channels = [
   {
@@ -132,7 +133,7 @@ export default function Contact() {
             <div className="border border-white/[0.07] rounded p-5 bg-white/[0.02]">
               <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-3">Company</p>
               <p className="text-sm text-white/60 mb-1">Battwheels Services Private Limited</p>
-              <p className="text-sm text-white/40">Incorporated in India · EFI Engine v2</p>
+              <p className="text-sm text-white/40">Incorporated in India · EVFI Engine v2</p>
               <div className="mt-4 pt-4 border-t border-white/[0.06] flex gap-6">
                 <div>
                   <p className="text-[10px] font-mono text-white/25 uppercase tracking-widest mb-1">Response time</p>
@@ -181,7 +182,7 @@ export default function Contact() {
                       type="email"
                       value={form.email}
                       onChange={e => setForm({ ...form, email: e.target.value })}
-                      placeholder="you@workshop.com"
+                      placeholder="you@company.com"
                       className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition"
                       data-testid="contact-email"
                     />
@@ -189,12 +190,12 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Company / Workshop</label>
+                  <label className="block text-[11px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Company / Service Center</label>
                   <input
                     type="text"
                     value={form.company}
                     onChange={e => setForm({ ...form, company: e.target.value })}
-                    placeholder="Your workshop or organisation name"
+                    placeholder="Your company or organisation name"
                     className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition"
                     data-testid="contact-company"
                   />
@@ -223,7 +224,7 @@ export default function Contact() {
                     value={form.message}
                     onChange={e => setForm({ ...form, message: e.target.value })}
                     rows={5}
-                    placeholder="Tell us about your workshop, fleet size, or what you're trying to solve…"
+                    placeholder="Tell us about your service operation, fleet size, or what you're trying to solve…"
                     className="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-bw-volt/50 transition resize-none"
                     data-testid="contact-message"
                   />
@@ -266,7 +267,7 @@ export default function Contact() {
 
       {/* Footer */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6 mt-10">
-        <div className="text-xs text-white/20 font-mono">© 2026 Battwheels Services Private Limited · EFI Engine v2 · India</div>
+        <div className="text-xs text-white/20 font-mono">&copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved</div>
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>

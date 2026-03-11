@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
-import motor.motor_asyncio
 import os
 import uuid
 import logging
@@ -18,11 +17,7 @@ from utils.database import extract_org_id, org_query
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/recurring-invoices", tags=["Recurring Invoices"])
 
@@ -209,7 +204,7 @@ async def create_recurring_invoice(request: Request, data: RecurringInvoiceCreat
 async def list_recurring_invoices(request: Request, status: Optional[str] = None, customer_id: Optional[str] = None, skip: int = 0, limit: int = 50):
     org_id = extract_org_id(request)
     """List all recurring invoice profiles"""
-    query = {}
+    query = {"organization_id": org_id} if org_id else {}
     if status:
         query["status"] = status
     if customer_id:
@@ -232,13 +227,13 @@ async def get_recurring_summary(request: Request):
     org_id = extract_org_id(request)
     """Get summary statistics for recurring invoices"""
     total = await recurring_collection.count_documents(org_query(org_id))
-    active = await recurring_collection.count_documents({"status": "active"})
-    stopped = await recurring_collection.count_documents({"status": "stopped"})
-    expired = await recurring_collection.count_documents({"status": "expired"})
+    active = await recurring_collection.count_documents(org_query(org_id, {"status": "active"}))
+    stopped = await recurring_collection.count_documents(org_query(org_id, {"status": "stopped"}))
+    expired = await recurring_collection.count_documents(org_query(org_id, {"status": "expired"}))
 
     # Calculate total recurring revenue
     pipeline = [
-        {"$match": {"status": "active"}},
+        {"$match": {"organization_id": org_id, "status": "active"} if org_id else {"status": "active"}},
         {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
     ]
     result = await recurring_collection.aggregate(pipeline).to_list(1)
@@ -246,10 +241,10 @@ async def get_recurring_summary(request: Request):
 
     # Get profiles due today
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    due_today = await recurring_collection.count_documents({
+    due_today = await recurring_collection.count_documents(org_query(org_id, {
         "status": "active",
         "next_invoice_date": today
-    })
+    }))
 
     return {
         "code": 0,
@@ -406,6 +401,7 @@ async def process_due_recurring_invoices(request: Request, background_tasks: Bac
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     due_profiles = await recurring_collection.find({
+        "organization_id": org_id,
         "status": "active",
         "next_invoice_date": {"$lte": today}
     }, {"_id": 0}).to_list(100)

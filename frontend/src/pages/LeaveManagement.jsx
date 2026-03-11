@@ -398,7 +398,7 @@ export default function LeaveManagement({ user }) {
       <Tabs defaultValue="my-requests">
         <TabsList>
           <TabsTrigger value="my-requests">My Requests</TabsTrigger>
-          {(user?.role === "admin" || user?.role === "technician") && (
+          {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
             <TabsTrigger value="approvals">
               Pending Approvals
               {pendingApprovals.length > 0 && (
@@ -476,7 +476,7 @@ export default function LeaveManagement({ user }) {
         </TabsContent>
 
         {/* Pending Approvals (Admin/Manager) */}
-        {(user?.role === "admin" || user?.role === "technician") && (
+        {(user?.role === "admin" || user?.role === "owner" || user?.role === "technician") && (
           <TabsContent value="approvals">
             <Card>
               <CardContent className="p-0">

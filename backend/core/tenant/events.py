@@ -59,7 +59,7 @@ class TenantEventType(str, Enum):
     INVENTORY_ALLOCATED = "tenant.inventory.allocated"
     INVENTORY_CONSUMED = "tenant.inventory.consumed"
     
-    # EFI Intelligence
+    # EVFI Intelligence
     FAILURE_CARD_CREATED = "tenant.efi.card_created"
     FAILURE_CARD_USED = "tenant.efi.card_used"
     FAILURE_CARD_RATED = "tenant.efi.card_rated"

@@ -33,7 +33,7 @@ from utils.database import extract_org_id
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/efi",
+    prefix="/evfi",
     tags=["Failure Intelligence"],
     dependencies=[Depends(require_feature("efi_failure_intelligence"))]
 )
@@ -48,14 +48,14 @@ def init_router(database, processor=None):
     global _service, _event_processor
     _event_processor = processor
     _service = init_efi_service(database, processor)
-    logger.info("EFI router initialized with service")
+    logger.info("EVFI router initialized with service")
     return router
 
 
 def get_service() -> EFIService:
-    """Get the EFI service instance"""
+    """Get the EVFI service instance"""
     if _service is None:
-        raise HTTPException(status_code=500, detail="EFI service not initialized")
+        raise HTTPException(status_code=500, detail="EVFI service not initialized")
     return _service
 
 
@@ -539,7 +539,7 @@ async def get_entity_graph(request: Request, entity_type: str, entity_id: str, d
 
 @router.get("/analytics/overview")
 async def get_efi_analytics(request: Request):
-    """Get EFI system analytics"""
+    """Get EVFI system analytics"""
     service = get_service()
     org_id = extract_org_id(request)
     return await service.get_analytics_overview()
@@ -616,7 +616,7 @@ async def get_part_anomaly_report(request: Request):
 
 @router.get("/events")
 async def list_events(request: Request, event_type: Optional[str] = None, processed: Optional[bool] = None, limit: int = 50):
-    """List EFI system events"""
+    """List EVFI system events"""
     service = get_service()
     org_id = extract_org_id(request)
     
@@ -635,7 +635,7 @@ async def list_events(request: Request, event_type: Optional[str] = None, proces
 
 @router.post("/events/process")
 async def process_pending_events(request: Request, background_tasks: BackgroundTasks):
-    """Process pending EFI events"""
+    """Process pending EVFI events"""
     service = get_service()
     org_id = extract_org_id(request)
     

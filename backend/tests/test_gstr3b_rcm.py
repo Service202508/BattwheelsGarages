@@ -1,97 +1,210 @@
 """
-GSTR-3B RCM (Reverse Charge Mechanism) Tests
-=============================================
-Verifies:
-1. Section 3.1(d) — Inward supplies liable to reverse charge
-2. Table 4A(3) — ITC from RCM supplies
-3. RCM adds to net tax liability
-4. Cleanup of test data
+GSTR-3B Section 3.1(d) — Reverse Charge Mechanism Tests
+========================================================
+Seeds 3 bills directly into MongoDB, queries GSTR-3B API,
+asserts exact RCM values. Cleans up seed data after tests.
+
+Test data:
+  Bill 1: reverse_charge=True, intra-state, taxable=10000, CGST=900, SGST=900
+  Bill 2: reverse_charge=False, taxable=5000 (should NOT appear in RCM)
+  Bill 3: reverse_charge=True, inter-state, taxable=20000, IGST=3600
 """
 
 import pytest
 import requests
-import os
 import uuid
+import os
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
-TEST_MONTH = "2026-01"  # Use a quiet month for isolation
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
+TEST_MONTH = "2099-01"
+RCM_TAG = f"rcm_test_{uuid.uuid4().hex[:8]}"
+
+# The org_id of the demo user — fetched from their auth token
+DEMO_ORG_ID = None
+
+
+def _get_event_loop():
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
 
 
 @pytest.fixture(scope="module")
-def admin_auth():
-    """Login as admin to get auth headers"""
-    res = requests.post(
+def auth_headers():
+    """Login as demo user and extract org_id from JWT."""
+    import jwt
+    resp = requests.post(
         f"{BASE_URL}/api/v1/auth/login",
-        json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
+        json={"email": "demo@voltmotors.in", "password": "Demo@12345"},
     )
-    if res.status_code != 200:
-        pytest.skip(f"Could not login: {res.status_code}")
-    token = res.json().get("token")
-    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    if resp.status_code != 200:
+        pytest.skip(f"Login failed: {resp.status_code}")
+    token = resp.json()["token"]
+    # Decode JWT to get organization_id
+    decoded = jwt.decode(token, options={"verify_signature": False})
+    org_id = decoded.get("organization_id", decoded.get("org_id", ""))
+    global DEMO_ORG_ID
+    DEMO_ORG_ID = org_id
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "X-Organization-ID": org_id,
+    }
 
 
-class TestGSTR3BReportStructure:
-    """Verify GSTR-3B report includes all RCM-related sections."""
+@pytest.fixture(scope="module", autouse=True)
+def seed_and_cleanup(auth_headers):
+    """Seed 3 test bills directly into MongoDB, yield, then delete them."""
+    loop = _get_event_loop()
 
-    def test_report_has_section_3_1_d(self, admin_auth):
-        """Section 3.1(d) for RCM inward supplies must exist"""
-        res = requests.get(
+    bill_ids = [
+        f"BILL-RCM-INTRA-{RCM_TAG}",
+        f"BILL-NORMAL-{RCM_TAG}",
+        f"BILL-RCM-INTER-{RCM_TAG}",
+    ]
+
+    bills = [
+        {
+            "bill_id": bill_ids[0],
+            "bill_number": f"RCM-INTRA-{RCM_TAG}",
+            "organization_id": DEMO_ORG_ID,
+            "vendor_name": "RCM Intra Vendor",
+            "vendor_gstin": "07AADCB2230M1ZT",
+            "date": f"{TEST_MONTH}-15",
+            "due_date": f"{TEST_MONTH}-28",
+            "sub_total": 10000,
+            "tax_total": 1800,
+            "total": 11800,
+            "reverse_charge": True,
+            "status": "approved",
+        },
+        {
+            "bill_id": bill_ids[1],
+            "bill_number": f"NORMAL-{RCM_TAG}",
+            "organization_id": DEMO_ORG_ID,
+            "vendor_name": "Normal Vendor",
+            "vendor_gstin": "07AADCB2230M1ZT",
+            "date": f"{TEST_MONTH}-15",
+            "due_date": f"{TEST_MONTH}-28",
+            "sub_total": 5000,
+            "tax_total": 900,
+            "total": 5900,
+            "reverse_charge": False,
+            "status": "approved",
+        },
+        {
+            "bill_id": bill_ids[2],
+            "bill_number": f"RCM-INTER-{RCM_TAG}",
+            "organization_id": DEMO_ORG_ID,
+            "vendor_name": "RCM Inter Vendor",
+            "vendor_gstin": "29AADCB2230M1ZV",
+            "date": f"{TEST_MONTH}-15",
+            "due_date": f"{TEST_MONTH}-28",
+            "sub_total": 20000,
+            "tax_total": 3600,
+            "total": 23600,
+            "reverse_charge": True,
+            "status": "approved",
+        },
+    ]
+
+    async def seed():
+        client = AsyncIOMotorClient(MONGO_URL)
+        db = client[DB_NAME]
+        for bill in bills:
+            await db.bills.insert_one(bill.copy())
+        print(f"  Seeded {len(bills)} test bills with tag {RCM_TAG}")
+
+    async def cleanup():
+        client = AsyncIOMotorClient(MONGO_URL)
+        db = client[DB_NAME]
+        result = await db.bills.delete_many({"bill_id": {"$in": bill_ids}})
+        print(f"  Cleaned up {result.deleted_count} seed bills")
+
+    loop.run_until_complete(seed())
+    yield
+    loop.run_until_complete(cleanup())
+
+
+class TestGSTR3BSection31D:
+    """Verify Section 3.1(d) RCM values from seeded bills."""
+
+    def test_section_3_1_d_exists_with_cess(self, auth_headers):
+        """section_3_1.d must exist and include cess field."""
+        resp = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
-            headers=admin_auth,
+            headers=auth_headers,
         )
-        assert res.status_code == 200, f"GSTR-3B failed: {res.status_code} {res.text}"
-        data = res.json()
-        s31d = data.get("section_3_1_d")
-        assert s31d is not None, "section_3_1_d missing from GSTR-3B"
-        assert "taxable_value" in s31d
-        assert "cgst" in s31d
-        assert "sgst" in s31d
-        assert "igst" in s31d
-        assert "total_tax" in s31d
-        assert "bill_count" in s31d
-        print(f"✓ section_3_1_d present with all RCM fields")
+        assert resp.status_code == 200, f"GSTR-3B failed: {resp.status_code}"
+        data = resp.json()
+        s31 = data.get("section_3_1", {})
+        assert "d" in s31, f"section_3_1.d missing. Keys: {list(s31.keys())}"
+        d = s31["d"]
+        assert "cess" in d, f"cess field missing from section_3_1.d: {d}"
+        print(f"  section_3_1.d exists with cess field")
 
-    def test_report_has_table_4a_rcm(self, admin_auth):
-        """Table 4A(3) for ITC from RCM must exist"""
-        res = requests.get(
+    def test_rcm_taxable_value_is_30000(self, auth_headers):
+        """Only reverse_charge=True bills should sum: 10000 + 20000 = 30000"""
+        resp = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
-            headers=admin_auth,
+            headers=auth_headers,
         )
-        data = res.json()
-        t4a = data.get("section_4", {}).get("table_4A", {})
-        rcm_itc = t4a.get("(3)_inward_supplies_rcm")
-        assert rcm_itc is not None, "table_4A (3)_inward_supplies_rcm missing"
-        assert "cgst" in rcm_itc
-        assert "sgst" in rcm_itc
-        assert "igst" in rcm_itc
-        print(f"✓ table_4A (3)_inward_supplies_rcm present")
+        d = resp.json()["section_3_1"]["d"]
+        assert d["taxable_value"] == 30000, f"Expected 30000, got {d['taxable_value']}"
 
-    def test_summary_has_rcm_liability(self, admin_auth):
-        """Summary must include rcm_tax_liability"""
-        res = requests.get(
+    def test_rcm_cgst_is_900(self, auth_headers):
+        """Intra-state RCM bill (10000 @ 18%): CGST = 1800/2 = 900"""
+        resp = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
-            headers=admin_auth,
+            headers=auth_headers,
         )
-        data = res.json()
-        summary = data.get("summary", {})
-        assert "rcm_tax_liability" in summary, "rcm_tax_liability missing from summary"
-        print(f"✓ summary.rcm_tax_liability = {summary['rcm_tax_liability']}")
+        d = resp.json()["section_3_1"]["d"]
+        assert d["cgst"] == 900, f"Expected 900, got {d['cgst']}"
 
-
-class TestGSTR3BRCMCalculation:
-    """Verify RCM calculations with test data."""
-
-    def test_zero_rcm_when_no_rcm_bills(self, admin_auth):
-        """When no reverse_charge bills exist, RCM values should be 0"""
-        res = requests.get(
+    def test_rcm_sgst_is_900(self, auth_headers):
+        """Intra-state RCM bill (10000 @ 18%): SGST = 1800/2 = 900"""
+        resp = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
-            headers=admin_auth,
+            headers=auth_headers,
         )
-        data = res.json()
-        s31d = data["section_3_1_d"]
-        # With no RCM bills in this month, all values should be 0
-        assert s31d["bill_count"] == 0 or s31d["bill_count"] >= 0
-        print(f"✓ RCM bill_count={s31d['bill_count']}, total_tax={s31d['total_tax']}")
+        d = resp.json()["section_3_1"]["d"]
+        assert d["sgst"] == 900, f"Expected 900, got {d['sgst']}"
+
+    def test_rcm_igst_is_3600(self, auth_headers):
+        """Inter-state RCM bill (20000 @ 18%): IGST = 3600"""
+        resp = requests.get(
+            f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
+            headers=auth_headers,
+        )
+        d = resp.json()["section_3_1"]["d"]
+        assert d["igst"] == 3600, f"Expected 3600, got {d['igst']}"
+
+    def test_rcm_cess_is_0(self, auth_headers):
+        """Cess should be 0 (no cess on RCM supplies in test data)."""
+        resp = requests.get(
+            f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
+            headers=auth_headers,
+        )
+        d = resp.json()["section_3_1"]["d"]
+        assert d["cess"] == 0, f"Expected 0, got {d['cess']}"
+
+    def test_non_rcm_bill_excluded(self, auth_headers):
+        """The non-RCM bill (5000) must NOT appear in section_3_1.d."""
+        resp = requests.get(
+            f"{BASE_URL}/api/v1/gst/gstr3b?month={TEST_MONTH}",
+            headers=auth_headers,
+        )
+        d = resp.json()["section_3_1"]["d"]
+        assert d["taxable_value"] == 30000, (
+            f"Non-RCM bill leaked into RCM! Expected 30000, got {d['taxable_value']}"
+        )
 
 
 if __name__ == "__main__":

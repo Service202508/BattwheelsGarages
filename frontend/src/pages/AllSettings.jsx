@@ -9,20 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle, DialogTrigger
-} from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from "@/components/ui/select";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
-} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { 
   Search, Building2, Users, Receipt, Palette, Zap, Settings2, 
@@ -344,7 +334,7 @@ function SettingsPanel({ item, settings, onUpdate, onSave, onRefresh }) {
     case "billing":
       return <BillingSettingsPanel settings={settings.billing || {}} onUpdate={(data) => onUpdate("billing", data)} />;
     case "efi":
-      return <EFISettingsPanel settings={settings.efi || {}} onUpdate={(data) => onUpdate("efi", data)} />;
+      return <EVFISettingsPanel settings={settings.efi || {}} onUpdate={(data) => onUpdate("efi", data)} />;
     case "portal":
       return <PortalSettingsPanel settings={settings.portal || {}} onUpdate={(data) => onUpdate("portal", data)} />;
     default:
@@ -2303,7 +2293,7 @@ function BillingSettingsPanel({ settings, onUpdate }) {
   );
 }
 
-function EFISettingsPanel({ settings, onUpdate }) {
+function EVFISettingsPanel({ settings, onUpdate }) {
   const [form, setForm] = useState(settings);
 
   useEffect(() => { setForm(settings); }, [settings]);
@@ -2334,7 +2324,7 @@ function EFISettingsPanel({ settings, onUpdate }) {
       <div className="flex items-center gap-4 p-4 border rounded-lg">
         <input type="checkbox" id="aiDiagnosis" checked={form.ai_diagnosis_enabled !== false} onChange={(e) => handleChange("ai_diagnosis_enabled", e.target.checked)} />
         <div>
-          <label htmlFor="aiDiagnosis" className="font-medium">AI Diagnosis</label>
+          <label htmlFor="aiDiagnosis" className="font-medium">Battwheels EVFI™ Diagnosis</label>
           <p className="text-sm text-muted-foreground">Use AI to suggest diagnostic steps and solutions</p>
         </div>
       </div>

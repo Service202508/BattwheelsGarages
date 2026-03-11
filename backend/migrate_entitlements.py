@@ -9,7 +9,6 @@ import asyncio
 import os
 import logging
 from datetime import datetime, timezone
-from motor.motor_asyncio import AsyncIOMotorClient
 
 # Load env
 try:
@@ -18,8 +17,8 @@ try:
 except Exception:
     pass
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
+from utils.database import db as _ent_db
+
 BATTWHEELS_ORG_ID = "6996dcf072ffd2a2395fee7b"
 
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 async def migrate():
-    client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    db = _ent_db
 
     # ─── 1. Verify Battwheels org exists ────────────────────────────────────
     from bson import ObjectId

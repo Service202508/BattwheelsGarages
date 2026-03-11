@@ -123,13 +123,20 @@ async def lock_period(request: Request, data: PeriodLockCreate):
 
 @router.delete("/{lock_id}")
 async def unlock_period(request: Request, lock_id: str):
-    """Unlock a period. Only platform_admin or super_admin can unlock."""
+    """Unlock a period. Only platform_admin or org owner/admin can unlock."""
     user = await _get_user_from_request(request)
     db = get_db()
 
-    role = user.get("role", "")
-    if role not in ("platform_admin", "super_admin"):
-        raise HTTPException(status_code=403, detail="Only platform super-admin can unlock financial periods")
+    # Check platform admin flag first
+    is_platform_admin = user.get("is_platform_admin", False)
+    if not is_platform_admin:
+        # Also allow org owner/admin to unlock their own org's periods
+        user_role = getattr(request.state, "tenant_user_role", None)
+        if user_role not in ("owner", "admin", "org_admin"):
+            raise HTTPException(
+                status_code=403,
+                detail="Only org owner/admin or platform admin can unlock periods."
+            )
 
     lock = await db.period_locks.find_one({"lock_id": lock_id}, {"_id": 0})
     if not lock:

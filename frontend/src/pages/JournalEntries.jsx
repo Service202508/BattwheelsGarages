@@ -4,7 +4,9 @@ import {
   Check, X, Calendar, FileText, Filter
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { API } from "@/App";
+// HARDCODED for production — Emergent overrides env vars during build
+const API_URL = window.location.origin;
 
 // Design tokens — using CSS variables
 const colors = {
@@ -348,7 +350,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch(`${API_URL}/api/journal-entries`, {
+      const response = await fetch(`${API}/journal-entries`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -775,7 +777,7 @@ const AccountLedgerTab = ({ accounts }) => {
     
     setLoading(true);
     try {
-      let url = `${API_URL}/api/journal-entries/accounts/${selectedAccount}/ledger`;
+      let url = `${API}/journal-entries/accounts/${selectedAccount}/ledger`;
       const params = new URLSearchParams();
       if (startDate) params.append('start_date', startDate);
       if (endDate) params.append('end_date', endDate);
@@ -1141,7 +1143,7 @@ const JournalEntries = () => {
     if (!cursorParam) setLoading(true);
     try {
       // Fetch entries
-      let entriesUrl = `${API_URL}/api/journal-entries`;
+      let entriesUrl = `${API}/journal-entries`;
       const params = new URLSearchParams();
       if (startDate) params.append('start_date', startDate);
       if (endDate) params.append('end_date', endDate);
@@ -1160,8 +1162,8 @@ const JournalEntries = () => {
       ];
       if (!cursorParam) {
         fetchPromises.push(
-          fetch(`${API_URL}/api/journal-entries/accounts/chart`, { headers: authHeaders, credentials: 'include' }),
-          fetch(`${API_URL}/api/journal-entries/reports/trial-balance`, { headers: authHeaders, credentials: 'include' })
+          fetch(`${API}/journal-entries/accounts/chart`, { headers: authHeaders, credentials: 'include' }),
+          fetch(`${API}/journal-entries/reports/trial-balance`, { headers: authHeaders, credentials: 'include' })
         );
       }
 
@@ -1169,13 +1171,18 @@ const JournalEntries = () => {
       const entriesData = await results[0].json();
 
       if (!cursorParam && results.length > 1) {
-        const accountsData = await results[1].json();
-        const trialData = await results[2].json();
-        setAccounts(accountsData.accounts || []);
-        setStats(prev => ({
-          ...prev,
-          trialBalance: trialData
-        }));
+        try {
+          if (results[1].ok) {
+            const accountsData = await results[1].json();
+            setAccounts(accountsData.accounts || []);
+          }
+        } catch (e) { /* accounts/chart may fail — non-blocking */ }
+        try {
+          if (results[2].ok) {
+            const trialData = await results[2].json();
+            setStats(prev => ({ ...prev, trialBalance: trialData }));
+          }
+        } catch (e) { /* trial-balance may fail — non-blocking */ }
       }
 
       // API returns paginated {data: [...], pagination: {...}} format
@@ -1222,7 +1229,7 @@ const JournalEntries = () => {
   }, [fetchData]);
 
   const handleExportCSV = async () => {
-    let url = `${API_URL}/api/journal-entries/export/csv`;
+    let url = `${API}/journal-entries/export/csv`;
     const params = new URLSearchParams();
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
@@ -1247,7 +1254,7 @@ const JournalEntries = () => {
       const token = localStorage.getItem('token');
       const orgId = localStorage.getItem('organization_id');
       const res = await fetch(
-        `${API_URL}/api/finance/export/tally-xml?date_from=${tallyDateFrom}&date_to=${tallyDateTo}`,
+        `${API}/finance/export/tally-xml?date_from=${tallyDateFrom}&date_to=${tallyDateTo}`,
         { headers: { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId || '' } }
       );
       if (!res.ok) {

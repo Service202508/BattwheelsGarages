@@ -189,7 +189,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
+        <main className="flex-1 min-w-0 overflow-x-hidden min-h-screen">
           <div className="p-6 lg:p-8 max-w-7xl mx-auto">
             {children || <Outlet />}
           </div>

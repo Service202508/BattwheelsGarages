@@ -100,7 +100,7 @@ class TicketCloseRequest(BaseModel):
     resolution_outcome: str = "success"
     resolution_notes: Optional[str] = None
     selected_failure_card: Optional[str] = None
-    confirmed_fault: Optional[str] = None  # Technician-confirmed actual fault for EFI feedback
+    confirmed_fault: Optional[str] = None  # Technician-confirmed actual fault for EVFI feedback
 
 
 class AssignTicketRequest(BaseModel):
@@ -166,6 +166,10 @@ async def create_ticket(request: Request, data: TicketCreateRequest, ctx: Tenant
     - Requires tenant context (X-Organization-ID header or user membership)
     - ticket_type is auto-set: "onsite" if customer_id is linked, "workshop" otherwise
     """
+    # Plan record limit enforcement
+    from utils.plan_limits import check_record_limit
+    await check_record_limit(ctx.org_id, "tickets")
+
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -360,7 +364,7 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
     """
     Close a ticket with resolution details
     
-    CRITICAL EFI ENDPOINT:
+    CRITICAL EVFI ENDPOINT:
     - Requires resolution and outcome
     - Triggers confidence engine updates
     - Auto-creates draft failure card for undocumented issues
@@ -385,7 +389,7 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
         await log_audit(service.db, AuditAction.TICKET_CLOSED, ctx.org_id, user.get("user_id"),
             "ticket", ticket_id, {"resolution": data.resolution, "confirmed_fault": data.confirmed_fault})
         
-        # Auto-create failure card for EFI brain
+        # Auto-create failure card for EVFI brain
         try:
             from routes.failure_cards import router as _fc_router
             fc_card_id = f"fc_{__import__('uuid').uuid4().hex[:12]}"
@@ -452,6 +456,17 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
                             )
                 except Exception as emb_err:
                     logger.warning(f"Embedding generation failed for card {fc_card_id}: {emb_err}")
+
+                # Feed anonymized pattern to EVFI brain
+                try:
+                    from routes.failure_cards import feed_efi_brain
+                    new_card = await service.db.failure_cards.find_one(
+                        {"card_id": fc_card_id}, {"_id": 0})
+                    if new_card and new_card.get("root_cause"):
+                        await feed_efi_brain(service.db, new_card)
+                except Exception as brain_err:
+                    logger.warning(
+                        f"EVFI brain feed failed for {fc_card_id}: {brain_err}")
         except Exception as e:
             logger.warning(f"Failed to create failure card for ticket {ticket_id}: {e}")
         
@@ -682,7 +697,7 @@ async def get_ticket_matches(request: Request, ticket_id: str):
     """
     Get AI-suggested failure cards for a ticket
     
-    Returns cards matched by the EFI AI matching pipeline:
+    Returns cards matched by the EVFI AI matching pipeline:
     1. Signature match
     2. Subsystem + vehicle filter
     3. Semantic similarity

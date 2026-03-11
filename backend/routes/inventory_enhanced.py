@@ -5,24 +5,18 @@ from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, Request, D
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
-import os
 import uuid
 import logging
 
 from core.subscriptions.entitlement import require_feature
-from utils.database import extract_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/inventory-enhanced", tags=["Inventory Enhanced"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db, extract_org_id, org_query
 
 # Collections
 items_collection = db["items"]  # Use same collection as items_enhanced route
@@ -571,7 +565,7 @@ async def get_bundle(request: Request, bundle_id: str):
     if not bundle:
         raise HTTPException(status_code=404, detail="Bundle not found")
     
-    components = await bundle_components_collection.find({"bundle_id": bundle_id}, {"_id": 0}).to_list(50)
+    components = await bundle_components_collection.find({"bundle_id": bundle_id, "organization_id": org_id}, {"_id": 0}).to_list(50)
     
     # Add stock availability for each component
     for comp in components:
@@ -599,7 +593,7 @@ async def assemble_bundle(request: Request, bundle_id: str, quantity: int = 1, w
     if not warehouse_id:
         raise HTTPException(status_code=400, detail="Warehouse required for assembly")
     
-    components = await bundle_components_collection.find({"bundle_id": bundle_id}).to_list(50)
+    components = await bundle_components_collection.find({"bundle_id": bundle_id, "organization_id": org_id}).to_list(50)
     
     # Check stock availability
     for comp in components:

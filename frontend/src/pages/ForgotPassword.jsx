@@ -5,7 +5,8 @@ import { Input } from '../components/ui/input';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API = `${window.location.origin}/api/v1`;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ export default function ForgotPassword() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API}/api/auth/forgot-password`, {
+      const res = await fetch(`${API}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

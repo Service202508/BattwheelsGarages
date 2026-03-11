@@ -28,13 +28,17 @@ def get_db():
     return client[db_name]
 
 
+# Use a single persistent event loop for all tests in this module.
+# Motor caches the event loop from its first I/O operation. Creating and
+# closing separate loops per test causes "Event loop is closed" errors
+# because the module-level `utils.database.db` motor client is bound to
+# the first loop and cannot switch to a new one.
+_MODULE_LOOP = asyncio.new_event_loop()
+
+
 def run_async(coro):
-    """Run an async coroutine in a sync test."""
-    loop = asyncio.new_event_loop()
-    try:
-        return loop.run_until_complete(coro)
-    finally:
-        loop.close()
+    """Run an async coroutine using the module-persistent event loop."""
+    return _MODULE_LOOP.run_until_complete(coro)
 
 
 # ==================== AUDIT LOG TESTS ====================

@@ -13,7 +13,6 @@ from fastapi import APIRouter, HTTPException, Request, Depends, BackgroundTasks
 from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 import uuid
 import os
 import secrets
@@ -27,10 +26,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/organizations", tags=["Organizations"])
 
 # MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 
 # ==================== PYDANTIC MODELS ====================
@@ -58,6 +54,7 @@ class OrganizationCreate(BaseModel):
 
     # Self-serve signup extras
     vehicle_types: Optional[List[str]] = None  # ["2W", "3W", "4W"]
+    invite_code: Optional[str] = None  # Beta access code
 
     @validator('industry_type')
     def validate_industry(cls, v):
@@ -181,6 +178,13 @@ async def signup_organization(data: OrganizationCreate):
             detail="Email already registered. Please login or use a different email."
         )
     
+    # Beta access gate — validate invite code (optional: only if provided)
+    # If no code provided, registration proceeds normally (open registration)
+    if data.invite_code:
+        valid_code = await db.beta_codes.find_one({"code": data.invite_code.strip().upper(), "used": False})
+        if not valid_code:
+            raise HTTPException(status_code=400, detail="Invalid or expired beta access code.")
+    
     now = datetime.now(timezone.utc).isoformat()
     now_dt = datetime.now(timezone.utc)
     trial_ends_at = (now_dt + timedelta(days=14)).isoformat()
@@ -249,6 +253,8 @@ async def signup_organization(data: OrganizationCreate):
         "picture": None,
         "is_active": True,
         "email_verified": False,
+        "verification_token": str(uuid.uuid4()),
+        "verification_token_expires": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
         "created_at": now,
         "updated_at": now
     }
@@ -323,40 +329,56 @@ async def signup_organization(data: OrganizationCreate):
     
     logger.info(f"New organization created: {data.name} ({org_id})")
 
-    # Send welcome email (non-blocking)
+    # Mark beta code as used (only if one was provided)
+    if data.invite_code:
+        await db.beta_codes.update_one(
+            {"code": data.invite_code.strip().upper()},
+            {"$set": {"used": True, "used_by": org_id, "used_by_email": data.admin_email, "used_at": datetime.now(timezone.utc).isoformat()}}
+        )
+
+    # Send verification email (non-blocking)
     try:
         from services.email_service import EmailService
-        app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://app.battwheels.in").replace("/api", "")
-        trial_end_date = datetime.now(timezone.utc) + timedelta(days=14)
-        trial_end_str = trial_end_date.strftime("%d %B %Y")
-        subject = "Welcome to Battwheels OS — Your 14-day trial has started"
+        base_url = os.environ.get("APP_URL", "https://battwheels.com")
+        verification_url = f"{base_url}/verify-email?token={user_doc['verification_token']}"
+        subject = "Verify your Battwheels OS account"
         html_body = f"""
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #080C0F; color: #F4F6F0; padding: 32px; border-radius: 8px;">
-  <h1 style="color: #C8FF00; font-size: 24px; margin-bottom: 8px;">Welcome to Battwheels OS</h1>
-  <p>Hi {data.admin_name},</p>
-  <p>Your workshop <strong>{data.name}</strong> is now live on Battwheels OS.</p>
-  <p>
-    <a href="{app_url}" style="display: inline-block; background: #C8FF00; color: #080C0F; font-weight: bold; padding: 12px 24px; border-radius: 4px; text-decoration: none; margin: 16px 0;">
-      Log in to your dashboard →
-    </a>
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0e12; color: #f4f6f0; padding: 40px; border-radius: 8px;">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="color: #CBFF00; font-size: 24px; margin: 0;">Battwheels OS</h1>
+  </div>
+  <h2 style="color: white; font-size: 20px;">Verify Your Email</h2>
+  <p style="color: #9ca3af; line-height: 1.6;">
+    Hi {data.admin_name},<br><br>
+    Welcome to Battwheels OS — India's AI-powered EV service platform.
+    Please verify your email to activate your account.
   </p>
-  <p>Your free trial ends on <strong>{trial_end_str}</strong>. No credit card required until then.</p>
-  <p>Need help? Just reply to this email — we're here.</p>
-  <p style="color: rgba(244,246,240,0.45); font-size: 12px; margin-top: 32px;">
-    Battwheels OS — EV Workshop Intelligence Platform<br>
-    <a href="https://battwheels.in" style="color: #C8FF00;">battwheels.in</a>
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="{verification_url}"
+      style="background: #CBFF00; color: #0a0e12; padding: 14px 32px;
+      text-decoration: none; font-weight: bold; border-radius: 8px;
+      display: inline-block; font-size: 14px;">
+      VERIFY MY EMAIL
+    </a>
+  </div>
+  <p style="color: #6b7280; font-size: 13px;">
+    This link expires in 24 hours. If you didn't create this account, please ignore this email.
+  </p>
+  <hr style="border-color: #1f2937; margin: 30px 0;">
+  <p style="color: #4b5563; font-size: 12px; text-align: center;">
+    &copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved<br>
+    Battwheels EVFI&trade; — Electric Vehicle Failure Intelligence
   </p>
 </div>
 """
-        await EmailService.send_generic_email(
-            to_email=data.admin_email,
-            to_name=data.admin_name,
+        await EmailService.send_email(
+            to=data.admin_email,
             subject=subject,
-            html_body=html_body,
+            html_content=html_body,
         )
-        logger.info(f"Welcome email sent to {data.admin_email}")
+        logger.info(f"Verification email sent to {data.admin_email}")
     except Exception as e:
-        logger.warning(f"Failed to send welcome email: {e}")
+        logger.warning(f"Failed to send verification email: {e}")
 
     return {
         "success": True,
@@ -373,7 +395,8 @@ async def signup_organization(data: OrganizationCreate):
             "user_id": user_id,
             "email": data.admin_email,
             "name": data.admin_name,
-            "role": "owner"
+            "role": "owner",
+            "email_verified": False
         }
     }
 

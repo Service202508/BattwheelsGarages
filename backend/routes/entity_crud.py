@@ -51,9 +51,10 @@ async def get_user(user_id: str, request: Request):
 @router.put("/users/{user_id}")
 async def update_user(user_id: str, update: UserUpdate, request: Request):
     current_user = await require_auth(request)
-    if current_user.get("user_id") != user_id and current_user.get("role") != "admin":
+    role = getattr(request.state, "tenant_user_role", None)
+    if current_user.get("user_id") != user_id and role not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Cannot update other users")
-    if update.role and current_user.get("role") != "admin":
+    if update.role and role not in ("admin", "owner"):
         raise HTTPException(status_code=403, detail="Only admins can change roles")
     
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
@@ -86,7 +87,8 @@ async def create_supplier(
     ctx: TenantContext = Depends(tenant_context_required)
 ):
     user = await require_auth(request)
-    if user.get("role") not in ["admin", "owner", "technician", "manager"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "technician", "manager"):
         raise HTTPException(status_code=403, detail="Technician or Admin access required")
     
     supplier = Supplier(**data.model_dump())
@@ -127,7 +129,8 @@ async def update_supplier(
     ctx: TenantContext = Depends(tenant_context_required)
 ):
     user = await require_auth(request)
-    if user.get("role") not in ["admin", "owner", "technician", "manager"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "technician", "manager"):
         raise HTTPException(status_code=403, detail="Technician or Admin access required")
     query = {"supplier_id": supplier_id, "organization_id": ctx.org_id}
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
@@ -170,7 +173,8 @@ async def get_vehicles(
     user = await require_auth(request)
     base_query = {"organization_id": ctx.org_id}
     
-    if user.get("role") in ["admin", "technician"]:
+    role = getattr(request.state, "tenant_user_role", None)
+    if role in ("admin", "owner", "technician"):
         vehicles = await db.vehicles.find(base_query, {"_id": 0}).to_list(1000)
     else:
         query = {**base_query, "owner_id": user.get("user_id")}
@@ -211,7 +215,7 @@ async def update_vehicle_status(
 # See: /app/backend/routes/tickets.py and /app/backend/services/ticket_service.py
 # The new module:
 # - Emits events (TICKET_CREATED, TICKET_UPDATED, TICKET_CLOSED)
-# - Integrates with EFI AI matching pipeline
+# - Integrates with EVFI AI matching pipeline
 # - Triggers confidence engine on ticket closure
 # - Auto-creates draft failure cards for undocumented issues
 

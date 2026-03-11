@@ -4,7 +4,7 @@ Battwheels OS - Authentication Routes
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 import os
 
@@ -107,11 +107,12 @@ async def login(credentials: UserLogin, response: Response):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
-    user_response = {k: v for k, v in user.items() if k not in ("password_hash", "password")}
+    user_response = {k: v for k, v in user.items() if k not in ("password_hash", "password", "verification_token", "verification_token_expires")}
     
     return {
         "token": token, 
         "user": user_response,
+        "email_verified": user.get("email_verified", True),
         "organizations": organizations,
         "organization": organizations[0] if len(organizations) == 1 else None,
         "current_organization": current_org_id
@@ -143,6 +144,96 @@ async def register(user_data: UserRegister):
     
     return {"token": token, "user": user_response}
 
+
+@router.get("/verify-email")
+async def verify_email(token: str):
+    """Verify user's email address via token from verification link."""
+    now = datetime.now(timezone.utc).isoformat()
+    user = await db.users.find_one({
+        "verification_token": token,
+        "verification_token_expires": {"$gt": now}
+    }, {"_id": 1, "email": 1, "email_verified": 1})
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired verification link. Please request a new one.")
+    
+    if user.get("email_verified"):
+        return {"success": True, "message": "Email is already verified."}
+    
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {
+            "email_verified": True,
+            "verification_token": None,
+            "verification_token_expires": None,
+            "verified_at": now
+        }}
+    )
+    return {"success": True, "message": "Email verified successfully. You can now login."}
+
+
+@router.post("/resend-verification")
+async def resend_verification(request: Request):
+    """Resend verification email to a user who hasn't verified yet."""
+    body = await request.json()
+    email = body.get("email", "").strip().lower()
+    
+    # Generic response to avoid email enumeration
+    generic_msg = "If this email is registered, a verification link has been sent."
+    
+    if not email:
+        return {"message": generic_msg}
+    
+    user = await db.users.find_one({"email": email}, {"_id": 1, "email_verified": 1, "name": 1})
+    if not user:
+        return {"message": generic_msg}
+    
+    if user.get("email_verified"):
+        return {"message": "Email is already verified."}
+    
+    new_token = str(uuid.uuid4())
+    now_dt = datetime.now(timezone.utc)
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {
+            "verification_token": new_token,
+            "verification_token_expires": (now_dt + timedelta(hours=24)).isoformat()
+        }}
+    )
+    
+    # Send verification email
+    try:
+        from services.email_service import EmailService
+        base_url = os.environ.get("APP_URL", "https://battwheels.com")
+        verification_url = f"{base_url}/verify-email?token={new_token}"
+        html_body = f"""
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0e12; color: #f4f6f0; padding: 40px; border-radius: 8px;">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="color: #CBFF00; font-size: 24px; margin: 0;">Battwheels OS</h1>
+  </div>
+  <h2 style="color: white; font-size: 20px;">Verify Your Email</h2>
+  <p style="color: #9ca3af; line-height: 1.6;">
+    Hi {user.get("name", "there")},<br><br>
+    Please verify your email to activate your Battwheels OS account.
+  </p>
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="{verification_url}"
+      style="background: #CBFF00; color: #0a0e12; padding: 14px 32px;
+      text-decoration: none; font-weight: bold; border-radius: 8px;
+      display: inline-block; font-size: 14px;">VERIFY MY EMAIL</a>
+  </div>
+  <p style="color: #6b7280; font-size: 13px;">This link expires in 24 hours.</p>
+  <hr style="border-color: #1f2937; margin: 30px 0;">
+  <p style="color: #4b5563; font-size: 12px; text-align: center;">&copy; 2026 Battwheels Services Private Limited</p>
+</div>"""
+        await EmailService.send_email(to=email, subject="Verify your Battwheels OS account", html_content=html_body)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to resend verification email: {e}")
+    
+    return {"message": generic_msg}
+
+
 @router.post("/logout")
 async def logout(request: Request, response: Response):
     session_token = request.cookies.get("session_token")
@@ -169,7 +260,7 @@ async def get_current_user(request: Request):
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token")
     
-    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0, "verification_token": 0, "verification_token_expires": 0})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     

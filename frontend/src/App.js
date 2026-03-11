@@ -1,3 +1,4 @@
+// Build: battwheels-production-v1
 import { useEffect, useState, createContext, useContext } from "react";
 import "@/App.css";
 import "leaflet/dist/leaflet.css";
@@ -14,6 +15,7 @@ import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Contact from "@/pages/Contact";
 import ResetPassword from "@/pages/ResetPassword";
+import VerifyEmail from "@/pages/VerifyEmail";
 import Dashboard from "@/pages/Dashboard";
 import Tickets from "@/pages/Tickets";
 import NewTicket from "@/pages/NewTicket";
@@ -36,6 +38,7 @@ import LeaveManagement from "@/pages/LeaveManagement";
 import Payroll from "@/pages/Payroll";
 import Employees from "@/pages/Employees";
 import FailureIntelligence from "@/pages/FailureIntelligence";
+import AIKnowledgeBrain from "@/components/ai/AIKnowledgeBrain";
 import FaultTreeImport from "@/pages/FaultTreeImport";
 import AMCManagement from "@/pages/AMCManagement";
 import TechnicianProductivity from "@/pages/ProductivityDashboard";
@@ -101,6 +104,7 @@ import BrandingSettings from "@/pages/BrandingSettings";
 import PlatformAdmin from "@/pages/PlatformAdmin";
 import DataInsights from "@/pages/DataInsights";
 import TicketDetail from "@/pages/TicketDetail";
+import JobCardPage from "@/pages/JobCardPage";
 import HRDashboard from "@/pages/HRDashboard";
 import PeriodLocks from "@/pages/PeriodLocks";
 import BalanceSheet from "@/pages/BalanceSheet";
@@ -140,7 +144,8 @@ import BusinessReports from "@/pages/business/BusinessReports";
 // Admin Settings
 import PermissionsManager from "@/pages/settings/PermissionsManager";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const BACKEND_URL = window.location.origin;
 export const API = `${BACKEND_URL}/api/v1`;
 export const AUTH_API = `${BACKEND_URL}/api`;
 
@@ -179,6 +184,7 @@ export const useAuth = () => {
   const [organizations, setOrganizations] = useState([]);
   const [currentOrg, setCurrentOrg] = useState(null);
   const [needsOrgSelection, setNeedsOrgSelection] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(true);
 
   const checkAuth = async () => {
     try {
@@ -197,6 +203,7 @@ export const useAuth = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
+        setEmailVerified(data.email_verified !== false);
         // Initialize organization after successful auth check
         await initializeOrgContext();
       } else {
@@ -279,11 +286,12 @@ export const useAuth = () => {
     setOrgReady(true);
   };
 
-  const login = async (userData, token, orgs = null) => {
+  const login = async (userData, token, orgs = null, emailVerifiedStatus = true) => {
     if (token) {
       localStorage.setItem("token", token);
     }
     setUser(userData);
+    setEmailVerified(emailVerifiedStatus);
     
     // If organizations are provided from login response
     if (orgs && orgs.length > 0) {
@@ -336,7 +344,9 @@ export const useAuth = () => {
     organizations,
     currentOrg,
     needsOrgSelection,
-    selectOrganization
+    selectOrganization,
+    emailVerified,
+    setEmailVerified
   };
 };
 
@@ -544,11 +554,12 @@ function AppRouter() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       
       {/* Zoho-style Financial Home Dashboard */}
       <Route path="/home" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Home user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -557,7 +568,7 @@ function AppRouter() {
       {/* Time Tracking */}
       <Route path="/time-tracking" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "technician"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <TimeTracking user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -566,7 +577,7 @@ function AppRouter() {
       {/* Documents */}
       <Route path="/documents" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Documents user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -574,70 +585,69 @@ function AppRouter() {
       
       <Route path="/dashboard" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Dashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/tickets" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Tickets user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/tickets/new" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <NewTicket user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/tickets/:ticketId" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <TicketDetail user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
-      <Route path="/inventory" element={
+      <Route path="/tickets/:ticketId/job-card" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
-            <Inventory user={auth.user} />
-          </Layout>
+          <JobCardPage user={auth.user} />
         </ProtectedRoute>
       } />
+      <Route path="/inventory" element={<Navigate to="/inventory-management" replace />} />
       <Route path="/ai-assistant" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <AIAssistant user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/vehicles" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Vehicles user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/users" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Users user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/alerts" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Alerts user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/settings" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Settings user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -645,266 +655,260 @@ function AppRouter() {
       {/* New ERP Modules */}
       <Route path="/suppliers" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Suppliers user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/purchases" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <PurchaseOrders user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/sales" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <SalesOrders user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/quotes" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Quotes user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/finance" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <FinanceDashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/bills" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Bills user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/credit-notes" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <CreditNotes user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/banking" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Banking user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/period-locks" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <PeriodLocks user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/balance-sheet" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <BalanceSheet />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/profit-loss" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ProfitLoss />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/accountant" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Accountant user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/stock-transfers" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <StockTransfers user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/reports" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Reports user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/gst-reports" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <GSTReports user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/vendor-credits" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <VendorCredits user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/chart-of-accounts" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ChartOfAccounts user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/journal-entries" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <JournalEntries user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/trial-balance" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <TrialBalance user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/recurring-transactions" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <RecurringTransactions user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/projects" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Projects user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/projects/:projectId" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ProjectDetail user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/taxes" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Taxes user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/delivery-challans" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <DeliveryChallans user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
-      <Route path="/invoices" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
-            <Invoices user={auth.user} />
-          </Layout>
-        </ProtectedRoute>
-      } />
+      <Route path="/invoices" element={<Navigate to="/invoices-enhanced" replace />} />
       <Route path="/items" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ItemsEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/inventory-management" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ItemsEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/price-lists" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <PriceLists user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/inventory-adjustments" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <InventoryAdjustments user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/serial-batch-tracking" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <SerialBatchTracking user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/recurring-expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <RecurringExpenses user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/project-tasks" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ProjectTasks user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/opening-balances" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <OpeningBalances user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/exchange-rates" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ExchangeRates user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/activity-logs" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ActivityLogs user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/zoho-sync" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ZohoSync user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/subscription" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <SubscriptionManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/team" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <TeamManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -916,84 +920,84 @@ function AppRouter() {
       } />
       <Route path="/branding" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <BrandingSettings user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/organization-settings" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <OrganizationSettings user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/all-settings" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <AllSettings user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/data-management" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <DataManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/accounting" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Accounting user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/customers" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Customers user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/contacts" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ContactsEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/estimates" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <EstimatesEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/sales-orders" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <SalesOrdersEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/invoices-enhanced" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <InvoicesEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/payments-received" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <PaymentsReceived user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/invoice-settings" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <InvoiceSettings user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1005,7 +1009,7 @@ function AppRouter() {
       {/* Advanced Reports with Charts */}
       <Route path="/reports-advanced" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <ReportsAdvanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1013,7 +1017,7 @@ function AppRouter() {
       {/* Bills Enhanced Module */}
       <Route path="/bills-enhanced" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <BillsEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1021,7 +1025,7 @@ function AppRouter() {
       {/* Composite Items (Kits/Assemblies/Bundles) */}
       <Route path="/composite-items" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <CompositeItems user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1029,7 +1033,7 @@ function AppRouter() {
       {/* Inventory Enhanced Module (Variants, Bundles, Shipments, Returns) */}
       <Route path="/inventory-enhanced" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <InventoryEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1037,7 +1041,7 @@ function AppRouter() {
       {/* Recurring Bills */}
       <Route path="/recurring-bills" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <RecurringBills user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1045,7 +1049,7 @@ function AppRouter() {
       {/* Fixed Assets */}
       <Route path="/fixed-assets" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <FixedAssets user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1053,91 +1057,98 @@ function AppRouter() {
       {/* Custom Modules */}
       <Route path="/custom-modules" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <CustomModules user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Expenses user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/data-migration" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <DataMigration user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/hr" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager", "hr"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <HRDashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/attendance" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Attendance user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/leave" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <LeaveManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/payroll" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "hr"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Payroll user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/employees" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Employees user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/failure-intelligence" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <FailureIntelligence user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/knowledge-brain" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
+            <AIKnowledgeBrain user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/fault-tree-import" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <FaultTreeImport user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/amc" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <AMCManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/productivity" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <TechnicianProductivity user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/insights" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <DataInsights user={auth.user} />
           </Layout>
         </ProtectedRoute>
@@ -1320,7 +1331,7 @@ function AppRouter() {
       {/* Admin Settings - Permissions */}
       <Route path="/settings/permissions" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
-          <Layout user={auth.user} onLogout={auth.logout}>
+          <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <PermissionsManager user={auth.user} />
           </Layout>
         </ProtectedRoute>

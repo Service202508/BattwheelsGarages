@@ -312,11 +312,12 @@ def _get_razorpay_client():
     return razorpay.Client(auth=(key_id, key_secret))
 
 
+from utils.database import db as _sub_db
+
+
 def _get_db():
     """Get MongoDB database handle."""
-    from motor.motor_asyncio import AsyncIOMotorClient
-    client = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
-    return client[os.environ.get("DB_NAME", "battwheels_dev")]
+    return _sub_db
 
 
 class SubscribeRequest(BaseModel):

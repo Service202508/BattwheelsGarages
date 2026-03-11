@@ -9,7 +9,7 @@ import { X, Zap, ArrowRight, Star } from "lucide-react";
  */
 
 const PLAN_DESCRIPTIONS = {
-  starter: "Advanced Reports, EFI Intelligence, AMC",
+  starter: "Advanced Reports, EVFI Intelligence, AMC",
   professional: "Payroll, Projects, E-Invoice, Accounting, HR",
   enterprise: "Multi-Warehouse, Stock Transfers, SSO, White-Label",
 };

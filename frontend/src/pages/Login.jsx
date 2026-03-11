@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Mail, Lock, User, Eye, EyeOff, Zap } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Zap, ArrowLeft } from "lucide-react";
 import { API, AUTH_API } from "@/App";
 
 // ─── Inject fonts + keyframes once ───────────────────────────────────────────
@@ -502,7 +502,7 @@ const LeftPanel = () => (
             marginBottom: 4,
           }}
         >
-          EFI
+          Battwheels EVFI™
         </div>
         <div
           style={{
@@ -598,7 +598,7 @@ export default function Login({ onLogin }) {
           localStorage.setItem("organization_id", data.organization.organization_id);
           localStorage.setItem("organization", JSON.stringify(data.organization));
         }
-        await onLogin(data.user, data.token, orgs);
+        await onLogin(data.user, data.token, orgs, data.email_verified !== false);
         toast.success("Welcome back!");
         if (data.user?.is_platform_admin) {
           navigate("/platform-admin", { replace: true });
@@ -760,6 +760,30 @@ export default function Login({ onLogin }) {
             maxWidth: 360,
           }}
         >
+          {/* Back to Home */}
+          <div style={anim(50)}>
+            <Link
+              to="/"
+              data-testid="back-to-home-btn"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "'Syne', sans-serif",
+                fontSize: 13,
+                color: "rgb(var(--bw-white) / 0.45)",
+                textDecoration: "none",
+                marginBottom: 24,
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#C8FF00")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgb(var(--bw-white) / 0.45)")}
+            >
+              <ArrowLeft size={15} />
+              Back to Home
+            </Link>
+          </div>
+
           {/* Header */}
           <div style={anim(100)}>
             <h2
@@ -1021,7 +1045,7 @@ export default function Login({ onLogin }) {
               margin: "0 0 6px",
             }}
           >
-            © 2026 Battwheels Services Pvt. Ltd.
+            &copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: 12, alignItems: "center" }}>
             <a href="#" className="bw-footer-link">
@@ -1032,6 +1056,9 @@ export default function Login({ onLogin }) {
               Terms of Service
             </a>
           </div>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "rgb(var(--bw-white) / 0.15)", margin: "8px 0 0", letterSpacing: "0.05em" }}>
+            Battwheels Engine Beta v2.00.26
+          </p>
         </div>
       </div>
 

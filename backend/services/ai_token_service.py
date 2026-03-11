@@ -2,7 +2,7 @@
 AI Diagnostic Token Service
 ============================
 Manages per-org monthly AI diagnostic token allocations.
-One token = one new EFI diagnostic session started.
+One token = one new EVFI diagnostic session started.
 Viewing past results does NOT consume tokens.
 
 Token Allocations:

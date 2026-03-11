@@ -290,12 +290,13 @@ class TestGSTR3BReport:
         assert "section_6" in data    # Payment of tax
         assert "summary" in data
         
-        # Verify section 3.1 structure
-        assert "taxable_value" in data["section_3_1"]
-        assert "cgst" in data["section_3_1"]
-        assert "sgst" in data["section_3_1"]
-        assert "igst" in data["section_3_1"]
-        assert "total_tax" in data["section_3_1"]
+        # Verify section 3.1 structure (nested under sub-key 'a')
+        assert "a" in data["section_3_1"]
+        assert "taxable_value" in data["section_3_1"]["a"]
+        assert "cgst" in data["section_3_1"]["a"]
+        assert "sgst" in data["section_3_1"]["a"]
+        assert "igst" in data["section_3_1"]["a"]
+        assert "total_tax" in data["section_3_1"]["a"]
         
         # Verify section 4 (ITC) structure — now nested under table_4C (P1-10)
         assert "table_4A" in data["section_4"]

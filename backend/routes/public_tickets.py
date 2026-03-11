@@ -755,9 +755,11 @@ async def get_public_issue_suggestions(
 # ==================== HELPER FUNCTIONS ====================
 
 async def send_ticket_notification(db, ticket_id: str, notification_type: str):
-    """Send email/SMS notification for ticket events"""
+    """Send email notification for ticket events via Resend"""
+    import logging
+    logger = logging.getLogger(__name__)
     try:
-        from services.notification_service import send_email_async
+        from services.email_service import EmailService
         
         ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
         if not ticket:
@@ -765,17 +767,52 @@ async def send_ticket_notification(db, ticket_id: str, notification_type: str):
         
         customer_email = ticket.get("customer_email")
         if not customer_email:
+            logger.info(f"No customer email for ticket {ticket_id}, skipping notification")
             return
         
-        # For now, just log - actual email sending requires RESEND_API_KEY
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(f"Would send {notification_type} notification to {customer_email} for ticket {ticket_id}")
+        customer_name = ticket.get("customer_name", "Customer")
+        org_id = ticket.get("organization_id")
+        org_name = "Battwheels"
+        if org_id:
+            org_doc = await db.organizations.find_one({"organization_id": org_id}, {"_id": 0, "company_name": 1, "name": 1})
+            if org_doc:
+                org_name = org_doc.get("company_name", org_doc.get("name", "Battwheels"))
+        
+        templates = {
+            "ticket_created": {
+                "subject": f"Service Ticket {ticket_id} Created — {org_name}",
+                "body": f"""
+                    <p>Dear {customer_name},</p>
+                    <p>Your service ticket <strong>{ticket_id}</strong> has been created successfully.</p>
+                    <p><strong>Description:</strong> {ticket.get('complaint_description', ticket.get('description', 'N/A'))}</p>
+                    <p>We will keep you updated on the progress. Thank you for choosing {org_name}.</p>
+                """
+            },
+            "estimate_approved": {
+                "subject": f"Estimate Approved for Ticket {ticket_id} — {org_name}",
+                "body": f"""
+                    <p>Dear {customer_name},</p>
+                    <p>The estimate for your service ticket <strong>{ticket_id}</strong> has been approved.</p>
+                    <p>Our team will now proceed with the service. Thank you for your confirmation.</p>
+                """
+            },
+        }
+        
+        tmpl = templates.get(notification_type)
+        if not tmpl:
+            logger.info(f"No template for notification type: {notification_type}")
+            return
+        
+        result = await EmailService.send_email(
+            to=customer_email,
+            subject=tmpl["subject"],
+            html_content=tmpl["body"],
+            org_id=org_id
+        )
+        logger.info(f"Ticket notification ({notification_type}) sent to {customer_email}: {result.get('status')}")
         
     except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Failed to send notification: {e}")
+        logger.error(f"Failed to send ticket notification: {e}")
 
 
 # ==================== SERVICE CHARGES INFO ====================

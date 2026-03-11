@@ -447,9 +447,9 @@ async def get_technician_insights(request: Request, date_from: Optional[str] = Q
     }
 
 
-# ======================== EFI INTELLIGENCE ========================
+# ======================== EVFI INTELLIGENCE ========================
 
-@router.get("/efi")
+@router.get("/evfi")
 async def get_efi_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
@@ -462,7 +462,7 @@ async def get_efi_insights(request: Request, date_from: Optional[str] = Query(No
         "created_at": {"$gte": start + "T00:00:00", "$lte": end + "T23:59:59"},
     }
 
-    # EFI session count (best-effort)
+    # EVFI session count (best-effort)
     efi_count = 0
     try:
         efi_count = await db.efi_sessions.count_documents({

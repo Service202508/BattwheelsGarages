@@ -830,6 +830,23 @@ class TicketEstimateService:
         
         now = datetime.now(timezone.utc)
         
+        # Validate HSN/SAC codes on line items (blocking)
+        hsn_errors = []
+        for idx, item in enumerate(line_items, 1):
+            code = (item.get("hsn_code") or "").strip()
+            if not code:
+                hsn_errors.append(f"Line item {idx} ({item.get('name', '')}): HSN/SAC code is required")
+                continue
+            code_str = str(code)
+            if code_str.startswith("99"):
+                if not (len(code_str) == 6 and code_str.isdigit()):
+                    hsn_errors.append(f"Line item {idx} ({item.get('name', '')}): Invalid SAC code '{code_str}': must be 6 digits starting with '99'")
+            else:
+                if not (len(code_str) in (4, 6, 8) and code_str.isdigit()):
+                    hsn_errors.append(f"Line item {idx} ({item.get('name', '')}): Invalid HSN code '{code_str}': must be 4, 6, or 8 digits")
+        if hsn_errors:
+            raise ValueError(f"HSN/SAC validation failed: {'; '.join(hsn_errors)}")
+        
         # Generate invoice number
         invoice_number = await self._get_next_invoice_number(organization_id)
         invoice_id = f"inv_{uuid.uuid4().hex[:12]}"
@@ -925,6 +942,7 @@ class TicketEstimateService:
                 {
                     "$set": {
                         "status": "invoiced",
+                        "has_invoice": True,
                         "invoice_id": invoice_id,
                         "updated_at": now.isoformat()
                     },
@@ -940,6 +958,23 @@ class TicketEstimateService:
         
         # Return invoice document (without _id)
         invoice_doc.pop("_id", None)
+        
+        # Post journal entry (DR Accounts Receivable, CR Revenue, CR GST)
+        try:
+            from services.double_entry_service import DoubleEntryService
+            de_service = DoubleEntryService(self.db)
+            success, msg, je = await de_service.post_sales_invoice(
+                organization_id=organization_id,
+                invoice=invoice_doc,
+                created_by=user_id
+            )
+            if success:
+                logger.info(f"Journal entry posted for ticket invoice {invoice_doc['invoice_number']}: {msg}")
+            else:
+                logger.warning(f"Failed to post journal for ticket invoice: {msg}")
+        except Exception as e:
+            logger.error(f"Error posting journal entry for ticket invoice: {e}")
+        
         return {
             "invoice": invoice_doc,
             "estimate": await self.get_estimate_by_id(estimate_id, organization_id)

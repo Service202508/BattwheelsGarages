@@ -51,7 +51,7 @@ export default function ProjectTasks() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/zoho/projects`, { headers });
+      const res = await fetch(`${API}/projects`, { headers });
       const data = await res.json();
       setProjects(data.projects || []);
       if (data.projects?.length > 0) {
@@ -68,7 +68,7 @@ export default function ProjectTasks() {
   const fetchTasks = async (projectId) => {
     setTasksLoading(true);
     try {
-      const res = await fetch(`${API}/zoho/projects/${projectId}/tasks`, { headers });
+      const res = await fetch(`${API}/projects/${projectId}/tasks`, { headers });
       const data = await res.json();
       setTasks(data.tasks || []);
     } catch (error) {
@@ -91,7 +91,7 @@ export default function ProjectTasks() {
         project_id: selectedProject.project_id
       };
 
-      const res = await fetch(`${API}/zoho/projects/${selectedProject.project_id}/tasks`, {
+      const res = await fetch(`${API}/projects/${selectedProject.project_id}/tasks`, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -118,7 +118,7 @@ export default function ProjectTasks() {
     }
 
     try {
-      const res = await fetch(`${API}/zoho/projects/${selectedProject.project_id}/tasks/${editingTask.task_id}`, {
+      const res = await fetch(`${API}/projects/${selectedProject.project_id}/tasks/${editingTask.task_id}`, {
         method: "PUT",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -143,7 +143,7 @@ export default function ProjectTasks() {
     if (!confirm("Are you sure you want to delete this task?")) return;
     
     try {
-      const res = await fetch(`${API}/zoho/projects/${selectedProject.project_id}/tasks/${taskId}`, {
+      const res = await fetch(`${API}/projects/${selectedProject.project_id}/tasks/${taskId}`, {
         method: "DELETE",
         headers
       });

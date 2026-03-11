@@ -526,7 +526,7 @@ export default function SubscriptionManagement() {
                   features: ["hr_employees", "hr_attendance", "hr_leave", "hr_payroll"]
                 },
                 { 
-                  title: "Intelligence (EFI)", 
+                  title: "Intelligence (EVFI)", 
                   icon: Bot, 
                   features: ["efi_failure_intelligence", "efi_ai_guidance", "efi_knowledge_brain", "efi_expert_escalation"]
                 },

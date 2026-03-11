@@ -7,17 +7,12 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
 import os
 from fastapi import Request
 from utils.database import extract_org_id, org_query
 
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/invoice-automation", tags=["Invoice Automation"])
 
@@ -107,6 +102,7 @@ async def get_overdue_invoices(request: Request):
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     invoices = await invoices_collection.find({
+        "organization_id": org_id,
         "status": {"$in": ["sent", "partially_paid"]},
         "due_date": {"$lt": today},
         "balance_due": {"$gt": 0}
@@ -134,6 +130,7 @@ async def get_due_soon_invoices(request: Request, days: int = 7):
     today_str = today.strftime("%Y-%m-%d")
     
     invoices = await invoices_collection.find({
+        "organization_id": org_id,
         "status": {"$in": ["sent", "partially_paid"]},
         "due_date": {"$gte": today_str, "$lte": future_date},
         "balance_due": {"$gt": 0}
@@ -369,7 +366,7 @@ async def apply_late_fee(request: Request, invoice_id: str):
 async def auto_apply_credits(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Automatically apply available customer credits to an invoice"""
-    invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id, "organization_id": org_id})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -382,6 +379,7 @@ async def auto_apply_credits(request: Request, invoice_id: str):
     # Get available credits
     credits = await customer_credits_collection.find({
         "customer_id": customer_id,
+        "organization_id": org_id,
         "status": "available"
     }).to_list(100)
     
@@ -468,6 +466,7 @@ async def get_aging_report(request: Request):
     
     # Get all unpaid invoices
     invoices = await invoices_collection.find({
+        "organization_id": org_id,
         "status": {"$in": ["sent", "partially_paid", "overdue"]},
         "balance_due": {"$gt": 0}
     }, {"_id": 0}).to_list(10000)

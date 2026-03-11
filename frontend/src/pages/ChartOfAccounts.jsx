@@ -42,9 +42,9 @@ export default function ChartOfAccounts() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/chartofaccounts`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API}/chart-of-accounts`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
-      setAccounts(data.chartofaccounts || []);
+      setAccounts(Array.isArray(data) ? data : (data.chartofaccounts || []));
     } catch (error) { console.error("Failed to fetch:", error); }
     finally { setLoading(false); }
   };
@@ -54,7 +54,7 @@ export default function ChartOfAccounts() {
     if (!newAccount.account_type) return toast.error("Select account type");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/chartofaccounts`, {
+      const res = await fetch(`${API}/banking/chart-of-accounts`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newAccount)

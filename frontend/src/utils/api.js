@@ -19,7 +19,7 @@ export const setOrganizationId = (orgId) => {
 
 // Helper to read CSRF token from cookie
 const getCsrfToken = () => {
-  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
   return match ? decodeURIComponent(match[1]) : null;
 };
 

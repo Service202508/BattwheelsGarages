@@ -15,18 +15,13 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
-import motor.motor_asyncio
 import os
 import uuid
 import logging
 
 logger = logging.getLogger(__name__)
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/banking", tags=["Banking & Accountant"])
 
@@ -446,12 +441,14 @@ async def complete_reconciliation(recon_id: str, transaction_ids: List[str] = []
 
 @router.get("/reconciliation/history")
 async def get_reconciliation_history(
+    request: Request,
     bank_account_id: Optional[str] = None,
     page: int = 1,
     per_page: int = 20
 ):
     """Get reconciliation history"""
-    query = {}
+    org_id = _get_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     if bank_account_id:
         query["bank_account_id"] = bank_account_id
     
@@ -604,13 +601,15 @@ async def create_journal_entry(entry: JournalEntryCreate):
 
 @router.get("/journal-entries")
 async def list_journal_entries(
+    request: Request,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     page: int = 1,
     per_page: int = 50
 ):
     """List journal entries"""
-    query = {}
+    org_id = _get_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     if start_date:
         query["entry_date"] = {"$gte": start_date}
     if end_date:
@@ -666,12 +665,12 @@ async def get_profit_loss_report(
     
     # Also calculate from actual transactions
     invoices_pipeline = [
-        {"$match": {"invoice_date": {"$gte": start_date, "$lte": end_date}, "status": {"$nin": ["void", "draft"]}}},
+        {"$match": {"organization_id": org_id, "invoice_date": {"$gte": start_date, "$lte": end_date}, "status": {"$nin": ["void", "draft"]}}},
         {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
     ]
     
     bills_pipeline = [
-        {"$match": {"bill_date": {"$gte": start_date, "$lte": end_date}, "status": {"$nin": ["void", "draft"]}}},
+        {"$match": {"organization_id": org_id, "bill_date": {"$gte": start_date, "$lte": end_date}, "status": {"$nin": ["void", "draft"]}}},
         {"$group": {"_id": None, "total": {"$sum": "$grand_total"}}}
     ]
     

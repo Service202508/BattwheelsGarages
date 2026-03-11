@@ -523,7 +523,7 @@ function TechnicianSection({ data, loading }) {
   );
 }
 
-// ─── Section 4: EFI Intelligence ──────────────────────────────────────────────
+// ─── Section 4: EVFI Intelligence ──────────────────────────────────────────────
 function EfiSection({ data, loading }) {
   if (loading) return <LoadingCard rows={4} />;
   if (!data) return <EmptyState icon={Cpu} action="Run your first diagnostic to see AI insights" />;
@@ -532,12 +532,12 @@ function EfiSection({ data, loading }) {
   const hasData = failure_patterns.length > 0;
 
   return (
-    <div className="space-y-5" data-testid="efi-section">
+    <div className="space-y-5" data-testid="evfi-section">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard icon={Zap} label="Diagnoses Run" value={fmtNum(stats.diagnoses_run)} color={VOLT} testId="efi-kpi-diagnoses" />
-        <KpiCard icon={Cpu} label="Fault Types Found" value={fmtNum(stats.total_fault_types)} color={CYAN} testId="efi-kpi-faults" />
-        <KpiCard icon={Activity} label="Tickets in Period" value={fmtNum(stats.total_in_period)} color={BLUE} testId="efi-kpi-total" />
-        <KpiCard icon={Target} label="Top Fault" value={stats.most_diagnosed || "—"} color={AMBER} testId="efi-kpi-top" />
+        <KpiCard icon={Zap} label="Diagnoses Run" value={fmtNum(stats.diagnoses_run)} color={VOLT} testId="evfi-kpi-diagnoses" />
+        <KpiCard icon={Cpu} label="Fault Types Found" value={fmtNum(stats.total_fault_types)} color={CYAN} testId="evfi-kpi-faults" />
+        <KpiCard icon={Activity} label="Tickets in Period" value={fmtNum(stats.total_in_period)} color={BLUE} testId="evfi-kpi-total" />
+        <KpiCard icon={Target} label="Top Fault" value={stats.most_diagnosed || "—"} color={AMBER} testId="evfi-kpi-top" />
       </div>
 
       {!hasData ? (
@@ -905,7 +905,7 @@ export default function DataInsights({ user }) {
       component: <RevenueSection data={revenue} loading={loading.revenue} />,
     },
     {
-      key: "operations", icon: Activity, title: "Workshop Operations",
+      key: "operations", icon: Activity, title: "Service Operations",
       sub: "Ticket volume, resolution times and SLA tracking",
       component: <OperationsSection data={operations} loading={loading.operations} />,
     },
@@ -915,7 +915,7 @@ export default function DataInsights({ user }) {
       component: <TechnicianSection data={technicians} loading={loading.technicians} />,
     },
     {
-      key: "efi", icon: Cpu, title: "EFI Intelligence",
+      key: "efi", icon: Cpu, title: "EVFI Intelligence",
       sub: "Fault patterns, vehicle diagnostics and trends",
       component: <EfiSection data={efi} loading={loading.efi} />,
     },
@@ -943,7 +943,7 @@ export default function DataInsights({ user }) {
             Data Insights
           </h1>
           <p className="text-sm mt-0.5" style={{ color: DIM_TEXT }}>
-            Business intelligence for your workshop
+            Business intelligence for your service center
           </p>
         </div>
 

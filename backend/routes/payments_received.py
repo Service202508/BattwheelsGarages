@@ -3,11 +3,10 @@ Payments Received Module - Zoho Books Style
 Handles payment recording, multi-invoice splitting, overpayments, retainer payments, and refunds.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, UploadFile, File
+from fastapi import APIRouter, HTTPException, BackgroundTasks, UploadFile, File, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
-import motor.motor_asyncio
 import uuid
 import csv
 import io
@@ -16,10 +15,7 @@ import os
 # Import double-entry posting hooks
 from services.posting_hooks import post_payment_received_journal_entry
 
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "battwheels")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 router = APIRouter(prefix="/payments-received", tags=["Payments Received"])
 
@@ -116,7 +112,7 @@ async def add_payment_history(payment_id: str, action: str, details: str, user_i
         "timestamp": datetime.now(timezone.utc).isoformat()
     })
 
-async def update_invoice_payment_status(invoice_id: str):
+async def update_invoice_payment_status(invoice_id: str, org_id: str = None):
     """Update invoice status based on payments"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
@@ -125,10 +121,10 @@ async def update_invoice_payment_status(invoice_id: str):
     total = invoice.get("grand_total", 0)
     
     # Get all payments for this invoice
-    payments = await payments_collection.find({
-        "allocations.invoice_id": invoice_id,
-        "status": {"$ne": "refunded"}
-    }).to_list(1000)
+    pq = {"allocations.invoice_id": invoice_id, "status": {"$ne": "refunded"}}
+    if org_id:
+        pq["organization_id"] = org_id
+    payments = await payments_collection.find(pq).to_list(1000)
     
     amount_paid = 0
     for payment in payments:
@@ -163,21 +159,21 @@ async def update_invoice_payment_status(invoice_id: str):
         }}
     )
 
-async def update_customer_balance(customer_id: str):
+async def update_customer_balance(customer_id: str, org_id: str = None):
     """Update customer's receivable balance"""
     # Get all unpaid invoices
-    invoices = await invoices_collection.find({
-        "customer_id": customer_id,
-        "status": {"$nin": ["void", "draft"]}
-    }).to_list(1000)
+    iq = {"customer_id": customer_id, "status": {"$nin": ["void", "draft"]}}
+    if org_id:
+        iq["organization_id"] = org_id
+    invoices = await invoices_collection.find(iq).to_list(1000)
     
     total_receivable = sum(inv.get("balance_due", 0) for inv in invoices)
     
     # Get customer credits
-    credits = await customer_credits_collection.find({
-        "customer_id": customer_id,
-        "status": "available"
-    }).to_list(1000)
+    cq = {"customer_id": customer_id, "status": "available"}
+    if org_id:
+        cq["organization_id"] = org_id
+    credits = await customer_credits_collection.find(cq).to_list(1000)
     
     total_credits = sum(c.get("amount", 0) for c in credits)
     
@@ -190,22 +186,21 @@ async def update_customer_balance(customer_id: str):
         }}
     )
 
-async def get_customer_open_invoices(customer_id: str) -> List[dict]:
+async def get_customer_open_invoices(customer_id: str, org_id: str = None) -> List[dict]:
     """Get all open invoices for a customer"""
-    invoices = await invoices_collection.find({
-        "customer_id": customer_id,
-        "status": {"$in": ["sent", "partially_paid", "overdue"]},
-        "balance_due": {"$gt": 0}
-    }, {"_id": 0}).sort("date", 1).to_list(1000)
+    q = {"customer_id": customer_id, "status": {"$in": ["sent", "partially_paid", "overdue"]}, "balance_due": {"$gt": 0}}
+    if org_id:
+        q["organization_id"] = org_id
+    invoices = await invoices_collection.find(q, {"_id": 0}).sort("date", 1).to_list(1000)
     
     return invoices
 
-async def get_customer_credits(customer_id: str) -> List[dict]:
+async def get_customer_credits(customer_id: str, org_id: str = None) -> List[dict]:
     """Get available credits for a customer"""
-    credits = await customer_credits_collection.find({
-        "customer_id": customer_id,
-        "status": "available"
-    }, {"_id": 0}).to_list(100)
+    q = {"customer_id": customer_id, "status": "available"}
+    if org_id:
+        q["organization_id"] = org_id
+    credits = await customer_credits_collection.find(q, {"_id": 0}).to_list(100)
     
     return credits
 
@@ -251,8 +246,10 @@ async def update_payment_settings(settings: dict):
 # ==================== SUMMARY & REPORTS ====================
 
 @router.get("/summary")
-async def get_payments_summary(period: str = "this_month"):
+async def get_payments_summary(request: Request, period: str = "this_month"):
     """Get payments summary statistics"""
+    from utils.database import extract_org_id
+    sum_org_id = extract_org_id(request)
     today = datetime.now(timezone.utc)
     
     if period == "today":
@@ -271,6 +268,8 @@ async def get_payments_summary(period: str = "this_month"):
         start_date = None
     
     match_filter = {"status": {"$ne": "refunded"}}
+    if sum_org_id:
+        match_filter["organization_id"] = sum_org_id
     if start_date:
         match_filter["payment_date"] = {"$gte": start_date.isoformat()[:10]}
     
@@ -288,7 +287,10 @@ async def get_payments_summary(period: str = "this_month"):
         by_mode[mode] = by_mode.get(mode, 0) + p.get("amount", 0)
     
     # Get pending credits
-    credits = await customer_credits_collection.find({"status": "available"}, {"_id": 0}).to_list(1000)
+    cr_filter = {"status": "available"}
+    if sum_org_id:
+        cr_filter["organization_id"] = sum_org_id
+    credits = await customer_credits_collection.find(cr_filter, {"_id": 0}).to_list(1000)
     total_credits = sum(c.get("amount", 0) for c in credits)
     
     return {
@@ -357,11 +359,11 @@ async def get_payments_by_mode(start_date: str = "", end_date: str = ""):
 @router.get("/customer/{customer_id}/open-invoices")
 async def get_customer_invoices_for_payment(customer_id: str):
     """Get open invoices for a customer when recording payment"""
-    invoices = await get_customer_open_invoices(customer_id)
-    credits = await get_customer_credits(customer_id)
-    
-    # Get customer info
+    # Get customer info to extract org_id
     customer = await contacts_collection.find_one({"contact_id": customer_id}, {"_id": 0})
+    oid = customer.get("organization_id", "") if customer else ""
+    invoices = await get_customer_open_invoices(customer_id, oid)
+    credits = await get_customer_credits(customer_id, oid)
     
     return {
         "code": 0,
@@ -396,6 +398,7 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     payment_id = generate_id("PAY")
     payment_number = await get_next_payment_number()
     payment_date = payment.payment_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    org_id = customer.get("organization_id", "")
     
     # Calculate allocation totals
     total_allocated = sum(a.amount for a in payment.allocations)
@@ -443,7 +446,7 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     # Update invoice statuses
     for alloc in payment.allocations:
         if alloc.amount > 0:
-            await update_invoice_payment_status(alloc.invoice_id)
+            await update_invoice_payment_status(alloc.invoice_id, org_id)
     
     # Create customer credit if overpayment
     if overpayment_amount > 0:
@@ -480,19 +483,12 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
         await customer_credits_collection.insert_one(credit_doc)
     
     # Update customer balance
-    await update_customer_balance(payment.customer_id)
+    await update_customer_balance(payment.customer_id, org_id)
     
     # Add history
     await add_payment_history(payment_id, "created", f"Payment {payment_number} recorded for ₹{payment.amount:,.2f}")
     
     # Post journal entry for double-entry bookkeeping
-    # Get org_id from one of the invoices
-    org_id = None
-    if payment.allocations:
-        first_invoice = await invoices_collection.find_one({"invoice_id": payment.allocations[0].invoice_id})
-        if first_invoice:
-            org_id = first_invoice.get("organization_id")
-    
     if org_id:
         try:
             await post_payment_received_journal_entry(
@@ -529,6 +525,7 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
 
 @router.get("/")
 async def list_payments(
+    request: Request,
     customer_id: str = "",
     payment_type: str = "",  # invoice, retainer, all
     payment_mode: str = "",
@@ -542,7 +539,9 @@ async def list_payments(
     per_page: int = 50
 ):
     """List all payments with filters"""
-    query = {}
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     
     if customer_id:
         query["customer_id"] = customer_id
@@ -601,13 +600,16 @@ async def list_payments(
 
 @router.get("/credits")
 async def list_all_credits(
+    request: Request,
     customer_id: str = "",
     status: str = "",
     page: int = 1,
     per_page: int = 50
 ):
     """List all customer credits"""
-    query = {}
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     if customer_id:
         query["customer_id"] = customer_id
     if status:
@@ -649,13 +651,16 @@ async def get_customer_credits_endpoint(customer_id: str):
 
 @router.get("/export")
 async def export_payments(
+    request: Request,
     format: str = "csv",
     start_date: str = "",
     end_date: str = "",
     customer_id: str = ""
 ):
     """Export payments to CSV"""
-    query = {}
+    from utils.database import extract_org_id
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id} if org_id else {}
     if start_date:
         query["payment_date"] = {"$gte": start_date}
     if end_date:
@@ -956,10 +961,11 @@ async def refund_payment(payment_id: str, refund: RefundCreate):
         raise HTTPException(status_code=404, detail="Payment not found")
     
     # Check available credit
-    credits = await customer_credits_collection.find({
-        "source_id": payment_id,
-        "status": "available"
-    }).to_list(10)
+    oid = payment.get("organization_id", "")
+    cq = {"source_id": payment_id, "status": "available"}
+    if oid:
+        cq["organization_id"] = oid
+    credits = await customer_credits_collection.find(cq).to_list(10)
     
     available_credit = sum(c.get("amount", 0) for c in credits)
     
@@ -1022,7 +1028,7 @@ async def refund_payment(payment_id: str, refund: RefundCreate):
     )
     
     # Update customer balance
-    await update_customer_balance(payment.get("customer_id"))
+    await update_customer_balance(payment.get("customer_id"), oid)
     
     await add_payment_history(payment_id, "refunded", f"Refund of ₹{refund.amount:,.2f} processed")
     

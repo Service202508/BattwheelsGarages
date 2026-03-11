@@ -25,26 +25,17 @@ if (SENTRY_DSN) {
 
 // Service worker: register in production, actively unregister in development.
 // In development the SW's cache-first strategy intercepts webpack HMR chunk
-// fetches and returns stale cached versions, causing intermittent full-page
-// reloads. We unregister any previously installed SW so those reloads stop.
+// Unregister any previously installed service worker and clear caches.
+// The SW was intercepting requests and serving stale cached content in production.
 if ('serviceWorker' in navigator) {
-  if (process.env.NODE_ENV === 'production') {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then((reg) => console.log('SW registered:', reg.scope))
-        .catch((err) => console.warn('SW registration failed:', err));
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((reg) => {
+      reg.unregister();
+      console.log('SW unregistered:', reg.scope);
     });
-  } else {
-    // Development: unregister every active service worker and clear caches
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach((reg) => {
-        reg.unregister();
-        console.log('SW unregistered (dev mode):', reg.scope);
-      });
-    });
-    if (window.caches) {
-      caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
-    }
+  });
+  if (window.caches) {
+    caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
   }
 }
 

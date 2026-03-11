@@ -316,7 +316,7 @@ export default function Attendance({ user }) {
       <Tabs defaultValue="my-records">
         <TabsList>
           <TabsTrigger value="my-records">My Records</TabsTrigger>
-          {user?.role === "admin" && (
+          {(user?.role === "admin" || user?.role === "owner") && (
             <TabsTrigger value="team">Team Overview</TabsTrigger>
           )}
         </TabsList>
@@ -468,8 +468,8 @@ export default function Attendance({ user }) {
           </Card>
         </TabsContent>
 
-        {/* Team Tab (Admin Only) */}
-        {user?.role === "admin" && (
+        {/* Team Tab (Admin/Owner) */}
+        {(user?.role === "admin" || user?.role === "owner") && (
           <TabsContent value="team" className="space-y-4">
             {teamData && (
               <>

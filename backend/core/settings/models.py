@@ -82,7 +82,7 @@ class ModuleName(str, Enum):
     PURCHASE_ORDERS = "purchase_orders"
     PAYMENTS = "payments"
     EXPENSES = "expenses"
-    EFI = "efi"
+    EVFI = "efi"
 
 
 # ==================== ORGANIZATION SETTINGS ====================
@@ -525,7 +525,7 @@ class BillingSettings(BaseModel):
 
 
 class EFISettings(BaseModel):
-    """Failure Intelligence (EFI) settings"""
+    """Failure Intelligence (EVFI) settings"""
     failure_categories: List[str] = [
         "battery", "motor", "controller", "charger", "bms",
         "electrical", "mechanical", "software", "sensor", "other"

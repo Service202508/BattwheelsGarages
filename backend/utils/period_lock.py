@@ -20,7 +20,6 @@ Usage:
 import os
 from datetime import datetime
 from fastapi import HTTPException
-import motor.motor_asyncio
 
 
 async def check_period_lock(db, org_id: str, transaction_date: datetime) -> bool:
@@ -81,10 +80,7 @@ async def check_period_locked(organization_id: str, transaction_date: str) -> No
         except Exception:
             return
 
-    MONGO_URL = os.environ.get("MONGO_URL")
-    DB_NAME = os.environ.get("DB_NAME")
-    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    from utils.database import db
 
     lock = await db.period_locks.find_one({
         "org_id": organization_id,

@@ -17,8 +17,8 @@ const ROUTE_FEATURES = {
   "/banking":               "ACCOUNTING_MODULE",
   "/finance/journal":       "ACCOUNTING_MODULE",
   "/journal-entries":       "ACCOUNTING_MODULE",
-  "/efi":                   "EFI_INTELLIGENCE",
-  "/failure-intelligence":  "EFI_INTELLIGENCE",
+  "/evfi":                   "EVFI_INTELLIGENCE",
+  "/failure-intelligence":  "EVFI_INTELLIGENCE",
 };
 
 // Minimum plan required per feature key
@@ -29,7 +29,7 @@ const FEATURE_PLANS = {
   MULTI_WAREHOUSE:    "enterprise",
   EINVOICE:           "professional",
   ACCOUNTING_MODULE:  "professional",
-  EFI_INTELLIGENCE:   "starter",
+  EVFI_INTELLIGENCE:   "starter",
 };
 
 const FEATURE_NAMES = {
@@ -39,7 +39,7 @@ const FEATURE_NAMES = {
   MULTI_WAREHOUSE:    "Multi-Warehouse Inventory",
   EINVOICE:           "E-Invoice",
   ACCOUNTING_MODULE:  "Accounting Module",
-  EFI_INTELLIGENCE:   "EFI Intelligence",
+  EVFI_INTELLIGENCE:   "EVFI Intelligence",
 };
 
 // Feature benefit bullets — shown in the center of the banner
@@ -80,7 +80,7 @@ const FEATURE_BENEFITS = {
     "Bank reconciliation",
     "Multi-account banking",
   ],
-  EFI_INTELLIGENCE: [
+  EVFI_INTELLIGENCE: [
     "AI-powered fault diagnosis",
     "Historical failure matching",
     "Diagnostic workflow guidance",
@@ -88,12 +88,17 @@ const FEATURE_BENEFITS = {
   ],
 };
 
-const PLAN_HIERARCHY = ["free", "starter", "professional", "enterprise"];
+const PLAN_HIERARCHY = ["free", "free_trial", "starter", "professional", "enterprise"];
 
 function planCovers(currentPlan, requiredPlan) {
-  const cur = PLAN_HIERARCHY.indexOf((currentPlan || "free").toLowerCase());
-  const req = PLAN_HIERARCHY.indexOf((requiredPlan || "free").toLowerCase());
-  return cur >= req;
+  // Normalize: treat "free" and "free_trial" as same level (index 0)
+  const normalize = (p) => (p || "free").toLowerCase();
+  const cur = PLAN_HIERARCHY.indexOf(normalize(currentPlan));
+  const req = PLAN_HIERARCHY.indexOf(normalize(requiredPlan));
+  // Both "free" (idx 0) and "free_trial" (idx 1) are at the same tier
+  const curTier = cur <= 1 ? 0 : cur;
+  const reqTier = req <= 1 ? 0 : req;
+  return curTier >= reqTier;
 }
 
 function capitalize(s) {

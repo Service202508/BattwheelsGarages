@@ -49,7 +49,7 @@ TENANT_COLLECTIONS = {
     # HR & Payroll
     "employees", "attendance", "leave_requests", "payroll_records",
     
-    # EFI Intelligence
+    # EVFI Intelligence
     "failure_cards", "technician_actions", "part_usage",
     "ai_guidance_snapshots", "ai_guidance_feedback",
     "model_risk_alerts", "structured_failure_cards",
@@ -79,7 +79,7 @@ TENANT_COLLECTIONS = {
     # Ticket estimates
     "ticket_estimates", "ticket_estimate_line_items", "ticket_estimate_history",
     
-    # EFI Extended (Sprint 1B — previously missing)
+    # EVFI Extended (Sprint 1B — previously missing)
     "efi_decision_trees", "efi_sessions", "learning_queue",
     "embedding_cache", "efi_events", "emerging_patterns",
     "symptoms", "knowledge_relations",
@@ -411,7 +411,9 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     # Endpoints that don't require tenant context
     PUBLIC_ENDPOINTS = {
         # Health
+        "/health",
         "/api/health",
+        "/api/v1/health",
         "/api/",
         "/",
         "/docs",
@@ -436,6 +438,10 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/v1/auth/me",
         "/api/v1/auth/forgot-password",
         "/api/v1/auth/reset-password",
+        "/api/v1/auth/verify-email",
+        "/api/v1/auth/resend-verification",
+        "/api/auth/verify-email",
+        "/api/auth/resend-verification",
         
         # Public ticket forms (API_ROUTES — /api/public/...)
         "/api/public/tickets/submit",
@@ -472,9 +478,19 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         # Public contact form (API_ROUTES — /api/...)
         "/api/contact",
         "/api/book-demo",
+        "/api/v1/contact",
+        "/api/v1/book-demo",
+        "/api/contact-form",
+        "/api/v1/contact-form",
+        "/api/demo-request",
+        "/api/v1/demo-request",
         
         # Public subscription plans (V1_ROUTES)
         "/api/v1/subscriptions/plans",
+
+        # Platform version (intentionally public, exact match)
+        "/api/platform/version",
+        "/api/v1/platform/version",
     }
     
     # Patterns for public endpoints
@@ -495,8 +511,9 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/v1/invoices-enhanced/public/.*",
         r"^/api/v1/estimates/public/.*",
         r"^/api/v1/estimates-enhanced/public/.*",
-        r"^/api/platform/.*",
-        r"^/api/v1/platform/.*",
+        # REMOVED: r"^/api/platform/.*" and r"^/api/v1/platform/.*"
+        # Platform admin routes now go through TenantGuard JWT validation.
+        # /api/platform/version is kept public via PUBLIC_ENDPOINTS (exact match).
         r"^/api/v1/subscriptions/plans$",
         r"^/api/v1/subscriptions/plans/.*$",
         r"^/api/v1/customer-portal/.*",
@@ -537,6 +554,19 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
                     content={"detail": "Authentication required", "code": "AUTH_REQUIRED"}
                 )
             
+            # Platform admin routes: validate JWT but skip org context requirement.
+            # Platform admins operate across all orgs and may not belong to any.
+            _platform_prefix = (path.startswith("/api/platform/") or
+                                path.startswith("/api/v1/platform/"))
+            if _platform_prefix and user_role == "platform_admin":
+                request.state.tenant_org_id = None
+                request.state.tenant_user_id = user_id
+                request.state.tenant_user_role = user_role
+                logger.debug(
+                    f"TENANT GUARD: Platform admin pass-through for {user_id} on {path}"
+                )
+                return await call_next(request)
+
             # Resolve organization_id
             org_id = await self._resolve_org_id(request, user_id, token_org_id)
             

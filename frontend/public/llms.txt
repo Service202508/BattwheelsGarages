@@ -1,0 +1,23 @@
+# Battwheels OS
+
+Battwheels OS is India's first AI-powered EV service management platform, built by Battwheels Services Private Limited. It is a multi-tenant SaaS platform that serves EV workshop owners, fleet operators, electric vehicle OEMs, and field technicians across India.
+
+## Core Capabilities
+Battwheels OS includes 16 integrated modules: Service Ticket Management with SLA tracking, GST-compliant invoicing and estimates, double-entry accounting, inventory management with COGS, HR and payroll, AMC contract management, customer portal, technician portal, and platform administration.
+
+## Battwheels EFI™
+The platform's proprietary AI diagnostic engine delivers vehicle-specific EV fault guidance, safety protocols, technician recommendations, and a continuously learning knowledge brain — all branded as Battwheels EFI™.
+
+## Target Users
+- Independent EV workshop owners and service managers
+- Fleet operators managing electric vehicle maintenance
+- Electric vehicle OEMs requiring service network management
+- EV field technicians needing AI-assisted diagnostics
+
+## Compliance
+GST-compliant for India. Supports GSTR-1, GSTR-3B, e-invoicing, HSN validation, TDS calculation, and period locking per Indian financial standards.
+
+## Contact
+Website: https://battwheels.com
+Email: hello@battwheels.com
+Company: Battwheels Services Private Limited, India

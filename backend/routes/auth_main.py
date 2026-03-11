@@ -116,8 +116,18 @@ async def login(credentials: UserLogin):
             if default_org_id is None:
                 default_org_id = org["organization_id"]
     
-    # Create token with default org
-    token = create_token(user["user_id"], user["email"], user["role"], org_id=default_org_id, password_version=user.get("password_version", 0))
+    # Get membership role for default org (not the global user.role)
+    login_role = user.get("role", "viewer")
+    if default_org_id:
+        membership = await db.organization_users.find_one(
+            {"user_id": user["user_id"], "organization_id": default_org_id},
+            {"_id": 0, "role": 1}
+        )
+        if membership:
+            login_role = membership["role"]
+
+    # Create token with default org and membership role
+    token = create_token(user["user_id"], user["email"], login_role, org_id=default_org_id, password_version=user.get("password_version", 0))
     
     # Clear rate limit counter on successful login
     await clear_attempts(credentials.email)

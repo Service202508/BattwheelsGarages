@@ -1,91 +1,115 @@
 # Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-EV service platform for the electric vehicle industry. Full-stack FastAPI + React + MongoDB application with multi-tenant architecture, financial management, ticket management, inventory, GST compliance, and AI-powered features.
+Battwheels OS is India's AI-powered EV service platform (SaaS). The platform provides multi-tenant workshop management with EVFI™ (Electric Vehicle Failure Intelligence) diagnostics, ticketing, invoicing, AMC, inventory, HR, payroll, and financial reporting.
 
 ## Core Architecture
-- **Backend:** FastAPI with Motor (async MongoDB)
-- **Frontend:** React with Shadcn UI
-- **Database:** MongoDB (battwheels_dev for development)
-- **Multi-Tenancy:** TenantGuardMiddleware → RBAC → CSRF → Sanitization → RateLimit
-- **Auth:** JWT-based with session cookie fallback
+- **Backend:** FastAPI (Python) on port 8001
+- **Frontend:** React (CRA + craco) on port 3000
+- **Database:** MongoDB (production: `battwheels`, dev: `battwheels_dev`)
+- **3rd Party:** Resend (email), Razorpay (payments), Sentry (monitoring), Gemini via Emergent LLM Key (AI)
+
+## Current Environment
+- `DB_NAME=battwheels` (PRODUCTION)
+- `ENVIRONMENT=production`
+- `TESTING=0`
+- Dev backup: `/app/backend/.env.dev_backup`
 
 ## What's Been Implemented
 
-### P1 CLEANUP BATCH (2026-03-04)
-- **FIX 1 (DB Connection):** Removed standalone MongoClient from reports_advanced.py and 10 other files. All use shared `utils.database` now.
-- **FIX 2 (Plan Sync):** Corrected volt-motors org: both `plan` and `plan_type` set to "professional". Verified via /api/v1/ai-usage/status.
-- **FIX 3 (Error Boundary):** Created ErrorBoundary.jsx class component, wrapped App.js content. Frontend build verified.
-- **FIX 4 (Journal reference_id):** Added `reference_id` and `reference_type` to JournalEntry.to_dict() in double_entry_service.py, aligning API-created entries with seed data.
-- **Verification Gate:** 1430 backend tests pass, all API flows working, frontend builds, production DB untouched.
+### Session: March 10, 2026
 
-### P0 Security Fix: org_id Trust Chain (2026-03-04)
-- **COMPLETED**: Secured org_id resolution across entire codebase
-- All 25 files with direct header/cookie reads patched to use middleware-validated `request.state.tenant_org_id`
-- Created comprehensive cross-tenant isolation test suite (7 tests)
+#### 1. Cross-Tenant Data Leak Fixes (2 remaining)
+- **`sales_finance_api.py:451`** — Added `organization_id` filter to ledger aggregation
+- **`operations_api.py:322-336`** — Added `org_filter` to invoices, inventory, purchase_orders queries
+- Removed hardcoded fake `monthly_repair_trends` data
+- **All 10 tested endpoints return ZERO data for new orgs** ✅
 
-### Existing Features (Pre-Audit)
-- Ticket management system with 7128 records
-- Invoice system (canonical + enhanced) with 1655 records
-- GST/statutory compliance module
-- HR module
-- Inventory management with serial/batch tracking
-- AI/EFI intelligence services
-- Customer/business/technician portals
-- Financial dashboard with receivables/payables
-- PDF template system
-- Notification system
-- SLA management
-- Knowledge brain
-- Banking module
-- Expense management
+#### 2. Production DB Switch
+- Verified prod DB readiness (4/4 checks pass)
+- Switched `DB_NAME=battwheels`, `ENVIRONMENT=production`, `TESTING=0`
+- Reset platform admin password in prod
+- Full smoke test: signup, login, tenant isolation — all pass
+
+#### 3. EFI → EVFI™ Trademark Rename
+- **253 instances** renamed across 40+ files (frontend + backend)
+- 4 JSX files renamed: EFIResponseCard → EVFIResponseCard, EFIGuidancePanel → EVFIGuidancePanel, EFISidePanel → EVFISidePanel, TicketEFIPanel → TicketEVFIPanel
+- All imports, function names (canAccessEVFI), test IDs updated
+- System prompts updated to "Battwheels EVFI™"
+- Full form: "Electric Vehicle Failure Intelligence"
+- Backend routes: `/efi` → `/evfi` with backward-compat middleware
+- RBAC + rate limiter patterns updated
+- **ZERO standalone "EFI" remaining** in frontend or backend
+- DB collections/env vars preserved (not renamed)
+
+#### 4. IP Protection Technical Safeguards
+- **Beta Access Gate:** Invite-only registration via `invite_code` field
+  - 20 codes seeded: `BATTWHEELS-BETA-001` through `BATTWHEELS-BETA-020`
+  - Validated on org signup, one-time use, tracked
+  - Added to Register.jsx + SaaSLanding.jsx signup forms
+- **EVFI Response Watermarking:** Zero-width Unicode watermark injected in every EVFI response, encoding org_id for IP tracing
+- **AI Rate Limiting:** Free trial: 25 tokens/month (verified working)
+- **Right-click Protection:** Disabled context menu on battwheels.com (production only)
+- **Terms of Service:** Added clauses for reverse engineering, scraping, UI copying, EVFI output commercial use, watermark tampering
+
+#### 5. Email Verification Flow
+- **Backend:** `email_verified`, `verification_token`, `verification_token_expires` fields on signup
+- **Verification email:** Branded HTML sent via Resend on registration
+- **`GET /api/auth/verify-email?token=`** — Verifies email, clears token
+- **`POST /api/auth/resend-verification`** — Resends with new token (24h expiry)
+- **Login response** includes `email_verified` status
+- **`/auth/me`** excludes verification tokens from response
+- **Frontend:** `VerifyEmail.jsx` page (success/error/resend states)
+- **Layout.jsx:** Amber verification banner for unverified users
+- **Register.jsx:** Shows "Check your email" after successful signup
+- **SaaSLanding.jsx:** Shows verification sent message in modal
+- CSRF, RBAC, TenantGuard exemptions added for new endpoints
+
+#### 6. Subscription Plan Gating (March 10, 2026)
+- **planConfig.js:** Single source of truth for 4 plans (free_trial/starter/professional/enterprise), module access matrix (60+ routes), module descriptions, helper functions
+- **UpgradePrompt.jsx:** Branded upgrade prompt shown when clicking locked modules — lock icon, title, description, plan comparison, UPGRADE CTA button
+- **Layout.jsx sidebar:** Lock icons on inaccessible modules, click-to-show-upgrade-prompt, clears on route change
+- **PlanEnforcementMiddleware:** Backend safety net gating write operations (POST/PUT/PATCH/DELETE) on 30+ route prefixes; GET always allowed
+- **Record limits:** free_trial enforced at tickets(20), contacts(10), estimates(10), invoices(10), items(20) in route handlers
+- **FeatureGateBanner:** Updated to handle both "free" and "free_trial" plan names
+
+#### 7. Open Registration + Mobile UX Fixes (March 11, 2026)
+- **Beta code made optional:** Registration open to all visitors, beta codes still accepted if provided
+- **Mobile nav redesigned:** Hamburger menu on mobile, desktop nav unchanged
+- **Pricing updated:** 4-tier pricing matching planConfig.js (Free Trial/Starter/Professional/Enterprise)
+- **11 Mobile UX bugs fixed:**
+  - EVFI diagnosis response: break-words, responsive padding, no text clipping
+  - Dashboard/Inventory/Estimates tabs: overflow-x-auto with flex-shrink-0 for horizontal scrolling
+  - Sidebar text contrast: increased from 0.45 to 0.65 opacity
+  - Removed duplicate close button from mobile sidebar
+  - Invoice form: responsive grid (1→3 cols), date field min-width, customer/item empty states
+  - Vehicle categories seeded in production DB (6 EV categories)
+  - Barcode scanner: camera permission request + rear camera preference
+- **Testing:** 100% pass rate on all bugs (iteration_152.json)
 
 ## Prioritized Backlog
 
-### P0 — Critical (Completed)
-- [x] Tenant Isolation Bypass — org_id trust chain secured
-- [x] DB Connection in reports_advanced.py — fixed
-- [x] Plan/plan_type sync — corrected
-- [x] Error Boundary — implemented
-- [x] Journal reference_id alignment — fixed
+### P0 (Critical)
+- [ ] First Customer Journey Audit (UI/UX walkthrough for all modules)
 
-### P0 — Critical (Remaining)
-- [ ] Risk of Writing to Production Database — Add env/DB mismatch guard in server.py
+### P1 (High)
+- [ ] Fix endpoint access bugs for new orgs (Operations Stats, Banking, HR Dashboard — 403/404s)
+- [ ] Trial Balance Report data gap (aggregation logic)
+- [ ] Fix CI/CD deployment pipeline
+- [ ] Migrate remaining mocked emails to real EmailService
 
-### P1 — High Priority
-- [ ] Inefficient DoS Protection — Reorder middleware chain (rate limiter first)
-- [ ] Non-Functional Deployment Pipeline — CI/CD workflows have placeholder TODOs
-- [ ] User Verification of Homepage & Product Tour (SaaSLanding.jsx, ProductTour.jsx)
+### P2 (Medium)
+- [ ] Implement Payslip PDF Generation
+- [ ] Refactor `_enhanced` file duplication
+- [ ] Unify `invoices` / `ticket_invoices` collections
+- [ ] Decompose "God Files" (reports_advanced.py, reports.py)
+- [ ] Fix flaky backend tests (pytest hangs)
 
-### P2 — Architectural Debt
-- [ ] Refactor `_enhanced` file duplication pattern
-- [ ] Break down 16+ god files (>1500 lines)
-- [ ] Consolidate `plan` vs `plan_type` codebase-wide (code refactor)
-- [ ] Centralize database connection logic
+### P3 (Low)
+- [ ] Demo data naming convention cleanup
+- [ ] Technician Report "Avg Response N/A" fix
 
-### P3 — Testing & Quality
-- [ ] Frontend test coverage (96 pages, 0 tests)
-- [ ] Improve seed data quality and staging DB
-- [ ] Pre-existing SLA breaches test failure (test_production_readiness_iteration103.py)
-
-## Environment
-- **Development DB**: battwheels_dev
-- **Staging DB**: battwheels_staging
-- **Production DB**: battwheels (READ-ONLY for agent)
-- **Credentials**: demo@voltmotors.in / Demo@12345
-
-## Key API Endpoints
-- POST /api/auth/login
-- GET /api/v1/tickets
-- GET /api/v1/invoices-enhanced/summary
-- GET /api/v1/dashboard/financial/summary
-- GET /api/v1/reports-advanced/revenue/monthly
-- GET /api/v1/ai-usage/status
-- POST /api/v1/journal-entries
-- GET /api/health
-
-## 3rd Party Integrations
-- Sentry: Configured for error monitoring
-- Razorpay: Integrated but disabled (test keys)
-- Gemini: API key NOT SET
-- Resend: API key SET
+## Credentials
+- **Platform Admin:** `platform-admin@battwheels.in` / `v4Nx6^3Xh&uPWwxK9HOs`
+- **Demo Org:** `demo@voltmotors.in` / `Demo@12345`
+- **Beta Codes:** BATTWHEELS-BETA-001 through BATTWHEELS-BETA-020

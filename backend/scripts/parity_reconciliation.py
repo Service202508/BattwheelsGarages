@@ -13,16 +13,15 @@ import asyncio
 import argparse
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Dict, List, Any, Optional
-import motor.motor_asyncio
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Ensure backend root is on sys.path for utils imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from utils.database import db
 
 # ========================= RECONCILIATION CLASSES =========================
 

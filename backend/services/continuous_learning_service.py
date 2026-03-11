@@ -42,7 +42,7 @@ def _derive_vehicle_category(vehicle_type: str) -> str:
 
 class ContinuousLearningService:
     """
-    Continuous Learning Engine for EFI Intelligence.
+    Continuous Learning Engine for EVFI Intelligence.
     
     Captures outcomes from ticket closures and guidance feedback,
     then updates success rates and recurrence counters on failure cards.

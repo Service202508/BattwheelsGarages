@@ -1,5 +1,5 @@
 """
-Battwheels OS - EFI Intelligence Engine Routes
+Battwheels OS - EVFI Intelligence Engine Routes
 
 API endpoints for:
 - Model Risk Alerts (Part E - Pattern Detection)
@@ -23,8 +23,8 @@ from core.subscriptions.entitlement import require_feature
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    prefix="/efi/intelligence",
-    tags=["EFI Intelligence Engine"],
+    prefix="/evfi/intelligence",
+    tags=["EVFI Intelligence Engine"],
     dependencies=[Depends(require_feature("efi_failure_intelligence"))]
 )
 
@@ -87,7 +87,7 @@ class FailureCardUpdate(BaseModel):
 # ==================== FEATURE FLAG CHECK ====================
 
 async def check_intelligence_enabled(org_id: str):
-    """Check if EFI Intelligence Engine is enabled"""
+    """Check if EVFI Intelligence Engine is enabled"""
     from services.feature_flags import FeatureFlagService
     db = get_db()
     flags = FeatureFlagService(db)
@@ -96,7 +96,7 @@ async def check_intelligence_enabled(org_id: str):
     if not config.get("efi_intelligence_engine_enabled", True):
         raise HTTPException(
             status_code=403,
-            detail="EFI Intelligence Engine is not enabled for your organization"
+            detail="EVFI Intelligence Engine is not enabled for your organization"
         )
 
 

@@ -13,14 +13,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { canAccessEVFI, canManageTicket, canEditEstimate, isOwnerOrAdmin } from "../utils/roles";
 import { 
   Printer, CheckCircle, PlusCircle, Trash2, Send, Check, Play, Flag, 
   FileText, UserCog, Paperclip, Download, ExternalLink, Phone, Mail, MapPin, Brain,
   ClipboardList, CheckSquare, Clock, XCircle, ChevronLeft
 } from "lucide-react";
 import { API } from "@/App";
-import EFISidePanel from "./EFISidePanel";
-import EFIGuidancePanel from "./ai/EFIGuidancePanel";
+import EVFISidePanel from "./EVFISidePanel";
+import EVFIGuidancePanel from "./ai/EVFIGuidancePanel";
 import EstimateItemsPanel from "./EstimateItemsPanel";
 
 const statusColors = {
@@ -47,6 +48,14 @@ const statusLabels = {
   in_progress: "In Progress",  // Legacy alias
 };
 
+function deriveVehicleCategory(ticket) {
+  if (ticket.vehicle_category) return ticket.vehicle_category;
+  const type = (ticket.vehicle_type || "").toLowerCase();
+  if (type.includes("scooter") || type.includes("bike") || type.includes("2w")) return "2W";
+  if (type.includes("auto") || type.includes("rick") || type.includes("3w")) return "3W";
+  return "4W";
+}
+
 export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const [localTicket, setLocalTicket] = useState(ticket);
   const [technicians, setTechnicians] = useState([]);
@@ -65,8 +74,8 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const [closeResolution, setCloseResolution] = useState("");
   const [closeConfirmedFault, setCloseConfirmedFault] = useState("");
   
-  // EFI Panel state
-  const [efiPanelOpen, setEfiPanelOpen] = useState(true);
+  // EVFI Panel state — hidden by default on mobile (<768px)
+  const [efiPanelOpen, setEfiPanelOpen] = useState(() => window.innerWidth >= 768);
   const [efiMode, setEfiMode] = useState("guidance"); // "guidance" or "legacy"
   
   // Items state
@@ -98,13 +107,14 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const fetchTechnicians = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/technicians`, {
+      const response = await fetch(`${API}/organizations/me/members`, {
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (response.ok) {
         const data = await response.json();
-        setTechnicians(data);
+        const members = data.members || data || [];
+        setTechnicians(members.filter(m => m.status === "active"));
       }
     } catch (error) {
       console.error("Failed to fetch technicians:", error);
@@ -414,27 +424,46 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/invoices`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          ticket_id: localTicket.ticket_id,
-          customer_name: localTicket.customer_name,
-          customer_email: localTicket.customer_email,
-          vehicle_number: localTicket.vehicle_number,
-          items: [...actualItems.parts, ...actualItems.services],
-        }),
-      });
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
 
-      if (response.ok) {
-        await updateTicketStatus("closed");
-        toast.success("Invoice generated and ticket closed");
+      // Step 1: Get the estimate for this ticket
+      const estResponse = await fetch(
+        `${API}/tickets/${localTicket.ticket_id}/estimate`,
+        { headers, credentials: "include" }
+      );
+      if (!estResponse.ok) {
+        toast.error("No estimate found for this ticket. Create an estimate first.");
+        return;
+      }
+      const estData = await estResponse.json();
+      const estimate = estData.estimate;
+
+      if (!estimate || estimate.status !== "approved") {
+        toast.error("Estimate must be approved before generating an invoice.");
+        return;
+      }
+      if (estimate.converted_to_invoice) {
+        toast.error("Invoice already generated from this estimate.");
+        return;
+      }
+
+      // Step 2: Convert approved estimate → invoice
+      const convResponse = await fetch(
+        `${API}/ticket-estimates/${estimate.estimate_id}/convert-to-invoice`,
+        { method: "POST", headers, credentials: "include" }
+      );
+
+      if (convResponse.ok) {
+        const result = await convResponse.json();
+        const invNum = result.invoice?.invoice_number || "Invoice";
+        toast.success(`${invNum} generated from estimate`);
+        if (onUpdate) onUpdate({ ...localTicket, status: "invoiced", has_invoice: true });
       } else {
-        toast.error("Failed to generate invoice");
+        const err = await convResponse.json().catch(() => ({}));
+        toast.error(err.detail || "Failed to generate invoice");
       }
     } catch (error) {
       toast.error("Error generating invoice");
@@ -461,15 +490,14 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
     ? inventory.filter(i => i.name.toLowerCase().includes(itemSearch.toLowerCase()))
     : services.filter(s => s.name.toLowerCase().includes(itemSearch.toLowerCase()));
 
-  const isAdmin = user?.role === "admin";
-  const isTechnician = user?.role === "technician";
   const isCustomer = user?.role === "customer";
+  const hasEFIAccess = canAccessEVFI(user);
 
-  // Handle EFI estimate suggestion
+  // Handle EVFI estimate suggestion
   const handleEfiEstimateSuggested = (estimate) => {
     if (!estimate) return;
     
-    // Convert EFI parts to estimate format
+    // Convert EVFI parts to estimate format
     const efiParts = (estimate.parts || estimate.parts_required || []).map(p => ({
       item_id: p.part_id || `efi_${Date.now()}`,
       name: p.name,
@@ -496,23 +524,23 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       services: [...prev.services, laborService]
     }));
 
-    toast.success("EFI estimate applied to job card");
+    toast.success("EVFI estimate applied to job card");
   };
 
   return (
-    <div className="flex h-full" data-testid="job-card">
+    <div className="flex flex-col md:flex-row h-full" data-testid="job-card">
       {/* Main Job Card Content */}
       <div className="flex-1 flex flex-col bg-muted/20 overflow-auto">
         <div className="p-4 space-y-4">
           {/* Header */}
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
             <div>
               <h1 className="text-2xl font-bold">Battwheels OS</h1>
               <p className="text-muted-foreground text-sm">Service & Repair Center</p>
             </div>
             <div className="flex items-start gap-4">
-              {/* EFI Toggle Button */}
-              {(isTechnician || isAdmin) && (
+              {/* EVFI Toggle Button */}
+              {hasEFIAccess && (
                 <Button
                   variant={efiPanelOpen ? "default" : "outline"}
                   size="sm"
@@ -521,7 +549,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                   data-testid="efi-header-toggle"
                 >
                   <Brain className="h-4 w-4" />
-                  {efiPanelOpen ? "Hide" : "Show"} EFI
+                  {efiPanelOpen ? "Hide" : "Show"} EVFI
                 </Button>
               )}
               <div className="text-right">
@@ -539,7 +567,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
             <CardHeader>
               <CardTitle>Customer & Vehicle Details</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
               <div>
                 <p className="text-muted-foreground">Customer</p>
                 <p className="font-semibold">{localTicket.customer_name || "N/A"}</p>
@@ -680,7 +708,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
           </Card>
           
           {/* Activity Log */}
-          {(isTechnician || isAdmin) && (
+          {hasEFIAccess && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
@@ -722,8 +750,8 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
 
       {/* Action Buttons */}
       <div className="pt-4 flex flex-wrap justify-end gap-2 border-t bg-background p-4">
-        {/* Assign Technician - Admin only, when Open */}
-        {isAdmin && localTicket.status === "open" && (
+        {/* Assign Technician - Owner/Admin/Manager, when not yet in work or closed */}
+        {hasEFIAccess && ["open", "technician_assigned", "estimate_shared", "estimate_approved"].includes(localTicket.status) && (
           <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -744,7 +772,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                   <SelectContent>
                     {technicians.map((tech) => (
                       <SelectItem key={tech.user_id} value={tech.user_id}>
-                        {tech.name} - {tech.designation || "Technician"}
+                        {tech.name} - {tech.role || tech.designation || "Member"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -764,7 +792,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         {/* The Approve button is in EstimateItemsPanel */}
 
         {/* Start Work - When estimate is approved (auto-triggered but can be manual) */}
-        {(isTechnician || isAdmin) && localTicket.status === "estimate_approved" && (
+        {hasEFIAccess && localTicket.status === "estimate_approved" && (
           <Button onClick={handleStartWork} disabled={loading} data-testid="start-work-btn">
             <Play className="mr-2 h-4 w-4" />
             {loading ? "Starting..." : "Start Work"}
@@ -772,7 +800,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         )}
 
         {/* Complete Work - When work is in progress */}
-        {(isTechnician || isAdmin) && (localTicket.status === "work_in_progress" || localTicket.status === "in_progress") && (
+        {hasEFIAccess && (localTicket.status === "work_in_progress" || localTicket.status === "in_progress") && (
           <Button onClick={handleCompleteWork} disabled={loading} data-testid="complete-work-btn">
             <CheckSquare className="mr-2 h-4 w-4" />
             {loading ? "Completing..." : "Complete Work"}
@@ -780,7 +808,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         )}
 
         {/* Add Note - Always available for tech/admin on open tickets */}
-        {(isTechnician || isAdmin) && localTicket.status !== "closed" && (
+        {hasEFIAccess && localTicket.status !== "closed" && (
           <Button variant="outline" onClick={handleAddNote} data-testid="add-note-btn">
             <ClipboardList className="mr-2 h-4 w-4" />
             Add Note
@@ -788,7 +816,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         )}
 
         {/* Close Ticket - Admin/Technician, when work is completed */}
-        {(isTechnician || isAdmin) && localTicket.status === "work_completed" && (
+        {hasEFIAccess && localTicket.status === "work_completed" && (
           <Dialog open={closeDialogOpen} onOpenChange={setCloseDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="default" data-testid="close-ticket-btn">
@@ -800,7 +828,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               <DialogHeader>
                 <DialogTitle>Close Ticket</DialogTitle>
                 <DialogDescription className="text-slate-400">
-                  Provide a resolution summary and optionally confirm the actual fault for EFI learning.
+                  Provide a resolution summary and optionally confirm the actual fault for EVFI learning.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-2">
@@ -817,7 +845,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="close-confirmed-fault" className="text-slate-300">
-                    Confirmed Fault <span className="text-slate-500 font-normal">(optional — trains EFI predictions)</span>
+                    Confirmed Fault <span className="text-slate-500 font-normal">(optional — trains EVFI predictions)</span>
                   </Label>
                   <Input
                     id="close-confirmed-fault"
@@ -828,7 +856,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                     className="bg-slate-800 border-slate-600 text-slate-100 placeholder:text-slate-500"
                   />
                   <p className="text-xs text-slate-500">
-                    This helps the EFI engine learn from real outcomes and improve future predictions.
+                    This helps the EVFI engine learn from real outcomes and improve future predictions.
                   </p>
                 </div>
               </div>
@@ -849,10 +877,10 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         )}
 
         {/* Generate Invoice - Admin/Technician, when Resolved or Work Completed */}
-        {!isCustomer && (localTicket.status === "resolved" || localTicket.status === "work_completed") && (
-          <Button onClick={handleGenerateInvoice} disabled={loading} variant="outline">
+        {!isCustomer && (localTicket.status === "resolved" || localTicket.status === "work_completed") && !localTicket.has_invoice && (
+          <Button onClick={handleGenerateInvoice} disabled={loading} variant="outline" data-testid="generate-invoice-btn">
             <FileText className="mr-2 h-4 w-4" />
-            Generate Invoice
+            {loading ? "Generating..." : "Generate Invoice"}
           </Button>
         )}
 
@@ -864,14 +892,14 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       </div>
       </div>
 
-      {/* EFI Side Panel - Only for technicians and admins */}
-      {(isTechnician || isAdmin) && efiPanelOpen && (
-        <div className="w-[420px] border-l border-white/[0.07] border-700 bg-slate-900/95 flex flex-col overflow-hidden">
+      {/* EVFI Side Panel */}
+      {hasEFIAccess && efiPanelOpen && (
+        <div className="w-full md:w-[420px] border-t md:border-t-0 md:border-l border-white/[0.07] border-700 bg-slate-900/95 flex flex-col overflow-hidden">
           {/* Panel Header with Mode Toggle */}
           <div className="p-3 border-b border-white/[0.07] border-700 flex items-center justify-between bg-slate-800/50">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-bw-volt text-400" />
-              <span className="font-semibold text-white">EFI Assistant</span>
+              <span className="font-semibold text-white">Battwheels EVFI&trade;</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex bg-slate-700 rounded p-0.5 text-xs">
@@ -900,22 +928,22 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
           {/* Panel Content */}
           <div className="flex-1 overflow-y-auto">
             {efiMode === "guidance" ? (
-              <EFIGuidancePanel
+              <EVFIGuidancePanel
                 ticketId={localTicket.ticket_id}
                 user={user}
                 vehicleInfo={{
-                  make: localTicket.vehicle_oem,
+                  make: localTicket.vehicle_make || localTicket.vehicle_oem,
                   model: localTicket.vehicle_model,
                   variant: localTicket.vehicle_variant
                 }}
                 symptoms={localTicket.symptoms || []}
-                dtcCodes={localTicket.dtc_codes || []}
-                category={localTicket.category || "general"}
+                dtcCodes={localTicket.dtc_codes || localTicket.error_codes_reported || []}
+                category={deriveVehicleCategory(localTicket)}
                 description={localTicket.description || localTicket.title}
                 onEstimateUpdated={() => fetchLinkedEstimate()}
               />
             ) : (
-              <EFISidePanel
+              <EVFISidePanel
                 ticket={localTicket}
                 user={user}
                 isOpen={true}

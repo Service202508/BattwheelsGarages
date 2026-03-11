@@ -321,22 +321,22 @@ class TestGSTR3B_SamePeriod:
     def test_net_taxable_value(self):
         """net taxable = invoice subtotal - CN1 - CN2 = 10000 - 2000 - 1000 = 7000"""
         data = self._get_month1()
-        assert data["section_3_1"]["taxable_value"] == 7000.0
+        assert data["section_3_1"]["a"]["taxable_value"] == 7000.0
 
     def test_cgst_reduced(self):
         """CGST = 900 - 180 - 90 = 630"""
         data = self._get_month1()
-        assert data["section_3_1"]["cgst"] == 630.0
+        assert data["section_3_1"]["a"]["cgst"] == 630.0
 
     def test_sgst_reduced(self):
         """SGST = 900 - 180 - 90 = 630"""
         data = self._get_month1()
-        assert data["section_3_1"]["sgst"] == 630.0
+        assert data["section_3_1"]["a"]["sgst"] == 630.0
 
     def test_igst_unchanged(self):
         """IGST = 0 (intra-state only, no IGST CNs in month 1)"""
         data = self._get_month1()
-        assert data["section_3_1"]["igst"] == 0
+        assert data["section_3_1"]["a"]["igst"] == 0
 
     def test_adjustments_count_and_values(self):
         """adjustments shows exactly 2 CNs with correct totals"""
@@ -350,7 +350,7 @@ class TestGSTR3B_SamePeriod:
     def test_gross_outward_preserved(self):
         """gross_outward = full invoice subtotal before CN deduction"""
         data = self._get_month1()
-        assert data["section_3_1"]["gross_outward"] == 10000.0
+        assert data["section_3_1"]["a"]["gross_outward"] == 10000.0
 
 
 # ============= CROSS PERIOD TESTS =============
@@ -382,8 +382,8 @@ class TestGSTR3B_CrossPeriod:
         data = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH_2}", headers=headers_a()
         ).json()
-        assert data["section_3_1"]["taxable_value"] == -500.0
-        assert data["section_3_1"]["igst"] == -90.0
+        assert data["section_3_1"]["a"]["taxable_value"] == -500.0
+        assert data["section_3_1"]["a"]["igst"] == -90.0
 
 
 # ============= TENANT SCOPING TESTS =============
@@ -395,13 +395,13 @@ class TestGSTR3B_TenantScoping:
         data = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH_1}", headers=headers_a()
         ).json()
-        assert data["section_3_1"]["gross_outward"] == 10000.0
+        assert data["section_3_1"]["a"]["gross_outward"] == 10000.0
 
     def test_org_b_sees_own_data(self):
         data = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH_1}", headers=headers_b()
         ).json()
-        assert data["section_3_1"]["gross_outward"] == 5000.0
+        assert data["section_3_1"]["a"]["gross_outward"] == 5000.0
         assert data["adjustments"]["credit_notes"]["count"] == 0
 
     def test_no_cross_org_leakage(self):
@@ -411,7 +411,7 @@ class TestGSTR3B_TenantScoping:
         data_b = requests.get(
             f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH_1}", headers=headers_b()
         ).json()
-        assert data_a["section_3_1"]["gross_outward"] != data_b["section_3_1"]["gross_outward"]
+        assert data_a["section_3_1"]["a"]["gross_outward"] != data_b["section_3_1"]["a"]["gross_outward"]
 
 
 # ============= GSTR-1 ALIGNMENT TESTS =============
@@ -435,14 +435,14 @@ class TestGSTR1_CreditNotes:
 
 
 class TestGSTR1_vs_GSTR3B_Alignment:
-    """GSTR-1 net taxable == GSTR-3B section_3_1.taxable_value for same period."""
+    """GSTR-1 net taxable == GSTR-3B section_3_1.a.taxable_value for same period."""
 
     def test_alignment(self):
         h = headers_a()
         r1 = requests.get(f"{BASE_URL}/api/v1/gst/gstr1?month={MONTH_1}", headers=h).json()
         r3b = requests.get(f"{BASE_URL}/api/v1/gst/gstr3b?month={MONTH_1}", headers=h).json()
         gstr1_net = r1["grand_total"]["taxable_value"]
-        gstr3b_net = r3b["section_3_1"]["taxable_value"]
+        gstr3b_net = r3b["section_3_1"]["a"]["taxable_value"]
         assert gstr1_net == gstr3b_net, (
             f"GSTR-1 net ({gstr1_net}) != GSTR-3B net ({gstr3b_net})"
         )

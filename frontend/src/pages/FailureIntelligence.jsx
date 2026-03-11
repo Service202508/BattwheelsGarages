@@ -115,7 +115,7 @@ export default function FailureIntelligence({ user }) {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let url = `${API}/efi/failure-cards?limit=${CARDS_PAGE_SIZE}`;
+      let url = `${API}/evfi/failure-cards?limit=${CARDS_PAGE_SIZE}`;
       if (cursorParam) url += `&cursor=${cursorParam}`;
       if (statusFilter && statusFilter !== "all") url += `&status=${statusFilter}`;
       if (subsystemFilter && subsystemFilter !== "all") url += `&subsystem=${subsystemFilter}`;
@@ -150,7 +150,7 @@ export default function FailureIntelligence({ user }) {
   const fetchAnalytics = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/efi/analytics/overview`, {
+      const response = await fetch(`${API}/evfi/analytics/overview`, {
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
@@ -177,7 +177,7 @@ export default function FailureIntelligence({ user }) {
     setMatching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/efi/match`, {
+      const response = await fetch(`${API}/evfi/match`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -212,7 +212,7 @@ export default function FailureIntelligence({ user }) {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/efi/failure-cards`, {
+      const response = await fetch(`${API}/evfi/failure-cards`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -251,7 +251,7 @@ export default function FailureIntelligence({ user }) {
   const handleApproveCard = async (failureId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/efi/failure-cards/${failureId}/approve`, {
+      const response = await fetch(`${API}/evfi/failure-cards/${failureId}/approve`, {
         method: "POST",
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {}
@@ -279,7 +279,7 @@ export default function FailureIntelligence({ user }) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Brain className="h-8 w-8 text-primary" />
-            EV Failure Intelligence
+            Electric Vehicle Failure Intelligence
           </h1>
           <p className="text-muted-foreground">
             AI-powered failure knowledge base • Every repair makes the system smarter
@@ -587,7 +587,7 @@ export default function FailureIntelligence({ user }) {
           <Card>
             <CardHeader>
               <CardTitle>Recent Events</CardTitle>
-              <CardDescription>System events from the EFI engine</CardDescription>
+              <CardDescription>System events from the EVFI engine</CardDescription>
             </CardHeader>
             <CardContent>
               {analytics?.recent_events?.length > 0 ? (

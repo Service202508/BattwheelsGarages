@@ -14,7 +14,6 @@ MongoDB equivalent of CONCURRENTLY - no table locks on production.
 
 import asyncio
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
 from pathlib import Path
@@ -189,7 +188,7 @@ INDEXES = [
     ("organizations", [("organization_id", 1)], {"name": "idx_organizations_id", "unique": True}),
     
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    # FAILURE CARDS (EFI)
+    # FAILURE CARDS (EVFI)
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     ("failure_cards", [("organization_id", 1), ("status", 1)], {"name": "idx_failure_cards_org_status"}),
     ("failure_cards", [("failure_card_id", 1)], {"name": "idx_failure_cards_id", "unique": True}),
@@ -219,11 +218,7 @@ INDEXES = [
 
 async def create_indexes():
     """Create all indexes with background=True (non-blocking)"""
-    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-    db_name = os.environ.get('DB_NAME', 'battwheels_db')
-    
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[db_name]
+    from utils.database import db
     
     logger.info("=" * 60)
     logger.info("BATTWHEELS OS - PERFORMANCE INDEX MIGRATION")
@@ -282,11 +277,7 @@ async def create_indexes():
 
 async def list_indexes():
     """List all indexes in the database"""
-    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-    db_name = os.environ.get('DB_NAME', 'battwheels_db')
-    
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[db_name]
+    from utils.database import db
     
     collections = await db.list_collection_names()
     

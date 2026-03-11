@@ -20,7 +20,6 @@ import xml.etree.ElementTree as ET
 import os
 import logging
 
-from motor.motor_asyncio import AsyncIOMotorClient
 from core.tenant.context import TenantContext, tenant_context_required
 from fastapi import Depends
 
@@ -28,10 +27,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/finance/export", tags=["Finance Export"])
 
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME")
-_client = AsyncIOMotorClient(MONGO_URL)
-db = _client[DB_NAME]
+from utils.database import db
 
 
 def _date_to_tally(date_str: str) -> str:

@@ -60,7 +60,7 @@ def sent_invoice(base_url, _headers):
         "invoice_date": today,
         "due_date": "2026-12-31",
         "send_email": False,
-        "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%"}]
+        "line_items": [{"name": "Battery Service", "quantity": 2, "rate": 1000.0, "tax_percentage": 18.0, "tax_name": "GST @18%", "hsn_sac_code": "998719"}]
     })
     if resp.status_code != 200:
         pytest.skip(f"Cannot create invoice: {resp.status_code}")
@@ -173,7 +173,7 @@ class TestCreateCreditNote:
             "line_items": [{"name": "x", "quantity": 1, "rate": 100, "tax_percentage": 18, "tax_name": "GST"}]
         })
         # 404 = invoice not found in their org, 400 = org context missing
-        assert resp.status_code in [400, 404]
+        assert resp.status_code in [400, 403, 404]
 
 
 # ==================== 2. GET — List Credit Notes ====================

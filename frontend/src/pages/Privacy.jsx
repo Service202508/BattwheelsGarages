@@ -51,16 +51,16 @@ export default function Privacy() {
         </div>
 
         <Section icon={Database} title="1. Data We Collect">
-          <p><span className="text-white/80 font-medium">Organisation data.</span> When you register a workshop, we collect your organisation name, GSTIN, city, state, industry type, and the email address and name of the admin user.</p>
+          <p><span className="text-white/80 font-medium">Organisation data.</span> When you register a service center, we collect your organisation name, GSTIN, city, state, industry type, and the email address and name of the admin user.</p>
           <p><span className="text-white/80 font-medium">User data.</span> For each team member you add: name, work email, role, phone number (optional), and bcrypt-hashed password. We never store plaintext passwords.</p>
           <p><span className="text-white/80 font-medium">Operational data.</span> Service tickets, vehicle records, customer contact information, invoices, bills, inventory, payroll records, attendance logs, and journal entries — all created by your team during normal platform use.</p>
-          <p><span className="text-white/80 font-medium">EFI intelligence.</span> Failure Cards and diagnostic patterns generated from resolved tickets within your organisation. This knowledge base is scoped to your organisation and is not shared with other organisations.</p>
+          <p><span className="text-white/80 font-medium">EVFI intelligence.</span> Failure Cards and diagnostic patterns generated from resolved tickets within your organisation. This knowledge base is scoped to your organisation and is not shared with other organisations.</p>
           <p><span className="text-white/80 font-medium">Usage and technical data.</span> Log entries including IP address, user agent, request timestamps, and error events (sent to Sentry for error monitoring). We do not use third-party advertising trackers.</p>
           <p><span className="text-white/80 font-medium">Payment data.</span> We do not store payment card numbers. Payments are processed via Razorpay (for Indian customers) or Stripe. We retain Razorpay payment IDs and order IDs for audit purposes.</p>
         </Section>
 
         <Section icon={Lock} title="2. How We Use Your Data">
-          <p>To <span className="text-white/80">provide the service</span> — running your workshop's tickets, invoices, payroll, and EFI diagnostics.</p>
+          <p>To <span className="text-white/80">provide the service</span> — running your service center's tickets, invoices, payroll, and EVFI diagnostics.</p>
           <p>To <span className="text-white/80">send transactional communications</span> — invoice emails to your customers, SLA breach alerts to your team, welcome emails on signup. All sent via Resend using your organisation's verified domain where configured.</p>
           <p>To <span className="text-white/80">monitor and improve reliability</span> — error events sent to Sentry are scrubbed of PII (passwords, tokens, bank details, GSTIN) before transmission. Sentry does not receive customer financial data.</p>
           <p>To <span className="text-white/80">enforce subscription entitlements</span> — we check your plan type on every API request to determine which features are accessible. This check uses only internal metadata, not your operational data.</p>
@@ -78,7 +78,7 @@ export default function Privacy() {
             ['Razorpay', "Payment processing for Indian customers. Razorpay receives payment amounts, order references, and your customers' phone/email when required for payment links. Razorpay Privacy Policy: razorpay.com/privacy."],
             ['Stripe', 'Payment processing for international or test transactions. Stripe Privacy Policy: stripe.com/privacy.'],
             ['Resend', 'Transactional email delivery (invoices, SLA alerts, welcome emails). Resend receives recipient email addresses and email body content. Resend Privacy Policy: resend.com/legal/privacy-policy.'],
-            ['Google Gemini (via Emergent)', 'EFI AI diagnostics and assistant responses. Ticket descriptions and vehicle details are sent to the Gemini API for AI processing. Gemini does not use your data to train its models (enterprise API usage).'],
+            ['Battwheels EVFI™ (AI Service)', 'EVFI AI diagnostics and assistant responses. Ticket descriptions and vehicle details are sent to a secure AI backend for processing. The AI service does not use your data to train its models (enterprise API usage).'],
             ['Sentry', 'Error monitoring. Stack traces and request context are sent on application errors, with PII fields scrubbed before transmission. Sentry Privacy Policy: sentry.io/privacy.'],
           ].map(([name, desc]) => (
             <p key={name}><span className="text-white/80 font-medium">{name}.</span> {desc}</p>
@@ -114,7 +114,7 @@ export default function Privacy() {
 
       {/* Footer */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="text-xs text-white/20 font-mono">© 2026 Battwheels Services Private Limited · EFI Engine v2 · India</div>
+        <div className="text-xs text-white/20 font-mono">&copy; 2026 Battwheels Services Private Limited - India - All Rights Reserved</div>
         <ul className="flex gap-8">
           {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
             <li key={label}>

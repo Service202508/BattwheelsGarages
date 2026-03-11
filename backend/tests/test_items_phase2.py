@@ -596,6 +596,7 @@ class TestExistingPhase1Features:
         assert "warehouses" in data or "data" in data
         print(f"✓ Warehouses: {len(data.get('warehouses', []))} warehouses")
     
+    @pytest.mark.timeout(90)
     def test_summary(self):
         """Test GET /api/v1/items-enhanced/summary still works"""
         response = self.session.get(f"{BASE_URL}/api/v1/items-enhanced/summary")

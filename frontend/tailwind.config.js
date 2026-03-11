@@ -6,6 +6,9 @@ module.exports = {
     "./public/index.html"
   ],
   theme: {
+  	fontFamily: {
+  		sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+  	},
   	extend: {
   		borderRadius: {
   			lg: 'var(--radius)',

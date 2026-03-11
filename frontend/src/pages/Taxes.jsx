@@ -29,8 +29,8 @@ export default function Taxes() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [taxRes, groupRes] = await Promise.all([
-        fetch(`${API}/zoho/taxes`, { headers }),
-        fetch(`${API}/zoho/tax-groups`, { headers })
+        fetch(`${API}/taxes`, { headers }),
+        fetch(`${API}/tax-groups`, { headers })
       ]);
       const [taxData, groupData] = await Promise.all([taxRes.json(), groupRes.json()]);
       setTaxes(taxData.taxes || []);
@@ -44,7 +44,7 @@ export default function Taxes() {
     if (newTax.tax_percentage <= 0) return toast.error("Enter tax percentage");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/taxes`, {
+      const res = await fetch(`${API}/taxes`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newTax)
@@ -63,7 +63,7 @@ export default function Taxes() {
     if (!newGroup.tax_ids.length) return toast.error("Select at least one tax");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/tax-groups`, {
+      const res = await fetch(`${API}/tax-groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newGroup)
@@ -80,7 +80,7 @@ export default function Taxes() {
   const handleDeleteTax = async (taxId) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/taxes/${taxId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      await fetch(`${API}/taxes/${taxId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       toast.success("Tax deleted");
       fetchData();
     } catch { toast.error("Error deleting tax"); }

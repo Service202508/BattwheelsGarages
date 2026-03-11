@@ -1,6 +1,6 @@
 """
 Battwheels OS - Fault Tree Import Routes
-Admin interface for importing EV Failure Intelligence from Excel
+Admin interface for importing Electric Vehicle Failure Intelligence from Excel
 """
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, BackgroundTasks, Depends
 from typing import Optional

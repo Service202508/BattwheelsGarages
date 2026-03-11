@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
-import motor.motor_asyncio
 import os
 import uuid
 import logging
@@ -28,13 +27,32 @@ from utils.audit_log import log_financial_action
 
 logger = logging.getLogger(__name__)
 
+# ========================= HSN/SAC VALIDATION =========================
+
+import re as _re
+
+def validate_hsn_sac(code: str, item_type: str = "part"):
+    """Validate HSN/SAC code format.
+    HSN: 4 or 8 digits, numeric only.
+    SAC: 6 digits, numeric only, starts with '99'.
+    Returns (is_valid, error_message).
+    """
+    if not code:
+        return False, "HSN/SAC code is required"
+    code = str(code).strip()
+    if item_type == "service":
+        if not (len(code) == 6 and code.isdigit() and code.startswith("99")):
+            return False, f"Invalid SAC code '{code}': must be 6 digits starting with '99'"
+        return True, ""
+    else:
+        if not (len(code) in (4, 6, 8) and code.isdigit()):
+            return False, f"Invalid HSN code '{code}': must be 4, 6, or 8 digits"
+        return True, ""
+
 router = APIRouter(prefix="/invoices-enhanced", tags=["Invoices Enhanced"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db
 
 # Collections - Use main collections with Zoho-synced data
 invoices_collection = db["invoices"]
@@ -558,12 +576,13 @@ async def get_invoices_summary(request: Request, period: str = "all"):
 # ========================= REPORTS (Must be before /{invoice_id}) =========================
 
 @router.get("/reports/aging")
-async def get_aging_report():
+async def get_aging_report(request: Request):
     """Get receivables aging report"""
+    org_id = await get_org_id(request)
     today = datetime.now(timezone.utc).date()
     
     invoices = await invoices_collection.find(
-        {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
+        {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]},
         {"_id": 0, "invoice_id": 1, "invoice_number": 1, "customer_id": 1, "customer_name": 1, 
          "due_date": 1, "grand_total": 1, "total_amount": 1, "balance_due": 1, "amount_due": 1}
     ).to_list(1000)
@@ -612,10 +631,11 @@ async def get_aging_report():
     }
 
 @router.get("/reports/customer-wise")
-async def get_customer_wise_report(limit: int = 20):
+async def get_customer_wise_report(request: Request, limit: int = 20):
     """Get invoices report grouped by customer"""
+    org_id = await get_org_id(request)
     pipeline = [
-        {"$match": {"status": {"$ne": "void"}}},
+        {"$match": {"organization_id": org_id, "status": {"$ne": "void"}}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
@@ -644,13 +664,15 @@ async def get_customer_wise_report(limit: int = 20):
     }
 
 @router.get("/reports/monthly")
-async def get_monthly_report(year: int = None):
+async def get_monthly_report(request: Request, year: int = None):
     """Get monthly invoice report"""
+    org_id = await get_org_id(request)
     if not year:
         year = datetime.now(timezone.utc).year
     
     pipeline = [
         {"$match": {
+            "organization_id": org_id,
             "status": {"$ne": "void"},
             "invoice_date": {
                 "$gte": f"{year}-01-01",
@@ -716,6 +738,11 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request) if request else None
 
+    # Plan record limit enforcement
+    if org_id:
+        from utils.plan_limits import check_record_limit
+        await check_record_limit(org_id, "invoices")
+
     # Period lock check
     from utils.period_lock import enforce_period_lock
     inv_date = invoice.invoice_date or datetime.now(timezone.utc).date().isoformat()
@@ -729,6 +756,20 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     
     if customer.get("contact_type") == "vendor":
         raise HTTPException(status_code=400, detail="Cannot create invoice for vendor-only contact")
+    
+    # Validate HSN/SAC codes on every line item (blocking)
+    hsn_errors = []
+    for idx, item in enumerate(invoice.line_items, 1):
+        code = (item.hsn_sac_code or "").strip()
+        if not code:
+            hsn_errors.append(f"Line item {idx} ({item.name}): HSN/SAC code is required")
+            continue
+        item_type = "service" if code.startswith("99") else "part"
+        valid, msg = validate_hsn_sac(code, item_type)
+        if not valid:
+            hsn_errors.append(f"Line item {idx} ({item.name}): {msg}")
+    if hsn_errors:
+        raise HTTPException(status_code=422, detail={"message": "HSN/SAC validation failed", "errors": hsn_errors})
     
     invoice_id = generate_id("INV")
     invoice_number = await get_next_invoice_number()
@@ -982,10 +1023,11 @@ async def get_invoice(request: Request, invoice_id: str):
     invoice["payments"] = payments
     
     # Get payments from payments_received module
-    payments_received = await db["payments_received"].find({
-        "allocations.invoice_id": invoice_id,
-        "status": {"$ne": "refunded"}
-    }, {"_id": 0, "payment_id": 1, "payment_number": 1, "payment_date": 1, "amount": 1, "payment_mode": 1, "allocations": 1}).to_list(50)
+    inv_org = invoice.get("organization_id", "")
+    pr_q = {"allocations.invoice_id": invoice_id, "status": {"$ne": "refunded"}}
+    if inv_org:
+        pr_q["organization_id"] = inv_org
+    payments_received = await db["payments_received"].find(pr_q, {"_id": 0, "payment_id": 1, "payment_number": 1, "payment_date": 1, "amount": 1, "payment_mode": 1, "allocations": 1}).to_list(50)
     
     for pr in payments_received:
         for alloc in pr.get("allocations", []):
@@ -995,10 +1037,10 @@ async def get_invoice(request: Request, invoice_id: str):
     invoice["payments_received"] = payments_received
     
     # Get available customer credits
-    customer_credits = await db["customer_credits"].find({
-        "customer_id": invoice.get("customer_id"),
-        "status": "available"
-    }, {"_id": 0}).to_list(50)
+    cc_q = {"customer_id": invoice.get("customer_id"), "status": "available"}
+    if inv_org:
+        cc_q["organization_id"] = inv_org
+    customer_credits = await db["customer_credits"].find(cc_q, {"_id": 0}).to_list(50)
     invoice["available_credits"] = customer_credits
     invoice["total_available_credits"] = sum(c.get("amount", 0) for c in customer_credits)
     
@@ -1115,7 +1157,7 @@ async def get_invoice_pdf(request: Request, invoice_id: str):
                 import os as _os
                 frontend_url = _os.environ.get("CORS_ORIGINS", "").split(",")[0].strip()
                 if not frontend_url:
-                    frontend_url = "https://frontend-errorbound.preview.emergentagent.com"
+                    frontend_url = os.environ.get("REACT_APP_BACKEND_URL", "https://battwheels.com")
                 survey_qr_url = f"{frontend_url}/survey/{ticket['survey_token']}"
 
     # ==================== GENERATE PDF ====================

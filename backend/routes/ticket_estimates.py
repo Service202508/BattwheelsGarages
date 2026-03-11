@@ -412,9 +412,9 @@ async def lock_estimate(request: Request, estimate_id: str,
     org_id = await get_org_id(request)
     user_id, user_name = await get_user_info(request)
     
-    # Check role - only admin/manager can lock
-    user = await get_current_user_from_token(request)
-    if not user or user.get("role") not in ["admin", "manager"]:
+    # Check role - only admin/owner/manager can lock
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner", "manager"):
         raise HTTPException(
             status_code=403, 
             detail="Only admin or manager can lock estimates"
@@ -444,9 +444,9 @@ async def unlock_estimate(request: Request, estimate_id: str
     org_id = await get_org_id(request)
     user_id, user_name = await get_user_info(request)
     
-    # Check role - only admin can unlock
-    user = await get_current_user_from_token(request)
-    if not user or user.get("role") != "admin":
+    # Check role - only admin/owner can unlock
+    role = getattr(request.state, "tenant_user_role", None)
+    if role not in ("admin", "owner"):
         raise HTTPException(
             status_code=403, 
             detail="Only admin can unlock estimates"

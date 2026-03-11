@@ -10,15 +10,11 @@ from datetime import datetime, timezone, timedelta, date
 from dateutil.relativedelta import relativedelta
 import uuid
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/time-tracking", tags=["Time Tracking"])
 
 # Database connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 async def get_org_id(request: Request) -> Optional[str]:
     """Get organization ID from request state (validated by TenantGuardMiddleware)"""

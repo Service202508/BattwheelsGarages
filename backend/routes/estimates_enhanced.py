@@ -9,8 +9,6 @@ from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
-import motor.motor_asyncio
-import os
 import uuid
 import logging
 import hashlib
@@ -27,11 +25,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/estimates-enhanced", tags=["Estimates Enhanced"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database connection - shared instance from utils.database
+from utils.database import db
+from services.posting_hooks import post_invoice_journal_entry
 
 # Collections - Use main collections with Zoho-synced data
 estimates_collection = db["estimates"]
@@ -87,9 +83,11 @@ ORG_STATE_CODE = "DL"  # Delhi
 
 class LineItemCreate(BaseModel):
     item_id: Optional[str] = None
+    type: str = "service"  # part or service
     name: str = Field(..., min_length=1)
     description: str = ""
     hsn_code: str = ""
+    hsn_sac_code: str = ""
     quantity: float = Field(default=1, gt=0)
     unit: str = "pcs"
     rate: float = Field(default=0, ge=0)
@@ -97,8 +95,10 @@ class LineItemCreate(BaseModel):
     discount_amount: float = Field(default=0, ge=0)
     tax_id: Optional[str] = None
     tax_name: str = ""
+    tax_rate: float = Field(default=0, ge=0)
     tax_percentage: float = Field(default=0, ge=0)
     warehouse_id: Optional[str] = None
+    inventory_item_id: Optional[str] = None
 
 class LineItemUpdate(BaseModel):
     item_id: Optional[str] = None
@@ -591,14 +591,31 @@ PDF_TEMPLATES = {
     }
 }
 
-def generate_pdf_html(estimate: dict, line_items: list, template: str = "standard") -> str:
+def generate_pdf_html(estimate: dict, line_items: list, template: str = "standard", org_settings: dict = None) -> str:
     """Generate HTML for PDF rendering with template support"""
     tmpl = PDF_TEMPLATES.get(template, PDF_TEMPLATES["standard"])
     primary = tmpl["primary_color"]
     font = tmpl["font_family"]
     
+    org = org_settings or {}
+    company_name = org.get("company_name", org.get("name", ""))
+    company_gstin = org.get("gstin", "")
+    company_pan = org.get("pan_number", "")
+    company_address = f"{org.get('address', '')} {org.get('city', '')} {org.get('state', '')} {org.get('pincode', '')}".strip()
+    company_phone = org.get("phone", "")
+    company_email = org.get("email", "")
+    company_state = org.get("state", "")
+    company_state_code = org.get("state_code", "")
+    
     items_html = ""
     for idx, item in enumerate(line_items, 1):
+        tax_pct = item.get('tax_percentage', 0)
+        taxable = item.get('total', 0) - item.get('tax_amount', 0)
+        if taxable <= 0:
+            taxable = item.get('rate', 0) * item.get('quantity', 1)
+        half_tax = tax_pct / 2
+        tax_amt = item.get('tax_amount', 0)
+        half_amt = tax_amt / 2
         items_html += f"""
         <tr>
             <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{idx}</td>
@@ -609,7 +626,11 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
             <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">{item.get('hsn_code', '-')}</td>
             <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">{item.get('quantity', 1)} {item.get('unit', 'pcs')}</td>
             <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{item.get('rate', 0):,.2f}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">{item.get('tax_percentage', 0)}%</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{taxable:,.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">{half_tax}%</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{half_amt:,.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">{half_tax}%</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{half_amt:,.2f}</td>
             <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">₹{item.get('total', 0):,.2f}</td>
         </tr>
         """
@@ -629,6 +650,25 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
             </div>
             """
     
+    total_tax = estimate.get('total_tax', 0)
+    cgst_total = total_tax / 2
+    sgst_total = total_tax / 2
+    
+    # Company details block
+    company_block = f"""<div class="company">{company_name}</div>"""
+    if company_address:
+        company_block += f"""<div style="color: #6b7280; margin-top: 5px;">{company_address}</div>"""
+    if company_phone:
+        company_block += f"""<div style="color: #6b7280;">Phone: {company_phone}</div>"""
+    if company_email:
+        company_block += f"""<div style="color: #6b7280;">Email: {company_email}</div>"""
+    if company_gstin:
+        company_block += f"""<div style="color: #6b7280; font-weight: 600;">GSTIN: {company_gstin}</div>"""
+    if company_state and company_state_code:
+        company_block += f"""<div style="color: #6b7280;">State: {company_state} | Code: {company_state_code}</div>"""
+    if company_pan:
+        company_block += f"""<div style="color: #6b7280;">PAN: {company_pan}</div>"""
+    
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -645,7 +685,7 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
             .info-label {{ color: #6b7280; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }}
             .info-value {{ font-weight: 600; }}
             table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-            th {{ background: {primary}; color: white; padding: 10px 8px; text-align: left; font-weight: 600; }}
+            th {{ background: {primary}; color: white; padding: 10px 8px; text-align: left; font-weight: 600; font-size: 10px; }}
             .totals {{ margin-left: auto; width: 300px; }}
             .totals-row {{ display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }}
             .totals-row.grand {{ font-size: 16px; font-weight: bold; color: {primary}; border-top: 2px solid {primary}; border-bottom: none; }}
@@ -661,8 +701,7 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
     <body>
         <div class="header">
             <div>
-                <div class="company">Battwheels OS</div>
-                <div style="color: #6b7280; margin-top: 5px;">Your Onsite EV Resolution Partner</div>
+                {company_block}
             </div>
             <div style="text-align: right;">
                 <div class="estimate-title">ESTIMATE</div>
@@ -694,13 +733,17 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
         <table>
             <thead>
                 <tr>
-                    <th style="width: 30px;">#</th>
+                    <th style="width: 25px;">#</th>
                     <th>Item & Description</th>
-                    <th style="width: 80px; text-align: center;">HSN/SAC</th>
-                    <th style="width: 80px; text-align: right;">Qty</th>
-                    <th style="width: 90px; text-align: right;">Rate</th>
-                    <th style="width: 60px; text-align: right;">Tax</th>
-                    <th style="width: 100px; text-align: right;">Amount</th>
+                    <th style="width: 65px; text-align: center;">HSN/SAC</th>
+                    <th style="width: 60px; text-align: right;">Qty</th>
+                    <th style="width: 70px; text-align: right;">Rate</th>
+                    <th style="width: 70px; text-align: right;">Taxable</th>
+                    <th style="width: 40px; text-align: center;">CGST%</th>
+                    <th style="width: 65px; text-align: right;">CGST Amt</th>
+                    <th style="width: 40px; text-align: center;">SGST%</th>
+                    <th style="width: 65px; text-align: right;">SGST Amt</th>
+                    <th style="width: 80px; text-align: right;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -711,7 +754,8 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
         <div class="totals">
             <div class="totals-row"><span>Subtotal:</span><span>₹{estimate.get('subtotal', 0):,.2f}</span></div>
             {f'<div class="totals-row"><span>Discount:</span><span>-₹{estimate.get("total_discount", 0):,.2f}</span></div>' if estimate.get('total_discount', 0) > 0 else ''}
-            <div class="totals-row"><span>Tax ({estimate.get('gst_type', 'GST').upper()}):</span><span>₹{estimate.get('total_tax', 0):,.2f}</span></div>
+            <div class="totals-row"><span>CGST:</span><span>₹{cgst_total:,.2f}</span></div>
+            <div class="totals-row"><span>SGST:</span><span>₹{sgst_total:,.2f}</span></div>
             {f'<div class="totals-row"><span>Shipping:</span><span>₹{estimate.get("shipping_charge", 0):,.2f}</span></div>' if estimate.get('shipping_charge', 0) > 0 else ''}
             {f'<div class="totals-row"><span>Adjustment:</span><span>₹{estimate.get("adjustment", 0):,.2f}</span></div>' if estimate.get('adjustment', 0) != 0 else ''}
             <div class="totals-row grand"><span>Grand Total:</span><span>₹{estimate.get('grand_total', 0):,.2f}</span></div>
@@ -721,7 +765,7 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
         {f'<div class="terms"><div class="terms-title">Notes</div><div>{estimate.get("notes", "")}</div></div>' if estimate.get('notes') else ''}
         
         <div class="footer">
-            <p>Generated by Battwheels OS • {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC</p>
+            <p>Generated by {company_name} &bull; {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC</p>
         </div>
     </body>
     </html>
@@ -761,14 +805,9 @@ async def convert_to_invoice_internal(estimate_id: str, auto_send: bool = False)
     
     line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
     
-    # Generate invoice number
-    inv_settings = await db["invoice_settings"].find_one({"type": "numbering"})
-    if not inv_settings:
-        inv_settings = {"prefix": "INV-", "next_number": 1, "padding": 5}
-        await db["invoice_settings"].insert_one({**inv_settings, "type": "numbering"})
-    
-    invoice_number = f"{inv_settings.get('prefix', 'INV-')}{str(inv_settings.get('next_number', 1)).zfill(inv_settings.get('padding', 5))}"
-    await db["invoice_settings"].update_one({"type": "numbering"}, {"$inc": {"next_number": 1}})
+    # Generate invoice number using shared function
+    from routes.invoices_enhanced import get_next_invoice_number
+    invoice_number = await get_next_invoice_number()
     
     invoice_id = generate_id("INV")
     today = datetime.now(timezone.utc).date().isoformat()
@@ -837,6 +876,18 @@ async def convert_to_invoice_internal(estimate_id: str, auto_send: bool = False)
     )
     
     await add_estimate_history(estimate_id, "auto_converted", f"Auto-converted to Invoice {invoice_number}")
+    
+    # ── ACCOUNTING: Revenue journal for auto-converted invoices ──
+    try:
+        success, msg, _entry = await post_invoice_journal_entry(
+            organization_id=estimate.get("organization_id", ""),
+            invoice=invoice_doc,
+            created_by="system_auto_convert"
+        )
+        if not success:
+            logger.warning(f"Auto-convert revenue journal failed for {invoice_number}: {msg}")
+    except Exception as e:
+        logger.error(f"Auto-convert revenue journal exception: {e}")
     
     return {"invoice_id": invoice_id, "invoice_number": invoice_number}
 
@@ -991,8 +1042,15 @@ async def update_preferences(preferences: EstimatePreferences):
 # ========================= ESTIMATE CRUD ENDPOINTS =========================
 
 @router.post("/")
-async def create_estimate(estimate: EstimateCreate, background_tasks: BackgroundTasks):
+async def create_estimate(estimate: EstimateCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new estimate/quote"""
+    # Plan record limit enforcement
+    if request:
+        from utils.plan_limits import check_record_limit
+        org_id = await get_org_id(request)
+        if org_id:
+            await check_record_limit(org_id, "estimates")
+
     # Validate customer
     customer = await get_contact_details(estimate.customer_id)
     if not customer:
@@ -1066,6 +1124,12 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
                     item_dict["tax_percentage"] = item_details.get("tax_percentage", 0)
         
         # Calculate line item totals
+        # Ensure tax_rate is mapped to tax_percentage if provided
+        if item_dict.get("tax_rate", 0) > 0 and item_dict.get("tax_percentage", 0) == 0:
+            item_dict["tax_percentage"] = item_dict["tax_rate"]
+        # Ensure hsn_sac_code is mapped to hsn_code
+        if item_dict.get("hsn_sac_code") and not item_dict.get("hsn_code"):
+            item_dict["hsn_code"] = item_dict["hsn_sac_code"]
         totals = calculate_line_item_totals(item_dict, gst_type)
         item_dict.update(totals)
         item_dict["line_item_id"] = generate_id("LI")
@@ -1142,6 +1206,7 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
 @router.get("")
 @router.get("/")
 async def list_estimates(
+    request: Request,
     status: Optional[str] = None,
     customer_id: Optional[str] = None,
     search: Optional[str] = None,
@@ -1161,7 +1226,8 @@ async def list_estimates(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    query = {}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id}
 
     if status:
         query["status"] = status
@@ -1250,7 +1316,7 @@ async def get_estimates_summary(request: Request):
     
     # Calculate totals
     pipeline = [
-        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$match": {"status": {"$nin": ["void"]}, "organization_id": org_id}},
         {"$group": {
             "_id": None,
             "total_value": {"$sum": "$grand_total"},
@@ -1284,9 +1350,10 @@ async def get_estimates_summary(request: Request):
 # ========================= REPORTING ENDPOINTS (Before dynamic routes) =========================
 
 @router.get("/reports/by-status")
-async def report_by_status(date_from: str = "", date_to: str = ""):
+async def report_by_status(request: Request, date_from: str = "", date_to: str = ""):
     """Report: Estimates by status"""
-    query = {}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id}
     if date_from:
         query["date"] = {"$gte": date_from}
     if date_to:
@@ -1313,10 +1380,11 @@ async def report_by_status(date_from: str = "", date_to: str = ""):
     }
 
 @router.get("/reports/by-customer")
-async def report_by_customer(limit: int = 20):
+async def report_by_customer(request: Request, limit: int = 20):
     """Report: Top customers by estimate value"""
+    org_id = await get_org_id(request)
     pipeline = [
-        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$match": {"status": {"$nin": ["void"]}, "organization_id": org_id}},
         {"$group": {
             "_id": "$customer_id",
             "customer_name": {"$first": "$customer_name"},
@@ -1339,12 +1407,14 @@ async def report_by_customer(limit: int = 20):
     return {"code": 0, "report": results}
 
 @router.get("/reports/conversion-funnel")
-async def report_conversion_funnel():
+async def report_conversion_funnel(request: Request):
     """Report: Estimate conversion funnel"""
-    total = await estimates_collection.count_documents({"status": {"$ne": "void"}})
-    sent = await estimates_collection.count_documents({"status": {"$in": ["sent", "accepted", "declined", "expired", "converted"]}})
-    accepted = await estimates_collection.count_documents({"status": {"$in": ["accepted", "converted"]}})
-    converted = await estimates_collection.count_documents({"status": "converted"})
+    org_id = await get_org_id(request)
+    base = {"organization_id": org_id}
+    total = await estimates_collection.count_documents({**base, "status": {"$ne": "void"}})
+    sent = await estimates_collection.count_documents({**base, "status": {"$in": ["sent", "accepted", "declined", "expired", "converted"]}})
+    accepted = await estimates_collection.count_documents({**base, "status": {"$in": ["accepted", "converted"]}})
+    converted = await estimates_collection.count_documents({**base, "status": "converted"})
     
     return {
         "code": 0,
@@ -1618,13 +1688,15 @@ async def bulk_action(action: BulkAction):
 
 @router.get("/export")
 async def export_estimates(
+    request: Request,
     status: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     format: str = "csv"
 ):
     """Export estimates to CSV or JSON"""
-    query = {}
+    org_id = await get_org_id(request)
+    query = {"organization_id": org_id}
     if status:
         query["status"] = status
     if date_from:
@@ -2189,9 +2261,14 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate, 
     return response
 
 @router.post("/{estimate_id}/send")
-async def send_estimate(estimate_id: str, email_to: Optional[str] = None, message: str = ""):
-    """Send estimate to customer (mocked)"""
-    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+async def send_estimate(request: Request, estimate_id: str, email_to: Optional[str] = None, message: str = ""):
+    """Send estimate to customer via email with PDF attachment"""
+    from services.email_service import EmailService
+    from weasyprint import HTML
+    
+    org_id = await get_org_id(request)
+    
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
@@ -2202,27 +2279,66 @@ async def send_estimate(estimate_id: str, email_to: Optional[str] = None, messag
     if not recipient:
         raise HTTPException(status_code=400, detail="No email address available")
     
-    # Mock send email
-    email_body = f"""
-Dear {estimate.get('customer_name', 'Customer')},
-
-Please find attached the estimate {estimate.get('estimate_number')} for your review.
-
-Subject: {estimate.get('subject', 'Estimate')}
-Amount: ₹{estimate.get('grand_total', 0):,.2f}
-Valid Until: {estimate.get('expiry_date', 'N/A')}
-
-{message}
-
-Best regards,
-Battwheels Team
-"""
+    # Get org settings
+    org_settings = {}
+    if org_id:
+        org_settings = await db["organizations"].find_one({"organization_id": org_id}, {"_id": 0}) or {}
+    org_name = org_settings.get("company_name", org_settings.get("name", "Battwheels"))
     
-    mock_send_email(
-        recipient,
-        f"Estimate {estimate.get('estimate_number')} from Battwheels",
-        email_body,
-        f"Estimate_{estimate.get('estimate_number')}.pdf"
+    # Generate PDF
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": estimate_id}, {"_id": 0}
+    ).sort("line_number", 1).to_list(100)
+    
+    html_content = generate_pdf_html(estimate, line_items, org_settings=org_settings)
+    pdf_buffer = io.BytesIO()
+    HTML(string=html_content).write_pdf(pdf_buffer)
+    pdf_content = pdf_buffer.getvalue()
+    
+    customer_name_safe = (estimate.get('customer_name', '') or 'Customer').replace(' ', '_')[:30]
+    pdf_filename = f"EST-{estimate.get('estimate_number', estimate_id)}-{customer_name_safe}.pdf"
+    
+    # Build email HTML
+    est_number = estimate.get('estimate_number', estimate_id)
+    grand_total = estimate.get('grand_total', 0)
+    
+    email_html = f"""
+    <p>Dear {estimate.get('customer_name', 'Customer')},</p>
+    <p>Please find attached the estimate <strong>{est_number}</strong> for your review.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; border: 1px solid #e5e7eb;">
+        <tr style="background: #f9fafb;">
+            <td style="padding: 12px 16px; color: #6b7280;">Estimate Number</td>
+            <td style="padding: 12px 16px; font-weight: 600; text-align: right;">{est_number}</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px 16px; color: #6b7280;">Date</td>
+            <td style="padding: 12px 16px; text-align: right;">{estimate.get('date', '')}</td>
+        </tr>
+        <tr style="background: #f9fafb;">
+            <td style="padding: 12px 16px; color: #6b7280;">Valid Until</td>
+            <td style="padding: 12px 16px; text-align: right;">{estimate.get('expiry_date', 'N/A')}</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; font-weight: 600;">Grand Total</td>
+            <td style="padding: 16px; font-size: 18px; font-weight: 700; text-align: right;">₹{grand_total:,.2f}</td>
+        </tr>
+    </table>
+    {f'<p>{message}</p>' if message else ''}
+    <p>Best regards,<br>{org_name}</p>
+    """
+    
+    import base64
+    attachments = [{
+        "filename": pdf_filename,
+        "content": base64.b64encode(pdf_content).decode("utf-8")
+    }]
+    
+    email_result = await EmailService.send_email(
+        to=recipient,
+        subject=f"Estimate {est_number} from {org_name} — ₹{grand_total:,.2f}",
+        html_content=email_html,
+        attachments=attachments,
+        org_id=org_id
     )
     
     # Update status to sent
@@ -2238,7 +2354,11 @@ Battwheels Team
     
     await add_estimate_history(estimate_id, "sent", f"Estimate sent to {recipient}")
     
-    return {"code": 0, "message": f"Estimate sent to {recipient}"}
+    return {
+        "code": 0,
+        "message": f"Estimate sent to {recipient}",
+        "email_status": email_result.get("status", "unknown")
+    }
 
 @router.post("/{estimate_id}/mark-accepted")
 async def mark_accepted(request: Request, estimate_id: str):
@@ -2270,19 +2390,20 @@ async def convert_to_invoice(request: Request, estimate_id: str):
     if not org_id:
         org_id = estimate.get("organization_id", "")
     
+    # Get user_id from request context
+    user_id = ""
+    try:
+        ctx = await optional_tenant_context(request)
+        user_id = ctx.user_id if ctx else ""
+    except Exception:
+        user_id = estimate.get("created_by", "")
+    
     # Get line items
     line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
     
-    # Use per-org sequence for invoice numbering (same as invoices_enhanced create)
-    from server import db as server_db
-    seq = await server_db.sequences.find_one_and_update(
-        {"organization_id": org_id, "type": "invoice"},
-        {"$inc": {"seq": 1}},
-        upsert=True,
-        return_document=True
-    )
-    next_num = seq.get("seq", 1) if seq else 1
-    invoice_number = f"INV-{str(next_num).zfill(5)}"
+    # Use the same invoice numbering as invoices_enhanced
+    from routes.invoices_enhanced import get_next_invoice_number
+    invoice_number = await get_next_invoice_number()
     
     invoice_id = generate_id("INV")
     today = datetime.now(timezone.utc).date().isoformat()
@@ -2357,6 +2478,119 @@ async def convert_to_invoice(request: Request, estimate_id: str):
     )
     
     await add_estimate_history(estimate_id, "converted", f"Converted to Invoice {invoice_number}")
+    
+    # ── ACCOUNTING: Revenue journal entry ──
+    # DR Accounts Receivable, CR Sales Revenue, CR GST Payable
+    try:
+        # Map estimate-style field names to journal-service field names
+        journal_invoice = dict(invoice_doc)
+        journal_invoice.setdefault("total", journal_invoice.get("grand_total", 0))
+        journal_invoice.setdefault("sub_total", journal_invoice.get("subtotal", 0))
+        journal_invoice.setdefault("tax_total", journal_invoice.get("total_tax", 0))
+        journal_invoice.setdefault("cgst_amount", journal_invoice.get("total_cgst", 0))
+        journal_invoice.setdefault("sgst_amount", journal_invoice.get("total_sgst", 0))
+        journal_invoice.setdefault("igst_amount", journal_invoice.get("total_igst", 0))
+        success, msg, _entry = await post_invoice_journal_entry(
+            organization_id=org_id,
+            invoice=journal_invoice,
+            created_by=user_id
+        )
+        if success:
+            logger.info(f"Revenue journal posted for invoice {invoice_number}")
+        else:
+            logger.warning(f"Revenue journal failed for invoice {invoice_number}: {msg}")
+    except Exception as e:
+        logger.error(f"Revenue journal exception for invoice {invoice_number}: {e}")
+    
+    # ── INVENTORY + COGS: Deduct stock and post COGS for part items ──
+    for item in line_items:
+        item_type = item.get("type", item.get("item_type", ""))
+        inv_item_id = item.get("inventory_item_id") or item.get("item_id_ref")
+        qty = float(item.get("qty", item.get("quantity", 0)))
+        if item_type != "part" or not inv_item_id or qty <= 0:
+            continue
+        try:
+            # Lookup item for cost and stock location
+            inv_item = await db["items"].find_one(
+                {"item_id": inv_item_id, "organization_id": org_id}, {"_id": 0}
+            )
+            if not inv_item:
+                continue
+            item_name = inv_item.get("name", "Unknown")
+            unit_cost = float(inv_item.get("purchase_price", 0))
+            total_cost = round(unit_cost * qty, 2)
+            
+            # 1. Deduct stock
+            await db["item_stock_locations"].update_one(
+                {"item_id": inv_item_id, "organization_id": org_id},
+                {"$inc": {"available_stock": -qty},
+                 "$set": {"updated_time": datetime.now(timezone.utc).isoformat()}}
+            )
+            
+            # 2. Stock movement audit trail
+            movement_id = f"stm_{uuid.uuid4().hex[:12]}"
+            await db["stock_movements"].insert_one({
+                "movement_id": movement_id,
+                "item_id": inv_item_id,
+                "item_name": item_name,
+                "movement_type": "CONSUMPTION",
+                "reference_type": "INVOICE",
+                "reference_id": invoice_id,
+                "reference_number": invoice_number,
+                "movement_date": datetime.now(timezone.utc).isoformat(),
+                "quantity": -qty,
+                "unit_cost": unit_cost,
+                "total_value": total_cost,
+                "organization_id": org_id,
+                "created_by": user_id,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "notes": f"Stock consumed: estimate {estimate_id} → invoice {invoice_number}"
+            })
+            
+            # 3. COGS journal entry (DR COGS, CR Inventory)
+            if total_cost > 0:
+                cogs_entry_id = f"je_{uuid.uuid4().hex[:12]}"
+                await db["journal_entries"].insert_one({
+                    "entry_id": cogs_entry_id,
+                    "entry_date": today,
+                    "reference_number": movement_id,
+                    "description": f"COGS: {item_name} x{qty} | Invoice {invoice_number}",
+                    "organization_id": org_id,
+                    "created_by": user_id,
+                    "entry_type": "COGS",
+                    "source_document_id": invoice_id,
+                    "source_document_type": "INVOICE",
+                    "is_posted": True,
+                    "is_reversed": False,
+                    "reversed_entry_id": "",
+                    "lines": [
+                        {
+                            "line_id": f"jel_{uuid.uuid4().hex[:8]}",
+                            "account_id": "COST_OF_GOODS_SOLD",
+                            "account_name": "Cost of Goods Sold",
+                            "account_code": "5100",
+                            "account_type": "Expense",
+                            "debit_amount": total_cost,
+                            "credit_amount": 0,
+                            "description": f"COGS - {item_name}"
+                        },
+                        {
+                            "line_id": f"jel_{uuid.uuid4().hex[:8]}",
+                            "account_id": "INVENTORY",
+                            "account_name": "Inventory",
+                            "account_code": "1300",
+                            "account_type": "Asset",
+                            "debit_amount": 0,
+                            "credit_amount": total_cost,
+                            "description": f"Inventory reduction - {item_name}"
+                        }
+                    ],
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                })
+                logger.info(f"COGS journal posted: {cogs_entry_id} for {item_name} ₹{total_cost}")
+        except Exception as e:
+            logger.error(f"Inventory/COGS error for item {inv_item_id}: {e}")
     
     invoice_doc.pop("_id", None)
     return {
@@ -2745,7 +2979,7 @@ async def revoke_share_link(estimate_id: str, share_link_id: str):
 # ========================= PDF GENERATION ENDPOINTS =========================
 
 @router.get("/{estimate_id}/pdf")
-async def generate_pdf(estimate_id: str):
+async def generate_pdf(request: Request, estimate_id: str):
     """Generate and download PDF of the estimate"""
     estimate = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
     if not estimate:
@@ -2756,8 +2990,14 @@ async def generate_pdf(estimate_id: str):
         {"_id": 0}
     ).sort("line_number", 1).to_list(100)
     
+    # Get org settings for branding
+    org_id = estimate.get("organization_id")
+    org_settings = {}
+    if org_id:
+        org_settings = await db["organizations"].find_one({"organization_id": org_id}, {"_id": 0}) or {}
+    
     # Generate HTML
-    html_content = generate_pdf_html(estimate, line_items)
+    html_content = generate_pdf_html(estimate, line_items, org_settings=org_settings)
     
     # Try to use WeasyPrint for PDF generation
     try:
@@ -2791,7 +3031,7 @@ async def generate_pdf(estimate_id: str):
         })
 
 @router.get("/{estimate_id}/pdf/{template_id}")
-async def generate_pdf_with_template(estimate_id: str, template_id: str = "standard"):
+async def generate_pdf_with_template(request: Request, estimate_id: str, template_id: str = "standard"):
     """Generate PDF with specific template"""
     if template_id not in PDF_TEMPLATES:
         raise HTTPException(status_code=400, detail=f"Invalid template. Available: {list(PDF_TEMPLATES.keys())}")
@@ -2805,7 +3045,12 @@ async def generate_pdf_with_template(estimate_id: str, template_id: str = "stand
         {"_id": 0}
     ).sort("line_number", 1).to_list(100)
     
-    html_content = generate_pdf_html(estimate, line_items, template_id)
+    org_id = estimate.get("organization_id")
+    org_settings = {}
+    if org_id:
+        org_settings = await db["organizations"].find_one({"organization_id": org_id}, {"_id": 0}) or {}
+    
+    html_content = generate_pdf_html(estimate, line_items, template_id, org_settings=org_settings)
     
     try:
         from weasyprint import HTML

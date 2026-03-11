@@ -6,15 +6,10 @@ from datetime import datetime, timezone, timedelta
 import logging
 import uuid
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
-# Database connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ.get('DB_NAME', 'test_database')
-_client = AsyncIOMotorClient(MONGO_URL)
-_db = _client[DB_NAME]
+from utils.database import db as _db
 
 def get_db():
     return _db

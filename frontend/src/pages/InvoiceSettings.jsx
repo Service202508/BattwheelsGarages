@@ -24,8 +24,7 @@ import {
   Settings, RefreshCw, TrendingUp, Users, FileText, CheckCircle, XCircle,
   Mail, Repeat, Plus, Play, Pause, Trash2, Edit, Eye
 } from "lucide-react";
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { API } from "@/App";
 
 export default function InvoiceSettings() {
   const [loading, setLoading] = useState(true);

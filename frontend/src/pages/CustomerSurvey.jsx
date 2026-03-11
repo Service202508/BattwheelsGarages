@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const API = process.env.REACT_APP_BACKEND_URL;
+// HARDCODED for production — Emergent overrides env vars during build
+const API = `${window.location.origin}/api/v1`;
 
 const RATING_LABELS = { 1: "Poor", 2: "Fair", 3: "Good", 4: "Very Good", 5: "Excellent" };
 
@@ -290,7 +291,7 @@ export default function CustomerSurvey() {
   // ── Fetch survey metadata ─────────────────────────────────────────────
   useEffect(() => {
     if (!token) { setState("error"); setErrorMsg("Invalid survey link."); return; }
-    axios.get(`${API}/api/public/survey/${token}`)
+    axios.get(`${API}/public/survey/${token}`)
       .then(r => { setSurveyData(r.data); setState("form"); })
       .catch(err => {
         const status = err?.response?.status;
@@ -305,7 +306,7 @@ export default function CustomerSurvey() {
     if (!rating || submitting) return;
     setSubmitting(true);
     try {
-      await axios.post(`${API}/api/public/survey/${token}`, {
+      await axios.post(`${API}/public/survey/${token}`, {
         rating, feedback, would_recommend: recommend,
       });
       setState("thanks");

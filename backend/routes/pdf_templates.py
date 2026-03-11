@@ -5,20 +5,12 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-import motor.motor_asyncio
-import os
 import uuid
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import db, extract_org_id, org_query
 
 
 router = APIRouter(prefix="/pdf-templates", tags=["PDF Templates"])
-
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
 
 # Collections
 templates_collection = db["pdf_templates"]

@@ -89,7 +89,7 @@ export default function CustomerPayments({ user }) {
                 <h4 className="font-medium text-blue-900">Payment Options</h4>
                 <ul className="text-sm text-blue-800 mt-1 space-y-1">
                   <li>• UPI: <span className="font-mono">battwheels@kotak</span></li>
-                  <li>• Pay at workshop counter</li>
+                  <li>• Pay at service center counter</li>
                   <li>• Online payment coming soon</li>
                 </ul>
               </div>

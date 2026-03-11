@@ -42,7 +42,13 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Master encryption key (in production, use a secret manager)
-VAULT_MASTER_KEY = os.environ.get("VAULT_MASTER_KEY", "battwheels-default-vault-key-change-in-prod")
+VAULT_MASTER_KEY = os.environ.get("VAULT_MASTER_KEY")
+if not VAULT_MASTER_KEY:
+    VAULT_MASTER_KEY = "INSECURE-DEFAULT-KEY-CHANGE-IN-PRODUCTION"
+    logging.warning(
+        "VAULT_MASTER_KEY not set — using insecure default. "
+        "Set VAULT_MASTER_KEY in production for secure token encryption."
+    )
 
 
 @dataclass

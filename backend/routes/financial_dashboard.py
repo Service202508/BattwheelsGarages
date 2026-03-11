@@ -8,15 +8,11 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/dashboard/financial", tags=["Financial Dashboard"])
 
 # Database connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from utils.database import db
 
 async def get_org_id(request: Request) -> Optional[str]:
     """Get organization ID from request state (validated by TenantGuardMiddleware)"""

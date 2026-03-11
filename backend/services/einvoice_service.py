@@ -21,7 +21,6 @@ import logging
 import httpx
 from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any, List, Tuple
-from motor.motor_asyncio import AsyncIOMotorClient
 from cryptography.fernet import Fernet
 import qrcode
 from io import BytesIO
@@ -61,12 +60,11 @@ ENCRYPTION_KEY = os.environ.get("EINVOICE_ENCRYPTION_KEY", Fernet.generate_key()
 
 # ==================== DATABASE ====================
 
+from utils.database import db as _einvoice_db
+
 def get_db():
     """Get database connection"""
-    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-    db_name = os.environ.get("DB_NAME", "battwheels")
-    client = AsyncIOMotorClient(mongo_url)
-    return client[db_name]
+    return _einvoice_db
 
 # ==================== ENCRYPTION HELPERS ====================
 

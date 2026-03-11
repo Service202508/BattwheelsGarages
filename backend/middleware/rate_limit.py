@@ -6,7 +6,7 @@ Protects against abuse and controls AI costs using slowapi.
 
 Rate limit tiers:
 - Auth endpoints: 5/min per IP (login), 3/hour per IP (register)
-- AI/EFI endpoints: 20/min per org, 200/hour per org
+- AI/EVFI endpoints: 20/min per org, 200/hour per org
 - Standard API: 300/min per user
 - Public endpoints: 60/min per IP
 """
@@ -61,7 +61,7 @@ RATE_LIMITS = {
     "auth_register": "100/hour" if os.environ.get("ENVIRONMENT") == "development" else "3/hour",
     "auth_password_reset": "5/hour",
     
-    # AI/EFI - cost control per organization
+    # AI/EVFI - cost control per organization
     "ai_per_minute": "20/minute",
     "ai_per_hour": "200/hour",
     
@@ -89,7 +89,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     ]
     
     AI_PATTERNS = [
-        r"^/api/efi/.*$",
+        r"^/api/e?v?fi/.*$",
         r"^/api/ai/.*$",
         r"^/api/failure-intelligence/.*$",
         r"^/api/knowledge-brain/.*$",

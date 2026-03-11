@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import FeatureGateBanner from "./FeatureGateBanner";
+import UpgradePrompt from "./UpgradePrompt";
 import OrganizationSwitcher from "./OrganizationSwitcher";
+import { isModuleAccessible } from "../config/planConfig";
+import { useOrganization } from "@/App";
 import { 
   LayoutDashboard, 
   Ticket, 
@@ -86,7 +89,8 @@ const navItems = [
     defaultOpen: false,
     items: [
       { name: "Failure Intelligence", path: "/failure-intelligence", icon: Brain },
-      { name: "AI Assistant", path: "/ai-assistant", icon: Bot },
+      { name: "EVFI\u2122 Knowledge Brain", path: "/knowledge-brain", icon: Brain },
+      { name: "EVFI\u2122 AI Assistant", path: "/ai-assistant", icon: Bot },
       { name: "Fault Tree Import", path: "/fault-tree-import", icon: FileText },
     ]
   },
@@ -160,7 +164,6 @@ const navItems = [
       { name: "Recurring Expenses", path: "/recurring-expenses", icon: Repeat },
       { name: "Banking", path: "/banking", icon: Wallet },
       { name: "Accountant", path: "/accountant", icon: Calculator },
-      { name: "Fixed Assets", path: "/fixed-assets", icon: Package },
       { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
       { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
       { name: "Trial Balance", path: "/trial-balance", icon: Scale },
@@ -211,23 +214,16 @@ const navItems = [
       { name: "Subscription & Billing", path: "/subscription", icon: CreditCard, adminOnly: true },
       { name: "Team Management", path: "/team", icon: Users, adminOnly: true },
       { name: "Branding", path: "/branding", icon: Palette, adminOnly: true },
-      { name: "All Settings", path: "/all-settings", icon: Settings, adminOnly: true },
       { name: "Organization", path: "/organization-settings", icon: Building2, adminOnly: true },
       { name: "Data Management", path: "/data-management", icon: Database, adminOnly: true },
       { name: "Documents", path: "/documents", icon: FolderOpen, adminOnly: true },
-      { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
-      { name: "Users", path: "/users", icon: Users, adminOnly: true },
-      { name: "Custom Modules", path: "/custom-modules", icon: Database, adminOnly: true },
-      { name: "Activity Logs", path: "/activity-logs", icon: Activity, adminOnly: true },
-      { name: "Zoho Sync", path: "/zoho-sync", icon: CloudDownload, adminOnly: true },
-      { name: "Exchange Rates", path: "/exchange-rates", icon: ArrowRightLeft },
       { name: "Customer Portal", path: "/customer-portal", icon: Building2 },
     ]
   },
 ];
 
 // Collapsible Navigation Section Component
-const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSection }) => {
+const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSection, currentPlan, onLockedClick }) => {
   const location = useLocation();
   const SectionIcon = section.icon;
   const isOpen = openSections[section.section] ?? section.defaultOpen;
@@ -258,19 +254,32 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
         {visibleItems.slice(0, 3).map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
+          const accessible = isModuleAccessible(item.path, currentPlan);
           return (
             <Link
               key={item.path}
-              to={item.path}
-              onClick={onClose}
-              title={item.name}
-              className={`flex items-center justify-center p-2.5 rounded transition-all duration-200 ${
-                isActive
+              to={accessible ? item.path : "#"}
+              onClick={(e) => {
+                if (!accessible) {
+                  e.preventDefault();
+                  onLockedClick?.(item.path);
+                } else {
+                  onClose?.();
+                }
+              }}
+              title={item.name + (!accessible ? " (Locked)" : "")}
+              className={`relative flex items-center justify-center p-2.5 rounded transition-all duration-200 ${
+                isActive && accessible
                   ? "bg-bw-volt/[0.12] text-bw-volt border-l-2 border-bw-volt"
-                  : "text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
+                  : accessible
+                    ? "text-bw-white/[0.65] hover:text-bw-white hover:bg-bw-volt/[0.06]"
+                    : "text-bw-white/[0.25] cursor-pointer hover:bg-white/[0.03]"
               }`}
             >
-              <Icon className={`h-5 w-5 ${isActive ? "text-bw-volt" : ""}`} strokeWidth={1.5} />
+              <Icon className={`h-5 w-5 ${isActive && accessible ? "text-bw-volt" : !accessible ? "text-bw-white/25" : ""}`} strokeWidth={1.5} />
+              {!accessible && (
+                <Lock className="absolute -top-0.5 -right-0.5 h-3 w-3 text-amber-500/70" strokeWidth={2} />
+              )}
             </Link>
           );
         })}
@@ -284,13 +293,13 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
         <div className={`flex items-center justify-between px-3 py-2.5 rounded transition-all duration-200 group cursor-pointer ${
           hasActiveItem 
             ? "bg-bw-volt/[0.08] text-bw-white" 
-            : "text-bw-white/[0.45] hover:bg-bw-volt/[0.06]"
+            : "text-bw-white/[0.65] hover:bg-bw-volt/[0.06]"
         }`}>
           <div className="flex items-center gap-3">
             <div className={`p-1.5 rounded transition-colors ${
               hasActiveItem ? "bg-bw-volt/[0.12]" : "bg-bw-panel group-hover:bg-bw-volt/[0.08]"
             }`}>
-              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-bw-volt" : "text-bw-white/30"}`} strokeWidth={1.5} />
+              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-bw-volt" : "text-bw-white/45"}`} strokeWidth={1.5} />
             </div>
             <span className={`text-sm font-medium nav-section-label ${hasActiveItem ? "text-bw-white !text-sm !tracking-normal !normal-case !font-medium" : ""}`} style={{ fontFamily: hasActiveItem ? 'Manrope, sans-serif' : undefined }}>
               {section.section}
@@ -305,20 +314,33 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
+            const accessible = isModuleAccessible(item.path, currentPlan);
             return (
               <Link
                 key={item.path}
-                to={item.path}
-                onClick={onClose}
+                to={accessible ? item.path : "#"}
+                onClick={(e) => {
+                  if (!accessible) {
+                    e.preventDefault();
+                    onLockedClick?.(item.path);
+                  } else {
+                    onClose?.();
+                  }
+                }}
                 data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className={`flex items-center gap-3 px-3 py-2 rounded transition-all duration-200 ${
-                  isActive
+                  isActive && accessible
                     ? "bg-bw-volt/[0.12] text-bw-volt font-semibold border-l-2 border-bw-volt rounded-l-none"
-                    : "text-bw-white/[0.45] hover:text-bw-white hover:bg-bw-volt/[0.06]"
+                    : accessible
+                      ? "text-bw-white/[0.65] hover:text-bw-white hover:bg-bw-volt/[0.06]"
+                      : "text-bw-white/[0.30] cursor-pointer hover:bg-white/[0.03]"
                 }`}
               >
-                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-bw-volt" : "text-bw-white/30"}`} strokeWidth={1.5} />
-                <span className="text-sm">{item.name}</span>
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive && accessible ? "text-bw-volt" : !accessible ? "text-bw-white/25" : "text-bw-white/40"}`} strokeWidth={1.5} />
+                <span className="text-sm flex-1">{item.name}</span>
+                {!accessible && (
+                  <Lock className="h-3 w-3 text-amber-500/60 flex-shrink-0 ml-auto" strokeWidth={2} data-testid={`lock-icon-${item.path.slice(1)}`} />
+                )}
               </Link>
             );
           })}
@@ -328,7 +350,7 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
   );
 };
 
-const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) => {
+const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose, currentPlan, onLockedClick }) => {
   const [openSections, setOpenSections] = useState({});
   
   const toggleSection = (sectionName) => {
@@ -369,16 +391,6 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
-          {onClose && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={onClose}
-              className="text-bw-white/35 hover:text-bw-white lg:hidden h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
         </div>
       </div>
 
@@ -412,6 +424,8 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
               onClose={onClose}
               openSections={openSections}
               toggleSection={toggleSection}
+              currentPlan={currentPlan}
+              onLockedClick={onLockedClick}
             />
           ))}
         </nav>
@@ -473,10 +487,31 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
   );
 };
 
-export default function Layout({ children, user, onLogout }) {
+export default function Layout({ children, user, onLogout, emailVerified = true }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
+  const [lockedModule, setLockedModule] = useState(null);
   const location = useLocation();
+  const currentOrg = useOrganization();
+  const currentPlan = (currentOrg?.plan_type || "free_trial").toLowerCase();
+
+  // Clear upgrade prompt on route changes
+  useEffect(() => {
+    setLockedModule(null);
+  }, [location.pathname]);
+
+  const handleResendVerification = useCallback(async () => {
+    try {
+      const API = window.location.origin;
+      await fetch(`${API}/api/auth/resend-verification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user?.email }),
+      });
+      setResendSent(true);
+    } catch { /* silent */ }
+  }, [user?.email]);
 
   // Mobile bottom tab items
   const MOBILE_TABS = [
@@ -498,7 +533,9 @@ export default function Layout({ children, user, onLogout }) {
           user={user} 
           collapsed={collapsed} 
           setCollapsed={setCollapsed} 
-          onLogout={onLogout} 
+          onLogout={onLogout}
+          currentPlan={currentPlan}
+          onLockedClick={(path) => { setLockedModule(path); }}
         />
       </aside>
 
@@ -509,13 +546,15 @@ export default function Layout({ children, user, onLogout }) {
             user={user} 
             onLogout={onLogout}
             onClose={() => setMobileOpen(false)}
+            currentPlan={currentPlan}
+            onLockedClick={(path) => { setLockedModule(path); setMobileOpen(false); }}
           />
         </SheetContent>
       </Sheet>
 
       {/* Main Content */}
       <main 
-        className={`flex-1 transition-all duration-300 ${
+        className={`flex-1 min-w-0 overflow-x-hidden transition-all duration-300 ${
           collapsed ? "lg:ml-[72px]" : "lg:ml-72"
         }`}
       >
@@ -559,11 +598,36 @@ export default function Layout({ children, user, onLogout }) {
           </div>
         </header>
 
+        {/* Email Verification Banner */}
+        {!emailVerified && (
+          <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 lg:px-8 py-3 flex items-center justify-between" data-testid="email-verify-banner">
+            <span className="text-amber-400 text-sm">
+              Please verify your email to unlock all features. Check your inbox for the verification link.
+            </span>
+            <button
+              onClick={handleResendVerification}
+              disabled={resendSent}
+              className="text-amber-400 text-sm underline ml-4 hover:text-amber-300 transition whitespace-nowrap disabled:opacity-50"
+              data-testid="resend-verification-btn"
+            >
+              {resendSent ? "Email sent!" : "Resend email"}
+            </button>
+          </div>
+        )}
+
         {/* Page Content — wrapped in FeatureGateBanner for plan-gated routes */}
         <div className="p-4 pb-[76px] lg:p-8 lg:pb-8">
-          <FeatureGateBanner>
-            {children}
-          </FeatureGateBanner>
+          {lockedModule ? (
+            <UpgradePrompt
+              modulePath={lockedModule}
+              currentPlan={currentPlan}
+              onClose={() => setLockedModule(null)}
+            />
+          ) : (
+            <FeatureGateBanner>
+              {children}
+            </FeatureGateBanner>
+          )}
         </div>
       </main>
 

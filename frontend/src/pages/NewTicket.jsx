@@ -346,17 +346,23 @@ export default function NewTicket({ user }) {
                       <SelectValue placeholder="Select vehicle category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((cat) => {
-                        const Icon = categoryIcons[cat.code] || Car;
-                        return (
-                          <SelectItem key={cat.code} value={cat.code}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="h-4 w-4" />
-                              {cat.name}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
+                      {categories.length === 0 ? (
+                        <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+                          Loading categories...
+                        </div>
+                      ) : (
+                        categories.map((cat) => {
+                          const Icon = categoryIcons[cat.code] || Car;
+                          return (
+                            <SelectItem key={cat.code} value={cat.code}>
+                              <div className="flex items-center gap-2">
+                                <Icon className="h-4 w-4" />
+                                {cat.name}
+                              </div>
+                            </SelectItem>
+                          );
+                        })
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -509,7 +515,7 @@ export default function NewTicket({ user }) {
                           </p>
                         )}
                         {suggestion.source === "efi" && (
-                          <Badge variant="outline" className="text-xs mt-1">From EFI Database</Badge>
+                          <Badge variant="outline" className="text-xs mt-1">From EVFI Database</Badge>
                         )}
                       </div>
                     ))}

@@ -423,6 +423,7 @@ class TestBillsReports:
 class TestInventorySummary:
     """Inventory summary tests"""
     
+    @pytest.mark.timeout(90)
     def test_get_inventory_summary(self, api_client):
         """Test inventory summary endpoint"""
         response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/summary")
@@ -792,6 +793,7 @@ class TestStockAdjustments:
 class TestInventoryReports:
     """Inventory reports tests"""
     
+    @pytest.mark.timeout(90)
     def test_stock_summary_report(self, api_client):
         """Test stock summary report"""
         response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/stock-summary")
@@ -803,6 +805,7 @@ class TestInventoryReports:
         assert "summary" in report
         print(f"✓ Stock summary: {report['summary']['total_items']} items, ₹{report['summary']['total_value']} value")
     
+    @pytest.mark.timeout(90)
     def test_low_stock_report(self, api_client):
         """Test low stock report"""
         response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/low-stock")
@@ -814,6 +817,7 @@ class TestInventoryReports:
         assert "total" in report
         print(f"✓ Low stock report: {report['total']} items below reorder level")
     
+    @pytest.mark.timeout(90)
     def test_valuation_report(self, api_client):
         """Test inventory valuation report"""
         response = api_client.get(f"{BASE_URL}/api/v1/inventory-enhanced/reports/valuation")

@@ -247,6 +247,9 @@ class AIQueryResponse(BaseModel):
     # Suggestions
     estimate_suggestions: List[Dict[str, Any]] = []  # Parts/labor to add
     
+    # EVFI classification
+    efi_classification: Optional[Dict[str, Any]] = None
+    
     # Tracking
     query_id: str
     response_time_ms: int = 0

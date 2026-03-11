@@ -64,7 +64,8 @@ class TestGSTR3B:
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert "section_3_1_d" in data
+        assert "section_3_1_d" not in data  # old flat key removed
+        assert "d" in data.get("section_3_1", {})
 
     def test_gstr3b_itc_section(self, base_url, _headers):
         resp = requests.get(f"{base_url}/api/v1/gst/gstr3b?month=2026-03", headers=_headers)

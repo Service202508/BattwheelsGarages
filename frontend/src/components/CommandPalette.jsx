@@ -29,7 +29,7 @@ const navigationItems = [
   { name: "Inventory", path: "/inventory-enhanced", icon: Package, keywords: ["stock management", "warehouse"] },
   { name: "Vehicles", path: "/vehicles", icon: Car, keywords: ["ev", "electric vehicles", "cars"] },
   { name: "Failure Intelligence", path: "/failure-intelligence", icon: Brain, keywords: ["efi", "diagnostics", "ai"] },
-  { name: "AI Assistant", path: "/ai-assistant", icon: Bot, keywords: ["chat", "help", "assistant"] },
+  { name: "EVFI\u2122 AI Assistant", path: "/ai-assistant", icon: Bot, keywords: ["chat", "help", "assistant", "efi", "diagnostic"] },
   { name: "Banking", path: "/banking", icon: Wallet, keywords: ["accounts", "bank", "transactions"] },
   { name: "Expenses", path: "/expenses", icon: Receipt, keywords: ["costs", "spending"] },
   { name: "Reports", path: "/reports", icon: BarChart3, keywords: ["analytics", "insights"] },

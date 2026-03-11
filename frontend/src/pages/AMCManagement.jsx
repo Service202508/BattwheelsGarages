@@ -95,7 +95,7 @@ export default function AMCManagement({ user }) {
       
       // Fetch subscriptions
       const subsRes = await fetch(`${API}/amc/subscriptions`, { headers, credentials: "include" });
-      if (subsRes.ok) setSubscriptions(await subsRes.json());
+      if (subsRes.ok) { const subsData = await subsRes.json(); setSubscriptions(subsData.data || subsData || []); }
       
       // Fetch analytics
       const analyticsRes = await fetch(`${API}/amc/analytics`, { headers, credentials: "include" });

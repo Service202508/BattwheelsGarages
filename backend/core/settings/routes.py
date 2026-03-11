@@ -553,7 +553,7 @@ async def update_billing_settings(request: Request, data: BillingSettings):
 
 @router.patch("/modules/efi")
 async def update_efi_settings(request: Request, data: EFISettings):
-    """Update EFI settings"""
+    """Update EVFI settings"""
     await require_admin(request)
     org_id = await get_org_id(request)
     service = get_settings_service()

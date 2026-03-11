@@ -27,7 +27,7 @@ const technicianNavItems = [
   { path: "/technician/leave", icon: Calendar, label: "Leave Requests" },
   { path: "/technician/payroll", icon: Wallet, label: "Payroll" },
   { path: "/technician/productivity", icon: TrendingUp, label: "My Performance" },
-  { path: "/technician/ai-assist", icon: Bot, label: "AI Assistant" },
+  { path: "/technician/ai-assist", icon: Bot, label: "EVFI\u2122 AI Assistant" },
 ];
 
 export default function TechnicianLayout({ children, user, onLogout }) {
@@ -177,7 +177,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
+        <main className="flex-1 min-w-0 overflow-x-hidden min-h-screen">
           <div className="p-4 lg:p-6">
             {children || <Outlet />}
           </div>

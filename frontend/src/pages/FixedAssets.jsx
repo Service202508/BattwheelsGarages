@@ -96,8 +96,8 @@ export default function FixedAssets() {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
       const [assetsRes, summaryRes] = await Promise.all([
-        fetch(`${API}/zoho/fixed-assets?per_page=100`, { headers }),
-        fetch(`${API}/zoho/fixed-assets/summary`, { headers })
+        fetch(`${API}/fixed-assets?per_page=100`, { headers }),
+        fetch(`${API}/fixed-assets/summary`, { headers })
       ]);
       const [assetsData, summaryData] = await Promise.all([
         assetsRes.json(), summaryRes.json()
@@ -118,7 +118,7 @@ export default function FixedAssets() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/fixed-assets`, {
+      const res = await fetch(`${API}/fixed-assets`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(newAsset)
@@ -150,7 +150,7 @@ export default function FixedAssets() {
         period: depreciationPeriod,
         ...(depreciationAmount > 0 ? { amount: depreciationAmount } : {})
       });
-      const res = await fetch(`${API}/zoho/fixed-assets/${selectedAsset.asset_id}/depreciate?${params}`, {
+      const res = await fetch(`${API}/fixed-assets/${selectedAsset.asset_id}/depreciate?${params}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -178,7 +178,7 @@ export default function FixedAssets() {
         disposal_amount: disposeData.disposal_amount,
         reason: disposeData.reason
       });
-      const res = await fetch(`${API}/zoho/fixed-assets/${selectedAsset.asset_id}/dispose?${params}`, {
+      const res = await fetch(`${API}/fixed-assets/${selectedAsset.asset_id}/dispose?${params}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -201,7 +201,7 @@ export default function FixedAssets() {
     if (!confirm("Write off this asset? This will record its remaining book value as a loss.")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/fixed-assets/${assetId}/write-off?reason=Asset write-off`, {
+      const res = await fetch(`${API}/fixed-assets/${assetId}/write-off?reason=Asset write-off`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -219,7 +219,7 @@ export default function FixedAssets() {
     if (!confirm("Delete this asset permanently?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/fixed-assets/${assetId}`, {
+      const res = await fetch(`${API}/fixed-assets/${assetId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });

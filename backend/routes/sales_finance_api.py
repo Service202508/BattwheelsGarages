@@ -1,5 +1,5 @@
 from utils.helpers import create_ledger_entry, generate_po_number, generate_invoice_number, generate_sales_number
-from utils.auth import require_auth, create_token, hash_password
+from utils.auth import require_auth, require_technician_or_admin, create_token, hash_password
 """
 Battwheels OS - Sales, Invoices, Payments, Finance Routes (extracted from server.py)
 Sales Orders, Invoices, Payments, Ledger, Accounting, Chart of Accounts
@@ -311,8 +311,13 @@ async def download_invoice_pdf(invoice_id: str, request: Request):
 async def record_payment(data: PaymentCreate, request: Request):
     user = await require_technician_or_admin(request)
     
-    # Get invoice
+    # Get invoice — check both collections (invoices + ticket_invoices)
+    invoice_collection = db.invoices
     invoice = await db.invoices.find_one({"invoice_id": data.invoice_id}, {"_id": 0})
+    if not invoice:
+        invoice = await db.ticket_invoices.find_one({"invoice_id": data.invoice_id}, {"_id": 0})
+        if invoice:
+            invoice_collection = db.ticket_invoices
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -349,7 +354,7 @@ async def record_payment(data: PaymentCreate, request: Request):
     if new_balance <= 0:
         update_data["paid_date"] = datetime.now(timezone.utc).isoformat()
     
-    await db.invoices.update_one({"invoice_id": data.invoice_id}, {"$set": update_data})
+    await invoice_collection.update_one({"invoice_id": data.invoice_id}, {"$set": update_data})
     
     # Create ledger entries
     await create_ledger_entry(
@@ -418,7 +423,9 @@ async def get_ledger(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None
 ):
-    await require_admin(request)
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if user_role not in ("admin", "owner", "org_admin", "accountant"):
+        raise HTTPException(status_code=403, detail="Admin access required")
     
     query = {}
     if account_type:
@@ -436,10 +443,14 @@ async def get_ledger(
 
 @router.get("/accounting/summary")
 async def get_accounting_summary(request: Request):
-    await require_admin(request)
+    user_role = getattr(request.state, "tenant_user_role", None)
+    if user_role not in ("admin", "owner", "org_admin", "accountant"):
+        raise HTTPException(status_code=403, detail="Admin access required")
     
-    # Calculate totals from ledger
+    # Calculate totals from ledger — scoped to org
+    org_id = getattr(request.state, "tenant_org_id", None)
     pipeline = [
+        {"$match": {"organization_id": org_id}},
         {"$group": {
             "_id": "$account_type",
             "total_debit": {"$sum": "$debit"},

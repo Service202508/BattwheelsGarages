@@ -1,5 +1,5 @@
 """
-EFI Seed Data - 15 Failure Cards with Decision Trees
+EVFI Seed Data - 15 Failure Cards with Decision Trees
 Categories: Battery, Electrical, Controller, Motor
 Each card has complete diagnostic decision tree with PASS/FAIL branching
 """
@@ -1481,19 +1481,10 @@ async def seed_knowledge_articles(db):
 
 # Run seeding if called directly
 if __name__ == "__main__":
-    import motor.motor_asyncio
-    import os
+    from utils.database import db, client
     
     async def main():
-        mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-        db_name = os.environ.get("DB_NAME", "battwheels")
-        
-        client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
-        db = client[db_name]
-        
         result = await seed_failure_cards_and_trees(db)
         print(f"Seeding complete: {result}")
-        
-        client.close()
     
     asyncio.run(main())

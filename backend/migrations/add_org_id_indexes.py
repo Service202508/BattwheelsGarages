@@ -8,14 +8,11 @@ These indexes are critical for:
 """
 import asyncio
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pathlib import Path
 
 load_dotenv(Path(__file__).parent.parent / '.env')
-
-MONGO_URL = os.environ['MONGO_URL']
-DB_NAME = os.environ['DB_NAME']
+from utils.database import db as _idx_db
 
 # Collections missing org_id index (from pre-deployment audit, Feb 2026)
 # Excludes global/platform tables: user_sessions, plans, platform_audit_runs
@@ -70,8 +67,7 @@ UNIQUE_INDEXES = [
 
 
 async def run():
-    client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    db = _idx_db
 
     existing_collections = set(await db.list_collection_names())
     created = 0

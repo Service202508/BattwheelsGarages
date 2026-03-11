@@ -119,6 +119,7 @@ def test_estimate_for_conversion(api_client, test_ticket):
                 "qty": 2,
                 "unit_price": 5000.00,
                 "tax_rate": 18,
+                "hsn_code": "8501",
                 "version": version
             }
         )

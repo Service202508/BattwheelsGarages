@@ -166,7 +166,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
+        <main className="flex-1 min-w-0 overflow-x-hidden min-h-screen">
           <div className="p-4 lg:p-8">
             {children}
           </div>

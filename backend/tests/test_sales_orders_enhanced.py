@@ -117,7 +117,7 @@ class TestSalesOrdersCRUD:
         }
         
         response = requests.post(f"{BASE_URL}/api/v1/sales-orders-enhanced/", json=payload)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text[:500]}"
         data = response.json()
         assert "salesorder" in data
         assert data["salesorder"]["status"] == "draft"
@@ -278,7 +278,7 @@ class TestSalesOrdersWorkflow:
         }
         
         response = requests.post(f"{BASE_URL}/api/v1/sales-orders-enhanced/", json=payload)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Workflow create failed {response.status_code}: {response.text[:500]}"
         data = response.json()
         
         TestSalesOrdersWorkflow.confirmed_order_id = data["salesorder"]["salesorder_id"]
@@ -419,7 +419,7 @@ class TestSalesOrdersVoidAndDelete:
         }
         
         response = requests.post(f"{BASE_URL}/api/v1/sales-orders-enhanced/", json=payload)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Void create failed {response.status_code}: {response.text[:500]}"
         data = response.json()
         TestSalesOrdersVoidAndDelete.void_order_id = data["salesorder"]["salesorder_id"]
         print(f"✓ Created order for void test: {data['salesorder']['salesorder_number']}")
@@ -457,7 +457,7 @@ class TestSalesOrdersVoidAndDelete:
         }
         
         response = requests.post(f"{BASE_URL}/api/v1/sales-orders-enhanced/", json=payload)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Delete-draft create failed {response.status_code}: {response.text[:500]}"
         delete_order_id = response.json()["salesorder"]["salesorder_id"]
         
         # Delete it
