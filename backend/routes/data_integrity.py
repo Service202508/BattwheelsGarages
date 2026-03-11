@@ -366,14 +366,13 @@ async def get_repair_history(limit: int = 10):
 # ============== STATS ENDPOINT ==============
 
 @router.get("/stats")
-async def get_integrity_stats(organization_id: Optional[str] = None):
+async def get_integrity_stats(request: Request):
     """Get quick summary of data integrity status"""
     db = get_db()
     service = get_integrity_service()
     
-    filter_query = {}
-    if organization_id:
-        filter_query["organization_id"] = organization_id
+    org_id = getattr(request.state, "tenant_org_id", None)
+    filter_query = {"organization_id": org_id}
     
     stats = {
         "collections": {},
@@ -388,7 +387,7 @@ async def get_integrity_stats(organization_id: Optional[str] = None):
         stats["collections"][coll] = {"total": total}
     
     # Run quick quality check
-    quality = await service._check_data_quality(organization_id)
+    quality = await service._check_data_quality(org_id)
     stats["quality_issues"] = quality
     
     # Determine overall health

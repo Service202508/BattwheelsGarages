@@ -279,14 +279,14 @@ async def get_composite_summary(request: Request):
     org_id = extract_org_id(request)
     """Get summary statistics for composite items"""
     total = await composite_collection.count_documents(org_query(org_id))
-    active = await composite_collection.count_documents({"is_active": True})
-    kits = await composite_collection.count_documents({"type": "kit"})
-    assemblies = await composite_collection.count_documents({"type": "assembly"})
-    bundles = await composite_collection.count_documents({"type": "bundle"})
+    active = await composite_collection.count_documents(org_query(org_id, {"is_active": True}))
+    kits = await composite_collection.count_documents(org_query(org_id, {"type": "kit"}))
+    assemblies = await composite_collection.count_documents(org_query(org_id, {"type": "assembly"}))
+    bundles = await composite_collection.count_documents(org_query(org_id, {"type": "bundle"}))
     
     # Total inventory value
     pipeline = [
-        {"$match": {"is_active": True}},
+        {"$match": {"organization_id": org_id, "is_active": True}},
         {"$group": {"_id": None, "total": {"$sum": {"$multiply": ["$selling_price", "$stock_on_hand"]}}}}
     ]
     result = await composite_collection.aggregate(pipeline).to_list(1)

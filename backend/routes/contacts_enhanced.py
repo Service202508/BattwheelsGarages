@@ -768,10 +768,11 @@ async def list_vendors_only(
 # ========================= REPORTS (Must be before /{contact_id}) =========================
 
 @router.get("/reports/by-segment")
-async def report_by_segment():
+async def report_by_segment(request: Request):
     """Report: Contacts by segment"""
+    org_id = await get_org_id(request)
     pipeline = [
-        {"$match": {"contact_type": {"$in": ["customer", "both"]}}},
+        {"$match": {"organization_id": org_id, "contact_type": {"$in": ["customer", "both"]}}},
         {"$group": {
             "_id": "$customer_segment",
             "count": {"$sum": 1},
@@ -788,32 +789,35 @@ async def report_by_segment():
     }
 
 @router.get("/reports/top-customers")
-async def report_top_customers(limit: int = 20):
+async def report_top_customers(request: Request, limit: int = 20):
     """Report: Top customers by outstanding amount"""
+    org_id = await get_org_id(request)
     contacts = await contacts_collection.find(
-        {"contact_type": {"$in": ["customer", "both"]}, "is_active": True},
+        {"organization_id": org_id, "contact_type": {"$in": ["customer", "both"]}, "is_active": True},
         {"_id": 0, "contact_id": 1, "name": 1, "company_name": 1, "outstanding_receivable": 1}
     ).sort("outstanding_receivable", -1).limit(limit).to_list(limit)
     
     return {"code": 0, "report": contacts}
 
 @router.get("/reports/top-vendors")
-async def report_top_vendors(limit: int = 20):
+async def report_top_vendors(request: Request, limit: int = 20):
     """Report: Top vendors by payable amount"""
+    org_id = await get_org_id(request)
     contacts = await contacts_collection.find(
-        {"contact_type": {"$in": ["vendor", "both"]}, "is_active": True},
+        {"organization_id": org_id, "contact_type": {"$in": ["vendor", "both"]}, "is_active": True},
         {"_id": 0, "contact_id": 1, "name": 1, "company_name": 1, "outstanding_payable": 1}
     ).sort("outstanding_payable", -1).limit(limit).to_list(limit)
     
     return {"code": 0, "report": contacts}
 
 @router.get("/reports/aging-summary")
-async def report_aging_summary(aging_type: str = "receivable"):
+async def report_aging_summary(request: Request, aging_type: str = "receivable"):
     """Report: Aging summary across all contacts"""
+    org_id = await get_org_id(request)
     contact_type_filter = {"$in": ["customer", "both"]} if aging_type == "receivable" else {"$in": ["vendor", "both"]}
     
     contacts = await contacts_collection.find(
-        {"contact_type": contact_type_filter, "is_active": True},
+        {"organization_id": org_id, "contact_type": contact_type_filter, "is_active": True},
         {"_id": 0, "contact_id": 1}
     ).to_list(1000)
     
@@ -832,11 +836,12 @@ async def report_aging_summary(aging_type: str = "receivable"):
     }
 
 @router.get("/reports/new-contacts")
-async def report_new_contacts(days: int = 30, contact_type: Optional[str] = None):
+async def report_new_contacts(request: Request, days: int = 30, contact_type: Optional[str] = None):
     """Report: New contacts in last N days"""
+    org_id = await get_org_id(request)
     cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     
-    query = {"created_time": {"$gte": cutoff}}
+    query = {"organization_id": org_id, "created_time": {"$gte": cutoff}}
     if contact_type:
         if contact_type == "customer":
             query["contact_type"] = {"$in": ["customer", "both"]}

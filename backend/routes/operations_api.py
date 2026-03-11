@@ -163,7 +163,7 @@ async def get_dashboard_stats(request: Request):
 
     # Scope all queries to the authenticated organisation
     org_id = getattr(request.state, 'tenant_org_id', None)
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
 
     vehicles_in_workshop = await db.vehicles.count_documents({**org_filter, "current_status": "in_workshop"})
     open_tickets = await db.tickets.count_documents({**org_filter, "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]}})
@@ -376,11 +376,13 @@ async def get_financial_dashboard(request: Request):
 @router.get("/alerts")
 async def get_alerts(request: Request):
     user = await require_auth(request)
+    org_id = getattr(request.state, 'tenant_org_id', None)
+    org_filter = {"organization_id": org_id}
     alerts = []
     
     # Low inventory alerts
     low_stock = await db.inventory.find(
-        {"$expr": {"$lt": ["$quantity", "$min_stock_level"]}},
+        {**org_filter, "$expr": {"$lt": ["$quantity", "$min_stock_level"]}},
         {"_id": 0}
     ).to_list(100)
     
@@ -397,7 +399,7 @@ async def get_alerts(request: Request):
     
     # Critical tickets
     critical_tickets = await db.tickets.find(
-        {"status": "open", "priority": "critical"},
+        {**org_filter, "status": "open", "priority": "critical"},
         {"_id": 0}
     ).to_list(10)
     
@@ -415,6 +417,7 @@ async def get_alerts(request: Request):
     # Overdue invoices
     overdue_invoices = await db.invoices.find(
         {
+            **org_filter,
             "status": {"$ne": "paid"},
             "due_date": {"$lt": datetime.now(timezone.utc).isoformat()}
         },
@@ -436,7 +439,7 @@ async def get_alerts(request: Request):
     role = getattr(request.state, "tenant_user_role", None)
     if role in ("admin", "owner"):
         pending_pos = await db.purchase_orders.find(
-            {"approval_status": "pending"},
+            {**org_filter, "approval_status": "pending"},
             {"_id": 0}
         ).to_list(10)
         

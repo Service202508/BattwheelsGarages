@@ -174,6 +174,7 @@ async def get_amc_plans(request: Request, include_inactive: bool = False):
     for plan in plans:
         plan["active_subscriptions"] = await get_db().amc_subscriptions.count_documents({
             "plan_id": plan["plan_id"],
+            "organization_id": org_id,
             "status": {"$in": ["active", "expiring"]}
         })
     

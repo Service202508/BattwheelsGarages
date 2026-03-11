@@ -552,7 +552,7 @@ async def get_effectiveness_report(request: Request):
     org_id = extract_org_id(request)
     
     pipeline = [
-        {"$match": {"status": "approved", "usage_count": {"$gt": 0}}},
+        {"$match": {"organization_id": org_id, "status": "approved", "usage_count": {"$gt": 0}}},
         {"$project": {
             "_id": 0,
             "failure_id": 1,
@@ -592,7 +592,7 @@ async def get_part_anomaly_report(request: Request):
     org_id = extract_org_id(request)
     
     pipeline = [
-        {"$match": {"expected_vs_actual": False}},
+        {"$match": {"organization_id": org_id, "expected_vs_actual": False}},
         {"$group": {
             "_id": "$part_id",
             "part_name": {"$first": "$part_name"},
@@ -620,7 +620,7 @@ async def list_events(request: Request, event_type: Optional[str] = None, proces
     service = get_service()
     org_id = extract_org_id(request)
     
-    query = {}
+    query = {"organization_id": org_id}
     if event_type:
         query["event_type"] = event_type
     if processed is not None:
@@ -639,7 +639,7 @@ async def process_pending_events(request: Request, background_tasks: BackgroundT
     service = get_service()
     org_id = extract_org_id(request)
     
-    pending = await service.db.efi_events.count_documents({"processed": False})
+    pending = await service.db.efi_events.count_documents({"organization_id": org_id, "processed": False})
     
     if _event_processor:
         background_tasks.add_task(_event_processor.process_pending_events, limit=100)

@@ -391,9 +391,10 @@ async def list_payment_transactions(request: Request, invoice_id: str = "", cust
 async def get_online_payments_summary(request: Request):
     org_id = extract_org_id(request)
     """Get summary of online payments"""
+    org_filter = {"organization_id": org_id}
     # Total online payments
     pipeline = [
-        {"$match": {"payment_status": "completed"}},
+        {"$match": {**org_filter, "payment_status": "completed"}},
         {"$group": {
             "_id": None,
             "total_amount": {"$sum": "$amount"},
@@ -404,10 +405,10 @@ async def get_online_payments_summary(request: Request):
     result = await payment_transactions_collection.aggregate(pipeline).to_list(1)
     
     # Pending payments
-    pending = await payment_transactions_collection.count_documents({"payment_status": "pending"})
+    pending = await payment_transactions_collection.count_documents({**org_filter, "payment_status": "pending"})
     
     # Failed payments
-    failed = await payment_transactions_collection.count_documents({"payment_status": {"$in": ["expired", "failed"]}})
+    failed = await payment_transactions_collection.count_documents({**org_filter, "payment_status": {"$in": ["expired", "failed"]}})
     
     stats = result[0] if result else {"total_amount": 0, "count": 0}
     

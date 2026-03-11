@@ -220,14 +220,15 @@ async def add_history(entity_type: str, entity_id: str, action: str, details: st
 async def get_inventory_summary(request: Request):
     org_id = extract_org_id(request)
     """Get inventory summary statistics"""
-    total_items = await items_collection.count_documents({"status": "active"})
+    org_filter = {"organization_id": org_id}
+    total_items = await items_collection.count_documents({**org_filter, "status": "active"})
     total_variants = await variants_collection.count_documents(org_query(org_id))
-    total_bundles = await bundles_collection.count_documents({"status": "active"})
-    total_warehouses = await warehouses_collection.count_documents({"is_active": True})
+    total_bundles = await bundles_collection.count_documents({**org_filter, "status": "active"})
+    total_warehouses = await warehouses_collection.count_documents({**org_filter, "is_active": True})
     
     # Stock value calculation
     pipeline = [
-        {"$match": {"status": "active"}},
+        {"$match": {**org_filter, "status": "active"}},
         {"$lookup": {
             "from": "item_stock_locations",
             "localField": "item_id",
@@ -245,7 +246,7 @@ async def get_inventory_summary(request: Request):
     
     # Low stock count
     low_stock_items = await items_collection.aggregate([
-        {"$match": {"status": "active", "track_inventory": True}},
+        {"$match": {**org_filter, "status": "active", "track_inventory": True}},
         {"$lookup": {
             "from": "item_stock_locations",
             "localField": "item_id",
@@ -257,10 +258,10 @@ async def get_inventory_summary(request: Request):
     ]).to_list(1000)
     
     # Pending shipments
-    pending_shipments = await shipments_collection.count_documents({"status": {"$in": ["packed", "shipped"]}})
+    pending_shipments = await shipments_collection.count_documents({**org_filter, "status": {"$in": ["packed", "shipped"]}})
     
     # Returns needing attention
-    pending_returns = await returns_collection.count_documents({"status": "pending"})
+    pending_returns = await returns_collection.count_documents({**org_filter, "status": "pending"})
     
     return {
         "code": 0,
@@ -1090,7 +1091,7 @@ async def list_adjustments(request: Request, item_id: Optional[str] = None, ware
 async def stock_summary_report(request: Request, warehouse_id: Optional[str] = None):
     org_id = extract_org_id(request)
     """Stock summary report"""
-    match = {"status": "active"}
+    match = {"organization_id": org_id, "status": "active"}
     
     pipeline = [
         {"$match": match},
@@ -1167,7 +1168,7 @@ async def low_stock_report(request: Request):
     org_id = extract_org_id(request)
     """Low stock items report"""
     pipeline = [
-        {"$match": {"status": "active", "track_inventory": True}},
+        {"$match": {"organization_id": org_id, "status": "active", "track_inventory": True}},
         {"$lookup": {
             "from": "item_stock_locations",
             "localField": "item_id",
@@ -1213,7 +1214,7 @@ async def inventory_valuation_report(request: Request):
     org_id = extract_org_id(request)
     """Inventory valuation report"""
     pipeline = [
-        {"$match": {"status": "active"}},
+        {"$match": {"organization_id": org_id, "status": "active"}},
         {"$lookup": {
             "from": "item_stock_locations",
             "localField": "item_id",
@@ -1247,7 +1248,7 @@ async def stock_movement_report(request: Request, item_id: Optional[str] = None,
     """Stock movement/history report"""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     
-    query = {"timestamp": {"$gte": since}}
+    query = {"organization_id": org_id, "timestamp": {"$gte": since}}
     if item_id:
         query["item_id"] = item_id
     

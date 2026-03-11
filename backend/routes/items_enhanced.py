@@ -938,7 +938,7 @@ async def get_items_summary(request: Request):
     
     # Calculate total stock value
     pipeline = [
-        {"$match": {"item_type": "inventory"}},
+        {"$match": org_query(org_id, {"item_type": "inventory"})},
         {"$lookup": {
             "from": "item_stock_locations",
             "localField": "item_id",

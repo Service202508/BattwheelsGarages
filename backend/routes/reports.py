@@ -753,7 +753,7 @@ async def get_profit_loss_report(
     """
     db = get_db()
     org_id = extract_org_id(request) if request else None
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
     
     if not start_date:
         start_date = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
@@ -836,7 +836,7 @@ async def get_balance_sheet_report(
     """
     db = get_db()
     org_id = extract_org_id(request)
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -928,7 +928,7 @@ async def get_ar_aging_report(
     """
     db = get_db()
     org_id = extract_org_id(request)
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1026,7 +1026,7 @@ async def get_sales_by_customer_report(
     """
     db = get_db()
     org_id = extract_org_id(request)
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
     
     if not start_date:
         start_date = (datetime.now(timezone.utc) - timedelta(days=365)).strftime("%Y-%m-%d")
@@ -1099,7 +1099,7 @@ async def get_ap_aging_report(
     """
     db = get_db()
     org_id = extract_org_id(request)
-    org_filter = {"organization_id": org_id} if org_id else {}
+    org_filter = {"organization_id": org_id}
     
     if not as_of_date:
         as_of_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1511,9 +1511,7 @@ async def get_inventory_valuation(
     # Get org from header
     raw_org_id = getattr(request.state, "tenant_org_id", "")
 
-    query: dict = {}
-    if raw_org_id:
-        query["organization_id"] = raw_org_id
+    query: dict = {"organization_id": raw_org_id}
 
     items = await db.inventory.find(query, {"_id": 0}).to_list(10000)
 

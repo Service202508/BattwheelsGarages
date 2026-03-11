@@ -315,10 +315,13 @@ class HRService:
         self,
         department: Optional[str] = None,
         status: str = "active",
-        limit: int = 100
+        limit: int = 100,
+        org_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """List employees with filtering"""
         query = {"status": status}
+        if org_id:
+            query["organization_id"] = org_id
         if department:
             query["department"] = department
         

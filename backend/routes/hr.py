@@ -777,7 +777,8 @@ async def get_tds_summary(request: Request, month: int = Query(None, ge=1, le=12
     year = year or now.year
     
     # Get all active employees
-    employees = await service.list_employees(status="active")
+    org_id = getattr(request.state, "tenant_org_id", None)
+    employees = await service.list_employees(status="active", org_id=org_id)
     
     # Calculate TDS for each
     summary = []

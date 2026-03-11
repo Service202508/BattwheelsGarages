@@ -364,9 +364,7 @@ class DataIntegrityService:
     
     async def _check_data_quality(self, organization_id: Optional[str] = None) -> Dict:
         """Check various data quality issues"""
-        filter_query = {}
-        if organization_id:
-            filter_query["organization_id"] = organization_id
+        filter_query = {"organization_id": organization_id} if organization_id else {}
         
         quality = {}
         
@@ -406,6 +404,7 @@ class DataIntegrityService:
             invoice_ids.add(inv.get("invoice_id"))
         
         orphan_lines = await self.db.invoice_line_items.count_documents({
+            **filter_query,
             "invoice_id": {"$nin": list(invoice_ids)}
         })
         quality["orphan_invoice_line_items"] = orphan_lines

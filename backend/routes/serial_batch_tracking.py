@@ -700,6 +700,7 @@ async def serial_tracking_summary(request: Request):
     org_id = extract_org_id(request)
     """Get serial number tracking summary"""
     pipeline = [
+        {"$match": {"organization_id": org_id}},
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1}
@@ -727,7 +728,9 @@ async def serial_tracking_summary(request: Request):
 async def batch_tracking_summary(request: Request):
     org_id = extract_org_id(request)
     """Get batch tracking summary"""
+    org_filter = {"organization_id": org_id}
     pipeline = [
+        {"$match": org_filter},
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1},
@@ -739,6 +742,7 @@ async def batch_tracking_summary(request: Request):
     
     today = get_today()
     expiring_count = await batch_numbers_collection.count_documents({
+        **org_filter,
         "expiry_date": {
             "$lte": (datetime.now(timezone.utc) + timedelta(days=30)).strftime("%Y-%m-%d"),
             "$gte": today
@@ -747,6 +751,7 @@ async def batch_tracking_summary(request: Request):
     })
     
     expired_count = await batch_numbers_collection.count_documents({
+        **org_filter,
         "expiry_date": {"$lt": today},
         "available_quantity": {"$gt": 0}
     })
@@ -767,13 +772,13 @@ async def batch_tracking_summary(request: Request):
 async def item_tracking_report(request: Request, item_id: str):
     org_id = extract_org_id(request)
     """Get comprehensive tracking report for an item"""
-    item = await items_collection.find_one({"item_id": item_id}, {"_id": 0, "item_id": 1, "name": 1, "sku": 1})
+    item = await items_collection.find_one({"organization_id": org_id, "item_id": item_id}, {"_id": 0, "item_id": 1, "name": 1, "sku": 1})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
     # Serial stats
     serial_pipeline = [
-        {"$match": {"item_id": item_id}},
+        {"$match": {"organization_id": org_id, "item_id": item_id}},
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1}
@@ -783,7 +788,7 @@ async def item_tracking_report(request: Request, item_id: str):
     
     # Batch stats
     batch_pipeline = [
-        {"$match": {"item_id": item_id}},
+        {"$match": {"organization_id": org_id, "item_id": item_id}},
         {"$group": {
             "_id": "$status",
             "count": {"$sum": 1},
@@ -794,7 +799,7 @@ async def item_tracking_report(request: Request, item_id: str):
     
     # Recent history
     history = await tracking_history_collection.find(
-        {"item_id": item_id},
+        {"organization_id": org_id, "item_id": item_id},
         {"_id": 0}
     ).sort("timestamp", -1).limit(20).to_list(20)
     

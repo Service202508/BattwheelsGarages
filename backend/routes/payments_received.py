@@ -267,9 +267,7 @@ async def get_payments_summary(request: Request, period: str = "this_month"):
     else:
         start_date = None
     
-    match_filter = {"status": {"$ne": "refunded"}}
-    if sum_org_id:
-        match_filter["organization_id"] = sum_org_id
+    match_filter = {"status": {"$ne": "refunded"}, "organization_id": sum_org_id}
     if start_date:
         match_filter["payment_date"] = {"$gte": start_date.isoformat()[:10]}
     
@@ -287,7 +285,7 @@ async def get_payments_summary(request: Request, period: str = "this_month"):
         by_mode[mode] = by_mode.get(mode, 0) + p.get("amount", 0)
     
     # Get pending credits
-    cr_filter = {"status": "available"}
+    cr_filter = {"organization_id": sum_org_id, "status": "available"}
     if sum_org_id:
         cr_filter["organization_id"] = sum_org_id
     credits = await customer_credits_collection.find(cr_filter, {"_id": 0}).to_list(1000)

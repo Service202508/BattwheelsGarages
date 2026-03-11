@@ -359,17 +359,17 @@ async def get_adjustments_summary(request: Request):
     org_id = extract_org_id(request)
     """Summary stats for the adjustments dashboard"""
     total = await adjustments_col.count_documents(org_query(org_id))
-    draft = await adjustments_col.count_documents({"status": "draft"})
-    adjusted = await adjustments_col.count_documents({"status": "adjusted"})
-    voided = await adjustments_col.count_documents({"status": "void"})
+    draft = await adjustments_col.count_documents(org_query(org_id, {"status": "draft"}))
+    adjusted = await adjustments_col.count_documents(org_query(org_id, {"status": "adjusted"}))
+    voided = await adjustments_col.count_documents(org_query(org_id, {"status": "void"}))
 
     # This month stats
     month_start = datetime.now(timezone.utc).replace(day=1).strftime("%Y-%m-%d")
-    this_month = await adjustments_col.count_documents({"date": {"$gte": month_start}})
+    this_month = await adjustments_col.count_documents(org_query(org_id, {"date": {"$gte": month_start}}))
 
     # Totals for adjusted only
     pipeline = [
-        {"$match": {"status": "adjusted"}},
+        {"$match": {"organization_id": org_id, "status": "adjusted"}},
         {"$group": {
             "_id": None,
             "total_increases": {"$sum": "$total_increase"},
@@ -564,7 +564,7 @@ async def remove_attachment(request: Request, adjustment_id: str, attachment_id:
 async def adjustment_summary_report(request: Request, date_from: Optional[str] = None, date_to: Optional[str] = None, warehouse_id: Optional[str] = None):
     org_id = extract_org_id(request)
     """Adjustment summary by reason, location, account"""
-    match = {"status": "adjusted"}
+    match = {"organization_id": org_id, "status": "adjusted"}
     if date_from or date_to:
         date_q = {}
         if date_from:
@@ -628,7 +628,7 @@ async def adjustment_summary_report(request: Request, date_from: Optional[str] =
 async def fifo_cost_lot_tracking(request: Request, item_id: Optional[str] = None, limit: int = 100):
     org_id = extract_org_id(request)
     """FIFO Cost Lot Tracking - shows product-in and product-out lots"""
-    match = {"status": "adjusted"}
+    match = {"organization_id": org_id, "status": "adjusted"}
     if item_id:
         match["line_items.item_id"] = item_id
 
@@ -673,7 +673,7 @@ async def abc_classification_report(request: Request, period_days: int = 90, a_t
     since = (datetime.now(timezone.utc) - timedelta(days=period_days)).strftime("%Y-%m-%d")
 
     pipeline = [
-        {"$match": {"status": "adjusted", "date": {"$gte": since}}},
+        {"$match": {"organization_id": org_id, "status": "adjusted", "date": {"$gte": since}}},
         {"$unwind": "$line_items"},
         {"$group": {
             "_id": "$line_items.item_id",
