@@ -13,7 +13,7 @@ import requests
 import os
 import time
 
-BASE_URL = "https://tenant-audit.preview.emergentagent.com"
+BASE_URL = "https://evfi-launch.preview.emergentagent.com"
 
 # Test credentials
 DEMO_EMAIL = "demo@voltmotors.in"
