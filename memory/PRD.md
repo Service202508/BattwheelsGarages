@@ -1,13 +1,13 @@
 # BattWheels OS — Product Requirements Document
 
 ## Overview
-BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provides service ticket management, EVFI (diagnostic AI), invoicing, inventory, HR, and comprehensive reporting for EV workshops.
+BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provides service ticket management, EVFI™ (diagnostic AI), invoicing, inventory, HR, and comprehensive reporting for EV workshops.
 
 ## Core Architecture
-- **Frontend**: React + Tailwind CSS + Shadcn/UI (dark theme, "bw-volt" green accent)
+- **Frontend**: React + Tailwind CSS + Shadcn/UI (dark theme, "bw-volt" green accent #CBFF00)
 - **Backend**: FastAPI + MongoDB (via Motor async driver)
 - **Auth**: JWT-based, multi-tenant with organization_id scoping
-- **AI**: Gemini via Emergent LLM Key (EVFI diagnostic engine)
+- **AI**: Gemini via Emergent LLM Key (EVFI™ diagnostic engine)
 - **Payments**: Razorpay
 - **Email**: Resend
 - **Monitoring**: Sentry
@@ -17,21 +17,33 @@ BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provid
 ### Security (Session 15)
 - 37 cross-tenant data leak endpoints fixed (23 LEAK, 14 PARTIAL)
 - RBAC middleware regex patterns fixed for owner role access
-- All summary/stats endpoints now enforce organization_id scoping
+- All summary/stats endpoints enforce organization_id scoping
 
-### UX Fixes (Session 16 — Current)
-- **EVFI Diagnosis Readability**: Responsive padding (px-3 mobile / px-6 desktop), break-words, flex-shrink-0 badges, max-w-4xl desktop width
-- **Dropdown Empty States**: All major dropdowns (customer, item, service, parts) show helpful empty states with navigation links when no data exists
-- **Sidebar Contrast**: Section labels at 50% opacity (up from 25%), nav items at 75% opacity (up from 65%), icons at 50% (up from 40%)
-- **Single Close Mechanism**: Mobile Sheet X button styled for dark theme with z-10, no duplicate close buttons
-- **Dashboard Tabs Scrollable**: overflow-x-auto with touch scrolling, hidden scrollbar, flex-shrink-0 on each tab
-- **Inventory Tabs Scrollable**: Same pattern applied to ItemsEnhanced tabs
-- **Invoice Date Display**: whitespace-nowrap + min-w-[100px] prevents date truncation on mobile
-- **Estimate Date Inputs**: min-w-[140px] prevents truncation
+### UX Fixes (Session 16)
+- EVFI Diagnosis Readability: Responsive padding, break-words, max-w-4xl desktop
+- Dropdown Empty States: Customer, item, service, parts show helpful empty states
+- Sidebar Contrast: Section labels 50% opacity, nav items 75% opacity
+- Dashboard & Inventory Tabs: Horizontally scrollable on mobile
+- Invoice Date Display: No truncation with whitespace-nowrap
 
-### Testing Status
-- All 11 UX fixes verified at 390px (mobile) and 1920px (desktop) — 100% pass rate
-- Build passes successfully
+### Homepage Content Rewrite v2.0 (Session 17 — Current)
+- **TASK 1**: Hero → "Stop Guessing. Start Fixing." + 4-benefit subtitle + VAHAN connecting line
+- **TASK 2**: Problem section → "Billing & GST Chaos" with new Hinglish quote
+- **TASK 3**: LiveShowcase → Without/With comparisons, EVFI context lines, billing chain, Hinglish
+- **TASK 4**: Opportunity → Closing paragraph with ₹25,000 Cr + EVFI
+- **TASK 5**: Five Audiences → Added Dealers tab, updated all feature pills
+- **TASK 6**: EVFI section → Hinglish emotional hook, "Diagnoses & Resolves"
+- **TASK 7**: Built for Scale → "Your Data, Only Yours" replacing "Multi-Tenant"
+- **TASK 8**: Pricing → "tokens" → "diagnoses" in all 4 tiers
+- **TASK 9**: Flywheel → User-focused language, "Yeh aapka competitive advantage hai"
+- **TASK 10**: CTA → Pain-focused Hinglish CTA
+- **TASK 11**: ProductTour → Updated titles, captions, final CTA
+- **TASK 12**: Global sweep verified (0 "workshop owner", 0 "tokens", 30+ EVFI mentions)
+
+### Files Modified (Session 17)
+- `frontend/src/pages/SaaSLanding.jsx` — All landing page content
+- `frontend/src/components/LiveShowcase.jsx` — 5 showcase panels enhanced
+- `frontend/src/components/ProductTour.jsx` — Tour step titles/captions updated
 
 ## Prioritized Backlog
 
@@ -47,16 +59,15 @@ BattWheels OS is a fleet/garage management SaaS for electric vehicles. It provid
 
 ### P2
 - Implement Payslip PDF generation
-- Fix Trial Balance Report (shows 0.00)
+- Fix Trial Balance Report (shows ₹0.00)
 - Refactor _enhanced file duplication
 - Decompose "God Files" (reports_advanced.py)
 - Unify invoices and ticket_invoices collections
 - Migrate mocked emails to real EmailService
-- Fix React hydration warnings (span in tbody)
 - Demo data naming convention (Pvt Ltd)
 - Technician report "Avg Response N/A"
 
 ## Key Credentials
 - Demo Org: demo@voltmotors.in / Demo@12345
 - DB: battwheels (production), battwheels_dev (testing)
-- EVFI branding is trademarked — always use EVFI, never EFI
+- EVFI™ branding is trademarked — always use EVFI™, never EFI
