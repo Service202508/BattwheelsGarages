@@ -574,14 +574,14 @@ class FailureMatchRequest(BaseModel):
 
 class FailureMatchResult(BaseModel):
     """Single match result from AI matching"""
-    failure_id: str
-    title: str
+    failure_id: Optional[str] = None
+    title: Optional[str] = None
     match_score: float  # 0-1
     match_type: str     # signature, subsystem, semantic, keyword
     match_stage: int    # Which stage matched (1-4)
     matched_symptoms: List[str] = []
     matched_error_codes: List[str] = []
-    confidence_level: ConfidenceLevel
+    confidence_level: Optional[ConfidenceLevel] = None
     effectiveness_score: float = 0.0
 
 class FailureMatchResponse(BaseModel):
