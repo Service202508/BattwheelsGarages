@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://test-suite-heal.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://env-conflict.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 ORG_ID = "dev-internal-testing-001"
 
