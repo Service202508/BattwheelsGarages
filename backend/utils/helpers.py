@@ -52,7 +52,7 @@ async def generate_po_number(org_id: str = None):
             upsert=True,
             return_document=True
         )
-        seq = result["current_value"]
+        seq = result.get("current_value", 1) if result else 1
         return f"PO-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
     # Fallback for legacy calls without org_id
     count = await db.purchase_orders.count_documents({"organization_id": {"$exists": False}})
@@ -67,7 +67,7 @@ async def generate_invoice_number(org_id: str = None):
             upsert=True,
             return_document=True
         )
-        seq = result["current_value"]
+        seq = result.get("current_value", 1) if result else 1
         return f"INV-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
     # Fallback
     count = await db.invoices.count_documents({"organization_id": {"$exists": False}})
@@ -82,7 +82,7 @@ async def generate_sales_number(org_id: str = None):
             upsert=True,
             return_document=True
         )
-        seq = result["current_value"]
+        seq = result.get("current_value", 1) if result else 1
         return f"SO-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
     # Fallback
     count = await db.sales_orders.count_documents({"organization_id": {"$exists": False}})
