@@ -272,6 +272,8 @@ class DoubleEntryService:
     
     async def ensure_system_accounts(self, organization_id: str) -> None:
         """Ensure all system accounts exist for an organization"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         for key, account_def in SYSTEM_ACCOUNTS.items():
             existing = await self.chart_of_accounts.find_one({
                 "organization_id": organization_id,
@@ -429,6 +431,9 @@ class DoubleEntryService:
         Returns:
             Tuple of (success, message, entry_dict)
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        
         # Period lock check — prevent posting to locked periods (P1-13C)
         if entry_date and organization_id:
             from utils.period_lock import check_period_locked
@@ -543,6 +548,9 @@ class DoubleEntryService:
         reason: str = ""
     ) -> Tuple[bool, str, Optional[Dict]]:
         """Create a reversal entry for an existing journal entry"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        
         # Get original entry
         original = await self.journal_entries.find_one({
             "entry_id": entry_id,
@@ -579,7 +587,7 @@ class DoubleEntryService:
         if success:
             # Mark original as reversed
             await self.journal_entries.update_one(
-                {"entry_id": entry_id},
+                {"entry_id": entry_id, "organization_id": organization_id},
                 {"$set": {
                     "is_reversed": True,
                     "reversed_entry_id": reversal_entry["entry_id"],
@@ -627,6 +635,8 @@ class DoubleEntryService:
         CREDIT: GST Payable - SGST (if intra-state)
         CREDIT: GST Payable - IGST (if inter-state)
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         await self.ensure_system_accounts(organization_id)
         
         # Get accounts
@@ -727,6 +737,8 @@ class DoubleEntryService:
         CREDIT: Accounts Receivable
         """
         await self.ensure_system_accounts(organization_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         
         # Determine which account to debit based on payment mode
         payment_mode = payment.get("payment_mode", "bank").lower()
@@ -785,6 +797,8 @@ class DoubleEntryService:
         """
         await self.ensure_system_accounts(organization_id)
         
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         # Get accounts
         ap_account = await self.get_account_by_code(organization_id, "2100")  # Accounts Payable
         expense_account = await self.get_account_by_code(organization_id, "5100")  # COGS (default)
@@ -889,6 +903,8 @@ class DoubleEntryService:
         
         ap_account = await self.get_account_by_code(organization_id, "2100")  # Accounts Payable
         
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         payment_mode = payment.get("payment_mode", "bank").lower()
         if payment_mode in ["cash"]:
             bank_account = await self.get_account_by_code(organization_id, "1210")  # Cash
@@ -940,6 +956,8 @@ class DoubleEntryService:
         DEBIT:  Expense account
         CREDIT: Bank / Cash / Accounts Payable
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         await self.ensure_system_accounts(organization_id)
         
         # Get expense account
@@ -1004,6 +1022,8 @@ class DoubleEntryService:
         Auto-post journal entry for individual payroll record (legacy support).
         For batch payroll processing, use post_payroll_run() instead.
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         return await self.post_payroll_run(organization_id, [payroll], created_by)
     
     async def post_payroll_run(
@@ -1037,6 +1057,8 @@ class DoubleEntryService:
           Professional Tax Payable    Cr  [sum professional_tax]
           TDS Payable                 Cr  [sum tds]
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         await self.ensure_system_accounts(organization_id)
         
         # Get / create accounts — expense side
@@ -1295,6 +1317,8 @@ class DoubleEntryService:
         Returns account-wise totals with debit and credit balances.
         Total debits must equal total credits.
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         if not as_of_date:
             as_of_date = datetime.now().strftime("%Y-%m-%d")
         
@@ -1378,6 +1402,8 @@ class DoubleEntryService:
         start_date: str = None
     ) -> Dict:
         """Get balance for a specific account"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         if not as_of_date:
             as_of_date = datetime.now().strftime("%Y-%m-%d")
         
@@ -1436,6 +1462,8 @@ class DoubleEntryService:
         Income accounts minus Expense accounts for the period.
         fiscal_year: FY start year (e.g. 2025 for FY 2025-26).
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         # Fiscal year resolution (P1-11)
         if fiscal_year is not None:
             fy_start, fy_end = get_fiscal_year_dates(fiscal_year)
@@ -1537,6 +1565,8 @@ class DoubleEntryService:
         Assets = Liabilities + Equity
         fiscal_year: FY start year (e.g. 2025 for FY 2025-26).
         """
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         # Fiscal year resolution (P1-11)
         if fiscal_year is not None:
             _, fy_end = get_fiscal_year_dates(fiscal_year)
@@ -1656,6 +1686,8 @@ class DoubleEntryService:
         skip: int = 0
     ) -> Dict:
         """List journal entries with filters"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         query = {"organization_id": organization_id}
         
         if start_date:
@@ -1692,6 +1724,8 @@ class DoubleEntryService:
         end_date: str = None
     ) -> Dict:
         """Get ledger (all transactions) for a specific account with running balance"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         if not start_date:
             start_date = "1900-01-01"
         if not end_date:
