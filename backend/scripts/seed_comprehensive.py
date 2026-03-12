@@ -80,6 +80,8 @@ async def main():
     # ================================================================
     print("[B] Seeding users...")
 
+    demo_password = os.environ.get("DEMO_USER_PASSWORD", "DevDefault@123")
+
     USERS = [
         {
             "user_id": "user-demo-owner-001",
@@ -93,28 +95,28 @@ async def main():
             "email": "priya@voltmotors.in",
             "name": "Priya Sharma",
             "role": "manager",
-            "password": "Demo@12345",
+            "password": demo_password,
         },
         {
             "user_id": "user_ankit_tech",
             "email": "ankit@voltmotors.in",
             "name": "Ankit Verma",
             "role": "technician",
-            "password": "Demo@12345",
+            "password": demo_password,
         },
         {
             "user_id": "user_ravi_tech",
             "email": "ravi@voltmotors.in",
             "name": "Ravi Kumar",
             "role": "technician",
-            "password": "Demo@12345",
+            "password": demo_password,
         },
         {
             "user_id": "user_neha_acct",
             "email": "neha@voltmotors.in",
             "name": "Neha Gupta",
             "role": "accountant",
-            "password": "Demo@12345",
+            "password": demo_password,
         },
     ]
 
