@@ -15,6 +15,15 @@ def get_db():
     from server import db
     return db
 
+
+def _require_org_id(request: Request) -> str:
+    """Extract and validate organization_id. Returns 403 if missing."""
+    org_id = extract_org_id(request)
+    if not org_id:
+        raise HTTPException(status_code=403, detail="Organization context required")
+    return org_id
+
+
 router = APIRouter(prefix="/master-data", tags=["Master Data"])
 
 
@@ -53,8 +62,8 @@ class EVIssueSuggestionCreate(BaseModel):
 
 @router.get("/vehicle-categories")
 async def list_vehicle_categories(request: Request, active_only: bool = True, ev_only: bool = False):
-    org_id = extract_org_id(request)
     """List all vehicle categories"""
+    # PLATFORM-GLOBAL: intentionally unscoped — shared reference data
     db = get_db()
     query = {}
     if active_only:
@@ -67,11 +76,11 @@ async def list_vehicle_categories(request: Request, active_only: bool = True, ev
 
 @router.post("/vehicle-categories")
 async def create_vehicle_category(request: Request, data: VehicleCategoryCreate):
-    org_id = extract_org_id(request)
     """Create a new vehicle category (admin only)"""
+    org_id = _require_org_id(request)
     db = get_db()
     
-    # Check if code already exists
+    # PLATFORM-GLOBAL: uniqueness check — codes are platform-wide
     existing = await db.vehicle_categories.find_one({"code": data.code})
     if existing:
         raise HTTPException(status_code=400, detail=f"Category code '{data.code}' already exists")
@@ -94,27 +103,27 @@ async def create_vehicle_category(request: Request, data: VehicleCategoryCreate)
 
 @router.put("/vehicle-categories/{category_id}")
 async def update_vehicle_category(request: Request, category_id: str, data: VehicleCategoryCreate):
-    org_id = extract_org_id(request)
     """Update a vehicle category"""
+    org_id = _require_org_id(request)
     db = get_db()
     
     result = await db.vehicle_categories.update_one(
-        {"category_id": category_id},
+        {"category_id": category_id, "organization_id": org_id},
         {"$set": {**data.model_dump(), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    return await db.vehicle_categories.find_one({"category_id": category_id}, {"_id": 0})
+    return await db.vehicle_categories.find_one({"category_id": category_id, "organization_id": org_id}, {"_id": 0})
 
 @router.delete("/vehicle-categories/{category_id}")
 async def delete_vehicle_category(request: Request, category_id: str):
-    org_id = extract_org_id(request)
     """Soft delete a vehicle category"""
+    org_id = _require_org_id(request)
     db = get_db()
     result = await db.vehicle_categories.update_one(
-        {"category_id": category_id},
+        {"category_id": category_id, "organization_id": org_id},
         {"$set": {"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     if result.matched_count == 0:
@@ -126,8 +135,8 @@ async def delete_vehicle_category(request: Request, category_id: str):
 
 @router.get("/vehicle-models")
 async def list_vehicle_models(request: Request, category_code: Optional[str] = None, oem: Optional[str] = None, active_only: bool = True, search: Optional[str] = None):
-    org_id = extract_org_id(request)
     """List vehicle models with optional filtering"""
+    # PLATFORM-GLOBAL: intentionally unscoped — shared reference data
     db = get_db()
     query = {}
     
@@ -161,8 +170,8 @@ async def list_vehicle_models(request: Request, category_code: Optional[str] = N
 
 @router.get("/vehicle-models/oems")
 async def list_oems(request: Request, category_code: Optional[str] = None):
-    org_id = extract_org_id(request)
     """List distinct OEMs"""
+    # PLATFORM-GLOBAL: intentionally unscoped — shared reference data
     db = get_db()
     query = {"is_active": True}
     if category_code:
@@ -173,11 +182,11 @@ async def list_oems(request: Request, category_code: Optional[str] = None):
 
 @router.post("/vehicle-models")
 async def create_vehicle_model(request: Request, data: VehicleModelCreate):
-    org_id = extract_org_id(request)
     """Create a new vehicle model"""
+    org_id = _require_org_id(request)
     db = get_db()
     
-    # Verify category exists
+    # PLATFORM-GLOBAL: category lookup — shared reference data
     category = await db.vehicle_categories.find_one({"code": data.category_code})
     if not category:
         raise HTTPException(status_code=400, detail=f"Category '{data.category_code}' not found")
@@ -200,27 +209,27 @@ async def create_vehicle_model(request: Request, data: VehicleModelCreate):
 
 @router.put("/vehicle-models/{model_id}")
 async def update_vehicle_model(request: Request, model_id: str, data: VehicleModelCreate):
-    org_id = extract_org_id(request)
     """Update a vehicle model"""
+    org_id = _require_org_id(request)
     db = get_db()
     
     result = await db.vehicle_models.update_one(
-        {"model_id": model_id},
+        {"model_id": model_id, "organization_id": org_id},
         {"$set": {**data.model_dump(), "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Model not found")
     
-    return await db.vehicle_models.find_one({"model_id": model_id}, {"_id": 0})
+    return await db.vehicle_models.find_one({"model_id": model_id, "organization_id": org_id}, {"_id": 0})
 
 @router.delete("/vehicle-models/{model_id}")
 async def delete_vehicle_model(request: Request, model_id: str):
-    org_id = extract_org_id(request)
     """Soft delete a vehicle model"""
+    org_id = _require_org_id(request)
     db = get_db()
     result = await db.vehicle_models.update_one(
-        {"model_id": model_id},
+        {"model_id": model_id, "organization_id": org_id},
         {"$set": {"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     if result.matched_count == 0:
@@ -232,9 +241,10 @@ async def delete_vehicle_model(request: Request, model_id: str):
 
 @router.get("/issue-suggestions")
 async def get_issue_suggestions(request: Request, category_code: Optional[str] = None, model_id: Optional[str] = None, issue_type: Optional[str] = None, search: Optional[str] = None):
-    org_id = extract_org_id(request)
     """Get EV issue suggestions based on vehicle category/model"""
+    org_id = _require_org_id(request)
     db = get_db()
+    # PLATFORM-GLOBAL: intentionally unscoped — shared reference data
     query = {"is_active": True}
     
     if category_code:
@@ -257,9 +267,9 @@ async def get_issue_suggestions(request: Request, category_code: Optional[str] =
     
     suggestions = await db.ev_issue_suggestions.find(query, {"_id": 0}).sort("usage_count", -1).to_list(50)
     
-    # Also get suggestions from historical ticket data (EVFI)
+    # Also get suggestions from historical ticket data (EVFI) — ORG-SCOPED
     if category_code or model_id:
-        efi_query = {"is_active": True}
+        efi_query = {"is_active": True, "organization_id": org_id}
         if category_code:
             efi_query["$or"] = [
                 {"vehicle_category": category_code},
@@ -286,8 +296,8 @@ async def get_issue_suggestions(request: Request, category_code: Optional[str] =
 
 @router.post("/issue-suggestions")
 async def create_issue_suggestion(request: Request, data: EVIssueSuggestionCreate):
-    org_id = extract_org_id(request)
     """Create a new EV issue suggestion"""
+    org_id = _require_org_id(request)
     db = get_db()
     
     suggestion_id = f"evis_{uuid.uuid4().hex[:8]}"
@@ -309,8 +319,8 @@ async def create_issue_suggestion(request: Request, data: EVIssueSuggestionCreat
 
 @router.post("/issue-suggestions/{suggestion_id}/increment-usage")
 async def increment_suggestion_usage(request: Request, suggestion_id: str):
-    org_id = extract_org_id(request)
     """Increment usage count when a suggestion is selected"""
+    # PLATFORM-GLOBAL: intentionally unscoped — usage counter for ranking
     db = get_db()
     await db.ev_issue_suggestions.update_one(
         {"suggestion_id": suggestion_id},
@@ -323,12 +333,12 @@ async def increment_suggestion_usage(request: Request, suggestion_id: str):
 
 @router.post("/seed")
 async def seed_master_data(request: Request):
-    org_id = extract_org_id(request)
     """Seed initial master data for vehicle categories, models, and issue suggestions"""
+    # PLATFORM-GLOBAL: intentionally unscoped — seeds shared reference data
     db = get_db()
     now = datetime.now(timezone.utc).isoformat()
     
-    # Check if already seeded (use code-based check, not org-scoped)
+    # PLATFORM-GLOBAL: check if already seeded (not org-scoped)
     existing_categories = await db.vehicle_categories.count_documents({"is_active": True})
     if existing_categories >= 5:
         return {"message": "Master data already exists", "categories": existing_categories}
@@ -397,7 +407,7 @@ async def seed_master_data(request: Request):
         }
     ]
     
-    # Upsert categories to prevent duplicates
+    # PLATFORM-GLOBAL: upsert categories to prevent duplicates
     for cat in categories:
         await db.vehicle_categories.update_one(
             {"code": cat["code"]},
@@ -437,7 +447,7 @@ async def seed_master_data(request: Request):
         {"model_id": "vmod_tata_ace_ev", "name": "Ace EV", "oem": "Tata Motors", "category_code": "COMM_EV", "category_name": "Commercial EV (Bus/Truck)", "battery_type": "Li-ion 21.3 kWh", "range_km": 154, "is_active": True, "created_at": now, "updated_at": now},
     ]
     
-    # Upsert models to prevent duplicates
+    # PLATFORM-GLOBAL: upsert models to prevent duplicates
     for model in models:
         await db.vehicle_models.update_one(
             {"model_id": model["model_id"]},
@@ -476,7 +486,7 @@ async def seed_master_data(request: Request):
         {"suggestion_id": "evis_gen_05", "title": "Lights not working", "category_codes": ["2W_EV", "3W_EV", "4W_EV"], "issue_type": "electrical", "common_symptoms": ["Headlight dim/off", "Tail light not working", "Indicators malfunction"], "severity": "medium", "is_active": True, "usage_count": 0, "source": "manual", "created_at": now, "updated_at": now},
     ]
     
-    # Upsert suggestions to prevent duplicates
+    # PLATFORM-GLOBAL: upsert suggestions to prevent duplicates
     for suggestion in issue_suggestions:
         await db.ev_issue_suggestions.update_one(
             {"suggestion_id": suggestion["suggestion_id"]},
