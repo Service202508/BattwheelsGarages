@@ -15,7 +15,7 @@ import {
   ChevronRight, RefreshCw, History, Receipt
 } from "lucide-react";
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API = `${window.location.origin}/api`;
 
 // Resolve workshop slug from subdomain or ?org query param

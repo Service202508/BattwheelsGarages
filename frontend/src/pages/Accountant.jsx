@@ -138,7 +138,7 @@ export default function Accountant() {
   const fetchTrialBalance = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/banking/reports/trial-balance`, { headers });
+      const res = await fetch(`${API}/journal-entries/reports/trial-balance`, { headers });
       const data = await res.json();
       setTrialBalance(data);
     } catch (error) {

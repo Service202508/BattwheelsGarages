@@ -209,7 +209,7 @@ export default function TicketDetail({ user }) {
         }),
       });
       if (!res.ok) throw new Error("Update failed");
-      toast.success("Failure card completed — data fed to EVFI brain");
+      toast.success("Failure card completed - data fed to EVFI brain");
       setFailureCardModal(false);
     } catch (err) {
       toast.error("Failed to update failure card");
@@ -281,7 +281,7 @@ export default function TicketDetail({ user }) {
 
   const st = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.open;
   const pr = PRIORITY_CONFIG[ticket.priority] || PRIORITY_CONFIG.medium;
-  const created = ticket.created_at ? new Date(ticket.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+  const created = ticket.created_at ? new Date(ticket.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
 
   return (
     <div className="space-y-6" data-testid="ticket-detail-page">
@@ -306,16 +306,16 @@ export default function TicketDetail({ user }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content — left 2 cols */}
+        {/* Main Content - left 2 cols */}
         <div className="lg:col-span-2 space-y-6">
           {/* Section 1: Customer & Vehicle */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-customer-section">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><User className="w-4 h-4" /> Customer & Vehicle</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
-              <div><span className="text-zinc-500">Customer</span><p className="text-zinc-200 font-medium">{ticket.customer_name || "—"}</p></div>
-              <div><span className="text-zinc-500">Contact</span><p className="text-zinc-200">{ticket.contact_number || "—"}</p></div>
-              <div><span className="text-zinc-500">Vehicle</span><p className="text-zinc-200">{[ticket.vehicle_make, ticket.vehicle_model].filter(Boolean).join(" ") || "—"}</p></div>
-              <div><span className="text-zinc-500">Reg Number</span><p className="text-zinc-200 font-mono">{ticket.vehicle_number || "—"}</p></div>
+              <div><span className="text-zinc-500">Customer</span><p className="text-zinc-200 font-medium">{ticket.customer_name || "-"}</p></div>
+              <div><span className="text-zinc-500">Contact</span><p className="text-zinc-200">{ticket.contact_number || "-"}</p></div>
+              <div><span className="text-zinc-500">Vehicle</span><p className="text-zinc-200">{[ticket.vehicle_make, ticket.vehicle_model].filter(Boolean).join(" ") || "-"}</p></div>
+              <div><span className="text-zinc-500">Reg Number</span><p className="text-zinc-200 font-mono">{ticket.vehicle_number || "-"}</p></div>
             </CardContent>
           </Card>
 
@@ -325,9 +325,9 @@ export default function TicketDetail({ user }) {
             <CardContent className="space-y-3 text-sm">
               <div><span className="text-zinc-500">Issue Description</span><p className="text-zinc-200 mt-1">{ticket.description || "No description"}</p></div>
               <div className="grid grid-cols-3 gap-4">
-                <div><span className="text-zinc-500">Category</span><p className="text-zinc-200">{ticket.category || "—"}</p></div>
-                <div><span className="text-zinc-500">Issue Type</span><p className="text-zinc-200">{ticket.issue_type || "—"}</p></div>
-                <div><span className="text-zinc-500">Ticket Type</span><p className="text-zinc-200 capitalize">{ticket.ticket_type || "—"}</p></div>
+                <div><span className="text-zinc-500">Category</span><p className="text-zinc-200">{ticket.category || "-"}</p></div>
+                <div><span className="text-zinc-500">Issue Type</span><p className="text-zinc-200">{ticket.issue_type || "-"}</p></div>
+                <div><span className="text-zinc-500">Ticket Type</span><p className="text-zinc-200 capitalize">{ticket.ticket_type || "-"}</p></div>
               </div>
             </CardContent>
           </Card>
@@ -348,10 +348,10 @@ export default function TicketDetail({ user }) {
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-costs-section">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Financials</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-              <div><span className="text-zinc-500">Estimated</span><p className="text-zinc-200 font-mono">{ticket.estimated_cost != null ? `₹${Number(ticket.estimated_cost).toLocaleString("en-IN")}` : "—"}</p></div>
-              <div><span className="text-zinc-500">Parts Cost</span><p className="text-zinc-200 font-mono">{ticket.parts_cost != null ? `₹${Number(ticket.parts_cost).toLocaleString("en-IN")}` : "—"}</p></div>
-              <div><span className="text-zinc-500">Labor Cost</span><p className="text-zinc-200 font-mono">{ticket.labor_cost != null ? `₹${Number(ticket.labor_cost).toLocaleString("en-IN")}` : "—"}</p></div>
-              <div><span className="text-zinc-500">Actual Cost</span><p className="text-bw-volt font-mono font-bold">{ticket.actual_cost != null ? `₹${Number(ticket.actual_cost).toLocaleString("en-IN")}` : "—"}</p></div>
+              <div><span className="text-zinc-500">Estimated</span><p className="text-zinc-200 font-mono">{ticket.estimated_cost != null ? `₹${Number(ticket.estimated_cost).toLocaleString("en-IN")}` : "-"}</p></div>
+              <div><span className="text-zinc-500">Parts Cost</span><p className="text-zinc-200 font-mono">{ticket.parts_cost != null ? `₹${Number(ticket.parts_cost).toLocaleString("en-IN")}` : "-"}</p></div>
+              <div><span className="text-zinc-500">Labor Cost</span><p className="text-zinc-200 font-mono">{ticket.labor_cost != null ? `₹${Number(ticket.labor_cost).toLocaleString("en-IN")}` : "-"}</p></div>
+              <div><span className="text-zinc-500">Actual Cost</span><p className="text-bw-volt font-mono font-bold">{ticket.actual_cost != null ? `₹${Number(ticket.actual_cost).toLocaleString("en-IN")}` : "-"}</p></div>
             </CardContent>
           </Card>
 
@@ -374,7 +374,7 @@ export default function TicketDetail({ user }) {
                 <div className="space-y-3" data-testid="estimate-details">
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div><span className="text-zinc-500">Estimate #</span><p className="text-zinc-200 font-mono">{estimate.estimate_number || estimate.estimate_id}</p></div>
-                    <div><span className="text-zinc-500">Total</span><p className="text-bw-volt font-mono font-bold">{estimate.grand_total != null ? `₹${Number(estimate.grand_total).toLocaleString("en-IN")}` : "—"}</p></div>
+                    <div><span className="text-zinc-500">Total</span><p className="text-bw-volt font-mono font-bold">{estimate.grand_total != null ? `₹${Number(estimate.grand_total).toLocaleString("en-IN")}` : "-"}</p></div>
                   </div>
                   {estimate.line_items && estimate.line_items.length > 0 && (
                     <div className="border-t border-zinc-800 pt-2">
@@ -440,7 +440,7 @@ export default function TicketDetail({ user }) {
           </Card>
         </div>
 
-        {/* Sidebar — right col */}
+        {/* Sidebar - right col */}
         <div className="space-y-6">
           {/* Status & Actions */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-actions-section">
@@ -521,7 +521,7 @@ export default function TicketDetail({ user }) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30" data-testid="failure-card-draft-badge">Draft — Needs Review</Badge>
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30" data-testid="failure-card-draft-badge">Draft - Needs Review</Badge>
                     <Button
                       size="sm"
                       variant="outline"
@@ -622,10 +622,10 @@ export default function TicketDetail({ user }) {
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="yes">Yes — EVFI was correct</SelectItem>
-                  <SelectItem value="no">No — Different root cause</SelectItem>
-                  <SelectItem value="partial">Partial — Partially correct</SelectItem>
-                  <SelectItem value="na">N/A — No EVFI suggestion</SelectItem>
+                  <SelectItem value="yes">Yes - EVFI was correct</SelectItem>
+                  <SelectItem value="no">No - Different root cause</SelectItem>
+                  <SelectItem value="partial">Partial - Partially correct</SelectItem>
+                  <SelectItem value="na">N/A - No EVFI suggestion</SelectItem>
                 </SelectContent>
               </Select>
             </div>

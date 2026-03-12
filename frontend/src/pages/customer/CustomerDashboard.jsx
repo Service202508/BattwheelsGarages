@@ -244,7 +244,7 @@ export default function CustomerDashboard({ user }) {
                 </p>
                 <div className="mt-3 space-y-1">
                   <p className="text-sm"><strong>Helpline:</strong> 1800-XXX-XXXX</p>
-                  <p className="text-sm"><strong>Email:</strong> support@battwheels.in</p>
+                  <p className="text-sm"><strong>Email:</strong> support@battwheels.com</p>
                 </div>
               </div>
             </div>

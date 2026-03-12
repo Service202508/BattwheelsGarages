@@ -1052,7 +1052,7 @@ export default function EstimateItemsPanel({
                     {item.type === "part" ? (
                       <StockIndicator stockInfo={item.stock_info} qty={item.qty} />
                     ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
+                      <span className="text-xs text-muted-foreground">-</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right font-mono">

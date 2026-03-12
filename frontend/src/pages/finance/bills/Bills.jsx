@@ -450,7 +450,7 @@ export default function Bills() {
                         <td className="p-4 font-mono text-sm">{bill.internal_ref}</td>
                         <td className="p-4 text-sm">{bill.bill_number}</td>
                         <td className="p-4">
-                          <p className="text-sm font-medium">{bill.vendor_name || "—"}</p>
+                          <p className="text-sm font-medium">{bill.vendor_name || "-"}</p>
                           {bill.vendor_gstin && <p className="text-xs text-bw-white/50">{bill.vendor_gstin}</p>}
                         </td>
                         <td className="p-4 text-sm">{bill.bill_date}</td>
@@ -505,11 +505,11 @@ export default function Bills() {
                     {vendorAging.vendors.map(v => (
                       <tr key={v.vendor_id} className="border-b border-bw-white/5 hover:bg-bw-white/[0.02]">
                         <td className="p-4 text-sm font-medium">{v.vendor_name}</td>
-                        <td className="p-4 text-right font-mono text-bw-teal">{v.current > 0 ? formatCurrency(v.current) : '—'}</td>
-                        <td className="p-4 text-right font-mono text-bw-amber">{v.days_1_30 > 0 ? formatCurrency(v.days_1_30) : '—'}</td>
-                        <td className="p-4 text-right font-mono text-bw-orange">{v.days_31_60 > 0 ? formatCurrency(v.days_31_60) : '—'}</td>
-                        <td className="p-4 text-right font-mono text-bw-orange">{v.days_61_90 > 0 ? formatCurrency(v.days_61_90) : '—'}</td>
-                        <td className="p-4 text-right font-mono text-bw-red">{v.days_over_90 > 0 ? formatCurrency(v.days_over_90) : '—'}</td>
+                        <td className="p-4 text-right font-mono text-bw-teal">{v.current > 0 ? formatCurrency(v.current) : '-'}</td>
+                        <td className="p-4 text-right font-mono text-bw-amber">{v.days_1_30 > 0 ? formatCurrency(v.days_1_30) : '-'}</td>
+                        <td className="p-4 text-right font-mono text-bw-orange">{v.days_31_60 > 0 ? formatCurrency(v.days_31_60) : '-'}</td>
+                        <td className="p-4 text-right font-mono text-bw-orange">{v.days_61_90 > 0 ? formatCurrency(v.days_61_90) : '-'}</td>
+                        <td className="p-4 text-right font-mono text-bw-red">{v.days_over_90 > 0 ? formatCurrency(v.days_over_90) : '-'}</td>
                         <td className="p-4 text-right font-mono font-bold">{formatCurrency(v.total)}</td>
                       </tr>
                     ))}
@@ -735,7 +735,7 @@ export default function Bills() {
                   </div>
                   <div>
                     <p className="text-xs text-bw-white/50">Vendor</p>
-                    <p className="font-medium">{selectedBill.vendor_name || "—"}</p>
+                    <p className="font-medium">{selectedBill.vendor_name || "-"}</p>
                     {selectedBill.vendor_gstin && <p className="text-xs text-bw-white/50">{selectedBill.vendor_gstin}</p>}
                   </div>
                   <div>

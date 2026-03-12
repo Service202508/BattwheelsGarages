@@ -447,18 +447,19 @@ async def get_accounting_summary(request: Request):
     if user_role not in ("admin", "owner", "org_admin", "accountant"):
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    # Calculate totals from ledger — scoped to org
+    # Calculate totals from journal_entries - scoped to org
     org_id = getattr(request.state, "tenant_org_id", None)
     pipeline = [
-        {"$match": {"organization_id": org_id}},
+        {"$match": {"organization_id": org_id, "is_posted": True}},
+        {"$unwind": "$lines"},
         {"$group": {
-            "_id": "$account_type",
-            "total_debit": {"$sum": "$debit"},
-            "total_credit": {"$sum": "$credit"}
+            "_id": "$lines.account_type",
+            "total_debit": {"$sum": "$lines.debit_amount"},
+            "total_credit": {"$sum": "$lines.credit_amount"}
         }}
     ]
     
-    results = await db.ledger.aggregate(pipeline).to_list(10)
+    results = await db.journal_entries.aggregate(pipeline).to_list(10)
     
     totals = {r["_id"]: {"debit": r["total_debit"], "credit": r["total_credit"]} for r in results}
     

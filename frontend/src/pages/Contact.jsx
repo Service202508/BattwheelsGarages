@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`;
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
 
 const channels = [
@@ -13,28 +13,28 @@ const channels = [
     icon: MessageSquare,
     label: 'General Enquiries',
     desc: 'Questions about the platform, features, or pricing.',
-    email: 'hello@battwheels.com',
+    email: 'support@battwheels.com',
     accent: 'rgb(var(--bw-volt))',
   },
   {
     icon: Briefcase,
     label: 'Enterprise & OEM',
     desc: 'Custom deployments, white-label, or fleet operator partnerships.',
-    email: 'enterprise@battwheels.com',
+    email: 'support@battwheels.com',
     accent: 'rgb(var(--bw-teal))',
   },
   {
     icon: Shield,
     label: 'Security',
     desc: 'Responsible disclosure of vulnerabilities or security concerns.',
-    email: 'security@battwheels.com',
+    email: 'support@battwheels.com',
     accent: 'rgb(var(--bw-orange))',
   },
   {
     icon: Building2,
     label: 'Legal & Privacy',
     desc: 'Data requests, privacy queries, and legal correspondence.',
-    email: 'legal@battwheels.com',
+    email: 'support@battwheels.com',
     accent: 'rgb(var(--bw-volt))',
   },
 ];
@@ -65,7 +65,7 @@ export default function Contact() {
         toast.error(data.detail || 'Something went wrong. Please try again.');
       }
     } catch {
-      toast.error('Network error. Please email us directly at hello@battwheels.com');
+      toast.error('Network error. Please email us directly at support@battwheels.com');
     } finally {
       setLoading(false);
     }
@@ -102,12 +102,12 @@ export default function Contact() {
             Get in <span className="text-bw-volt">Touch</span>
           </h1>
           <p className="text-white/45 text-base leading-relaxed max-w-xl">
-            We're building India's EV reliability infrastructure — and we're early enough that your message will reach the team directly.
+            We're building India's EV reliability infrastructure - and we're early enough that your message will reach the team directly.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Left — channels */}
+          {/* Left - channels */}
           <div>
             <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-6">Contact channels</p>
             <div className="flex flex-col gap-4 mb-10">
@@ -147,7 +147,7 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Right — form */}
+          {/* Right - form */}
           <div>
             <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-6">Send a message</p>
 
@@ -256,7 +256,7 @@ export default function Contact() {
         <div className="mt-16 p-8 border border-white/[0.07] rounded bg-white/[0.02] flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <p className="text-[10px] font-mono text-bw-volt uppercase tracking-widest mb-1">Not ready to talk yet?</p>
-            <p className="font-bold">Start a free 14-day trial — no credit card required.</p>
+            <p className="font-bold">Start a free 14-day trial - no credit card required.</p>
             <p className="text-white/40 text-sm mt-0.5">Full Professional access. Your data, your workspace.</p>
           </div>
           <button onClick={() => navigate('/register')} className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-bw-volt text-bw-black text-[13px] font-bold uppercase tracking-wide rounded-sm hover:bg-bw-volt-hover transition">

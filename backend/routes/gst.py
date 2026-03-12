@@ -653,7 +653,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     if format == "excel":
         return generate_gstr1_excel(report_data, month)
     elif format == "pdf":
-        return await generate_gstr1_pdf(report_data, month, org_settings)
+        return await generate_gstr1_pdf(report_data, month, org_settings, org_id)
     
     return {"code": 0, "report": "gstr1", **report_data}
 
@@ -735,7 +735,7 @@ def generate_gstr1_excel(data: dict, month: str) -> Response:
         headers={"Content-Disposition": f"attachment; filename=gstr1_{month}.xlsx"}
     )
 
-async def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
+async def generate_gstr1_pdf(data: dict, month: str, org_settings: dict, org_id: str = "") -> Response:
     """Generate GSTR-1 PDF report"""
     company = org_settings.get("company_name", "Battwheels")
     gstin = org_settings.get("gstin", "")
@@ -1291,7 +1291,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     if format == "excel":
         return generate_gstr3b_excel(report_data, month)
     elif format == "pdf":
-        return await generate_gstr3b_pdf(report_data, month, org_settings)
+        return await generate_gstr3b_pdf(report_data, month, org_settings, org_id)
     
     return {"code": 0, "report": "gstr3b", **report_data}
 
@@ -1346,7 +1346,7 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
         headers={"Content-Disposition": f"attachment; filename=gstr3b_{month}.xlsx"}
     )
 
-async def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
+async def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict, org_id: str = "") -> Response:
     """Generate GSTR-3B PDF report"""
     company = org_settings.get("company_name", "Battwheels")
     gstin = org_settings.get("gstin", "")

@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API = `${window.location.origin}/api/v1`;
 
 export default function ForgotPassword() {

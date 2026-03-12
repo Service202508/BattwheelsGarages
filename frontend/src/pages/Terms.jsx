@@ -92,7 +92,7 @@ export default function Terms() {
         </Section>
 
         <Section icon={RefreshCw} num="03" title="Cancellation & Refunds">
-          <p>You may cancel your subscription at any time from Organisation Settings. Cancellation takes effect at the end of the current billing period — you retain access until then.</p>
+          <p>You may cancel your subscription at any time from Organisation Settings. Cancellation takes effect at the end of the current billing period - you retain access until then.</p>
           <p>Battwheels does not provide pro-rated refunds for partial months. If you cancel on day 5 of a monthly subscription, you retain access for the remaining 25 days with no refund.</p>
           <p>Exception: if the platform is unavailable for more than 24 cumulative hours in a billing month due to a fault on our side (not scheduled maintenance or force majeure), you are entitled to a credit equal to one month's subscription fee. Credits are applied to the next invoice.</p>
         </Section>
@@ -105,7 +105,7 @@ export default function Terms() {
         </Section>
 
         <Section icon={AlertTriangle} num="05" title="EVFI™ Diagnostic Advisory Disclaimer">
-          <p><span className="text-white/80 font-medium">Advisory only.</span> Battwheels EVFI™ diagnostic suggestions are provided as advisory guidance only and do not constitute professional engineering, electrical, or safety advice. All EVFI outputs — including root cause analysis, diagnostic steps, parts recommendations, and confidence scores — are AI-generated and must be independently verified by a qualified EV technician before any repair work is performed.</p>
+          <p><span className="text-white/80 font-medium">Advisory only.</span> Battwheels EVFI™ diagnostic suggestions are provided as advisory guidance only and do not constitute professional engineering, electrical, or safety advice. All EVFI outputs - including root cause analysis, diagnostic steps, parts recommendations, and confidence scores - are AI-generated and must be independently verified by a qualified EV technician before any repair work is performed.</p>
           <p><span className="text-white/80 font-medium">No liability.</span> Battwheels Services Private Limited accepts no liability for damages arising from reliance on EVFI diagnostic suggestions without independent professional verification.</p>
           <p><span className="text-white/80 font-medium">Evolving intelligence.</span> Users acknowledge that EVFI intelligence improves over time through anonymised pattern learning and that early-stage suggestions may have lower accuracy than mature datasets.</p>
         </Section>
@@ -118,13 +118,13 @@ export default function Terms() {
             'Reverse-engineer, decompile, or attempt to extract source code from the platform',
             'Use automated tools to scrape, crawl, or extract data from the platform beyond the official API',
             'Copy, reproduce, or create derivative works of the platform\'s user interface, visual design, or workflow architecture',
-            'Use EVFI™ diagnostic outputs commercially outside the platform — including reselling, redistributing, or incorporating EVFI intelligence into competing products or services',
+            'Use EVFI™ diagnostic outputs commercially outside the platform - including reselling, redistributing, or incorporating EVFI intelligence into competing products or services',
             'Upload malicious code, scripts, or payloads to any input field',
             'Share API credentials or JWT tokens across organisations',
             'Resell or sublicense access to the platform without written permission',
             'Remove, obscure, or alter any proprietary notices, watermarks, or attribution embedded in platform outputs',
           ].map(r => (
-            <p key={r} className="flex items-start gap-2"><span className="text-white/30 font-mono shrink-0">—</span>{r}</p>
+            <p key={r} className="flex items-start gap-2"><span className="text-white/30 font-mono shrink-0">-</span>{r}</p>
           ))}
           <p>Violation of acceptable use may result in immediate suspension without refund.</p>
         </Section>
@@ -137,13 +137,13 @@ export default function Terms() {
 
         <Section icon={Scale} num="08" title="Governing Law & Disputes">
           <p>These Terms are governed by the laws of India. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka, India.</p>
-          <p>Before initiating legal proceedings, you agree to first contact us at <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a> and allow 30 days for good-faith resolution.</p>
+          <p>Before initiating legal proceedings, you agree to first contact us at <a href="mailto:support@battwheels.com" className="text-bw-volt hover:underline">support@battwheels.com</a> and allow 30 days for good-faith resolution.</p>
         </Section>
 
         <Section icon={FileText} num="09" title="Changes to These Terms">
           <p>We may update these Terms as the platform and applicable regulations evolve. Material changes will be communicated to registered admin users by email at least 14 days before they take effect.</p>
           <p>Continued use of Battwheels OS after the effective date of changes constitutes acceptance of the updated Terms.</p>
-          <p>Questions? Email <a href="mailto:legal@battwheels.com" className="text-bw-volt hover:underline">legal@battwheels.com</a></p>
+          <p>Questions? Email <a href="mailto:support@battwheels.com" className="text-bw-volt hover:underline">support@battwheels.com</a></p>
         </Section>
       </main>
 

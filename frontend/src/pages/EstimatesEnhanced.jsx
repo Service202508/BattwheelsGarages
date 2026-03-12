@@ -618,7 +618,7 @@ export default function EstimatesEnhanced() {
 
   // ========================= EDIT ESTIMATE =========================
   const handleOpenEdit = (estimate) => {
-    // Normalize line items — handle both enhanced (quantity/rate) and ticket (qty/unit_price) formats
+    // Normalize line items - handle both enhanced (quantity/rate) and ticket (qty/unit_price) formats
     const normalizedLineItems = (estimate.line_items || []).map(item => ({
       ...item,
       quantity: item.quantity || item.qty || 1,
@@ -1081,7 +1081,7 @@ export default function EstimatesEnhanced() {
     });
   };
 
-  // ── Totals derived from newEstimate (via custom hook — no API calls) ──
+  // ── Totals derived from newEstimate (via custom hook - no API calls) ──
   const totals = useEstimateCalculations(newEstimate);
 
   const resetForm = () => {

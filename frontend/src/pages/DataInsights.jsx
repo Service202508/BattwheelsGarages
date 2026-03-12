@@ -59,7 +59,7 @@ function getDateRange(period) {
 }
 
 function fmtCurrency(val) {
-  if (val === null || val === undefined) return "—";
+  if (val === null || val === undefined) return "-";
   if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(1)}Cr`;
   if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)}L`;
   if (val >= 1_000) return `₹${(val / 1_000).toFixed(1)}K`;
@@ -67,7 +67,7 @@ function fmtCurrency(val) {
 }
 
 function fmtNum(val) {
-  if (val === null || val === undefined) return "—";
+  if (val === null || val === undefined) return "-";
   return val.toLocaleString("en-IN");
 }
 
@@ -215,7 +215,7 @@ function RevenueSection({ data, loading }) {
         <KpiCard
           icon={Target}
           label="Collection Rate"
-          value={kpis.collection_rate != null ? `${kpis.collection_rate}%` : "—"}
+          value={kpis.collection_rate != null ? `${kpis.collection_rate}%` : "-"}
           sub={`${kpis.paid_count} of ${kpis.total_count} invoices`}
           color={kpis.collection_rate < 60 ? RED : kpis.collection_rate < 80 ? AMBER : VOLT}
           warn={kpis.collection_rate < 80}
@@ -311,17 +311,17 @@ function OperationsSection({ data, loading }) {
     <div className="space-y-5" data-testid="operations-section">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard icon={Ticket} label="Tickets Resolved" value={fmtNum(kpis.tickets_resolved)} delta={kpis.tickets_delta} color={VOLT} testId="ops-kpi-resolved" />
-        <KpiCard icon={Clock} label="Avg Resolution" value={kpis.avg_resolution_hours != null ? `${kpis.avg_resolution_hours}h` : "—"} color={CYAN} testId="ops-kpi-avg-time" />
+        <KpiCard icon={Clock} label="Avg Resolution" value={kpis.avg_resolution_hours != null ? `${kpis.avg_resolution_hours}h` : "-"} color={CYAN} testId="ops-kpi-avg-time" />
         <KpiCard
           icon={Target}
           label="SLA Compliance"
-          value={kpis.sla_compliance_rate != null ? `${kpis.sla_compliance_rate}%` : "—"}
+          value={kpis.sla_compliance_rate != null ? `${kpis.sla_compliance_rate}%` : "-"}
           sub="Target: 90%+"
           color={slaColor}
           warn={kpis.sla_compliance_rate != null && kpis.sla_compliance_rate < 90}
           testId="ops-kpi-sla"
         />
-        <KpiCard icon={Award} label="First-Time Fix" value={kpis.first_fix_rate != null ? `${kpis.first_fix_rate}%` : "—"} color={BLUE} testId="ops-kpi-firstfix" />
+        <KpiCard icon={Award} label="First-Time Fix" value={kpis.first_fix_rate != null ? `${kpis.first_fix_rate}%` : "-"} color={BLUE} testId="ops-kpi-firstfix" />
       </div>
 
       {!hasData ? (
@@ -457,15 +457,15 @@ function TechnicianSection({ data, loading }) {
                         </div>
                       </td>
                       <td className="py-2 pr-3" style={{ color: "rgb(var(--bw-white))" }}>
-                        {tech.avg_hours != null ? `${tech.avg_hours}h` : "—"}
+                        {tech.avg_hours != null ? `${tech.avg_hours}h` : "-"}
                       </td>
                       <td className="py-2 pr-3" style={{ color: AMBER }}>
                         {tech.avg_rating != null ? (
                           <span>{tech.avg_rating} <span style={{ color: DIM_TEXT }}>★</span></span>
-                        ) : "—"}
+                        ) : "-"}
                       </td>
                       <td className="py-2" style={{ color: tech.sla_compliance != null && tech.sla_compliance >= 90 ? VOLT : tech.sla_compliance != null ? AMBER : DIM_TEXT }}>
-                        {tech.sla_compliance != null ? `${tech.sla_compliance}%` : "—"}
+                        {tech.sla_compliance != null ? `${tech.sla_compliance}%` : "-"}
                       </td>
                     </tr>
                   );
@@ -537,7 +537,7 @@ function EfiSection({ data, loading }) {
         <KpiCard icon={Zap} label="Diagnoses Run" value={fmtNum(stats.diagnoses_run)} color={VOLT} testId="evfi-kpi-diagnoses" />
         <KpiCard icon={Cpu} label="Fault Types Found" value={fmtNum(stats.total_fault_types)} color={CYAN} testId="evfi-kpi-faults" />
         <KpiCard icon={Activity} label="Tickets in Period" value={fmtNum(stats.total_in_period)} color={BLUE} testId="evfi-kpi-total" />
-        <KpiCard icon={Target} label="Top Fault" value={stats.most_diagnosed || "—"} color={AMBER} testId="evfi-kpi-top" />
+        <KpiCard icon={Target} label="Top Fault" value={stats.most_diagnosed || "-"} color={AMBER} testId="evfi-kpi-top" />
       </div>
 
       {!hasData ? (
@@ -565,7 +565,7 @@ function EfiSection({ data, loading }) {
                         <td className="py-2 pr-3 font-medium capitalize" style={{ color: "rgb(var(--bw-white))" }}>{p.fault_type}</td>
                         <td className="py-2 pr-3" style={{ color: VOLT }}>{p.count}</td>
                         <td className="py-2 pr-3" style={{ color: "rgb(var(--bw-white))" }}>
-                          {p.avg_fix_hours != null ? `${p.avg_fix_hours}h` : "—"}
+                          {p.avg_fix_hours != null ? `${p.avg_fix_hours}h` : "-"}
                         </td>
                         <td className="py-2" style={{ color: AMBER }}>{fmtCurrency(p.avg_cost)}</td>
                       </tr>
@@ -621,8 +621,8 @@ function CustomerSection({ data, loading }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard icon={Users} label="New Customers" value={fmtNum(kpis.new_customers)} color={VOLT} testId="cust-kpi-new" />
         <KpiCard icon={ChevronRight} label="Returning" value={fmtNum(kpis.returning_customers)} color={CYAN} testId="cust-kpi-returning" />
-        <KpiCard icon={Star} label="Avg Rating" value={kpis.avg_rating != null ? `${kpis.avg_rating} / 5` : "—"} color={ratingColor} testId="cust-kpi-rating" />
-        <KpiCard icon={Activity} label="Survey Response" value={kpis.response_rate != null ? `${kpis.response_rate}%` : "—"} color={BLUE} testId="cust-kpi-response" />
+        <KpiCard icon={Star} label="Avg Rating" value={kpis.avg_rating != null ? `${kpis.avg_rating} / 5` : "-"} color={ratingColor} testId="cust-kpi-rating" />
+        <KpiCard icon={Activity} label="Survey Response" value={kpis.response_rate != null ? `${kpis.response_rate}%` : "-"} color={BLUE} testId="cust-kpi-response" />
       </div>
 
       {!hasData ? (
@@ -662,7 +662,7 @@ function CustomerSection({ data, loading }) {
                           </td>
                           <td className="py-2 pr-3" style={{ color: DIM_TEXT }}>{c.invoice_count}</td>
                           <td className="py-2 pr-3 font-semibold" style={{ color: VOLT }}>{fmtCurrency(c.total_spent)}</td>
-                          <td className="py-2" style={{ color: c.at_risk ? AMBER : DIM_TEXT }}>{c.last_visit || "—"}</td>
+                          <td className="py-2" style={{ color: c.at_risk ? AMBER : DIM_TEXT }}>{c.last_visit || "-"}</td>
                         </tr>
                       ))}
                     </tbody>

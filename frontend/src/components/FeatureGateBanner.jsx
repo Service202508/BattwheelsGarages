@@ -42,7 +42,7 @@ const FEATURE_NAMES = {
   EVFI_INTELLIGENCE:   "EVFI Intelligence",
 };
 
-// Feature benefit bullets — shown in the center of the banner
+// Feature benefit bullets - shown in the center of the banner
 const FEATURE_BENEFITS = {
   PAYROLL: [
     "TDS calculation (new & old regime)",
@@ -159,7 +159,7 @@ export default function FeatureGateBanner({ children }) {
         }}
         data-testid="feature-gate-banner"
       >
-        {/* Left — lock icon + plan requirement */}
+        {/* Left - lock icon + plan requirement */}
         <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
           <Lock
             size={16}
@@ -180,7 +180,7 @@ export default function FeatureGateBanner({ children }) {
           </div>
         </div>
 
-        {/* Center — feature benefit bullets (desktop only) */}
+        {/* Center - feature benefit bullets (desktop only) */}
         {benefits.length > 0 && (
           <div
             className="hidden lg:flex flex-1 items-center justify-center gap-x-5"
@@ -199,7 +199,7 @@ export default function FeatureGateBanner({ children }) {
           </div>
         )}
 
-        {/* Right — upgrade button */}
+        {/* Right - upgrade button */}
         <button
           onClick={() => navigate("/subscription")}
           className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90 active:opacity-80"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Mail, Lock, User, Eye, EyeOff, Zap, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Zap, ArrowLeft, Building2, MapPin } from "lucide-react";
 import { API, AUTH_API } from "@/App";
 
 // ─── Inject fonts + keyframes once ───────────────────────────────────────────
@@ -307,7 +307,7 @@ const LeftPanel = () => (
       flexShrink: 0,
     }}
   >
-    {/* Layer 1 — grid */}
+    {/* Layer 1 - grid */}
     <div
       style={{
         position: "absolute",
@@ -319,7 +319,7 @@ const LeftPanel = () => (
       }}
     />
 
-    {/* Layer 2 — ambient glows */}
+    {/* Layer 2 - ambient glows */}
     <div
       style={{
         position: "absolute",
@@ -330,7 +330,7 @@ const LeftPanel = () => (
       }}
     />
 
-    {/* Layer 3 — grain */}
+    {/* Layer 3 - grain */}
     <div
       style={{
         position: "absolute",
@@ -439,7 +439,7 @@ const LeftPanel = () => (
             margin: 0,
           }}
         >
-          AI-powered diagnostics for Electric 2W, 3W &amp; 4W vehicles —
+          AI-powered diagnostics for Electric 2W, 3W &amp; 4W vehicles -
           turning every failure into reusable enterprise intelligence.
         </p>
       </div>
@@ -525,7 +525,7 @@ const LeftPanel = () => (
         }}
       />
 
-      {/* Stat 3 — live indicator */}
+      {/* Stat 3 - live indicator */}
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div
@@ -569,10 +569,13 @@ export default function Login({ onLogin }) {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
+    orgName: "",
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    city: "",
+    state: "",
   });
 
   // ── Auth handlers (logic unchanged) ────────────────────────────────────────
@@ -656,23 +659,31 @@ export default function Login({ onLogin }) {
     setIsLoading(true);
     setRegisterError("");
     try {
-      const response = await fetch(`${AUTH_API}/auth/register`, {
+      const response = await fetch(`${API}/v1/organizations/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: registerData.name,
-          email: registerData.email,
-          password: registerData.password,
-          role: "customer",
+          name: registerData.orgName,
+          admin_name: registerData.name,
+          admin_email: registerData.email,
+          admin_password: registerData.password,
+          city: registerData.city,
+          state: registerData.state,
         }),
       });
       const data = await response.json();
-      if (response.ok) {
-        toast.success("Account created! Please login.");
-        setRegisterData({ name: "", email: "", password: "", confirmPassword: "" });
-        setActiveTab("login");
+      if (response.ok && data.token) {
+        toast.success("Organization created! Redirecting...");
+        localStorage.setItem("token", data.token);
+        if (data.organization) {
+          localStorage.setItem("organization", JSON.stringify(data.organization));
+        }
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+        navigate("/dashboard");
       } else {
-        const msg = data.detail || "Registration failed";
+        const msg = typeof data.detail === "string" ? data.detail : Array.isArray(data.detail) ? data.detail.map(d => d.msg).join(", ") : "Registration failed";
         setRegisterError(msg);
         toast.error(msg);
       }
@@ -967,10 +978,21 @@ export default function Login({ onLogin }) {
                 }}
               >
                 <FormInput
+                  icon={Building2}
+                  type="text"
+                  id="register-org"
+                  label="Organization Name"
+                  placeholder="My EV Service Center"
+                  value={registerData.orgName}
+                  onChange={(e) => setRegisterData({ ...registerData, orgName: e.target.value })}
+                  required
+                  dataTestId="register-org-input"
+                />
+                <FormInput
                   icon={User}
                   type="text"
                   id="register-name"
-                  label="Full Name"
+                  label="Your Name"
                   placeholder="John Doe"
                   value={registerData.name}
                   onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
@@ -1014,11 +1036,39 @@ export default function Login({ onLogin }) {
                   showToggle
                   dataTestId="register-confirm-input"
                 />
+                <div style={{ display: "flex", gap: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <FormInput
+                      icon={MapPin}
+                      type="text"
+                      id="register-city"
+                      label="City"
+                      placeholder="Mumbai"
+                      value={registerData.city}
+                      onChange={(e) => setRegisterData({ ...registerData, city: e.target.value })}
+                      required
+                      dataTestId="register-city-input"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <FormInput
+                      icon={MapPin}
+                      type="text"
+                      id="register-state"
+                      label="State"
+                      placeholder="Maharashtra"
+                      value={registerData.state}
+                      onChange={(e) => setRegisterData({ ...registerData, state: e.target.value })}
+                      required
+                      dataTestId="register-state-input"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div style={{ marginTop: 24 }}>
                 <CTAButton isLoading={isLoading} dataTestId="register-submit-btn">
-                  CREATE ACCOUNT →
+                  CREATE ORGANIZATION →
                 </CTAButton>
                 <InlineError msg={registerError} />
               </div>

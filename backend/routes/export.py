@@ -35,7 +35,7 @@ class EInvoiceConfig(BaseModel):
     city: str = "New Delhi"
     state_code: str = "07"
     pin_code: str = "110001"
-    email: str = "accounts@battwheels.in"
+    email: str = "support@battwheels.com"
     phone: str = "9876543210"
 
 # Default config (can be updated via settings)

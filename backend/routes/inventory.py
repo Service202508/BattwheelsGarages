@@ -126,9 +126,13 @@ async def list_inventory(request: Request, category: Optional[str] = None, low_s
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
+    org_id = getattr(request.state, "tenant_org_id", None) or request.headers.get("X-Organization-ID")
+    if not org_id:
+        raise HTTPException(status_code=403, detail="Organization context required")
+
     service = get_service()
 
-    query = {}
+    query = {"organization_id": org_id}
     if category:
         query["category"] = category
     if low_stock:

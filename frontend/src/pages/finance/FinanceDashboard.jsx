@@ -109,7 +109,7 @@ export default function FinanceDashboard() {
         </div>
       </div>
 
-      {/* ROW 1 — Cash Position Strip */}
+      {/* ROW 1 - Cash Position Strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Card 1: Total Bank Balance */}
         <Card className="bg-bw-panel border-bw-white/[0.08]">
@@ -200,12 +200,12 @@ export default function FinanceDashboard() {
         </Card>
       </div>
 
-      {/* ROW 2 — Chart + Bank Accounts */}
+      {/* ROW 2 - Chart + Bank Accounts */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* LEFT: Cash Flow Chart (60%) */}
         <Card className="lg:col-span-3 bg-bw-panel border-bw-white/[0.08]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">Cash Flow — Last 6 Months</CardTitle>
+            <CardTitle className="text-base font-medium">Cash Flow - Last 6 Months</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -317,7 +317,7 @@ export default function FinanceDashboard() {
         </Card>
       </div>
 
-      {/* ROW 3 — Three Columns */}
+      {/* ROW 3 - Three Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT: Overdue Bills */}
         <Card className="bg-bw-panel border-bw-white/[0.08] border-l-[3px] border-l-bw-red">

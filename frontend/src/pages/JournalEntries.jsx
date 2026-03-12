@@ -5,10 +5,10 @@ import {
 } from 'lucide-react';
 
 import { API } from "@/App";
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
 
-// Design tokens — using CSS variables
+// Design tokens - using CSS variables
 const colors = {
   pageBg: 'rgb(var(--bw-off-black))',
   cardBg: 'rgb(var(--bw-panel))',
@@ -50,7 +50,7 @@ const entryTypeColors = {
 
 // Format currency
 const formatCurrency = (amount) => {
-  if (!amount && amount !== 0) return '—';
+  if (!amount && amount !== 0) return '-';
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -234,7 +234,7 @@ const EntryLines = ({ lines }) => {
                 {line.account_name}
                 {line.description && (
                   <span style={{ color: colors.muted, marginLeft: '8px', fontSize: '12px' }}>
-                    — {line.description}
+                    - {line.description}
                   </span>
                 )}
               </td>
@@ -246,7 +246,7 @@ const EntryLines = ({ lines }) => {
                 color: line.debit_amount > 0 ? colors.green : colors.muted,
                 fontWeight: line.debit_amount > 0 ? 600 : 400
               }}>
-                {line.debit_amount > 0 ? formatCurrency(line.debit_amount) : '—'}
+                {line.debit_amount > 0 ? formatCurrency(line.debit_amount) : '-'}
               </td>
               <td style={{ 
                 padding: '12px 16px',
@@ -256,7 +256,7 @@ const EntryLines = ({ lines }) => {
                 color: line.credit_amount > 0 ? colors.blue : colors.muted,
                 fontWeight: line.credit_amount > 0 ? 600 : 400
               }}>
-                {line.credit_amount > 0 ? formatCurrency(line.credit_amount) : '—'}
+                {line.credit_amount > 0 ? formatCurrency(line.credit_amount) : '-'}
               </td>
             </tr>
           ))}
@@ -1034,7 +1034,7 @@ const AccountLedgerTab = ({ accounts }) => {
                     {entry.description}
                     {entry.line_description && (
                       <span style={{ color: colors.muted, marginLeft: '8px', fontSize: '12px' }}>
-                        — {entry.line_description}
+                        - {entry.line_description}
                       </span>
                     )}
                   </td>
@@ -1045,7 +1045,7 @@ const AccountLedgerTab = ({ accounts }) => {
                     fontSize: '13px',
                     color: entry.debit_amount > 0 ? colors.green : colors.muted
                   }}>
-                    {entry.debit_amount > 0 ? formatCurrency(entry.debit_amount) : '—'}
+                    {entry.debit_amount > 0 ? formatCurrency(entry.debit_amount) : '-'}
                   </td>
                   <td style={{ 
                     padding: '12px 16px',
@@ -1054,7 +1054,7 @@ const AccountLedgerTab = ({ accounts }) => {
                     fontSize: '13px',
                     color: entry.credit_amount > 0 ? colors.blue : colors.muted
                   }}>
-                    {entry.credit_amount > 0 ? formatCurrency(entry.credit_amount) : '—'}
+                    {entry.credit_amount > 0 ? formatCurrency(entry.credit_amount) : '-'}
                   </td>
                   <td style={{ 
                     padding: '12px 16px',
@@ -1176,13 +1176,13 @@ const JournalEntries = () => {
             const accountsData = await results[1].json();
             setAccounts(accountsData.accounts || []);
           }
-        } catch (e) { /* accounts/chart may fail — non-blocking */ }
+        } catch (e) { /* accounts/chart may fail - non-blocking */ }
         try {
           if (results[2].ok) {
             const trialData = await results[2].json();
             setStats(prev => ({ ...prev, trialBalance: trialData }));
           }
-        } catch (e) { /* trial-balance may fail — non-blocking */ }
+        } catch (e) { /* trial-balance may fail - non-blocking */ }
       }
 
       // API returns paginated {data: [...], pagination: {...}} format
@@ -1414,7 +1414,7 @@ const JournalEntries = () => {
                   width: '140px'
                 }}
               />
-              <span style={{ color: colors.muted }}>—</span>
+              <span style={{ color: colors.muted }}>-</span>
               <input
                 type="date"
                 value={endDate}
@@ -1672,7 +1672,7 @@ const JournalEntries = () => {
                         fontSize: '12px',
                         color: entry.source_document_id ? colors.blue : colors.muted
                       }}>
-                        {entry.source_document_type ? `${entry.source_document_type.toUpperCase()}` : '—'}
+                        {entry.source_document_type ? `${entry.source_document_type.toUpperCase()}` : '-'}
                       </td>
                       <td style={{ 
                         padding: '14px 16px',

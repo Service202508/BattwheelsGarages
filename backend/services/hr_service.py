@@ -163,7 +163,10 @@ class HRService:
         # Generate employee code if not provided
         employee_code = data.get("employee_code")
         if not employee_code:
-            count = await self.db.employees.count_documents({})
+            count = await self.db.employees.count_documents(
+                {"organization_id": data.get("organization_id")} 
+                if data.get("organization_id") else {}
+            )
             employee_code = f"EMP{str(count + 1).zfill(4)}"
         
         # Create user account if password is provided

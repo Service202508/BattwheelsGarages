@@ -1,10 +1,7 @@
-# Environment files (NEVER commit real credentials)
-.env
-*.env
-*.env.*
+# Environment files
+!backend/.env
+!frontend/.env
 !.env.example
-backend/.env
-frontend/.env
 
 # Dependencies
 node_modules/
@@ -69,328 +66,104 @@ chainlit.md
 .chainlit
 .ipynb_checkpoints/
 .vercel
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
 
 # Test artifacts
 test_reports/
 audit_results_v2.json
 CTO_REAUDIT_REPORT.md
 .emergent/
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
--e 
 # Environment files
-*.env
-*.env.*
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
+# Environment files
 -e 
 # Environment files
 *.env

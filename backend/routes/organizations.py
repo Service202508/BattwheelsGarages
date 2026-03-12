@@ -285,7 +285,7 @@ async def signup_organization(data: OrganizationCreate):
         from core.subscriptions import get_subscription_service, SubscriptionCreate, PlanCode, BillingCycle
         sub_service = get_subscription_service()
         
-        # Create subscription with trial
+        # Create subscription with trial (Starter features during trial)
         sub_data = SubscriptionCreate(
             plan_code=PlanCode.STARTER,
             billing_cycle=BillingCycle.MONTHLY,
@@ -293,6 +293,13 @@ async def signup_organization(data: OrganizationCreate):
         )
         subscription = await sub_service.create_subscription(org_id, sub_data, user_id)
         logger.info(f"Created subscription {subscription.subscription_id} for org {org_id}")
+        
+        # Restore plan_type to "free_trial" - subscription service overwrites to "starter"
+        # but the org should show "free_trial" until trial expires or user upgrades
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {"plan_type": "free_trial"}}
+        )
     except Exception as e:
         logger.warning(f"Failed to create subscription: {e}")
     

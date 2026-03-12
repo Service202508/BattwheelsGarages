@@ -299,7 +299,7 @@ export default function DataManagement() {
               <div>
                 <p className="text-sm text-muted-foreground">Test Records</p>
                 <p className="text-2xl font-bold text-bw-red">
-                  {sanitizationReport?.total_test_records || "—"}
+                  {sanitizationReport?.total_test_records || "-"}
                 </p>
               </div>
               <Trash2 className="h-8 w-8 text-bw-red opacity-80" />
@@ -487,7 +487,7 @@ export default function DataManagement() {
                           <TableCell className="text-bw-green">{result.records_deleted}</TableCell>
                           <TableCell>{result.records_kept}</TableCell>
                           <TableCell className="max-w-xs truncate">
-                            {result.sample_deleted?.slice(0, 2).map(s => s.name).join(", ") || "—"}
+                            {result.sample_deleted?.slice(0, 2).map(s => s.name).join(", ") || "-"}
                           </TableCell>
                         </TableRow>
                       ))}

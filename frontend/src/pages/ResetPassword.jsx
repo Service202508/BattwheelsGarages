@@ -43,7 +43,7 @@ export default function ResetPassword() {
           const data = await res.clone().json();
           errorMsg = data.detail;
         } catch {
-          // Body already consumed by Sentry instrumentation — use status-based fallback
+          // Body already consumed by Sentry instrumentation - use status-based fallback
           if (res.status === 400) errorMsg = "Invalid or expired reset link";
           else if (res.status === 422) errorMsg = "Invalid input";
           else errorMsg = `Request failed (${res.status})`;
@@ -62,7 +62,7 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-bw-black p-4">
         <Card className="w-full max-w-md border-white/10 bg-card/80">
           <CardContent className="pt-6 text-center space-y-4">
-            <p className="text-destructive">Invalid reset link — no token provided.</p>
+            <p className="text-destructive">Invalid reset link - no token provided.</p>
             <Button variant="outline" onClick={() => navigate("/login")} data-testid="back-to-login-btn">
               <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
             </Button>

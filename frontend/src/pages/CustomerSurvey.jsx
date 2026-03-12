@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API = `${window.location.origin}/api/v1`;
 
 const RATING_LABELS = { 1: "Poor", 2: "Fair", 3: "Good", 4: "Very Good", 5: "Excellent" };

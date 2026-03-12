@@ -625,7 +625,7 @@ export default function PaymentsReceived() {
                             {payment.invoice_numbers?.length > 0 ? (
                               payment.invoice_numbers.join(", ")
                             ) : (
-                              <span className="text-bw-white/[0.45]">—</span>
+                              <span className="text-bw-white/[0.45]">-</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -1095,7 +1095,7 @@ export default function PaymentsReceived() {
                 </div>
                 <div>
                   <p className="text-bw-white/[0.45]">Reference #</p>
-                  <p className="font-medium">{selectedPayment.reference_number || "—"}</p>
+                  <p className="font-medium">{selectedPayment.reference_number || "-"}</p>
                 </div>
               </div>
 

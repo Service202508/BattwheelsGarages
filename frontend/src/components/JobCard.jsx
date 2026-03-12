@@ -74,7 +74,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const [closeResolution, setCloseResolution] = useState("");
   const [closeConfirmedFault, setCloseConfirmedFault] = useState("");
   
-  // EVFI Panel state — hidden by default on mobile (<768px)
+  // EVFI Panel state - hidden by default on mobile (<768px)
   const [efiPanelOpen, setEfiPanelOpen] = useState(() => window.innerWidth >= 768);
   const [efiMode, setEfiMode] = useState("guidance"); // "guidance" or "legacy"
   
@@ -130,7 +130,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       });
       if (response.ok) {
         const data = await response.json();
-        // API returns {data: [...], pagination: {...}} — extract the array
+        // API returns {data: [...], pagination: {...}} - extract the array
         setInventory(Array.isArray(data) ? data : (data.data || data.items || data.inventory || []));
       }
     } catch (error) {
@@ -845,7 +845,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="close-confirmed-fault" className="text-slate-300">
-                    Confirmed Fault <span className="text-slate-500 font-normal">(optional — trains EVFI predictions)</span>
+                    Confirmed Fault <span className="text-slate-500 font-normal">(optional - trains EVFI predictions)</span>
                   </Label>
                   <Input
                     id="close-confirmed-fault"

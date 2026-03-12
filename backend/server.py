@@ -355,17 +355,31 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' https://*.emergentagent.com https://*.emergent.host https://*.battwheels.com; frame-ancestors 'none';"
     return response
 
-_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "https://battwheels.com,https://app.battwheels.com").split(",") if o.strip()]
+_cors_env = os.environ.get("CORS_ORIGINS", "")
 _environment = os.environ.get("ENVIRONMENT", "development")
-if _environment != "production":
-    _cors_origins += ["http://localhost:3000", "http://localhost:3001"]
-    # Emergent preview URL only in non-production environments
-    _preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-    if _preview_url and _preview_url not in _cors_origins:
-        _cors_origins.append(_preview_url)
+
+# If CORS_ORIGINS is wildcard, allow all origins
+if _cors_env.strip() == "*":
+    all_origins = ["*"]
 else:
-    # Production: ensure Emergent hosting domain is allowed
+    REQUIRED_ORIGINS = [
+        "https://battwheels.com",
+        "https://www.battwheels.com",
+        "https://app.battwheels.com",
+    ]
+    extra = [o.strip() for o in _cors_env.split(",") if o.strip()]
+    if _environment != "production":
+        extra += ["http://localhost:3000", "http://localhost:3001"]
     _backend_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-    if _backend_url and _backend_url not in _cors_origins:
-        _cors_origins.append(_backend_url)
-app.add_middleware(CORSMiddleware, allow_credentials=True, allow_origins=_cors_origins, allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS","HEAD"], allow_headers=["Authorization","Content-Type","X-Organization-ID","X-Requested-With","Accept","X-CSRF-Token"])
+    if _backend_url:
+        extra.append(_backend_url)
+    all_origins = list(set(REQUIRED_ORIGINS + extra))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=all_origins,
+    allow_origin_regex=r"https://.*\.emergent\.host$|https://.*\.emergentagent\.com$",
+    allow_credentials=True,
+    allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS","HEAD"],
+    allow_headers=["Authorization","Content-Type","X-Organization-ID","X-Requested-With","Accept","X-CSRF-Token"],
+)

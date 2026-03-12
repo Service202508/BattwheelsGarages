@@ -338,7 +338,7 @@ export default function Register({ onLogin }) {
                 Garage Details
               </h2>
               <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "28px" }}>
-                Step 1 of 3 — Tell us about your service center
+                Step 1 of 3 - Tell us about your service center
               </p>
 
               <div style={{ marginBottom: "16px" }}>
@@ -440,7 +440,7 @@ export default function Register({ onLogin }) {
                 Your Account
               </h2>
               <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "28px" }}>
-                Step 2 of 3 — Create your login credentials
+                Step 2 of 3 - Create your login credentials
               </p>
 
               <div style={{ marginBottom: "16px" }}>
@@ -542,7 +542,7 @@ export default function Register({ onLogin }) {
                 Confirm & Launch
               </h2>
               <p style={{ fontSize: "13px", color: "var(--bw-muted)", marginBottom: "20px" }}>
-                Step 3 of 3 — Review your details
+                Step 3 of 3 - Review your details
               </p>
 
               {/* Summary card */}

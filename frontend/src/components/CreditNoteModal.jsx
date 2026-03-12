@@ -120,7 +120,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
             Issue Credit Note
           </DialogTitle>
           <DialogDescription>
-            Against Invoice {invoice?.invoice_number} — {invoice?.customer_name}
+            Against Invoice {invoice?.invoice_number} - {invoice?.customer_name}
           </DialogDescription>
         </DialogHeader>
 
@@ -136,7 +136,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
             </div>
             {alreadyCredited > 0 && (
               <div className="text-bw-orange text-xs">
-                Already credited: {formatCurrency(alreadyCredited)} — Remaining: {formatCurrency(remaining)}
+                Already credited: {formatCurrency(alreadyCredited)} - Remaining: {formatCurrency(remaining)}
               </div>
             )}
           </div>
@@ -242,7 +242,7 @@ export function CreditNoteCreateModal({ open, onOpenChange, invoice, headers, on
             data-testid="cn-submit-btn"
           >
             {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Minus className="h-4 w-4 mr-2" />}
-            Issue Credit Note — {formatCurrency(total)}
+            Issue Credit Note - {formatCurrency(total)}
           </Button>
         </DialogFooter>
       </DialogContent>

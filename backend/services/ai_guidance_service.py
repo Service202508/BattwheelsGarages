@@ -19,6 +19,15 @@ from services.feature_flags import FeatureFlagService
 
 logger = logging.getLogger(__name__)
 
+# Daily EVFI usage limits by plan
+EFI_DAILY_LIMITS = {
+    "free": 5,
+    "free_trial": 20,
+    "starter": 20,
+    "professional": 100,
+    "enterprise": -1,  # unlimited
+}
+
 
 class GuidanceMode(str, Enum):
     QUICK = "quick"  # 60-90 seconds read

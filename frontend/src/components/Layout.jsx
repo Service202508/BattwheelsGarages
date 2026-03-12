@@ -615,7 +615,7 @@ export default function Layout({ children, user, onLogout, emailVerified = true 
           </div>
         )}
 
-        {/* Page Content — wrapped in FeatureGateBanner for plan-gated routes */}
+        {/* Page Content - wrapped in FeatureGateBanner for plan-gated routes */}
         <div className="p-4 pb-[76px] lg:p-8 lg:pb-8">
           {lockedModule ? (
             <UpgradePrompt

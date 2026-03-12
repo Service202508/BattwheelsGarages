@@ -176,7 +176,7 @@ export default function HRDashboard({ user }) {
       <Card className="bg-zinc-900/60 border-zinc-800" data-testid="hr-payroll-status">
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2">
-            <Wallet className="w-4 h-4" /> Payroll Status — {currentMonth}
+            <Wallet className="w-4 h-4" /> Payroll Status - {currentMonth}
           </CardTitle>
           <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate("/payroll")} data-testid="run-payroll-btn">
             Run Payroll <ArrowRight className="w-3 h-3 ml-1" />
@@ -202,9 +202,9 @@ export default function HRDashboard({ user }) {
                     const processed = payRecord?.processed_at || payRecord?.status === "processed";
                     return (
                       <tr key={emp.employee_id || i} className="border-b border-zinc-800/30">
-                        <td className="py-2 text-zinc-200">{emp.full_name || emp.name || "—"}</td>
-                        <td className="py-2 text-zinc-400">{emp.department || "—"}</td>
-                        <td className="py-2 text-zinc-200 text-right font-mono">{emp.salary ? `₹${(typeof emp.salary === 'object' ? (emp.salary.basic || 0) + (emp.salary.hra || 0) + (emp.salary.da || 0) : Number(emp.salary)).toLocaleString("en-IN")}` : "—"}</td>
+                        <td className="py-2 text-zinc-200">{emp.full_name || emp.name || "-"}</td>
+                        <td className="py-2 text-zinc-400">{emp.department || "-"}</td>
+                        <td className="py-2 text-zinc-200 text-right font-mono">{emp.salary ? `₹${(typeof emp.salary === 'object' ? (emp.salary.basic || 0) + (emp.salary.hra || 0) + (emp.salary.da || 0) : Number(emp.salary)).toLocaleString("en-IN")}` : "-"}</td>
                         <td className="py-2 text-center">
                           <Badge variant="outline" className={`text-xs ${processed ? "text-emerald-400 border-emerald-400/30" : "text-amber-400 border-amber-400/30"}`}>
                             {processed ? "Processed" : "Pending"}

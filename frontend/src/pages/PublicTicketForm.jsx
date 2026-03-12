@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API = `${window.location.origin}/api`;
 
 // Resolve the workshop slug from the current URL:

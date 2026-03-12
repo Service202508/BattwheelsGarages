@@ -20,9 +20,13 @@ Usage in test files:
 
 import os
 import re
+from pathlib import Path
 import pymongo
 import pytest
 import requests
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # ── Name patterns for tests that intentionally test auth denial ──
 _NO_AUTH_PATTERNS = re.compile(
@@ -50,7 +54,7 @@ _ORIGINAL_SESSION_REQUEST = requests.Session.request
 def _db():
     """Shared MongoDB client for the test session."""
     mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-    db_name = os.environ.get("DB_NAME", "battwheels_dev")
+    db_name = os.environ.get("TEST_DB_NAME", "battwheels_test")
     client = pymongo.MongoClient(mongo_url)
     db = client[db_name]
     yield db
@@ -69,14 +73,69 @@ def _clear_login_attempts_session(_db):
 def _ensure_test_user_passwords(_db):
     """Ensure key test user passwords are correct at session start.
     
+    Creates the dev test user and org if they don't exist.
     Tests may corrupt passwords via change-password endpoints.
     This fixture resets them to known-good values.
     """
     import bcrypt
     import time
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    # Ensure dev org exists
+    _db.organizations.update_one(
+        {"organization_id": "dev-internal-testing-001"},
+        {"$setOnInsert": {
+            "organization_id": "dev-internal-testing-001",
+            "name": "Dev Internal Testing",
+            "is_active": True,
+            "plan_type": "professional",
+            "created_at": now,
+        }},
+        upsert=True,
+    )
+
+    # Ensure dev user exists with correct password
+    dev_hash = bcrypt.hashpw("DevTest@123".encode(), bcrypt.gensalt()).decode()
+    dev_user_id = "user_dev_test_001"
+    existing_dev = _db.users.find_one({"email": "dev@battwheels.internal"})
+    if existing_dev:
+        dev_user_id = existing_dev.get("user_id", dev_user_id)
+        _db.users.update_one(
+            {"email": "dev@battwheels.internal"},
+            {"$set": {"password_hash": dev_hash, "pwd_version": time.time()}}
+        )
+    else:
+        _db.users.insert_one({
+            "user_id": dev_user_id,
+            "email": "dev@battwheels.internal",
+            "name": "Dev Admin",
+            "role": "owner",
+            "organization_id": "dev-internal-testing-001",
+            "password_hash": dev_hash,
+            "is_active": True,
+            "pwd_version": time.time(),
+            "created_at": now,
+        })
+
+    # Ensure dev user org membership exists
+    _db.organization_users.update_one(
+        {"user_id": dev_user_id, "organization_id": "dev-internal-testing-001"},
+        {"$setOnInsert": {
+            "user_id": dev_user_id,
+            "email": "dev@battwheels.internal",
+            "organization_id": "dev-internal-testing-001",
+            "role": "owner",
+            "status": "active",
+            "joined_at": now,
+        }},
+        upsert=True,
+    )
+
+    # Reset passwords for other known test users (if they exist)
     users = {
         "demo@voltmotors.in": "Demo@12345",
-        "dev@battwheels.internal": "DevTest@123",
         "platform-admin@battwheels.in": "DevTest@123",
         "admin@battwheels.in": "DevTest@123",
     }
@@ -87,8 +146,8 @@ def _ensure_test_user_passwords(_db):
             {"$set": {"password_hash": new_hash, "pwd_version": time.time()}}
         )
     yield
-    # Reset passwords again after tests (in case tests changed them)
-    for email, password in users.items():
+    # Reset passwords again after tests
+    for email, password in {**users, "dev@battwheels.internal": "DevTest@123"}.items():
         new_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         _db.users.update_one(
             {"email": email},

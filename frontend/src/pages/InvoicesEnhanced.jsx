@@ -1671,7 +1671,7 @@ export default function InvoicesEnhanced() {
                         {/* Validation Errors */}
                         {irnValidationErrors.length > 0 && (
                           <div className="mt-4 p-3 bg-bw-red/[0.08] border border-bw-red/25 border-l-[3px] border-l-bw-red rounded">
-                            <h5 className="font-medium text-bw-red text-sm">Cannot Generate IRN — Validation Failed</h5>
+                            <h5 className="font-medium text-bw-red text-sm">Cannot Generate IRN - Validation Failed</h5>
                             <ul className="mt-2 space-y-1">
                               {irnValidationErrors.map((error, idx) => (
                                 <li key={idx} className="text-sm text-bw-white/[0.65] flex items-start gap-2">
@@ -1905,7 +1905,7 @@ export default function InvoicesEnhanced() {
                           >
                             <div>
                               <p className="font-medium text-bw-orange">{cn.credit_note_number}</p>
-                              <p className="text-xs text-bw-white/[0.45]">{cn.created_at?.slice(0, 10)} — {cn.reason}</p>
+                              <p className="text-xs text-bw-white/[0.45]">{cn.created_at?.slice(0, 10)} - {cn.reason}</p>
                             </div>
                             <div className="text-right">
                               <p className="font-medium">{formatCurrency(cn.total)}</p>
@@ -2266,7 +2266,7 @@ export default function InvoicesEnhanced() {
                             <div className="flex-1 min-w-0">
                               <p className="text-sm text-bw-white/85">
                                 <span className="font-medium" style={{ color: style.color }}>{style.label}</span>
-                                {h.details && <span className="text-bw-white/[0.55]"> — {h.details}</span>}
+                                {h.details && <span className="text-bw-white/[0.55]"> - {h.details}</span>}
                               </p>
                               {h.user && (
                                 <p className="text-xs text-bw-white/35">by {h.user}</p>

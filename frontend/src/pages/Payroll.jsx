@@ -174,7 +174,7 @@ export default function Payroll({ user }) {
       const data = await response.json();
       
       if (response.ok) {
-        toast.success(`TDS deposited — Challan ${challanForm.challan_number} recorded`);
+        toast.success(`TDS deposited - Challan ${challanForm.challan_number} recorded`);
         setShowChallanModal(false);
         setChallanForm({ challan_number: "", bsr_code: "", deposit_date: new Date().toISOString().split("T")[0], amount: 0, payment_mode: "net_banking" });
         fetchTdsChallans();

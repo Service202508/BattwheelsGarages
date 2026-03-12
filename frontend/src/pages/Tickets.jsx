@@ -228,9 +228,9 @@ export default function Tickets({ user }) {
 
   const paginatedTickets = tickets;
 
-  // SLA cell — defined inside component to avoid babel-metadata-plugin issues
+  // SLA cell - defined inside component to avoid babel-metadata-plugin issues
   const SLACell = ({ ticket }) => {
-    if (!ticket.sla_resolution_due_at) return <span style={{ color: "rgb(var(--bw-white) / 0.25)" }}>—</span>;
+    if (!ticket.sla_resolution_due_at) return <span style={{ color: "rgb(var(--bw-white) / 0.25)" }}>-</span>;
     const now = new Date();
     const resDue = new Date(ticket.sla_resolution_due_at);
     const minsRemaining = (resDue - now) / 60000;
@@ -387,7 +387,7 @@ export default function Tickets({ user }) {
         </div>
       </div>
 
-      {/* Tickets — Table (desktop) / Cards (mobile) */}
+      {/* Tickets - Table (desktop) / Cards (mobile) */}
       <Card>
         <CardContent className="p-0">
           {loading ? (
@@ -500,7 +500,7 @@ export default function Tickets({ user }) {
                     {/* Middle: Customer + Vehicle + Title */}
                     <p className="font-semibold text-bw-white text-sm mb-0.5">{ticket.customer_name || "N/A"}</p>
                     <p className="text-xs text-bw-white/[0.45] mb-1">
-                      {ticket.vehicle_number || "—"} {ticket.vehicle_type ? `· ${ticket.vehicle_type.replace("_", " ")}` : ""}
+                      {ticket.vehicle_number || "-"} {ticket.vehicle_type ? `· ${ticket.vehicle_type.replace("_", " ")}` : ""}
                     </p>
                     <p className="text-sm text-bw-white/70 truncate mb-3">{ticket.title}</p>
 

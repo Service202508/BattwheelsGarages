@@ -66,14 +66,14 @@ const LEAD_STATUS_STYLES = {
 
 const LEAD_STATUS_LABELS = {
   new: "New", called: "Called", qualified: "Qualified",
-  closed_won: "Closed — Won", closed_lost: "Closed — Lost",
+  closed_won: "Closed - Won", closed_lost: "Closed - Lost",
 };
 
 function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave }) {
   const [notes, setNotes] = useState(lead.notes || "");
   const fmtDate = (d) => d
     ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
-    : "—";
+    : "-";
 
   return (
     <>
@@ -312,7 +312,7 @@ export default function PlatformAdmin({ user, onLogout }) {
 
   const fmtDate = (d) => d
     ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
-    : "—";
+    : "-";
 
   const fmtAgo = (iso) => {
     if (!iso) return null;
@@ -350,7 +350,7 @@ export default function PlatformAdmin({ user, onLogout }) {
             </div>
             <div>
               <h1 className="font-semibold text-white text-sm">Platform Admin</h1>
-              <p className="text-xs text-bw-white/35">Battwheels OS — Operator Dashboard</p>
+              <p className="text-xs text-bw-white/35">Battwheels OS - Operator Dashboard</p>
             </div>
             {(() => {
               const env = backendEnv || process.env.REACT_APP_ENVIRONMENT || "production";
@@ -482,8 +482,8 @@ export default function PlatformAdmin({ user, onLogout }) {
                       fontWeight: 600,
                     }}>
                       {auditResult.failed === 0
-                        ? `✅ ${auditResult.passed}/${auditResult.total} — All systems operational`
-                        : `⚠️ ${auditResult.passed}/${auditResult.total} — ${auditResult.failed} failure${auditResult.failed !== 1 ? "s" : ""} detected`}
+                        ? `✅ ${auditResult.passed}/${auditResult.total} - All systems operational`
+                        : `⚠️ ${auditResult.passed}/${auditResult.total} - ${auditResult.failed} failure${auditResult.failed !== 1 ? "s" : ""} detected`}
                     </p>
                     <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "rgb(var(--bw-white) / 0.40)", margin: "4px 0 0 0" }}>
                       Completed in {auditResult.duration_seconds}s · {new Date(auditResult.timestamp).toLocaleTimeString()}
@@ -538,7 +538,7 @@ export default function PlatformAdmin({ user, onLogout }) {
             <StatCard icon={Building2} label="Total Organisations" value={metrics.total_organizations} color="emerald" />
             <StatCard icon={CheckCircle} label="Active" value={metrics.active_organizations} sub={`+${metrics.new_this_month} this month`} color="blue" />
             <StatCard icon={Users} label="Platform Users" value={metrics.total_users} color="amber" />
-            <StatCard icon={IndianRupee} label="MRR" value={health ? fmtINR(health.total_mrr) : "—"} sub="Monthly Recurring Revenue" color="volt" />
+            <StatCard icon={IndianRupee} label="MRR" value={health ? fmtINR(health.total_mrr) : "-"} sub="Monthly Recurring Revenue" color="volt" />
           </div>
         )}
 
@@ -727,7 +727,7 @@ export default function PlatformAdmin({ user, onLogout }) {
               {/* Trial pipeline */}
               <SectionCard title={`Trial Pipeline (${health.trial_pipeline.count})`} icon={TrendingUp} iconColor="text-amber-400">
                 {health.trial_pipeline.count === 0 ? (
-                  <p className="text-sm text-bw-white/35">No free/trial orgs — all customers are on paid plans.</p>
+                  <p className="text-sm text-bw-white/35">No free/trial orgs - all customers are on paid plans.</p>
                 ) : (
                   <div className="space-y-2">
                     {health.trial_pipeline.orgs.map((org, i) => (
@@ -746,7 +746,7 @@ export default function PlatformAdmin({ user, onLogout }) {
               {/* Churn risk */}
               <SectionCard title={`Churn Risk (${health.churn_risk.count})`} icon={AlertTriangle} iconColor="text-red-400">
                 {health.churn_risk.count === 0 ? (
-                  <p className="text-sm text-bw-white/35">No orgs at risk — all have recent activity.</p>
+                  <p className="text-sm text-bw-white/35">No orgs at risk - all have recent activity.</p>
                 ) : (
                   <div className="space-y-2">
                     {health.churn_risk.orgs.map((org, i) => (
@@ -777,7 +777,7 @@ export default function PlatformAdmin({ user, onLogout }) {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-white">{org.name}</p>
-                          <p className="text-xs text-bw-white/35">{org.email || "—"}</p>
+                          <p className="text-xs text-bw-white/35">{org.email || "-"}</p>
                         </div>
                       </div>
                       <div className="text-right">

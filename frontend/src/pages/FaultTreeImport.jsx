@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_BASE = window.location.origin;
 
 const FaultTreeImport = () => {

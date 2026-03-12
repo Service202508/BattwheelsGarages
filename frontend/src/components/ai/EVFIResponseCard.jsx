@@ -91,7 +91,7 @@ function ClassificationBadge({ classification }) {
 }
 
 /**
- * Shared EVFI Response Card — used by EVFIGuidancePanel and TechnicianAIAssistant.
+ * Shared EVFI Response Card - used by EVFIGuidancePanel and TechnicianAIAssistant.
  * Renders the structured, branded EVFI diagnostic response.
  */
 export default function EFIResponseCard({
@@ -172,8 +172,8 @@ export default function EFIResponseCard({
           </div>
           <div className="space-y-1.5">
             {parsed.steps.map((step, i) => {
-              // Try to split "Action — Expected: Result"
-              const parts = step.split(/\s*—\s*Expected:\s*/i);
+              // Try to split "Action - Expected: Result"
+              const parts = step.split(/\s*-\s*Expected:\s*/i);
               return (
                 <div key={i} className="flex items-start gap-2 sm:gap-3 px-3 py-2 sm:px-4 sm:py-3 bg-slate-800/60 rounded-lg border border-slate-700/50">
                   <span className="w-6 h-6 rounded-full bg-[#CBFF00]/10 text-[#CBFF00] text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">

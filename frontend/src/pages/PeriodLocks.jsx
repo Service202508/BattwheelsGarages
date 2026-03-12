@@ -181,7 +181,7 @@ export default function PeriodLocks({ user }) {
                     </td>
                     <td className="px-4 py-3 text-bw-white/70">{lock.locked_by_name || lock.locked_by}</td>
                     <td className="px-4 py-3 text-bw-white/50">{new Date(lock.locked_at).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-bw-white/50">{lock.lock_reason || '—'}</td>
+                    <td className="px-4 py-3 text-bw-white/50">{lock.lock_reason || '-'}</td>
                     <td className="px-4 py-3">
                       <Badge className="bg-red-500/15 text-red-400 border-0 text-[10px] uppercase tracking-wider">
                         <Lock className="w-3 h-3 mr-1" /> Locked

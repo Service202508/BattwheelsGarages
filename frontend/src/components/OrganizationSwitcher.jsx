@@ -3,7 +3,7 @@ import { Building2, ChevronDown, Check, Plus, Settings, Users, Shield } from 'lu
 import { toast } from 'sonner';
 import { useOrganization } from '@/App';
 
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
 
 const PLAN_BADGE = {
@@ -18,7 +18,7 @@ function getPlanBadge(planType) {
 }
 
 const OrganizationSwitcher = ({ onSwitch, user }) => {
-  // ── ALL HOOKS FIRST — no conditionals before this block ─────────────────────
+  // ── ALL HOOKS FIRST - no conditionals before this block ─────────────────────
   const currentOrg = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const [organizations, setOrganizations] = useState([]);

@@ -1,19 +1,19 @@
 #!/bin/bash
-# Battwheels OS - Startup Script
-# Ensures all system dependencies are installed before backend starts.
-# This script handles dependencies that cannot be committed to the container image
-# and must be installed on each new fork/deployment.
+# Battwheels OS - Production Startup Script
+# This script is the container entrypoint for production deployments.
+# It checks dependencies and then starts supervisord to manage all services.
 
-set -e
+echo "[startup.sh] Starting Battwheels OS..."
 
-echo "[startup.sh] Installing WeasyPrint PDF generation dependencies..."
-apt-get install -y --quiet \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libpangoft2-1.0-0 \
-    libharfbuzz0b \
-    libcairo2 \
-    libgdk-pixbuf2.0-0 \
-    2>&1 | tail -3
+# Ensure log directory exists
+mkdir -p /var/log/supervisor
 
-echo "[startup.sh] WeasyPrint dependencies installed. PDF generation ready."
+# Check WeasyPrint PDF generation dependencies (non-fatal)
+echo "[startup.sh] Checking WeasyPrint PDF generation dependencies..."
+dpkg -l libpango-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libharfbuzz0b >/dev/null 2>&1 && \
+    echo "[startup.sh] WeasyPrint dependencies already installed." || \
+    echo "[startup.sh] Some WeasyPrint dependencies may be missing (non-fatal)."
+
+# Start supervisord as the main process (foreground mode via nodaemon=true)
+echo "[startup.sh] Starting supervisord..."
+exec /usr/bin/supervisord -c /app/supervisord.prod.conf

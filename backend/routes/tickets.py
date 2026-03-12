@@ -64,6 +64,8 @@ class TicketCreateRequest(BaseModel):
     vehicle_make: Optional[str] = None
     vehicle_model: Optional[str] = None
     vehicle_number: Optional[str] = None
+    vehicle_category: Optional[str] = None
+    vehicle_year: Optional[int] = None
     customer_id: Optional[str] = None
     customer_name: Optional[str] = None
     customer_type: str = "individual"

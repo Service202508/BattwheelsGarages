@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Download, Calendar, FileText, Check, X, AlertTriangle } from 'lucide-react';
 
 import { API } from "@/App";
-// HARDCODED for production — Emergent overrides env vars during build
+// HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
 
-// Design tokens — using CSS variables
+// Design tokens - using CSS variables
 const colors = {
   pageBg: 'rgb(var(--bw-off-black))',
   cardBg: 'rgb(var(--bw-panel))',
@@ -25,7 +25,7 @@ const colors = {
 
 // Format currency
 const formatCurrency = (amount) => {
-  if (!amount && amount !== 0) return '—';
+  if (!amount && amount !== 0) return '-';
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -247,7 +247,7 @@ const TrialBalance = () => {
                 color: colors.red,
                 marginTop: '4px'
               }}>
-                Difference: {formatCurrency(Math.abs(difference))} — Review journal entries for errors
+                Difference: {formatCurrency(Math.abs(difference))} - Review journal entries for errors
               </div>
             </div>
           </>
@@ -365,7 +365,7 @@ const TrialBalance = () => {
                           fontSize: '13px',
                           color: account.debit_balance > 0 ? colors.white : colors.muted
                         }}>
-                          {account.debit_balance > 0 ? formatCurrency(account.debit_balance) : '—'}
+                          {account.debit_balance > 0 ? formatCurrency(account.debit_balance) : '-'}
                         </td>
                         <td style={{ 
                           padding: '12px 20px',
@@ -374,7 +374,7 @@ const TrialBalance = () => {
                           fontSize: '13px',
                           color: account.credit_balance > 0 ? colors.white : colors.muted
                         }}>
-                          {account.credit_balance > 0 ? formatCurrency(account.credit_balance) : '—'}
+                          {account.credit_balance > 0 ? formatCurrency(account.credit_balance) : '-'}
                         </td>
                       </tr>
                     ))}
@@ -399,7 +399,7 @@ const TrialBalance = () => {
                         color: colors.white,
                         fontWeight: 700
                       }}>
-                        {group.totalDebit > 0 ? formatCurrency(group.totalDebit) : '—'}
+                        {group.totalDebit > 0 ? formatCurrency(group.totalDebit) : '-'}
                       </td>
                       <td style={{ 
                         padding: '10px 20px',
@@ -409,7 +409,7 @@ const TrialBalance = () => {
                         color: colors.white,
                         fontWeight: 700
                       }}>
-                        {group.totalCredit > 0 ? formatCurrency(group.totalCredit) : '—'}
+                        {group.totalCredit > 0 ? formatCurrency(group.totalCredit) : '-'}
                       </td>
                     </tr>
                   </React.Fragment>
@@ -468,8 +468,8 @@ const TrialBalance = () => {
                   color: isBalanced ? colors.green : colors.red
                 }}>
                   {isBalanced 
-                    ? '✓ DEBITS = CREDITS — TRIAL BALANCE VERIFIED' 
-                    : `✗ DIFFERENCE: ${formatCurrency(Math.abs(difference))} — REQUIRES INVESTIGATION`
+                    ? '✓ DEBITS = CREDITS - TRIAL BALANCE VERIFIED' 
+                    : `✗ DIFFERENCE: ${formatCurrency(Math.abs(difference))} - REQUIRES INVESTIGATION`
                   }
                 </td>
               </tr>

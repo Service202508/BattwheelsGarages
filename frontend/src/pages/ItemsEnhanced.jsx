@@ -982,7 +982,7 @@ export default function ItemsEnhanced() {
             </div>
           )}
 
-          {/* Items — Table (desktop) / Cards (mobile) */}
+          {/* Items - Table (desktop) / Cards (mobile) */}
           {loading ? (
             <div className="text-center py-8">Loading...</div>
           ) : items.length === 0 ? (
@@ -1121,7 +1121,7 @@ export default function ItemsEnhanced() {
                               {itemTypeLabels[item.item_type] || item.item_type}
                             </Badge>
                           </div>
-                          <p className="text-xs text-bw-white/35 font-mono mt-0.5">{item.sku || '—'}</p>
+                          <p className="text-xs text-bw-white/35 font-mono mt-0.5">{item.sku || '-'}</p>
                         </div>
                       </div>
 

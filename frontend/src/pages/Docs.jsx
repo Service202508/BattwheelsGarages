@@ -11,19 +11,19 @@ const sections = [
     label: '01 · Getting Started',
     title: 'Sign up and go live in minutes',
     content: [
-      { heading: 'Create your organisation', body: 'Visit /register and complete the 3-step onboarding: service center details, admin account, and confirmation. Your workspace is isolated — no data is shared with other organisations.' },
+      { heading: 'Create your organisation', body: 'Visit /register and complete the 3-step onboarding: service center details, admin account, and confirmation. Your workspace is isolated - no data is shared with other organisations.' },
       { heading: 'Onboarding checklist', body: 'After sign-in, Battwheels OS shows a guided checklist: add your first contact, register a vehicle, open a service ticket, add inventory, raise an invoice, and invite a team member. Each step unlocks the next layer of the platform.' },
-      { heading: 'Subscription plans', body: 'Free 14-day trial includes all Professional features. Plans: Starter (₹2,999/mo), Professional (₹5,999/mo), Enterprise (custom). Features are enforced at API level — the platform shows an upgrade prompt when a gated feature is accessed on a lower plan.' },
+      { heading: 'Subscription plans', body: 'Free 14-day trial includes all Professional features. Plans: Starter (₹2,999/mo), Professional (₹5,999/mo), Enterprise (custom). Features are enforced at API level - the platform shows an upgrade prompt when a gated feature is accessed on a lower plan.' },
     ]
   },
   {
     id: 'efi-engine',
     icon: Brain,
     label: '02 · EVFI Engine',
-    title: 'Electric Vehicle Failure Intelligence — how it works',
+    title: 'Electric Vehicle Failure Intelligence - how it works',
     content: [
       { heading: 'What is EVFI?', body: 'Battwheels EVFI™ is a proprietary AI-powered engine trained exclusively on EV failure patterns. Unlike generic automotive AI, EVFI maps fault codes to EV-specific fault trees, accounting for BMS architecture, motor controller variants, and firmware versions.' },
-      { heading: 'Failure Cards', body: 'Every resolved ticket creates a Failure Card — a structured knowledge entry with vehicle model, fault codes, root cause, resolution steps, and confidence score. Cards are org-scoped; your knowledge base does not merge with other organisations.' },
+      { heading: 'Failure Cards', body: 'Every resolved ticket creates a Failure Card - a structured knowledge entry with vehicle model, fault codes, root cause, resolution steps, and confidence score. Cards are org-scoped; your knowledge base does not merge with other organisations.' },
       { heading: 'AI Diagnostics', body: 'When a ticket is created, EVFI automatically matches the complaint against your Failure Card knowledge base. Technicians receive ranked root cause suggestions with step-by-step guidance in plain English (or Hinglish for field technicians).' },
       { heading: 'Confidence scoring', body: 'Each EVFI match returns a confidence level: High, Medium, or Low. Low-confidence matches automatically create a draft Failure Card so your team can document the new failure pattern for future reference.' },
     ]
@@ -46,7 +46,7 @@ const sections = [
     label: '04 · Finance & Accounting',
     title: 'GST-compliant double-entry accounting',
     content: [
-      { heading: 'Invoice flow', body: 'Estimates → Sales Orders → Invoices. All conversions preserve line items, GST rates, and discounts. Per-organisation sequential numbering (INV-202602-0001) with atomic counters — no gaps, no duplicates.' },
+      { heading: 'Invoice flow', body: 'Estimates → Sales Orders → Invoices. All conversions preserve line items, GST rates, and discounts. Per-organisation sequential numbering (INV-202602-0001) with atomic counters - no gaps, no duplicates.' },
       { heading: 'GST & E-Invoice', body: 'Invoices split CGST/SGST for intra-state and IGST for inter-state. GST reports available under Reports → GST Summary. E-Invoice generation via the Finance tab (PROFESSIONAL plan and above).' },
       { heading: 'Double-entry accounting', body: 'Every financial event (invoice raised, payment received, bill approved, payroll run, job card completed) automatically posts balanced journal entries. Trial Balance, Profit & Loss, and Balance Sheet are available in real time.' },
       { heading: 'Tally XML export', body: 'Export journal entries as TallyPrime-compatible XML (Finance → Journal Entries → Export to Tally). Useful for accountants who continue to work in Tally for statutory filings.' },
@@ -83,7 +83,7 @@ const sections = [
     title: 'API & Integrations',
     content: [
       { heading: 'REST API', body: 'Battwheels OS provides a comprehensive REST API for custom integrations. API documentation is available to registered users in the developer portal.' },
-      { heading: 'Integration Support', body: 'Contact us at hello@battwheels.com for API access and integration support.' },
+      { heading: 'Integration Support', body: 'Contact us at support@battwheels.com for API access and integration support.' },
     ]
   },
   {
@@ -92,11 +92,11 @@ const sections = [
     label: '08 · FAQ',
     title: 'Frequently asked questions',
     content: [
-      { heading: 'Is my data isolated from other organisations?', body: 'Yes. Every piece of data — tickets, invoices, employees, vehicles, knowledge base entries — is scoped to your organisation_id. You cannot read or write another organisation\'s data, and neither can platform administrators (they can only see metadata like plan and member count).' },
+      { heading: 'Is my data isolated from other organisations?', body: 'Yes. Every piece of data - tickets, invoices, employees, vehicles, knowledge base entries - is scoped to your organisation_id. You cannot read or write another organisation\'s data, and neither can platform administrators (they can only see metadata like plan and member count).' },
       { heading: 'Can I export my data?', body: 'Yes. You can export journal entries as Tally XML, download payslips and Form 16 as PDFs, and request a full data export from Organisation Settings → Data Export.' },
       { heading: 'Does EVFI work without internet?', body: 'No. EVFI diagnostics require an active internet connection to reach the AI backend. Service ticket creation, job cards, and invoicing work normally offline but syncing requires connectivity.' },
       { heading: 'How do I integrate with Zoho Books?', body: 'Go to Organisation Settings → Integrations tab. Enter your Zoho OAuth credentials. Once connected, contacts, invoices, and bills sync bidirectionally. Zoho import is available in Finance → Import from Zoho.' },
-      { heading: 'What happens when my trial ends?', body: 'After 14 days, you are moved to the Free plan. Features gated to Starter and above show an upgrade prompt. Your data is preserved — nothing is deleted. You can upgrade at any time to restore full access.' },
+      { heading: 'What happens when my trial ends?', body: 'After 14 days, you are moved to the Free plan. Features gated to Starter and above show an upgrade prompt. Your data is preserved - nothing is deleted. You can upgrade at any time to restore full access.' },
     ]
   },
 ];
@@ -156,7 +156,7 @@ export default function Docs() {
               Battwheels OS<br /><span className="text-bw-volt">Documentation</span>
             </h1>
             <p className="text-white/45 text-base leading-relaxed max-w-xl">
-              Everything you need to deploy, operate, and extend the platform — from onboarding to the REST API.
+              Everything you need to deploy, operate, and extend the platform - from onboarding to the REST API.
             </p>
           </div>
 

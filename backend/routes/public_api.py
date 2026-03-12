@@ -29,7 +29,7 @@ class ContactFormRequest(BaseModel):
 async def submit_contact_form(data: ContactFormRequest):
     """
     Public contact form submission.
-    Sends the enquiry to hello@battwheels.com and a confirmation to the submitter.
+    Sends the enquiry to support@battwheels.com and a confirmation to the submitter.
     No auth required.
     """
     from services.email_service import EmailService
@@ -45,7 +45,7 @@ async def submit_contact_form(data: ContactFormRequest):
     type_label = type_labels.get(data.type, data.type.replace("_", " ").title())
     company_line = f"<p><strong>Company:</strong> {data.company}</p>" if data.company else ""
 
-    # Email to hello@battwheels.com (internal notification)
+    # Email to support@battwheels.com (internal notification)
     internal_html = f"""
     <div style="font-family:monospace;background:#080C0F;color:#F4F6F0;padding:32px;border-radius:8px;max-width:560px">
       <div style="display:inline-block;background:#C8FF00;color:#080C0F;padding:4px 10px;font-size:11px;
@@ -94,7 +94,7 @@ async def submit_contact_form(data: ContactFormRequest):
     import asyncio as _asyncio
     results = await _asyncio.gather(
         EmailService.send_email(
-            to="hello@battwheels.com",
+            to="support@battwheels.com",
             subject=f"[{type_label}] {data.name} — {data.email}",
             html_content=internal_html,
             reply_to=data.email,
@@ -139,7 +139,7 @@ class BookDemoRequest(BaseModel):
 async def book_demo(data: BookDemoRequest):
     """
     Pre-sales demo request — no auth required.
-    Stores lead in demo_requests collection and notifies sales@battwheels.com.
+    Stores lead in demo_requests collection and notifies support@battwheels.com.
     """
     from services.email_service import EmailService
     import uuid as _uuid
@@ -169,7 +169,7 @@ async def book_demo(data: BookDemoRequest):
     """
 
     result = await EmailService.send_email(
-        to="sales@battwheels.com",
+        to="support@battwheels.com",
         subject=f"[Demo Request] {data.workshop_name} — {data.city} ({data.vehicles_per_month} vehicles/mo)",
         html_content=sales_html,
     )

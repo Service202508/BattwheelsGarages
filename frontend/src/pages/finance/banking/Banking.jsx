@@ -494,9 +494,9 @@ export default function Banking() {
                         <td className="p-3 text-sm">{txn.transaction_date}</td>
                         <td className="p-3 text-sm">{txn.description}</td>
                         <td className="p-3"><Badge variant="outline" className="border-bw-white/20 text-bw-white/70 text-xs">{txn.category}</Badge></td>
-                        <td className="p-3 text-sm text-bw-white/50">{txn.reference_number || "—"}</td>
-                        <td className="p-3 text-right font-mono text-bw-red">{txn.transaction_type === "DEBIT" ? formatCurrency(txn.amount) : "—"}</td>
-                        <td className="p-3 text-right font-mono text-bw-teal">{txn.transaction_type === "CREDIT" ? formatCurrency(txn.amount) : "—"}</td>
+                        <td className="p-3 text-sm text-bw-white/50">{txn.reference_number || "-"}</td>
+                        <td className="p-3 text-right font-mono text-bw-red">{txn.transaction_type === "DEBIT" ? formatCurrency(txn.amount) : "-"}</td>
+                        <td className="p-3 text-right font-mono text-bw-teal">{txn.transaction_type === "CREDIT" ? formatCurrency(txn.amount) : "-"}</td>
                         <td className="p-3 text-right font-mono">{formatCurrency(txn.balance_after)}</td>
                         <td className="p-3 text-center">
                           <Button

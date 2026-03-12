@@ -105,7 +105,7 @@ export default function InventoryEnhanced() {
         fetch(`${API}/inventory-enhanced/reports/low-stock`, { headers })
       ]);
 
-      // Handle each response individually — 403 means enterprise-gated
+      // Handle each response individually - 403 means enterprise-gated
       const parse = async (res) => {
         if (res.status === 403) return { _gated: true };
         if (!res.ok) return {};
@@ -851,7 +851,7 @@ export default function InventoryEnhanced() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-bw-white">Reorder Point Alerts</h3>
-              <p className="text-xs text-bw-white/[0.45]">Items below reorder level — auto-grouped by vendor for PO creation</p>
+              <p className="text-xs text-bw-white/[0.45]">Items below reorder level - auto-grouped by vendor for PO creation</p>
             </div>
             <Button onClick={fetchReorderSuggestions} disabled={loadingReorder} size="sm" data-testid="refresh-reorder-btn">
               {loadingReorder ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />}
@@ -970,7 +970,7 @@ export default function InventoryEnhanced() {
                             onSubmit={(val) => handleSubmitCount(activeStocktake.stocktake_id, line.item_id, val)}
                           />
                         ) : (
-                          <span className="text-sm font-mono">{line.counted_quantity ?? '—'}</span>
+                          <span className="text-sm font-mono">{line.counted_quantity ?? '-'}</span>
                         )}
                         {line.counted && (
                           <span className={`text-xs font-mono font-bold ${line.variance > 0 ? 'text-bw-green' : line.variance < 0 ? 'text-bw-red' : 'text-bw-white/35'}`}>

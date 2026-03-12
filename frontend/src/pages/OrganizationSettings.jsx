@@ -361,7 +361,7 @@ export default function OrganizationSettings({ user }) {
       });
 
       if (res.ok) {
-        // Backend returns {success, message} — update local state optimistically
+        // Backend returns {success, message} - update local state optimistically
         if (section) {
           setSettings(prev => ({ ...prev, [section]: { ...(prev?.[section] || {}), ...data } }));
           setSettingsForm(prev => ({ ...prev, [section]: { ...(prev?.[section] || {}), ...data } }));
@@ -606,7 +606,7 @@ export default function OrganizationSettings({ user }) {
       if (data.delivered) {
         toast.success("Test message sent! Check your WhatsApp.");
       } else {
-        toast.error(data.error || "Test failed — check credentials");
+        toast.error(data.error || "Test failed - check credentials");
       }
     } catch { toast.error("Test request failed"); }
     finally { setTestingWa(false); }
