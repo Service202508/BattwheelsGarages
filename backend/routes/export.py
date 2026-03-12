@@ -14,7 +14,7 @@ from xml.dom import minidom
 import uuid
 import logging
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ DEFAULT_CONFIG = EInvoiceConfig()
 
 @router.get("/einvoice/{invoice_id}")
 async def generate_einvoice(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Generate GST e-invoice JSON for a given invoice"""
     db = get_db()
     
@@ -168,7 +168,7 @@ async def generate_einvoice(request: Request, invoice_id: str):
 
 @router.get("/einvoice/{invoice_id}/download")
 async def download_einvoice(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Download e-invoice as JSON file"""
     result = await generate_einvoice(invoice_id)
     
@@ -186,7 +186,7 @@ async def download_einvoice(request: Request, invoice_id: str):
 
 @router.get("/tally/invoices")
 async def export_invoices_to_tally(request: Request, start_date: str = "", end_date: str = "", limit: int = 100):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export invoices in Tally-compatible XML format"""
     db = get_db()
     
@@ -270,7 +270,7 @@ async def export_invoices_to_tally(request: Request, start_date: str = "", end_d
 
 @router.get("/tally/bills")
 async def export_bills_to_tally(request: Request, start_date: str = "", end_date: str = "", limit: int = 100):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export bills (purchases) in Tally-compatible XML format"""
     db = get_db()
     
@@ -348,7 +348,7 @@ async def export_bills_to_tally(request: Request, start_date: str = "", end_date
 
 @router.get("/tally/payments")
 async def export_payments_to_tally(request: Request, start_date: str = "", end_date: str = "", limit: int = 100):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export customer payments in Tally-compatible XML format"""
     db = get_db()
     
@@ -408,7 +408,7 @@ async def export_payments_to_tally(request: Request, start_date: str = "", end_d
 
 @router.get("/tally/ledgers")
 async def export_ledgers_to_tally(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export customer and vendor ledgers in Tally-compatible XML format"""
     db = get_db()
     
@@ -498,7 +498,7 @@ def format_date_for_tally(date_str: str) -> str:
 
 @router.get("/bulk/invoices")
 async def bulk_export_invoices(request: Request, format: str = "csv", start_date: str = "", end_date: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export invoices in CSV or Excel format"""
     db = get_db()
     
@@ -534,7 +534,7 @@ async def bulk_export_invoices(request: Request, format: str = "csv", start_date
 
 @router.get("/bulk/expenses")
 async def bulk_export_expenses(request: Request, format: str = "csv", start_date: str = "", end_date: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export expenses in CSV format"""
     db = get_db()
     

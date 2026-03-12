@@ -31,13 +31,24 @@ db = client[DB_NAME]
 
 def extract_org_id(request) -> Optional[str]:
     """Extract organization_id from request state (set by TenantGuardMiddleware).
-    This is the canonical way to get org context in route handlers.
-    Every DB query on tenant data MUST use this.
+    Returns None if no org context — use ONLY in public/auth/platform routes
+    where None is a valid outcome.
     
-    SECURITY: Always reads from request.state.tenant_org_id which has been
-    validated against the user's org membership by TenantGuardMiddleware.
-    Never trusts client-provided headers/cookies directly."""
+    For tenant-scoped routes, use require_org_id() instead."""
     return getattr(getattr(request, "state", None), "tenant_org_id", None)
+
+
+def require_org_id(request) -> str:
+    """Extract and VALIDATE organization_id from request state.
+    Raises HTTP 403 if org context is missing — use in ALL tenant-scoped routes.
+    
+    This is the mandatory guard for Pattern A multi-tenancy compliance.
+    Every tenant-scoped DB query MUST use this instead of extract_org_id()."""
+    from fastapi import HTTPException
+    org_id = getattr(getattr(request, "state", None), "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=403, detail="Organization context required")
+    return org_id
 
 
 def org_query(org_id: str, extra: dict = None) -> dict:

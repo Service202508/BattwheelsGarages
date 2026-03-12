@@ -260,8 +260,8 @@ async def update_bill_status(bill_id: str):
 
 @router.get("/summary")
 async def get_bills_summary(request: Request, period: str = "all"):
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"status": {"$ne": "void"}}
     if org_id:
         query["organization_id"] = org_id
@@ -303,8 +303,8 @@ async def get_bills_summary(request: Request, period: str = "all"):
 
 @router.get("/purchase-orders/summary")
 async def get_po_summary(request: Request):
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     base = {"organization_id": org_id} if org_id else {}
     total = await purchase_orders_collection.count_documents({**base, "status": {"$ne": "void"}})
     draft = await purchase_orders_collection.count_documents({**base, "status": "draft"})
@@ -393,8 +393,8 @@ async def list_purchase_orders(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"status": {"$ne": "void"}}
     if org_id:
         query["organization_id"] = org_id
@@ -591,8 +591,8 @@ async def list_bills(
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"organization_id": org_id} if org_id else {}
     if vendor_id:
         query["vendor_id"] = vendor_id
@@ -633,8 +633,8 @@ async def list_bills(
 @router.get("/aging-report")
 async def get_payables_aging(request: Request):
     """Get payables aging report"""
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     today = datetime.now(timezone.utc).date()
     
     bills = await bills_collection.find(
@@ -671,8 +671,8 @@ async def get_payables_aging(request: Request):
 @router.get("/vendor-wise")
 async def get_vendor_wise_report(request: Request, limit: int = 20):
     """Get vendor-wise payables report"""
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     pipeline = [
         {"$match": {"organization_id": org_id, "status": {"$ne": "void"}}},
         {"$group": {"_id": "$vendor_id", "vendor_name": {"$first": "$vendor_name"}, "bill_count": {"$sum": 1}, "total_billed": {"$sum": "$grand_total"}, "total_payable": {"$sum": "$balance_due"}}},

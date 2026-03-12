@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import logging
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class NotificationUpdate(BaseModel):
 
 @router.post("")
 async def create_notification(request: Request, notification: NotificationCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new notification"""
     db = get_db()
     notification_id = f"NOTIF-{uuid.uuid4().hex[:12].upper()}"
@@ -64,7 +64,7 @@ async def create_notification(request: Request, notification: NotificationCreate
 
 @router.get("")
 async def list_notifications(request: Request, user_id: str = "", role: str = "", notification_type: str = "", is_read: str = "", priority: str = "", page: int = 1, per_page: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List notifications with filters"""
     db = get_db()
     query = {"is_archived": False}
@@ -97,7 +97,7 @@ async def list_notifications(request: Request, user_id: str = "", role: str = ""
 
 @router.get("/unread-count")
 async def get_unread_count(request: Request, user_id: str = "", role: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get unread notification count"""
     db = get_db()
     query = {"is_read": False, "is_archived": False}
@@ -114,7 +114,7 @@ async def get_unread_count(request: Request, user_id: str = "", role: str = ""):
 
 @router.get("/{notification_id}")
 async def get_notification(request: Request, notification_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get notification details"""
     db = get_db()
     notification = await db.notifications.find_one({"notification_id": notification_id}, {"_id": 0})
@@ -124,7 +124,7 @@ async def get_notification(request: Request, notification_id: str):
 
 @router.put("/{notification_id}/read")
 async def mark_as_read(request: Request, notification_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Mark notification as read"""
     db = get_db()
     result = await db.notifications.update_one(
@@ -137,7 +137,7 @@ async def mark_as_read(request: Request, notification_id: str):
 
 @router.put("/mark-all-read")
 async def mark_all_as_read(request: Request, user_id: str = "", role: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Mark all notifications as read"""
     db = get_db()
     query = {"is_read": False}
@@ -157,7 +157,7 @@ async def mark_all_as_read(request: Request, user_id: str = "", role: str = ""):
 
 @router.delete("/{notification_id}")
 async def archive_notification(request: Request, notification_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Archive (soft delete) notification"""
     db = get_db()
     result = await db.notifications.update_one(
@@ -259,7 +259,7 @@ async def notify_ticket_update(ticket_id: str, ticket_number: str, status: str, 
 
 @router.post("/check-overdue-invoices")
 async def check_overdue_invoices(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Check and create notifications for overdue invoices"""
     db = get_db()
     today = datetime.now(timezone.utc)
@@ -298,7 +298,7 @@ async def check_overdue_invoices(request: Request):
 
 @router.post("/check-expiring-amcs")
 async def check_expiring_amcs(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Check and create notifications for expiring AMCs"""
     db = get_db()
     today = datetime.now(timezone.utc)
@@ -341,7 +341,7 @@ async def check_expiring_amcs(request: Request):
 
 @router.post("/check-low-stock")
 async def check_low_stock(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Check and create notifications for low stock items"""
     db = get_db()
     today = datetime.now(timezone.utc)
@@ -391,7 +391,7 @@ class NotificationPreference(BaseModel):
 
 @router.get("/preferences/{user_id}")
 async def get_notification_preferences(request: Request, user_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get user notification preferences"""
     db = get_db()
     prefs = await db.notification_preferences.find_one({"user_id": user_id}, {"_id": 0})
@@ -410,7 +410,7 @@ async def get_notification_preferences(request: Request, user_id: str):
 
 @router.put("/preferences/{user_id}")
 async def update_notification_preferences(request: Request, user_id: str, prefs: NotificationPreference):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update user notification preferences"""
     db = get_db()
     prefs_dict = prefs.dict()

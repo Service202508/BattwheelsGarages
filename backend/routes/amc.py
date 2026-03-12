@@ -5,7 +5,7 @@ Admin routes for managing AMC plans and subscriptions.
 Based on official Battwheels Garages subscription plans.
 """
 from fastapi import APIRouter, HTTPException, Depends, Request, Query
-from utils.database import db as _amc_db, extract_org_id, org_query
+from utils.database import db as _amc_db, require_org_id, org_query
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone, timedelta
 import os
@@ -83,7 +83,7 @@ class AMCSubscriptionCreate(BaseModel):
 # ==================== AUTH HELPERS ====================
 
 async def get_current_user_from_request(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Extract current user from request"""
     from utils.auth import decode_token_safe
     
@@ -106,7 +106,7 @@ async def get_current_user_from_request(request: Request):
     return None
 
 async def require_admin(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Require admin access"""
     user = await get_current_user_from_request(request)
     if not user:
@@ -117,7 +117,7 @@ async def require_admin(request: Request):
     return user
 
 async def require_admin_or_technician(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Require admin or technician access"""
     user = await get_current_user_from_request(request)
     if not user:
@@ -131,7 +131,7 @@ async def require_admin_or_technician(request: Request):
 
 @router.post("/plans")
 async def create_amc_plan(request: Request, plan_data: AMCPlanCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new AMC plan (admin only)"""
     user = await require_admin(request)
     
@@ -162,7 +162,7 @@ async def create_amc_plan(request: Request, plan_data: AMCPlanCreate):
 
 @router.get("/plans")
 async def get_amc_plans(request: Request, include_inactive: bool = False):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get all AMC plans"""
     user = await require_admin_or_technician(request)
     
@@ -182,7 +182,7 @@ async def get_amc_plans(request: Request, include_inactive: bool = False):
 
 @router.get("/plans/{plan_id}")
 async def get_amc_plan(request: Request, plan_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get AMC plan details"""
     user = await require_admin_or_technician(request)
     
@@ -194,7 +194,7 @@ async def get_amc_plan(request: Request, plan_id: str):
 
 @router.put("/plans/{plan_id}")
 async def update_amc_plan(request: Request, plan_id: str, update_data: AMCPlanUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update AMC plan (admin only)"""
     user = await require_admin(request)
     
@@ -216,7 +216,7 @@ async def update_amc_plan(request: Request, plan_id: str, update_data: AMCPlanUp
 
 @router.delete("/plans/{plan_id}")
 async def deactivate_amc_plan(request: Request, plan_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Deactivate AMC plan (soft delete)"""
     user = await require_admin(request)
     
@@ -234,7 +234,7 @@ async def deactivate_amc_plan(request: Request, plan_id: str):
 
 @router.post("/subscriptions")
 async def create_amc_subscription(request: Request, sub_data: AMCSubscriptionCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new AMC subscription for a customer"""
     user = await require_admin_or_technician(request)
     
@@ -304,7 +304,7 @@ async def get_amc_subscriptions(request: Request, customer_id: Optional[str] = N
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     user = await require_admin_or_technician(request)
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
 
     query = {"organization_id": org_id}
     if customer_id:
@@ -346,10 +346,10 @@ async def get_amc_subscriptions(request: Request, customer_id: Optional[str] = N
 
 @router.get("/subscriptions/{subscription_id}")
 async def get_amc_subscription(request: Request, subscription_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get AMC subscription details"""
     user = await require_admin_or_technician(request)
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     subscription = await get_db().amc_subscriptions.find_one(
         {"subscription_id": subscription_id, "organization_id": org_id},
@@ -371,7 +371,7 @@ async def get_amc_subscription(request: Request, subscription_id: str):
 
 @router.put("/subscriptions/{subscription_id}/use-service")
 async def record_amc_service_usage(request: Request, subscription_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Record a service usage against AMC subscription"""
     user = await require_admin_or_technician(request)
     body = await request.json()
@@ -410,7 +410,7 @@ async def record_amc_service_usage(request: Request, subscription_id: str):
 
 @router.put("/subscriptions/{subscription_id}/cancel")
 async def cancel_amc_subscription(request: Request, subscription_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Cancel AMC subscription"""
     user = await require_admin(request)
     body = await request.json()
@@ -434,7 +434,7 @@ async def cancel_amc_subscription(request: Request, subscription_id: str):
 
 @router.post("/subscriptions/{subscription_id}/renew")
 async def renew_amc_subscription(request: Request, subscription_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Renew an expiring/expired AMC subscription"""
     user = await require_admin_or_technician(request)
     body = await request.json()
@@ -503,7 +503,7 @@ async def renew_amc_subscription(request: Request, subscription_id: str):
 
 @router.get("/analytics")
 async def get_amc_analytics(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get AMC analytics for admin dashboard"""
     user = await require_admin(request)
     
@@ -569,7 +569,7 @@ async def get_amc_analytics(request: Request):
 
 @router.post("/seed-official-plans")
 async def seed_official_battwheels_plans(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """
     Seed official Battwheels Garages subscription plans
     Source: https://battwheelsgarages.in/plans
@@ -815,7 +815,7 @@ async def seed_official_battwheels_plans(request: Request):
 
 @router.get("/plans-by-category")
 async def get_plans_by_category(request: Request, vehicle_category: Optional[str] = None, billing_frequency: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get AMC plans grouped by vehicle category and billing frequency"""
     user = await require_admin_or_technician(request)
     

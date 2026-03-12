@@ -8,7 +8,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
 import os
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 from utils.database import db
@@ -39,7 +39,7 @@ class ProductivitySummary(BaseModel):
 # ==================== AUTH HELPERS ====================
 
 async def get_current_user_from_request(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Extract current user from request"""
     from utils.auth import decode_token_safe
     
@@ -62,7 +62,7 @@ async def get_current_user_from_request(request: Request):
     return None
 
 async def require_admin_or_manager(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Require admin or manager access (org-scoped from JWT)"""
     user_role = getattr(request.state, "tenant_user_role", None)
     if not user_role:
@@ -78,7 +78,7 @@ async def require_admin_or_manager(request: Request):
 
 @router.get("/summary")
 async def get_productivity_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get overall productivity summary"""
     user = await require_admin_or_manager(request)
     
@@ -158,7 +158,7 @@ async def get_productivity_summary(request: Request):
 
 @router.get("/technicians")
 async def get_technician_productivity(request: Request, period: str = "all", sort_by: str = "tickets_resolved"):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get productivity breakdown by technician"""
     user = await require_admin_or_manager(request)
     
@@ -280,7 +280,7 @@ async def get_technician_productivity(request: Request, period: str = "all", sor
 
 @router.get("/technicians/{technician_id}")
 async def get_technician_detail(request: Request, technician_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get detailed productivity for a specific technician"""
     user = await require_admin_or_manager(request)
     
@@ -366,7 +366,7 @@ async def get_technician_detail(request: Request, technician_id: str):
 
 @router.get("/leaderboard")
 async def get_productivity_leaderboard(request: Request, period: str = "month", metric: str = "tickets"):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get top performing technicians"""
     user = await require_admin_or_manager(request)
     
@@ -389,7 +389,7 @@ async def get_productivity_leaderboard(request: Request, period: str = "month", 
 
 @router.get("/trends")
 async def get_productivity_trends(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get productivity trends over time"""
     user = await require_admin_or_manager(request)
     
@@ -420,7 +420,7 @@ async def get_productivity_trends(request: Request):
 
 @router.get("/kpis")
 async def get_productivity_kpis(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get key performance indicators"""
     user = await require_admin_or_manager(request)
     

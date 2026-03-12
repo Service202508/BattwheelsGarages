@@ -8,20 +8,12 @@ from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 def get_db():
     from server import db
     return db
-
-
-def _require_org_id(request: Request) -> str:
-    """Extract and validate organization_id. Returns 403 if missing."""
-    org_id = extract_org_id(request)
-    if not org_id:
-        raise HTTPException(status_code=403, detail="Organization context required")
-    return org_id
 
 
 router = APIRouter(prefix="/master-data", tags=["Master Data"])
@@ -77,7 +69,7 @@ async def list_vehicle_categories(request: Request, active_only: bool = True, ev
 @router.post("/vehicle-categories")
 async def create_vehicle_category(request: Request, data: VehicleCategoryCreate):
     """Create a new vehicle category (admin only)"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     
     # PLATFORM-GLOBAL: uniqueness check — codes are platform-wide
@@ -104,7 +96,7 @@ async def create_vehicle_category(request: Request, data: VehicleCategoryCreate)
 @router.put("/vehicle-categories/{category_id}")
 async def update_vehicle_category(request: Request, category_id: str, data: VehicleCategoryCreate):
     """Update a vehicle category"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     
     result = await db.vehicle_categories.update_one(
@@ -120,7 +112,7 @@ async def update_vehicle_category(request: Request, category_id: str, data: Vehi
 @router.delete("/vehicle-categories/{category_id}")
 async def delete_vehicle_category(request: Request, category_id: str):
     """Soft delete a vehicle category"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     result = await db.vehicle_categories.update_one(
         {"category_id": category_id, "organization_id": org_id},
@@ -183,7 +175,7 @@ async def list_oems(request: Request, category_code: Optional[str] = None):
 @router.post("/vehicle-models")
 async def create_vehicle_model(request: Request, data: VehicleModelCreate):
     """Create a new vehicle model"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     
     # PLATFORM-GLOBAL: category lookup — shared reference data
@@ -210,7 +202,7 @@ async def create_vehicle_model(request: Request, data: VehicleModelCreate):
 @router.put("/vehicle-models/{model_id}")
 async def update_vehicle_model(request: Request, model_id: str, data: VehicleModelCreate):
     """Update a vehicle model"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     
     result = await db.vehicle_models.update_one(
@@ -226,7 +218,7 @@ async def update_vehicle_model(request: Request, model_id: str, data: VehicleMod
 @router.delete("/vehicle-models/{model_id}")
 async def delete_vehicle_model(request: Request, model_id: str):
     """Soft delete a vehicle model"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     result = await db.vehicle_models.update_one(
         {"model_id": model_id, "organization_id": org_id},
@@ -242,7 +234,7 @@ async def delete_vehicle_model(request: Request, model_id: str):
 @router.get("/issue-suggestions")
 async def get_issue_suggestions(request: Request, category_code: Optional[str] = None, model_id: Optional[str] = None, issue_type: Optional[str] = None, search: Optional[str] = None):
     """Get EV issue suggestions based on vehicle category/model"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     # PLATFORM-GLOBAL: intentionally unscoped — shared reference data
     query = {"is_active": True}
@@ -297,7 +289,7 @@ async def get_issue_suggestions(request: Request, category_code: Optional[str] =
 @router.post("/issue-suggestions")
 async def create_issue_suggestion(request: Request, data: EVIssueSuggestionCreate):
     """Create a new EV issue suggestion"""
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     db = get_db()
     
     suggestion_id = f"evis_{uuid.uuid4().hex[:8]}"

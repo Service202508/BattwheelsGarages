@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from calendar import monthrange
 
 from core.subscriptions.entitlement import require_feature
-from utils.database import db, extract_org_id, org_query
+from utils.database import db, require_org_id, org_query
 
 
 router = APIRouter(
@@ -25,13 +25,6 @@ payments_collection = db["invoice_payments"]
 expenses_collection = db["expenses"]
 items_collection = db["items"]
 
-def _require_org_id(request: Request) -> str:
-    """Extract and validate organization_id. Returns 403 if missing."""
-    org_id = _require_org_id(request)
-    if not org_id:
-        raise HTTPException(status_code=403, detail="Organization context required")
-    return org_id
-
 def round_currency(val: float) -> float:
     return round(val, 2)
 
@@ -39,7 +32,7 @@ def round_currency(val: float) -> float:
 
 @router.get("/revenue/monthly")
 async def get_monthly_revenue(request: Request, year: int = None, months: int = 12):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get monthly revenue data for charts"""
     if not year:
         year = datetime.now(timezone.utc).year
@@ -101,7 +94,7 @@ async def get_monthly_revenue(request: Request, year: int = None, months: int = 
 
 @router.get("/revenue/quarterly")
 async def get_quarterly_revenue(request: Request, year: int = None):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get quarterly revenue for charts"""
     if not year:
         year = datetime.now(timezone.utc).year
@@ -155,7 +148,7 @@ async def get_quarterly_revenue(request: Request, year: int = None):
 
 @router.get("/revenue/yearly-comparison")
 async def get_yearly_comparison(request: Request, years: int = 3):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Compare revenue across years"""
     current_year = datetime.now(timezone.utc).year
     results = []
@@ -196,7 +189,7 @@ async def get_yearly_comparison(request: Request, years: int = 3):
 
 @router.get("/receivables/aging")
 async def get_receivables_aging_chart(request: Request):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get receivables aging for pie/bar chart"""
     today = datetime.now(timezone.utc).date()
     
@@ -259,7 +252,7 @@ async def get_receivables_aging_chart(request: Request):
 
 @router.get("/receivables/trend")
 async def get_receivables_trend(request: Request, months: int = 6):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get receivables trend over time"""
     current = datetime.now(timezone.utc)
     results = []
@@ -310,7 +303,7 @@ async def get_receivables_trend(request: Request, months: int = 6):
 
 @router.get("/customers/top-revenue")
 async def get_top_customers_by_revenue(request: Request, limit: int = 10):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get top customers by revenue for chart"""
     pipeline = [
         {"$match": {"organization_id": org_id, "status": {"$nin": ["draft", "void"]}}},
@@ -346,7 +339,7 @@ async def get_top_customers_by_revenue(request: Request, limit: int = 10):
 
 @router.get("/customers/top-outstanding")
 async def get_top_customers_by_outstanding(request: Request, limit: int = 10):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get customers with highest outstanding"""
     pipeline = [
         {"$match": {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}, "$or": [{"balance_due": {"$gt": 0}}, {"amount_due": {"$gt": 0}}]}},
@@ -382,7 +375,7 @@ async def get_top_customers_by_outstanding(request: Request, limit: int = 10):
 
 @router.get("/customers/acquisition")
 async def get_customer_acquisition(request: Request, months: int = 12):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get new customer acquisition over time"""
     current = datetime.now(timezone.utc)
     results = []
@@ -425,7 +418,7 @@ async def get_customer_acquisition(request: Request, months: int = 12):
 
 @router.get("/sales/funnel")
 async def get_sales_funnel(request: Request):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get sales funnel data (estimates -> orders -> invoices)"""
     # Estimates
     total_estimates = await estimates_collection.count_documents({"organization_id": org_id, "status": {"$ne": "draft"}})
@@ -500,7 +493,7 @@ async def get_sales_funnel(request: Request):
 
 @router.get("/invoices/status-distribution")
 async def get_invoice_status_distribution(request: Request):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get invoice status distribution for pie chart"""
     pipeline = [
         {"$match": {"organization_id": org_id}},
@@ -559,7 +552,7 @@ async def get_invoice_status_distribution(request: Request):
 
 @router.get("/payments/trend")
 async def get_payment_trend(request: Request, months: int = 6):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get payment collection trend"""
     current = datetime.now(timezone.utc)
     results = []
@@ -607,7 +600,7 @@ async def get_payment_trend(request: Request, months: int = 6):
 
 @router.get("/payments/by-mode")
 async def get_payments_by_mode(request: Request):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get payment distribution by mode"""
     pipeline = [
         {"$match": {"organization_id": org_id}},
@@ -653,7 +646,7 @@ async def get_payments_by_mode(request: Request):
 
 @router.get("/dashboard-summary")
 async def get_dashboard_summary(request: Request):
-    org_id = _require_org_id(request)
+    org_id = require_org_id(request)
     """Get comprehensive dashboard summary with KPIs"""
     today = datetime.now(timezone.utc)
     first_of_month = today.replace(day=1).date().isoformat()

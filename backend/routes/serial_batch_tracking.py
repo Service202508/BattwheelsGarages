@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 import uuid
 from fastapi import Request
-from utils.database import db, extract_org_id, org_query
+from utils.database import db, require_org_id, org_query
 
 
 router = APIRouter(prefix="/serial-batch", tags=["Serial & Batch Tracking"])
@@ -94,7 +94,7 @@ def get_today() -> str:
 
 @router.post("/items/{item_id}/configure")
 async def configure_item_tracking(request: Request, item_id: str, config: ItemTrackingConfig):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Enable/configure serial or batch tracking for an item"""
     item = await items_collection.find_one({"item_id": item_id})
     if not item:
@@ -131,7 +131,7 @@ async def configure_item_tracking(request: Request, item_id: str, config: ItemTr
 
 @router.get("/items/{item_id}/config")
 async def get_item_tracking_config(request: Request, item_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get tracking configuration for an item"""
     item = await items_collection.find_one(
         {"item_id": item_id},
@@ -161,7 +161,7 @@ async def get_item_tracking_config(request: Request, item_id: str):
 
 @router.get("/items/tracking-enabled")
 async def list_tracking_enabled_items(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List all items with serial or batch tracking enabled"""
     items = await items_collection.find(
         {"$or": [
@@ -190,7 +190,7 @@ async def list_tracking_enabled_items(request: Request):
 
 @router.post("/serials")
 async def create_serial_number(request: Request, data: SerialNumberCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a single serial number"""
     # Validate item
     item = await items_collection.find_one({"item_id": data.item_id})
@@ -246,7 +246,7 @@ async def create_serial_number(request: Request, data: SerialNumberCreate):
 
 @router.post("/serials/bulk")
 async def bulk_create_serials(request: Request, data: SerialNumberBulkCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Bulk create serial numbers with auto-numbering"""
     item = await items_collection.find_one({"item_id": data.item_id})
     if not item:
@@ -294,7 +294,7 @@ async def bulk_create_serials(request: Request, data: SerialNumberBulkCreate):
 
 @router.get("/serials")
 async def list_serial_numbers(request: Request, item_id: Optional[str] = None, warehouse_id: Optional[str] = None, status: Optional[str] = None, search: str = "", page: int = 1, per_page: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List serial numbers with filters"""
     query = {}
     if item_id:
@@ -326,7 +326,7 @@ async def list_serial_numbers(request: Request, item_id: Optional[str] = None, w
 
 @router.get("/serials/{serial_id}")
 async def get_serial_number(request: Request, serial_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get serial number details with history"""
     serial = await serial_numbers_collection.find_one({"serial_id": serial_id}, {"_id": 0})
     if not serial:
@@ -343,7 +343,7 @@ async def get_serial_number(request: Request, serial_id: str):
 
 @router.get("/serials/lookup/{serial_number}")
 async def lookup_serial_number(request: Request, serial_number: str, item_id: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Look up a serial number across all items or for a specific item"""
     query = {"serial_number": serial_number}
     if item_id:
@@ -357,7 +357,7 @@ async def lookup_serial_number(request: Request, serial_number: str, item_id: Op
 
 @router.put("/serials/{serial_id}/status")
 async def update_serial_status(request: Request, serial_id: str, status: str, reason: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update serial number status"""
     valid_statuses = ["available", "sold", "returned", "damaged", "reserved"]
     if status not in valid_statuses:
@@ -395,7 +395,7 @@ async def update_serial_status(request: Request, serial_id: str, status: str, re
 
 @router.post("/batches")
 async def create_batch_number(request: Request, data: BatchNumberCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a batch/lot number"""
     item = await items_collection.find_one({"item_id": data.item_id})
     if not item:
@@ -449,7 +449,7 @@ async def create_batch_number(request: Request, data: BatchNumberCreate):
 
 @router.get("/batches")
 async def list_batch_numbers(request: Request, item_id: Optional[str] = None, warehouse_id: Optional[str] = None, status: Optional[str] = None, expiring_within_days: Optional[int] = None, search: str = "", page: int = 1, per_page: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List batch numbers with filters"""
     query = {}
     if item_id:
@@ -493,7 +493,7 @@ async def list_batch_numbers(request: Request, item_id: Optional[str] = None, wa
 
 @router.get("/batches/expiring")
 async def get_expiring_batches(request: Request, days: int = 30):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get batches expiring within specified days"""
     future_date = (datetime.now(timezone.utc) + timedelta(days=days)).strftime("%Y-%m-%d")
     today = get_today()
@@ -512,7 +512,7 @@ async def get_expiring_batches(request: Request, days: int = 30):
 
 @router.get("/batches/{batch_id}")
 async def get_batch_number(request: Request, batch_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get batch number details with history"""
     batch = await batch_numbers_collection.find_one({"batch_id": batch_id}, {"_id": 0})
     if not batch:
@@ -529,7 +529,7 @@ async def get_batch_number(request: Request, batch_id: str):
 
 @router.put("/batches/{batch_id}/quantity")
 async def adjust_batch_quantity(request: Request, batch_id: str, quantity_change: float, reason: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Adjust batch quantity (positive to add, negative to deduct)"""
     batch = await batch_numbers_collection.find_one({"batch_id": batch_id})
     if not batch:
@@ -582,7 +582,7 @@ async def adjust_batch_quantity(request: Request, batch_id: str, quantity_change
 
 @router.post("/assign/serials")
 async def assign_serials_to_transaction(request: Request, assignment: SerialAssignment):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Assign serial numbers to an invoice/shipment"""
     updated = 0
     errors = []
@@ -634,7 +634,7 @@ async def assign_serials_to_transaction(request: Request, assignment: SerialAssi
 
 @router.post("/assign/batches")
 async def assign_batches_to_transaction(request: Request, assignment: BatchAssignment):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Assign batch quantities to an invoice/shipment"""
     allocated = []
     errors = []
@@ -697,7 +697,7 @@ async def assign_batches_to_transaction(request: Request, assignment: BatchAssig
 
 @router.get("/reports/serial-summary")
 async def serial_tracking_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get serial number tracking summary"""
     pipeline = [
         {"$match": {"organization_id": org_id}},
@@ -726,7 +726,7 @@ async def serial_tracking_summary(request: Request):
 
 @router.get("/reports/batch-summary")
 async def batch_tracking_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get batch tracking summary"""
     org_filter = {"organization_id": org_id}
     pipeline = [
@@ -770,7 +770,7 @@ async def batch_tracking_summary(request: Request):
 
 @router.get("/reports/item-tracking/{item_id}")
 async def item_tracking_report(request: Request, item_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get comprehensive tracking report for an item"""
     item = await items_collection.find_one({"organization_id": org_id, "item_id": item_id}, {"_id": 0, "item_id": 1, "name": 1, "sku": 1})
     if not item:

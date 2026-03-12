@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import uuid
 from fastapi import Request
-from utils.database import db, extract_org_id, org_query
+from utils.database import db, require_org_id, org_query
 
 
 router = APIRouter(prefix="/pdf-templates", tags=["PDF Templates"])
@@ -197,7 +197,7 @@ async def ensure_default_templates():
 
 @router.get("/")
 async def list_templates(request: Request, template_type: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List all available templates"""
     await ensure_default_templates()
     
@@ -215,7 +215,7 @@ async def list_templates(request: Request, template_type: Optional[str] = None):
 
 @router.get("/styles")
 async def list_available_styles(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List available template styles"""
     return {
         "code": 0,
@@ -229,7 +229,7 @@ async def list_available_styles(request: Request):
 
 @router.get("/{template_id}")
 async def get_template(request: Request, template_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get template details"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})
     if not template:
@@ -239,7 +239,7 @@ async def get_template(request: Request, template_id: str):
 
 @router.post("/")
 async def create_template(request: Request, data: PDFTemplateCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a custom template"""
     template_id = generate_id()
     
@@ -276,7 +276,7 @@ async def create_template(request: Request, data: PDFTemplateCreate):
 
 @router.put("/{template_id}")
 async def update_template(request: Request, template_id: str, data: PDFTemplateUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update a template"""
     template = await templates_collection.find_one({"template_id": template_id})
     if not template:
@@ -310,7 +310,7 @@ async def update_template(request: Request, template_id: str, data: PDFTemplateU
 
 @router.post("/{template_id}/duplicate")
 async def duplicate_template(request: Request, template_id: str, new_name: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Duplicate a template (useful for customizing system templates)"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})
     if not template:
@@ -332,7 +332,7 @@ async def duplicate_template(request: Request, template_id: str, new_name: str =
 
 @router.delete("/{template_id}")
 async def delete_template(request: Request, template_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Delete a custom template"""
     template = await templates_collection.find_one({"template_id": template_id})
     if not template:
@@ -347,7 +347,7 @@ async def delete_template(request: Request, template_id: str):
 
 @router.post("/{template_id}/set-default")
 async def set_default_template(request: Request, template_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Set a template as default for its type"""
     template = await templates_collection.find_one({"template_id": template_id})
     if not template:
@@ -369,7 +369,7 @@ async def set_default_template(request: Request, template_id: str):
 
 @router.get("/default/{template_type}")
 async def get_default_template(request: Request, template_type: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get the default template for a document type"""
     await ensure_default_templates()
     
@@ -394,7 +394,7 @@ async def get_default_template(request: Request, template_type: str):
 
 @router.post("/preview")
 async def preview_template(request: Request, template_id: str, sample_data: Dict = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Generate a preview HTML for a template"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})
     if not template:

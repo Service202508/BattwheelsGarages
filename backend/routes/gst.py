@@ -19,7 +19,7 @@ import re
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from fastapi import Request
-from utils.database import extract_org_id, org_query, db as _gst_db
+from utils.database import require_org_id, org_query, db as _gst_db
 
 
 # Soft import for PDF service (may not be available in all environments)
@@ -225,7 +225,7 @@ class GSTCalculationRequest(BaseModel):
 
 @router.get("/summary")
 async def get_gst_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get GST summary for current financial year"""
     db = get_db()
     
@@ -296,21 +296,21 @@ async def get_gst_summary(request: Request):
 
 @router.get("/states")
 async def get_indian_states(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get list of Indian states with GST codes"""
     states = [{"code": k, "name": v} for k, v in INDIAN_STATES.items()]
     return {"code": 0, "states": states}
 
 @router.post("/validate-gstin")
 async def validate_gstin_endpoint(request: Request, data: GSTINValidation):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Validate GSTIN format and extract details"""
     result = validate_gstin(data.gstin)
     return {"code": 0 if result["valid"] else 1, **result}
 
 @router.post("/calculate")
 async def calculate_gst_endpoint(request: Request, data: GSTCalculationRequest):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Calculate GST (CGST/SGST/IGST) based on place of supply"""
     result = calculate_gst(
         data.subtotal,
@@ -322,7 +322,7 @@ async def calculate_gst_endpoint(request: Request, data: GSTCalculationRequest):
 
 @router.get("/organization-settings")
 async def get_organization_gst_settings(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get organization GST settings"""
     db = get_db()
     settings = await db.organization_settings.find_one(
@@ -339,7 +339,7 @@ async def get_organization_gst_settings(request: Request):
 
 @router.put("/organization-settings")
 async def update_organization_gst_settings(request: Request, settings: OrganizationGSTSettings):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update organization GST settings"""
     db = get_db()
     
@@ -396,7 +396,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
     
     # Fetch invoices for the period — from invoices_enhanced (primary collection), org-scoped
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     inv_query = org_query(org_id, {
         "invoice_date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
@@ -843,7 +843,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
     
     # Extract org context — every query in this function MUST include org_id
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Get organization settings — org-scoped
     org_settings = await db.organization_settings.find_one(
@@ -1439,7 +1439,7 @@ async def get_hsn_summary(request: Request, month: str = "", format: str = Query
     Required for GSTR-1 filing
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     if not month:
         month = datetime.now(timezone.utc).strftime("%Y-%m")

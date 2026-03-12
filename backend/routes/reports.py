@@ -17,7 +17,7 @@ import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 
-from utils.database import db as _reports_db, extract_org_id
+from utils.database import db as _reports_db, require_org_id
 from core.subscriptions.entitlement import require_feature
 
 # Soft import for PDF service (may not be available in all environments)
@@ -752,7 +752,7 @@ async def get_profit_loss_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
-    org_id = extract_org_id(request) if request else None
+    org_id = require_org_id(request) if request else None
     org_filter = {"organization_id": org_id}
     
     if not start_date:
@@ -835,7 +835,7 @@ async def get_balance_sheet_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     org_filter = {"organization_id": org_id}
     
     if not as_of_date:
@@ -927,7 +927,7 @@ async def get_ar_aging_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     org_filter = {"organization_id": org_id}
     
     if not as_of_date:
@@ -1025,7 +1025,7 @@ async def get_sales_by_customer_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     org_filter = {"organization_id": org_id}
     
     if not start_date:
@@ -1098,7 +1098,7 @@ async def get_ap_aging_report(
     Exports: JSON (web view), PDF, Excel
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     org_filter = {"organization_id": org_id}
     
     if not as_of_date:
@@ -1351,7 +1351,7 @@ async def get_technician_performance(
     end_iso = end_dt.isoformat()
 
     db = get_db()
-    org_id = extract_org_id(request) if request else None
+    org_id = require_org_id(request) if request else None
 
     # Build query
     query = {

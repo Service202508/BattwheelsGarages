@@ -5,7 +5,7 @@ Token status endpoint for the AI diagnostic system.
 """
 
 from fastapi import APIRouter, HTTPException, Request
-from utils.database import extract_org_id
+from utils.database import require_org_id
 
 router = APIRouter(prefix="/ai-usage", tags=["AI Usage"])
 
@@ -21,7 +21,7 @@ def init_router(database):
 async def get_ai_usage_status(request: Request):
     """Get AI diagnostic token status for the authenticated user's org."""
     # Auth check
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     if not org_id:
         raise HTTPException(status_code=401, detail="Organization context required")
 

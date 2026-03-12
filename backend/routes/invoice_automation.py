@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import os
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 from utils.database import db
@@ -54,7 +54,7 @@ class AutoCreditSettings(BaseModel):
 
 @router.get("/reminder-settings")
 async def get_reminder_settings(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get payment reminder settings"""
     settings = await reminder_settings_collection.find_one({"type": "reminder"}, {"_id": 0})
     if not settings:
@@ -63,7 +63,7 @@ async def get_reminder_settings(request: Request):
 
 @router.put("/reminder-settings")
 async def update_reminder_settings(request: Request, settings: ReminderSettings):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update payment reminder settings"""
     await reminder_settings_collection.update_one(
         {"type": "reminder"},
@@ -74,7 +74,7 @@ async def update_reminder_settings(request: Request, settings: ReminderSettings)
 
 @router.get("/late-fee-settings")
 async def get_late_fee_settings(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get late fee settings"""
     settings = await late_fee_settings_collection.find_one({"type": "late_fee"}, {"_id": 0})
     if not settings:
@@ -83,7 +83,7 @@ async def get_late_fee_settings(request: Request):
 
 @router.put("/late-fee-settings")
 async def update_late_fee_settings(request: Request, settings: LateFeeSettings):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update late fee settings"""
     await late_fee_settings_collection.update_one(
         {"type": "late_fee"},
@@ -97,7 +97,7 @@ async def update_late_fee_settings(request: Request, settings: LateFeeSettings):
 
 @router.get("/overdue-invoices")
 async def get_overdue_invoices(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get all overdue invoices"""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
@@ -123,7 +123,7 @@ async def get_overdue_invoices(request: Request):
 
 @router.get("/due-soon-invoices")
 async def get_due_soon_invoices(request: Request, days: int = 7):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get invoices due within specified days"""
     today = datetime.now(timezone.utc)
     future_date = (today + timedelta(days=days)).strftime("%Y-%m-%d")
@@ -151,7 +151,7 @@ async def get_due_soon_invoices(request: Request, days: int = 7):
 
 @router.post("/send-reminder/{invoice_id}")
 async def send_payment_reminder(request: Request, invoice_id: str, background_tasks: BackgroundTasks):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Send payment reminder for a specific invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
@@ -205,7 +205,7 @@ async def send_payment_reminder(request: Request, invoice_id: str, background_ta
 
 @router.post("/send-bulk-reminders")
 async def send_bulk_reminders(request: Request, invoice_ids: List[str], background_tasks: BackgroundTasks):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Send payment reminders for multiple invoices"""
     sent = 0
     failed = 0
@@ -262,7 +262,7 @@ async def send_bulk_reminders(request: Request, invoice_ids: List[str], backgrou
 
 @router.get("/reminder-history")
 async def get_reminder_history(request: Request, invoice_id: str = "", customer_id: str = "", limit: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get reminder history"""
     query = {}
     if invoice_id:
@@ -279,7 +279,7 @@ async def get_reminder_history(request: Request, invoice_id: str = "", customer_
 
 @router.get("/calculate-late-fee/{invoice_id}")
 async def calculate_late_fee(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Calculate late fee for an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
@@ -327,7 +327,7 @@ async def calculate_late_fee(request: Request, invoice_id: str):
 
 @router.post("/apply-late-fee/{invoice_id}")
 async def apply_late_fee(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Apply late fee to an invoice"""
     # Calculate fee
     fee_result = await calculate_late_fee(invoice_id)
@@ -364,7 +364,7 @@ async def apply_late_fee(request: Request, invoice_id: str):
 
 @router.post("/auto-apply-credits/{invoice_id}")
 async def auto_apply_credits(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Automatically apply available customer credits to an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id, "organization_id": org_id})
     if not invoice:
@@ -450,7 +450,7 @@ async def auto_apply_credits(request: Request, invoice_id: str):
 
 @router.get("/aging-report")
 async def get_aging_report(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get accounts receivable aging report"""
     today = datetime.now(timezone.utc)
     today_str = today.strftime("%Y-%m-%d")

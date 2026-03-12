@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import uuid
 import logging
 from fastapi import Request
-from utils.database import db, extract_org_id, org_query
+from utils.database import db, require_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
@@ -167,7 +167,7 @@ def map_legacy_vendor_to_contact(vendor: dict) -> dict:
 
 @router.get("/status")
 async def get_migration_status(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get current migration status and statistics"""
     # Count legacy records
     legacy_customers = await legacy_customers_collection.count_documents(org_query(org_id))
@@ -219,7 +219,7 @@ async def get_migration_status(request: Request):
 
 @router.get("/preview")
 async def preview_migration(request: Request, limit: int = 10):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Preview records that will be migrated"""
     # Sample customers
     customers = await legacy_customers_collection.find({}, {"_id": 0}).limit(limit).to_list(limit)
@@ -255,7 +255,7 @@ async def preview_migration(request: Request, limit: int = 10):
 
 @router.post("/run")
 async def run_migration(request: Request, config: MigrationConfig, background_tasks: BackgroundTasks):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Run the migration process"""
     results = {
         "customers_migrated": 0,
@@ -360,7 +360,7 @@ async def run_migration(request: Request, config: MigrationConfig, background_ta
 
 @router.post("/sync-from-zoho")
 async def sync_from_zoho_contacts(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Migrate contacts that were synced from Zoho into enhanced collection"""
     results = {"migrated": 0, "skipped": 0, "errors": []}
     
@@ -437,7 +437,7 @@ async def sync_from_zoho_contacts(request: Request):
 
 @router.post("/cleanup-duplicates")
 async def cleanup_duplicates(request: Request, dry_run: bool = True):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Find and optionally remove duplicate contacts"""
     # Find duplicates by email
     email_pipeline = [
@@ -486,7 +486,7 @@ async def cleanup_duplicates(request: Request, dry_run: bool = True):
 
 @router.post("/rollback")
 async def rollback_migration(request: Request, migration_source: str = "legacy_customers"):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Rollback migrated contacts from a specific source"""
     if migration_source not in ["legacy_customers", "legacy_vendors", "zoho_contacts"]:
         raise HTTPException(status_code=400, detail="Invalid migration source")
@@ -505,7 +505,7 @@ async def rollback_migration(request: Request, migration_source: str = "legacy_c
 
 @router.get("/logs")
 async def get_migration_logs(request: Request, limit: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get migration logs"""
     logs = await migration_logs_collection.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
     return {"code": 0, "logs": logs}

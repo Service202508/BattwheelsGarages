@@ -11,7 +11,7 @@ import os
 import uuid
 import logging
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
@@ -174,7 +174,7 @@ async def deduct_component_stock(components: List[dict], quantity: int, referenc
 
 @router.post("")
 async def create_composite_item(request: Request, data: CompositeItemCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new composite/kit item"""
     # Validate all components exist
     for comp in data.components:
@@ -250,7 +250,7 @@ async def create_composite_item(request: Request, data: CompositeItemCreate):
 
 @router.get("")
 async def list_composite_items(request: Request, type: Optional[str] = None, is_active: bool = True, skip: int = 0, limit: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List all composite items"""
     query = {"is_active": is_active}
     if type:
@@ -276,7 +276,7 @@ async def list_composite_items(request: Request, type: Optional[str] = None, is_
 
 @router.get("/summary")
 async def get_composite_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get summary statistics for composite items"""
     total = await composite_collection.count_documents(org_query(org_id))
     active = await composite_collection.count_documents(org_query(org_id, {"is_active": True}))
@@ -305,7 +305,7 @@ async def get_composite_summary(request: Request):
 
 @router.get("/{composite_id}")
 async def get_composite_item(request: Request, composite_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get a specific composite item with component details"""
     item = await composite_collection.find_one({"composite_id": composite_id}, {"_id": 0})
     if not item:
@@ -329,7 +329,7 @@ async def get_composite_item(request: Request, composite_id: str):
 
 @router.put("/{composite_id}")
 async def update_composite_item(request: Request, composite_id: str, data: CompositeItemUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update a composite item"""
     item = await composite_collection.find_one({"composite_id": composite_id})
     if not item:
@@ -499,7 +499,7 @@ async def unbuild_composite_item(composite_id: str, request: BuildRequest):
 
 @router.get("/{composite_id}/availability")
 async def check_build_availability(request: Request, composite_id: str, quantity: int = 1):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Check if components are available to build a quantity"""
     item = await composite_collection.find_one({"composite_id": composite_id}, {"_id": 0})
     if not item:
@@ -540,7 +540,7 @@ async def check_build_availability(request: Request, composite_id: str, quantity
 
 @router.delete("/{composite_id}")
 async def delete_composite_item(request: Request, composite_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Delete a composite item"""
     result = await composite_collection.delete_one({"composite_id": composite_id})
     if result.deleted_count == 0:

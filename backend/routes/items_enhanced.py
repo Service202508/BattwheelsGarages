@@ -27,7 +27,7 @@ import base64
 
 # Import tenant context for multi-tenant scoping
 from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
-from utils.database import extract_org_id, db as _items_db
+from utils.database import require_org_id, db as _items_db
 
 router = APIRouter(prefix="/items-enhanced", tags=["Items Enhanced"])
 
@@ -472,7 +472,7 @@ class SalesByItemFilter(BaseModel):
 async def create_item_group(group: ItemGroupCreate, request: Request):
     """Create an item group (category)"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Check unique name
     existing = await db.item_groups.find_one({"name": group.name, "organization_id": org_id})
@@ -510,7 +510,7 @@ async def create_item_group(group: ItemGroupCreate, request: Request):
 async def list_item_groups(request: Request, include_inactive: bool = False):
     """List all item groups"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     query = {"organization_id": org_id}
     if not include_inactive:
         query["is_active"] = True
@@ -528,7 +528,7 @@ async def list_item_groups(request: Request, include_inactive: bool = False):
 async def list_item_categories(request: Request, include_inactive: bool = False):
     """List all item categories (alias for groups for Zoho compatibility)"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     query = {"organization_id": org_id}
     if not include_inactive:
         query["is_active"] = True
@@ -562,7 +562,7 @@ async def list_item_categories(request: Request, include_inactive: bool = False)
 async def get_item_group(group_id: str, request: Request):
     """Get item group details with items"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     group = await db.item_groups.find_one({"group_id": group_id, "organization_id": org_id}, {"_id": 0})
     if not group:
         raise HTTPException(status_code=404, detail="Item group not found")
@@ -580,7 +580,7 @@ async def get_item_group(group_id: str, request: Request):
 async def update_item_group(group_id: str, group: ItemGroupCreate, request: Request):
     """Update item group"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     result = await db.item_groups.update_one(
         {"group_id": group_id, "organization_id": org_id},
@@ -602,7 +602,7 @@ async def update_item_group(group_id: str, group: ItemGroupCreate, request: Requ
 async def delete_item_group(group_id: str, request: Request):
     """Delete item group (only if no items)"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Check for items
     item_count = await db.items.count_documents(
@@ -623,7 +623,7 @@ async def delete_item_group(group_id: str, request: Request):
 async def create_warehouse(warehouse: WarehouseCreate, request: Request):
     """Create a warehouse"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     existing = await db.warehouses.find_one({"name": warehouse.name, "organization_id": org_id})
     if existing:
@@ -653,7 +653,7 @@ async def create_warehouse(warehouse: WarehouseCreate, request: Request):
 async def list_warehouses(request: Request, include_inactive: bool = False):
     """List all warehouses"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     query = {"organization_id": org_id}
     if not include_inactive:
         query["is_active"] = True
@@ -674,7 +674,7 @@ async def list_warehouses(request: Request, include_inactive: bool = False):
 async def get_warehouse(warehouse_id: str, request: Request):
     """Get warehouse details with stock"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     warehouse = await db.warehouses.find_one({"warehouse_id": warehouse_id, "organization_id": org_id}, {"_id": 0})
     if not warehouse:
         raise HTTPException(status_code=404, detail="Warehouse not found")
@@ -709,7 +709,7 @@ async def get_warehouse(warehouse_id: str, request: Request):
 async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate, request: Request):
     """Update warehouse"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     result = await db.warehouses.update_one(
         {"warehouse_id": warehouse_id, "organization_id": org_id},
@@ -733,7 +733,7 @@ async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate, reques
 async def create_enhanced_item(item: ItemCreate, request: Request):
     """Create item with full Zoho Books-style features and CSV compatibility"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Plan record limit enforcement
     from utils.plan_limits import check_record_limit
@@ -915,7 +915,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
 async def get_item_image(image_id: str, request: Request):
     """Get item image by ID"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     image = await db.item_images.find_one({"image_id": image_id, "organization_id": org_id}, {"_id": 0})
     if not image:
@@ -928,7 +928,7 @@ async def get_item_image(image_id: str, request: Request):
 async def get_items_summary(request: Request):
     """Get items summary statistics"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     base = org_query(org_id)
     
     total_items = await db.items.count_documents(base)
@@ -982,7 +982,7 @@ async def list_enhanced_items(
 ):
     """List items with advanced filters and sorting"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id}
     if item_type:
@@ -1049,7 +1049,7 @@ async def list_enhanced_items(
 async def get_low_stock_items(request: Request):
     """Get items below reorder level"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # H-02: hard cap, Sprint 3 for cursor pagination
     items = await db.items.find(
@@ -1080,7 +1080,7 @@ async def get_low_stock_items(request: Request):
 async def create_stock_location(location: ItemStockLocationCreate, request: Request):
     """Create or update stock location"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Get warehouse name
     warehouse = await db.warehouses.find_one({"warehouse_id": location.warehouse_id, "organization_id": org_id})
@@ -1119,7 +1119,7 @@ async def create_stock_location(location: ItemStockLocationCreate, request: Requ
 async def bulk_update_stock(bulk: BulkStockUpdate, request: Request):
     """Bulk update stock locations"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     updated = 0
     
     for update in bulk.updates:
@@ -1143,7 +1143,7 @@ async def bulk_update_stock(bulk: BulkStockUpdate, request: Request):
 async def create_item_adjustment(adj: ItemAdjustmentCreate, request: Request):
     """Create inventory adjustment"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Get item
     item = await db.items.find_one({"item_id": adj.item_id, "organization_id": org_id})
@@ -1245,7 +1245,7 @@ async def list_item_adjustments(
 ):
     """List inventory adjustments"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id}
     if item_id:
@@ -1269,7 +1269,7 @@ async def list_item_adjustments(
 async def get_item_adjustment(adj_id: str, request: Request):
     """Get adjustment details"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     adj = await db.item_adjustments.find_one({"adjustment_id": adj_id, "organization_id": org_id}, {"_id": 0})
     if not adj:
         raise HTTPException(status_code=404, detail="Adjustment not found")
@@ -1281,7 +1281,7 @@ async def get_item_adjustment(adj_id: str, request: Request):
 async def create_price_list(price_list: PriceListCreate, request: Request):
     """Create a price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     existing = await db.price_lists.find_one({"name": price_list.name, "organization_id": org_id})
     if existing:
@@ -1311,7 +1311,7 @@ async def create_price_list(price_list: PriceListCreate, request: Request):
 async def list_price_lists(request: Request, include_inactive: bool = False):
     """List all price lists"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     query = {"organization_id": org_id}
     if not include_inactive:
         query["is_active"] = True
@@ -1336,7 +1336,7 @@ async def list_price_lists(request: Request, include_inactive: bool = False):
 async def get_price_list(pricelist_id: str, request: Request):
     """Get price list with item prices"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     pl = await db.price_lists.find_one({"pricelist_id": pricelist_id, "organization_id": org_id}, {"_id": 0})
     if not pl:
         raise HTTPException(status_code=404, detail="Price list not found")
@@ -1368,7 +1368,7 @@ async def get_price_list(pricelist_id: str, request: Request):
 async def update_price_list(pricelist_id: str, price_list: PriceListCreate, request: Request):
     """Update price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     result = await db.price_lists.update_one(
         {"pricelist_id": pricelist_id, "organization_id": org_id},
@@ -1391,7 +1391,7 @@ async def update_price_list(pricelist_id: str, price_list: PriceListCreate, requ
 async def delete_price_list(pricelist_id: str, request: Request):
     """Delete price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Delete associated item prices
     await db.item_prices.delete_many({"price_list_id": pricelist_id, "organization_id": org_id})
@@ -1408,7 +1408,7 @@ async def delete_price_list(pricelist_id: str, request: Request):
 async def create_item_price(price: ItemPriceCreate, request: Request):
     """Set item price for a price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Check if exists
     existing = await db.item_prices.find_one({
@@ -1448,7 +1448,7 @@ async def create_item_price(price: ItemPriceCreate, request: Request):
 async def get_item_prices(item_id: str, request: Request):
     """Get all prices for an item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     prices = await db.item_prices.find({"item_id": item_id, "organization_id": org_id}, {"_id": 0}).to_list(100)
     return {"code": 0, "prices": prices}
 
@@ -1456,7 +1456,7 @@ async def get_item_prices(item_id: str, request: Request):
 async def delete_item_price(item_id: str, price_list_id: str, request: Request):
     """Delete item price from a price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     result = await db.item_prices.delete_one({
         "item_id": item_id,
         "price_list_id": price_list_id,
@@ -1472,7 +1472,7 @@ async def delete_item_price(item_id: str, price_list_id: str, request: Request):
 async def assign_price_list_to_contact(assignment: ContactPriceListAssign, request: Request):
     """Assign sales/purchase price list to a customer/vendor"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Verify contact exists
     contact = await db.contacts_enhanced.find_one({"contact_id": assignment.contact_id, "organization_id": org_id})
@@ -1516,7 +1516,7 @@ async def assign_price_list_to_contact(assignment: ContactPriceListAssign, reque
 async def get_contact_price_lists(contact_id: str, request: Request):
     """Get price lists assigned to a contact"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     contact = await db.contacts_enhanced.find_one({"contact_id": contact_id, "organization_id": org_id}, {"_id": 0})
     if not contact:
@@ -1550,7 +1550,7 @@ async def get_contact_price_lists(contact_id: str, request: Request):
 async def calculate_line_item_prices(line_request: LineItemPriceRequest, request: Request):
     """Calculate prices for line items based on contact or specific price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     price_list_id = line_request.price_list_id
     
@@ -1652,7 +1652,7 @@ async def calculate_line_item_prices(line_request: LineItemPriceRequest, request
 async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, request: Request):
     """Set prices for multiple items in a price list"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pl = await db.price_lists.find_one({"pricelist_id": pricelist_id, "organization_id": org_id})
     if not pl:
@@ -1740,7 +1740,7 @@ async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, reque
 async def create_item_barcode(barcode: ItemBarcodeCreate, request: Request):
     """Create or update barcode for an item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     item = await db.items.find_one({"item_id": barcode.item_id, "organization_id": org_id})
     if not item:
@@ -1782,7 +1782,7 @@ async def create_item_barcode(barcode: ItemBarcodeCreate, request: Request):
 async def lookup_by_barcode(barcode_value: str, request: Request):
     """Look up item by barcode or SKU"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Search by barcode_value or SKU
     item = await db.items.find_one({
@@ -1810,7 +1810,7 @@ async def lookup_by_barcode(barcode_value: str, request: Request):
 async def batch_barcode_lookup(barcodes: List[str], request: Request):
     """Look up multiple items by barcode/SKU"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     results = []
     not_found = []
@@ -1858,7 +1858,7 @@ async def get_item_price_for_contact(
     - discount/markup applied: The adjustment made
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Get item
     item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
@@ -1964,7 +1964,7 @@ async def get_contact_pricing_summary(contact_id: str, request: Request):
     Useful for displaying which price list is being applied in Quotes/Invoices UI.
     """
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     contact = await db.contacts_enhanced.find_one({"contact_id": contact_id, "organization_id": org_id})
     if not contact:
@@ -2020,7 +2020,7 @@ async def get_sales_by_item_report(
 ):
     """Sales by Item report - shows quantity sold and revenue per item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Build query for invoices
     query = {"organization_id": org_id, "status": {"$in": ["paid", "sent", "overdue", "partially_paid"]}}
@@ -2105,7 +2105,7 @@ async def get_purchases_by_item_report(
 ):
     """Purchases by Item report"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id, "status": {"$in": ["paid", "pending", "overdue", "partially_paid"]}}
     
@@ -2185,7 +2185,7 @@ async def get_inventory_valuation_report(
 ):
     """Inventory valuation report with FIFO/LIFO tracking"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}, "is_active": True}
     
@@ -2255,7 +2255,7 @@ async def get_item_movement_report(
 ):
     """Item movement report - all stock in/out for an item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
@@ -2361,7 +2361,7 @@ async def get_item_movement_report(
 async def get_stock_summary(request: Request, warehouse_id: str = ""):
     """Get stock summary report"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     match_stage = {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}}
     
@@ -2416,7 +2416,7 @@ async def get_stock_summary(request: Request, warehouse_id: str = ""):
 async def get_inventory_valuation(request: Request):
     """Get inventory valuation report"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pipeline = [
         {"$match": {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}}},
@@ -2465,7 +2465,7 @@ async def get_inventory_valuation(request: Request):
 async def perform_bulk_action(bulk_request: BulkActionRequest, request: Request):
     """Perform bulk actions on multiple items"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     if not bulk_request.item_ids:
         raise HTTPException(status_code=400, detail="No items selected")
@@ -2539,7 +2539,7 @@ async def export_items(
 ):
     """Export items to CSV (Zoho Books compatible) or JSON"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id}
     if item_type:
@@ -2741,7 +2741,7 @@ async def get_import_template():
 async def import_items(request: Request, file: UploadFile = File(...), overwrite_existing: bool = False):
     """Import items from CSV file"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     if not file.filename.endswith(('.csv', '.CSV')):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
@@ -2848,7 +2848,7 @@ async def get_all_item_history(
 ):
     """Get item history with filters"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id}
     if item_id:
@@ -2872,7 +2872,7 @@ async def get_all_item_history(
 async def create_value_adjustment(adj: ValueAdjustmentCreate, request: Request):
     """Create inventory value adjustment"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     item = await db.items.find_one({"item_id": adj.item_id, "organization_id": org_id})
     if not item:
@@ -2934,7 +2934,7 @@ async def create_value_adjustment(adj: ValueAdjustmentCreate, request: Request):
 async def get_item_preferences(request: Request):
     """Get module preferences"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     prefs = await db.item_preferences.find_one({"type": "items_module", "organization_id": org_id}, {"_id": 0})
     if not prefs:
@@ -2952,7 +2952,7 @@ async def get_item_preferences(request: Request):
 async def update_item_preferences(prefs: ItemPreferences, request: Request):
     """Update module preferences"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     prefs_dict = prefs.dict()
     prefs_dict["type"] = "items_module"
@@ -2971,7 +2971,7 @@ async def update_item_preferences(prefs: ItemPreferences, request: Request):
 async def get_custom_fields(request: Request):
     """Get custom field definitions"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     fields = await db.item_custom_fields.find({"organization_id": org_id}, {"_id": 0}).to_list(100)
     return {"code": 0, "custom_fields": fields}
@@ -2980,7 +2980,7 @@ async def get_custom_fields(request: Request):
 async def create_custom_field(field: CustomFieldDefinition, request: Request):
     """Create a custom field definition"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     if not field.field_id:
         field.field_id = f"CF-{uuid.uuid4().hex[:8].upper()}"
@@ -3003,7 +3003,7 @@ async def create_custom_field(field: CustomFieldDefinition, request: Request):
 async def update_custom_field(field_id: str, field: CustomFieldDefinition, request: Request):
     """Update a custom field"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     field_dict = field.dict()
     field_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
@@ -3022,7 +3022,7 @@ async def update_custom_field(field_id: str, field: CustomFieldDefinition, reque
 async def delete_custom_field(field_id: str, request: Request):
     """Delete a custom field"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     result = await db.item_custom_fields.delete_one({"field_id": field_id, "organization_id": org_id})
     if result.deleted_count == 0:
@@ -3055,7 +3055,7 @@ DEFAULT_FIELDS = [
 async def get_field_configuration(request: Request):
     """Get field visibility and access configuration"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     fields = await db.item_field_config.find({"organization_id": org_id}, {"_id": 0}).sort("field_order", 1).to_list(100)
     
@@ -3076,7 +3076,7 @@ async def get_field_configuration(request: Request):
 async def update_field_configuration(fields: List[FieldConfiguration], request: Request):
     """Update field visibility and access configuration"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     for field in fields:
         field_dict = field.dict()
@@ -3094,7 +3094,7 @@ async def update_field_configuration(fields: List[FieldConfiguration], request: 
 async def update_single_field_config(field_name: str, config: FieldConfiguration, request: Request):
     """Update configuration for a single field"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     config_dict = config.dict()
     config_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
@@ -3111,7 +3111,7 @@ async def update_single_field_config(field_name: str, config: FieldConfiguration
 async def get_fields_for_role(role: str, request: Request):
     """Get visible fields for a specific role"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     fields = await db.item_field_config.find(
         {"is_active": True, "allowed_roles": role, "organization_id": org_id},
@@ -3132,7 +3132,7 @@ async def get_fields_for_role(role: str, request: Request):
 async def generate_sku(request: Request):
     """Generate next SKU based on preferences"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     prefs = await db.item_preferences.find_one({"type": "items_module", "organization_id": org_id})
     if not prefs or not prefs.get("auto_generate_sku"):
@@ -3191,7 +3191,7 @@ async def validate_sac_code(sac_code: str = ""):
 async def get_enhanced_item(item_id: str, request: Request):
     """Get item with full details"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -3234,7 +3234,7 @@ async def get_enhanced_item(item_id: str, request: Request):
 async def update_enhanced_item(item_id: str, item: ItemUpdate, request: Request):
     """Update item with partial data"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     existing = await db.items.find_one({"item_id": item_id, "organization_id": org_id})
     if not existing:
@@ -3267,7 +3267,7 @@ async def update_enhanced_item(item_id: str, item: ItemUpdate, request: Request)
 async def activate_item(item_id: str, request: Request):
     """Activate item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     result = await db.items.update_one(
         {"item_id": item_id, "organization_id": org_id},
         {"$set": {"is_active": True, "status": "active", "updated_time": datetime.now(timezone.utc).isoformat()}}
@@ -3280,7 +3280,7 @@ async def activate_item(item_id: str, request: Request):
 async def deactivate_item(item_id: str, request: Request):
     """Deactivate item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     result = await db.items.update_one(
         {"item_id": item_id, "organization_id": org_id},
         {"$set": {"is_active": False, "status": "inactive", "updated_time": datetime.now(timezone.utc).isoformat()}}
@@ -3293,7 +3293,7 @@ async def deactivate_item(item_id: str, request: Request):
 async def delete_enhanced_item(item_id: str, request: Request):
     """Delete item (only if not used in transactions)"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Check usage
     invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
@@ -3325,7 +3325,7 @@ async def delete_enhanced_item(item_id: str, request: Request):
 async def get_item_stock_locations(item_id: str, request: Request):
     """Get stock locations for an item"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     locations = await db.item_stock_locations.find(
         {"item_id": item_id, "organization_id": org_id},
         {"_id": 0}
@@ -3343,7 +3343,7 @@ async def get_item_stock_locations(item_id: str, request: Request):
 async def fix_negative_stock_items(request: Request):
     """Fix items with negative stock by setting stock_on_hand to 0"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Find all items with negative stock
     negative_items = await db.items.find(
@@ -3385,7 +3385,7 @@ async def fix_negative_stock_items(request: Request):
 async def get_stock_integrity_report(request: Request):
     """Get report of stock integrity issues"""
     db = get_db()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Negative stock items
     negative_items = await db.items.find(

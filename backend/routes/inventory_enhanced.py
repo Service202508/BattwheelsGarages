@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/inventory-enhanced", tags=["Inventory Enhanced"])
 
 # Database connection - shared instance from utils.database
-from utils.database import db, extract_org_id, org_query
+from utils.database import db, require_org_id, org_query
 
 # Collections
 items_collection = db["items"]  # Use same collection as items_enhanced route
@@ -218,7 +218,7 @@ async def add_history(entity_type: str, entity_id: str, action: str, details: st
 
 @router.get("/summary")
 async def get_inventory_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get inventory summary statistics"""
     org_filter = {"organization_id": org_id}
     total_items = await items_collection.count_documents({**org_filter, "status": "active"})
@@ -283,7 +283,7 @@ async def get_inventory_summary(request: Request):
 @router.post("/warehouses")
 async def create_warehouse(warehouse: WarehouseCreate, request: Request = None,
                            _: None = Depends(require_feature("inventory_multi_warehouse"))):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new warehouse"""
     warehouse_id = generate_id("WH")
     
@@ -304,7 +304,7 @@ async def create_warehouse(warehouse: WarehouseCreate, request: Request = None,
 @router.get("/warehouses")
 async def list_warehouses(active_only: bool = True, request: Request = None,
                           _: None = Depends(require_feature("inventory_multi_warehouse"))):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List all warehouses"""
     query = {"is_active": True} if active_only else {}
     warehouses = await warehouses_collection.find(query, {"_id": 0}).to_list(100)
@@ -312,7 +312,7 @@ async def list_warehouses(active_only: bool = True, request: Request = None,
 
 @router.get("/stock")
 async def get_stock(request: Request, warehouse_id: str = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get stock items, optionally filtered by warehouse"""
     query = {}
     if warehouse_id:
@@ -340,7 +340,7 @@ async def get_stock(request: Request, warehouse_id: str = None):
 @router.get("/warehouses/{warehouse_id}")
 async def get_warehouse(warehouse_id: str, request: Request = None,
                         _: None = Depends(require_feature("inventory_multi_warehouse"))):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get warehouse details with stock summary"""
     warehouse = await warehouses_collection.find_one({"warehouse_id": warehouse_id}, {"_id": 0})
     if not warehouse:
@@ -370,7 +370,7 @@ async def get_warehouse(warehouse_id: str, request: Request = None,
 @router.put("/warehouses/{warehouse_id}")
 async def update_warehouse(warehouse_id: str, update: dict, request: Request = None,
                            _: None = Depends(require_feature("inventory_multi_warehouse"))):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update warehouse"""
     if update.get("is_primary"):
         await warehouses_collection.update_many({"is_primary": True}, {"$set": {"is_primary": False}})
@@ -383,7 +383,7 @@ async def update_warehouse(warehouse_id: str, update: dict, request: Request = N
 
 @router.post("/variants")
 async def create_variant(request: Request, variant: VariantCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create item variant (e.g., size/color combinations)"""
     # Verify base item exists
     item = await items_collection.find_one({"item_id": variant.item_id})
@@ -425,7 +425,7 @@ async def create_variant(request: Request, variant: VariantCreate):
 
 @router.get("/variants")
 async def list_variants(request: Request, item_id: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List item variants"""
     query = {}
     if item_id:
@@ -442,7 +442,7 @@ async def list_variants(request: Request, item_id: Optional[str] = None):
 
 @router.get("/variants/{variant_id}")
 async def get_variant(request: Request, variant_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get variant details"""
     variant = await variants_collection.find_one({"variant_id": variant_id}, {"_id": 0})
     if not variant:
@@ -461,7 +461,7 @@ async def get_variant(request: Request, variant_id: str):
 
 @router.put("/variants/{variant_id}")
 async def update_variant(request: Request, variant_id: str, update: VariantUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update variant"""
     update_dict = {k: v for k, v in update.dict().items() if v is not None}
     
@@ -482,7 +482,7 @@ async def update_variant(request: Request, variant_id: str, update: VariantUpdat
 
 @router.delete("/variants/{variant_id}")
 async def delete_variant(request: Request, variant_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Delete variant (soft delete)"""
     await variants_collection.update_one({"variant_id": variant_id}, {"$set": {"status": "inactive"}})
     return {"code": 0, "message": "Variant deleted"}
@@ -491,7 +491,7 @@ async def delete_variant(request: Request, variant_id: str):
 
 @router.post("/bundles")
 async def create_bundle(request: Request, bundle: BundleCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create item bundle (composite/kit)"""
     bundle_id = generate_id("BDL")
     sku = bundle.sku or f"BDL-{bundle.name.upper().replace(' ', '-')[:20]}"
@@ -552,7 +552,7 @@ async def create_bundle(request: Request, bundle: BundleCreate):
 
 @router.get("/bundles")
 async def list_bundles(request: Request, status: str = "active"):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List item bundles"""
     query = {"status": status} if status != "all" else {}
     bundles = await bundles_collection.find(query, {"_id": 0}).to_list(200)
@@ -560,7 +560,7 @@ async def list_bundles(request: Request, status: str = "active"):
 
 @router.get("/bundles/{bundle_id}")
 async def get_bundle(request: Request, bundle_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get bundle with components"""
     bundle = await bundles_collection.find_one({"bundle_id": bundle_id}, {"_id": 0})
     if not bundle:
@@ -581,7 +581,7 @@ async def get_bundle(request: Request, bundle_id: str):
 
 @router.post("/bundles/{bundle_id}/assemble")
 async def assemble_bundle(request: Request, bundle_id: str, quantity: int = 1, warehouse_id: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Assemble bundle by consuming component stock"""
     bundle = await bundles_collection.find_one({"bundle_id": bundle_id})
     if not bundle:
@@ -623,7 +623,7 @@ async def assemble_bundle(request: Request, bundle_id: str, quantity: int = 1, w
 
 @router.post("/serial-batches")
 async def create_serial_batch(request: Request, data: SerialBatchCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create serial number or batch"""
     # Check for duplicate
     existing = await serial_batches_collection.find_one({"number": data.number, "item_id": data.item_id})
@@ -653,7 +653,7 @@ async def create_serial_batch(request: Request, data: SerialBatchCreate):
 
 @router.get("/serial-batches")
 async def list_serial_batches(request: Request, item_id: Optional[str] = None, tracking_type: Optional[str] = None, status: str = "available"):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List serial numbers and batches"""
     query = {}
     if item_id:
@@ -668,7 +668,7 @@ async def list_serial_batches(request: Request, item_id: Optional[str] = None, t
 
 @router.get("/serial-batches/{serial_batch_id}")
 async def get_serial_batch(request: Request, serial_batch_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get serial/batch details with history"""
     serial = await serial_batches_collection.find_one({"serial_batch_id": serial_batch_id}, {"_id": 0})
     if not serial:
@@ -683,7 +683,7 @@ async def get_serial_batch(request: Request, serial_batch_id: str):
 
 @router.put("/serial-batches/{serial_batch_id}/status")
 async def update_serial_status(request: Request, serial_batch_id: str, status: str, reason: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update serial/batch status"""
     valid_statuses = ["available", "sold", "returned", "damaged", "expired"]
     if status not in valid_statuses:
@@ -700,7 +700,7 @@ async def update_serial_status(request: Request, serial_batch_id: str, status: s
 
 @router.post("/shipments")
 async def create_shipment(request: Request, shipment: ShipmentCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create shipment from sales order"""
     # Verify sales order
     so = await sales_orders_collection.find_one({"salesorder_id": shipment.sales_order_id})
@@ -817,7 +817,7 @@ async def list_shipments(request: Request, sales_order_id: Optional[str] = None,
 
 @router.get("/shipments/{shipment_id}")
 async def get_shipment(request: Request, shipment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get shipment details"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id}, {"_id": 0})
     if not shipment:
@@ -830,7 +830,7 @@ async def get_shipment(request: Request, shipment_id: str):
 
 @router.post("/shipments/{shipment_id}/ship")
 async def mark_shipped(request: Request, shipment_id: str, tracking_number: str = ""):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Mark shipment as shipped"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id})
     if not shipment:
@@ -854,7 +854,7 @@ async def mark_shipped(request: Request, shipment_id: str, tracking_number: str 
 
 @router.post("/shipments/{shipment_id}/deliver")
 async def mark_delivered(request: Request, shipment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Mark shipment as delivered"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id})
     if not shipment:
@@ -874,7 +874,7 @@ async def mark_delivered(request: Request, shipment_id: str):
 
 @router.post("/returns")
 async def create_return(request: Request, ret: ReturnCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create return from shipment"""
     shipment = await shipments_collection.find_one({"shipment_id": ret.shipment_id})
     if not shipment:
@@ -975,7 +975,7 @@ async def list_returns(request: Request, status: Optional[str] = None, page: int
 
 @router.get("/returns/{return_id}")
 async def get_return(request: Request, return_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get return details"""
     ret = await returns_collection.find_one({"return_id": return_id}, {"_id": 0})
     if not ret:
@@ -984,7 +984,7 @@ async def get_return(request: Request, return_id: str):
 
 @router.post("/returns/{return_id}/process")
 async def process_return(request: Request, return_id: str, create_credit_note: bool = True):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Process pending return"""
     ret = await returns_collection.find_one({"return_id": return_id})
     if not ret:
@@ -1006,7 +1006,7 @@ async def process_return(request: Request, return_id: str, create_credit_note: b
 
 @router.post("/adjustments")
 async def create_adjustment(request: Request, adjustment: StockAdjustmentCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create stock adjustment"""
     item = await items_collection.find_one({"item_id": adjustment.item_id})
     if not item:
@@ -1089,7 +1089,7 @@ async def list_adjustments(request: Request, item_id: Optional[str] = None, ware
 
 @router.get("/reports/stock-summary")
 async def stock_summary_report(request: Request, warehouse_id: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Stock summary report"""
     match = {"organization_id": org_id, "status": "active"}
     
@@ -1165,7 +1165,7 @@ async def stock_summary_report(request: Request, warehouse_id: Optional[str] = N
 
 @router.get("/reports/low-stock")
 async def low_stock_report(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Low stock items report"""
     pipeline = [
         {"$match": {"organization_id": org_id, "status": "active", "track_inventory": True}},
@@ -1211,7 +1211,7 @@ async def low_stock_report(request: Request):
 
 @router.get("/reports/valuation")
 async def inventory_valuation_report(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Inventory valuation report"""
     pipeline = [
         {"$match": {"organization_id": org_id, "status": "active"}},
@@ -1244,7 +1244,7 @@ async def inventory_valuation_report(request: Request):
 
 @router.get("/reports/movement")
 async def stock_movement_report(request: Request, item_id: Optional[str] = None, days: int = 30):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Stock movement/history report"""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     
@@ -1281,7 +1281,7 @@ class StockTransferCreate(BaseModel):
 
 @router.post("/stock-transfers")
 async def create_stock_transfer(request: Request, data: StockTransferCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Transfer stock between two warehouses"""
     if data.from_warehouse_id == data.to_warehouse_id:
         raise HTTPException(status_code=400, detail="Source and destination warehouses must differ")
@@ -1360,7 +1360,7 @@ async def create_stock_transfer(request: Request, data: StockTransferCreate):
 
 @router.get("/stock-transfers")
 async def list_stock_transfers(request: Request, limit: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List recent stock transfers"""
     transfers = await db["stock_transfers"].find(
         {}, {"_id": 0}
@@ -1372,7 +1372,7 @@ async def list_stock_transfers(request: Request, limit: int = 50):
 
 @router.get("/reorder-suggestions")
 async def get_reorder_suggestions(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """
     Get items below reorder point with suggested PO quantities.
     Returns grouped-by-supplier suggestions ready for PO creation.
@@ -1452,7 +1452,7 @@ async def get_reorder_suggestions(request: Request):
 
 @router.post("/reorder-suggestions/create-po")
 async def create_po_from_suggestions(request: Request, data: dict):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """
     Create a purchase order from reorder suggestions.
     Body: {"vendor_id": "...", "items": [{"item_id": ..., "quantity": ..., "unit_cost": ...}]}
@@ -1535,7 +1535,7 @@ class StocktakeCountUpdate(BaseModel):
 
 @router.post("/stocktakes")
 async def create_stocktake(request: Request, data: StocktakeCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """
     Create a new stocktake (inventory count session) for a warehouse.
     If item_ids is empty, includes ALL items in that warehouse.
@@ -1600,7 +1600,7 @@ async def create_stocktake(request: Request, data: StocktakeCreate):
 
 @router.get("/stocktakes")
 async def list_stocktakes(request: Request, status: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List all stocktakes"""
     query = {}
     if status:
@@ -1615,7 +1615,7 @@ async def list_stocktakes(request: Request, status: Optional[str] = None):
 
 @router.get("/stocktakes/{stocktake_id}")
 async def get_stocktake(request: Request, stocktake_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get stocktake details with all count lines"""
     st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
     if not st:
@@ -1625,7 +1625,7 @@ async def get_stocktake(request: Request, stocktake_id: str):
 
 @router.put("/stocktakes/{stocktake_id}/lines/{item_id}")
 async def update_stocktake_line(request: Request, stocktake_id: str, item_id: str, data: StocktakeCountUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Submit a count for a specific item in the stocktake"""
     st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
     if not st:
@@ -1665,7 +1665,7 @@ async def update_stocktake_line(request: Request, stocktake_id: str, item_id: st
 
 @router.post("/stocktakes/{stocktake_id}/finalize")
 async def finalize_stocktake(request: Request, stocktake_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """
     Finalize stocktake: apply all variances as stock adjustments.
     Only lines with variance != 0 are adjusted.

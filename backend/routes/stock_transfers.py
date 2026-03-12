@@ -17,7 +17,7 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-from utils.database import db, extract_org_id
+from utils.database import db, require_org_id
 
 router = APIRouter(
     prefix="/stock-transfers",
@@ -463,7 +463,7 @@ async def void_transfer(transfer_id: str, voided_by: str = "system", reason: str
 @router.get("/stats/summary")
 async def get_transfer_stats(request: Request):
     """Get stock transfer statistics"""
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     query = {"organization_id": org_id}
     
     total = await transfers_col.count_documents(query)

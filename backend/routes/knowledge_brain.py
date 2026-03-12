@@ -17,7 +17,7 @@ from models.knowledge_brain import (
 )
 from services.ai_assist_service import AIAssistService
 from services.knowledge_store_service import KnowledgeStoreService
-from utils.database import extract_org_id
+from utils.database import extract_org_id, require_org_id
 
 logger = logging.getLogger(__name__)
 
@@ -81,9 +81,7 @@ async def get_ticket_ai_suggestions(
     Get AI-powered suggestions for a specific ticket.
     Returns diagnostic steps, probable causes, and estimate suggestions.
     """
-    org_id = extract_org_id(http_request)
-    if not org_id:
-        raise HTTPException(status_code=400, detail="Organization ID required")
+    org_id = require_org_id(http_request)
     
     service = get_ai_service()
     suggestions = await service.get_ticket_suggestions(ticket_id, org_id)
@@ -110,7 +108,7 @@ async def quick_diagnose(
     Quick diagnosis endpoint for category-based symptom lookup.
     Returns matching failure cards and diagnostic suggestions.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     
     store = get_knowledge_store()
     
@@ -208,7 +206,7 @@ async def upload_knowledge(
     Upload new knowledge article to the tenant knowledge base.
     Article goes to 'draft' status until approved.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
@@ -256,7 +254,7 @@ async def create_failure_card(
     Create a new failure card in the knowledge base.
     Failure cards provide structured diagnostic and repair procedures.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
@@ -335,7 +333,7 @@ async def approve_knowledge(
     Approve or reject a knowledge article.
     Requires supervisor/admin role.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
@@ -363,7 +361,7 @@ async def get_source_details(
     Get full details of a knowledge source.
     Used when user clicks on a citation link.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     db = get_db()
     
     # TENANT GUARD: Only return global or same-org sources
@@ -405,7 +403,7 @@ async def list_knowledge(http_request: Request, knowledge_type: Optional[str] = 
     """
     List knowledge articles with filters.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     db = get_db()
     
     query = {
@@ -445,7 +443,7 @@ async def list_failure_cards(http_request: Request, subsystem: Optional[str] = N
     """
     List failure cards with filters.
     """
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     db = get_db()
     
     query = {
@@ -503,7 +501,7 @@ async def ai_health():
 @router.get("/stats")
 async def get_ai_stats(http_request: Request):
     """Get AI usage statistics for the organization"""
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     db = get_db()
     
     # Query stats

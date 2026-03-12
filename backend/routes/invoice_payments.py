@@ -19,7 +19,7 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutStatusResponse, 
     CheckoutSessionRequest
 )
-from utils.database import extract_org_id, org_query, db
+from utils.database import require_org_id, org_query, db
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
 
@@ -74,7 +74,7 @@ async def get_next_payment_number(org_id: str) -> str:
 
 @router.post("/create-payment-link")
 async def create_payment_link(request: CreatePaymentLinkRequest, http_request: Request):
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     """
     Create a Stripe checkout session for an invoice payment.
     Returns a payment link URL that the customer can use to pay.
@@ -168,7 +168,7 @@ async def create_payment_link(request: CreatePaymentLinkRequest, http_request: R
 
 @router.get("/status/{session_id}")
 async def get_payment_status(session_id: str, http_request: Request):
-    org_id = extract_org_id(http_request)
+    org_id = require_org_id(http_request)
     """
     Check the status of a Stripe checkout session.
     Used for polling after redirect from Stripe.
@@ -338,7 +338,7 @@ async def update_customer_balance(customer_id: str, org_id: str = None):
 
 @router.get("/invoice/{invoice_id}/payment-link")
 async def get_invoice_payment_link(request: Request, invoice_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get existing payment link for an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
@@ -361,7 +361,7 @@ async def get_invoice_payment_link(request: Request, invoice_id: str):
 
 @router.get("/transactions")
 async def list_payment_transactions(request: Request, invoice_id: str = "", customer_id: str = "", status: str = "", page: int = 1, per_page: int = 50):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List payment transactions"""
     query = {}
     if invoice_id:
@@ -389,7 +389,7 @@ async def list_payment_transactions(request: Request, invoice_id: str = "", cust
 
 @router.get("/summary")
 async def get_online_payments_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get summary of online payments"""
     org_filter = {"organization_id": org_id}
     # Total online payments

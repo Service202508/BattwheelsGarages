@@ -248,8 +248,8 @@ async def update_payment_settings(settings: dict):
 @router.get("/summary")
 async def get_payments_summary(request: Request, period: str = "this_month"):
     """Get payments summary statistics"""
-    from utils.database import extract_org_id
-    sum_org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    sum_org_id = require_org_id(request)
     today = datetime.now(timezone.utc)
     
     if period == "today":
@@ -537,8 +537,8 @@ async def list_payments(
     per_page: int = 50
 ):
     """List all payments with filters"""
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"organization_id": org_id} if org_id else {}
     
     if customer_id:
@@ -605,8 +605,8 @@ async def list_all_credits(
     per_page: int = 50
 ):
     """List all customer credits"""
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"organization_id": org_id} if org_id else {}
     if customer_id:
         query["customer_id"] = customer_id
@@ -656,8 +656,8 @@ async def export_payments(
     customer_id: str = ""
 ):
     """Export payments to CSV"""
-    from utils.database import extract_org_id
-    org_id = extract_org_id(request)
+    from utils.database import require_org_id
+    org_id = require_org_id(request)
     query = {"organization_id": org_id} if org_id else {}
     if start_date:
         query["payment_date"] = {"$gte": start_date}

@@ -28,7 +28,7 @@ from services.failure_intelligence_service import (
     init_efi_service
 )
 from core.subscriptions.entitlement import require_feature
-from utils.database import extract_org_id
+from utils.database import require_org_id
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ async def get_current_user(request: Request, db) -> dict:
 async def create_failure_card(request: Request, data: FailureCardCreate):
     """Create a new failure intelligence card"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     user = await get_current_user(request, service.db)
     
     result = await service.create_failure_card(
@@ -116,7 +116,7 @@ async def list_failure_cards(request: Request, status: Optional[str] = None, sub
     from utils.pagination import paginate_keyset
 
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
 
     if cursor:
         # Build query directly for cursor-based path
@@ -169,7 +169,7 @@ async def list_failure_cards(request: Request, status: Optional[str] = None, sub
 async def get_failure_card(request: Request, failure_id: str):
     """Get a single failure card by ID"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     card = await service.get_failure_card(failure_id)
     if not card:
@@ -181,7 +181,7 @@ async def get_failure_card(request: Request, failure_id: str):
 async def get_confidence_history(request: Request, failure_id: str):
     """Get confidence score history for a failure card"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     try:
         return await service.get_confidence_history(failure_id)
@@ -193,7 +193,7 @@ async def get_confidence_history(request: Request, failure_id: str):
 async def update_failure_card(request: Request, failure_id: str, data: FailureCardUpdate):
     """Update a failure card"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -210,7 +210,7 @@ async def update_failure_card(request: Request, failure_id: str, data: FailureCa
 async def approve_failure_card(request: Request, failure_id: str, approved_by: Optional[str] = None):
     """Approve a failure card for network distribution"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -227,7 +227,7 @@ async def approve_failure_card(request: Request, failure_id: str, approved_by: O
 async def deprecate_failure_card(request: Request, failure_id: str, reason: str):
     """Deprecate a failure card"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -246,7 +246,7 @@ async def deprecate_failure_card(request: Request, failure_id: str, reason: str)
 async def match_failure(request: Request, data: FailureMatchRequest):
     """AI-powered failure matching - 4-stage pipeline"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     response = await service.match_failure(data)
     return response
@@ -256,7 +256,7 @@ async def match_failure(request: Request, data: FailureMatchRequest):
 async def match_ticket_to_failures(request: Request, ticket_id: str):
     """Match an existing ticket to failure cards"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     try:
         return await service.match_ticket_to_failures(ticket_id, org_id=org_id)
@@ -270,7 +270,7 @@ async def match_ticket_to_failures(request: Request, ticket_id: str):
 async def record_technician_action(request: Request, data: TechnicianActionCreate):
     """Record technician diagnostic and repair actions"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -288,7 +288,7 @@ async def record_technician_action(request: Request, data: TechnicianActionCreat
 async def list_technician_actions(request: Request, ticket_id: Optional[str] = None, technician_id: Optional[str] = None, include_hypotheses: bool = False, limit: int = 50):
     """List technician actions"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {}
     if ticket_id:
@@ -314,7 +314,7 @@ async def list_technician_actions(request: Request, ticket_id: Optional[str] = N
 async def record_part_usage(request: Request, data: PartUsageCreate):
     """Record part usage with failure card linkage"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     await get_current_user(request, service.db)  # Auth check
     
     try:
@@ -327,7 +327,7 @@ async def record_part_usage(request: Request, data: PartUsageCreate):
 async def list_part_usage(request: Request, ticket_id: Optional[str] = None, failure_card_id: Optional[str] = None, unexpected_only: bool = False, limit: int = 100):
     """List part usage records"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {}
     if ticket_id:
@@ -347,7 +347,7 @@ async def list_part_usage(request: Request, ticket_id: Optional[str] = None, fai
 async def list_emerging_patterns(request: Request, status: Optional[str] = None, pattern_type: Optional[str] = None, limit: int = 50):
     """List detected emerging patterns"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {}
     if status:
@@ -366,7 +366,7 @@ async def list_emerging_patterns(request: Request, status: Optional[str] = None,
 async def review_pattern(request: Request, pattern_id: str, action: str, notes: Optional[str] = None):
     """Review and action an emerging pattern"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pattern = await service.db.emerging_patterns.find_one({"pattern_id": pattern_id}, {"_id": 0})
     if not pattern:
@@ -390,7 +390,7 @@ async def review_pattern(request: Request, pattern_id: str, action: str, notes: 
 @router.post("/patterns/detect")
 async def trigger_pattern_detection(request: Request, background_tasks: BackgroundTasks):
     """Manually trigger pattern detection job"""
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     if _event_processor:
         background_tasks.add_task(
             _event_processor.detect_emerging_patterns,
@@ -408,7 +408,7 @@ async def trigger_pattern_detection(request: Request, background_tasks: Backgrou
 async def create_symptom(request: Request, data: SymptomCreate):
     """Create a new symptom in the library"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     symptom = Symptom(
         code=data.code,
@@ -428,7 +428,7 @@ async def create_symptom(request: Request, data: SymptomCreate):
 async def list_symptoms(request: Request, category: Optional[str] = None, search: Optional[str] = None):
     """List symptoms from library"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {}
     if category:
@@ -450,7 +450,7 @@ async def list_symptoms(request: Request, category: Optional[str] = None, search
 async def create_knowledge_relation(request: Request, data: dict):
     """Create a relationship in the knowledge graph"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     relation = KnowledgeRelation(
         source_type=data["source_type"],
@@ -477,7 +477,7 @@ async def create_knowledge_relation(request: Request, data: dict):
 async def get_knowledge_relations(request: Request, source_id: Optional[str] = None, target_id: Optional[str] = None, relation_type: Optional[str] = None):
     """Get relationships from knowledge graph"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {}
     if source_id:
@@ -495,7 +495,7 @@ async def get_knowledge_relations(request: Request, source_id: Optional[str] = N
 async def get_entity_graph(request: Request, entity_type: str, entity_id: str, depth: int = 2):
     """Get knowledge graph around an entity"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     relations = await service.db.knowledge_relations.find({
         "$or": [
@@ -541,7 +541,7 @@ async def get_entity_graph(request: Request, entity_type: str, entity_id: str, d
 async def get_efi_analytics(request: Request):
     """Get EVFI system analytics"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     return await service.get_analytics_overview()
 
 
@@ -549,7 +549,7 @@ async def get_efi_analytics(request: Request):
 async def get_effectiveness_report(request: Request):
     """Get effectiveness report for failure cards"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pipeline = [
         {"$match": {"organization_id": org_id, "status": "approved", "usage_count": {"$gt": 0}}},
@@ -589,7 +589,7 @@ async def get_effectiveness_report(request: Request):
 async def get_part_anomaly_report(request: Request):
     """Get report of unexpected part usage"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pipeline = [
         {"$match": {"organization_id": org_id, "expected_vs_actual": False}},
@@ -618,7 +618,7 @@ async def get_part_anomaly_report(request: Request):
 async def list_events(request: Request, event_type: Optional[str] = None, processed: Optional[bool] = None, limit: int = 50):
     """List EVFI system events"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     query = {"organization_id": org_id}
     if event_type:
@@ -637,7 +637,7 @@ async def list_events(request: Request, event_type: Optional[str] = None, proces
 async def process_pending_events(request: Request, background_tasks: BackgroundTasks):
     """Process pending EVFI events"""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     pending = await service.db.efi_events.count_documents({"organization_id": org_id, "processed": False})
     
@@ -669,7 +669,7 @@ async def generate_embeddings(request: Request, background_tasks: BackgroundTask
     
     Note: Requires OPENAI_API_KEY in environment. Emergent LLM key does not support embeddings.
     """
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     try:
         from services.embedding_service import get_card_embedder, get_embedding_service
         
@@ -717,7 +717,7 @@ async def generate_embeddings(request: Request, background_tasks: BackgroundTask
 async def get_embedding_status(request: Request):
     """Check embedding generation status for failure cards."""
     service = get_service()
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     
     # Check if embedding service is available
     try:

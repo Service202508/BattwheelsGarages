@@ -16,7 +16,7 @@ import csv
 import io
 import logging
 from fastapi import Request
-from utils.database import extract_org_id, org_query
+from utils.database import require_org_id, org_query
 
 
 logger = logging.getLogger(__name__)
@@ -177,7 +177,7 @@ def enrich_line_items(line_items: list, items_map: dict, adjustment_type: str) -
 
 @router.get("/reasons")
 async def list_reasons(request: Request, active_only: bool = True):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List adjustment reasons"""
     query = {"is_active": True} if active_only else {}
     reasons = await reasons_col.find(query, {"_id": 0}).sort("sort_order", 1).to_list(100)
@@ -206,7 +206,7 @@ async def list_reasons(request: Request, active_only: bool = True):
 
 @router.post("/reasons")
 async def create_reason(request: Request, data: ReasonCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create an adjustment reason"""
     reason_id = f"RSN-{uuid.uuid4().hex[:8].upper()}"
     doc = {
@@ -220,7 +220,7 @@ async def create_reason(request: Request, data: ReasonCreate):
 
 @router.put("/reasons/{reason_id}")
 async def update_reason(request: Request, reason_id: str, data: ReasonCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update an adjustment reason"""
     result = await reasons_col.update_one(
         {"reason_id": reason_id},
@@ -233,7 +233,7 @@ async def update_reason(request: Request, reason_id: str, data: ReasonCreate):
 
 @router.delete("/reasons/{reason_id}")
 async def disable_reason(request: Request, reason_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Disable an adjustment reason (soft delete)"""
     await reasons_col.update_one(
         {"reason_id": reason_id},
@@ -246,7 +246,7 @@ async def disable_reason(request: Request, reason_id: str):
 
 @router.post("")
 async def create_adjustment(request: Request, data: AdjustmentCreate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Create a new inventory adjustment (draft or adjusted)"""
     adj_id = f"IA-{uuid.uuid4().hex[:12].upper()}"
     ref_number = data.reference_number or await generate_ref_number()
@@ -312,7 +312,7 @@ async def create_adjustment(request: Request, data: AdjustmentCreate):
 
 @router.get("")
 async def list_adjustments(request: Request, status: Optional[str] = None, adjustment_type: Optional[str] = None, reason: Optional[str] = None, warehouse_id: Optional[str] = None, search: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None, sort_by: str = "date", sort_order: str = "desc", page: int = 1, per_page: int = 25):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """List inventory adjustments with filters"""
     query = {}
     if status:
@@ -356,7 +356,7 @@ async def list_adjustments(request: Request, status: Optional[str] = None, adjus
 
 @router.get("/summary")
 async def get_adjustments_summary(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Summary stats for the adjustments dashboard"""
     total = await adjustments_col.count_documents(org_query(org_id))
     draft = await adjustments_col.count_documents(org_query(org_id, {"status": "draft"}))
@@ -393,7 +393,7 @@ async def get_adjustments_summary(request: Request):
 
 @router.get("/{adjustment_id}")
 async def get_adjustment(request: Request, adjustment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get adjustment detail with audit trail"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
     if not adj:
@@ -410,7 +410,7 @@ async def get_adjustment(request: Request, adjustment_id: str):
 
 @router.put("/{adjustment_id}")
 async def update_adjustment(request: Request, adjustment_id: str, data: AdjustmentUpdate):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update a draft adjustment"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id})
     if not adj:
@@ -446,7 +446,7 @@ async def update_adjustment(request: Request, adjustment_id: str, data: Adjustme
 
 @router.post("/{adjustment_id}/convert")
 async def convert_to_adjusted(request: Request, adjustment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Convert draft adjustment to adjusted (applies stock changes)"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
     if not adj:
@@ -471,7 +471,7 @@ async def convert_to_adjusted(request: Request, adjustment_id: str):
 
 @router.post("/{adjustment_id}/void")
 async def void_adjustment(request: Request, adjustment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Void an adjusted adjustment (reverses stock changes)"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
     if not adj:
@@ -494,7 +494,7 @@ async def void_adjustment(request: Request, adjustment_id: str):
 
 @router.delete("/{adjustment_id}")
 async def delete_adjustment(request: Request, adjustment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Delete a draft adjustment"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id})
     if not adj:
@@ -545,7 +545,7 @@ async def add_attachment(request: Request, adjustment_id: str, file: UploadFile 
 
 @router.delete("/{adjustment_id}/attachments/{attachment_id}")
 async def remove_attachment(request: Request, adjustment_id: str, attachment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Remove attachment from adjustment"""
     result = await adjustments_col.update_one(
         {"adjustment_id": adjustment_id},
@@ -562,7 +562,7 @@ async def remove_attachment(request: Request, adjustment_id: str, attachment_id:
 
 @router.get("/reports/adjustment-summary")
 async def adjustment_summary_report(request: Request, date_from: Optional[str] = None, date_to: Optional[str] = None, warehouse_id: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Adjustment summary by reason, location, account"""
     match = {"organization_id": org_id, "status": "adjusted"}
     if date_from or date_to:
@@ -626,7 +626,7 @@ async def adjustment_summary_report(request: Request, date_from: Optional[str] =
 
 @router.get("/reports/fifo-tracking")
 async def fifo_cost_lot_tracking(request: Request, item_id: Optional[str] = None, limit: int = 100):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """FIFO Cost Lot Tracking - shows product-in and product-out lots"""
     match = {"organization_id": org_id, "status": "adjusted"}
     if item_id:
@@ -668,7 +668,7 @@ async def fifo_cost_lot_tracking(request: Request, item_id: Optional[str] = None
 
 @router.get("/reports/abc-classification")
 async def abc_classification_report(request: Request, period_days: int = 90, a_threshold: float = 80, b_threshold: float = 95):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """ABC Classification based on adjustment value over a period"""
     since = (datetime.now(timezone.utc) - timedelta(days=period_days)).strftime("%Y-%m-%d")
 
@@ -720,7 +720,7 @@ async def abc_classification_report(request: Request, period_days: int = 90, a_t
 
 @router.get("/settings/numbering")
 async def get_numbering_settings(request: Request):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Get adjustment numbering settings"""
     settings = await settings_col.find_one({"type": "adjustment_numbering"}, {"_id": 0})
     if not settings:
@@ -730,7 +730,7 @@ async def get_numbering_settings(request: Request):
 
 @router.put("/settings/numbering")
 async def update_numbering_settings(request: Request, prefix: str = "ADJ", next_number: int = 1):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Update adjustment numbering settings"""
     await settings_col.update_one(
         {"type": "adjustment_numbering"},
@@ -756,7 +756,7 @@ async def update_numbering_settings(request: Request, prefix: str = "ADJ", next_
 
 @router.get("/export/csv")
 async def export_adjustments_csv(request: Request, status: Optional[str] = None, adjustment_type: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Export adjustments to CSV"""
     query = {}
     if status:
@@ -819,7 +819,7 @@ async def export_adjustments_csv(request: Request, status: Optional[str] = None,
 
 @router.post("/import/validate")
 async def validate_import(request: Request, file: UploadFile = File(...)):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Validate CSV import file and return mapping preview"""
     content = await file.read()
     text = content.decode("utf-8", errors="replace")
@@ -866,7 +866,7 @@ async def validate_import(request: Request, file: UploadFile = File(...)):
 
 @router.post("/import/process")
 async def process_import(request: Request, file: UploadFile = File(...)):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Process CSV import and create adjustments"""
     content = await file.read()
     text = content.decode("utf-8", errors="replace")
@@ -1077,7 +1077,7 @@ def generate_adjustment_html(adj: dict) -> str:
 
 @router.get("/{adjustment_id}/pdf")
 async def generate_pdf(request: Request, adjustment_id: str):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Generate and download PDF of adjustment"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
     if not adj:
@@ -1104,7 +1104,7 @@ async def generate_pdf(request: Request, adjustment_id: str):
 
 @router.get("/reports/abc-classification/{item_id}")
 async def abc_drill_down(request: Request, item_id: str, period_days: int = 90):
-    org_id = extract_org_id(request)
+    org_id = require_org_id(request)
     """Drill down into adjustments for a specific item in ABC report"""
     since = (datetime.now(timezone.utc) - timedelta(days=period_days)).strftime("%Y-%m-%d")
 
