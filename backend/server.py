@@ -101,22 +101,33 @@ from utils.database import db, client
 from utils.auth import JWT_SECRET, JWT_ALGORITHM
 
 # ==================== LIFESPAN ====================
+async def _wait_for_mongodb(max_retries: int = 30, delay: float = 2.0):
+    """Retry MongoDB connection with backoff. Logs every attempt."""
+    for attempt in range(1, max_retries + 1):
+        try:
+            await asyncio.wait_for(db.command("ping"), timeout=3.0)
+            logger.info(f"MongoDB connected (attempt {attempt})")
+            return True
+        except Exception as e:
+            logger.warning(f"MongoDB not ready (attempt {attempt}/{max_retries}): {e}")
+            if attempt < max_retries:
+                await asyncio.sleep(delay)
+    logger.error(f"MongoDB unavailable after {max_retries} attempts — starting without DB")
+    return False
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Battwheels OS...")
-    try:
-        await db.command("ping")
-        logger.info("MongoDB connected")
-    except Exception as e:
-        logger.error(f"MongoDB connection failed: {e}")
+    mongo_ok = await _wait_for_mongodb()
 
-    # Run migrations
-    try:
-        from migrations.runner import run_migrations
-        await run_migrations(db)
-        logger.info("Database migrations completed")
-    except Exception as e:
-        logger.warning(f"Migration runner failed: {e}")
+    if mongo_ok:
+        # Run migrations
+        try:
+            from migrations.runner import run_migrations
+            await run_migrations(db)
+            logger.info("Database migrations completed")
+        except Exception as e:
+            logger.warning(f"Migration runner failed: {e}")
 
     # Init shared helpers
     from utils.helpers import init_helpers
@@ -130,13 +141,14 @@ async def lifespan(app: FastAPI):
     from services.ai_token_service import init_ai_token_service
     init_ai_token_service(db)
 
-    # Ensure indexes
-    try:
-        from utils.indexes import ensure_compound_indexes
-        await ensure_compound_indexes(db)
-        logger.info("Compound indexes ensured on startup")
-    except Exception as e:
-        logger.warning(f"Index creation failed: {e}")
+    if mongo_ok:
+        # Ensure indexes
+        try:
+            from utils.indexes import ensure_compound_indexes
+            await ensure_compound_indexes(db)
+            logger.info("Compound indexes ensured on startup")
+        except Exception as e:
+            logger.warning(f"Index creation failed: {e}")
 
     logger.info("Battwheels OS started successfully")
 
