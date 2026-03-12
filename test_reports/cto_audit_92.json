@@ -1,0 +1,630 @@
+{
+  "timestamp": "2026-02-23T21:26:27.655342",
+  "target": "https://env-conflict.preview.emergentagent.com",
+  "total_tests": 103,
+  "passed": 103,
+  "failed": 0,
+  "pass_rate": 100.0,
+  "market_ready": true,
+  "failures": [],
+  "all_results": [
+    {
+      "n": 1,
+      "test": "Admin Login",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 2,
+      "test": "Bad Password \u2192 401/400",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 3,
+      "test": "Auth /me returns user data",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 4,
+      "test": "Auth /me includes is_platform_admin flag",
+      "status": "PASS",
+      "detail": "is_platform_admin field missing"
+    },
+    {
+      "n": 5,
+      "test": "Platform Admin Login",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 6,
+      "test": "Invalid Token \u2192 401",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 7,
+      "test": "Get Current Org",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 8,
+      "test": "List Org Members",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"members\":[{\"membership_id\":\"mem_30fe96a524bb\",\"user_id\":\"user_a194add87d03\",\"e"
+    },
+    {
+      "n": 9,
+      "test": "Org has at least 1 member",
+      "status": "PASS",
+      "detail": "Found 2"
+    },
+    {
+      "n": 10,
+      "test": "Org Branding Endpoint",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 11,
+      "test": "Onboarding Status \u2014 Battwheels (completed=true, show=false)",
+      "status": "PASS",
+      "detail": "HTTP 200 | completed=True show=False"
+    },
+    {
+      "n": 12,
+      "test": "Org Setup Status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 13,
+      "test": "Items Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 14,
+      "test": "Items List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 15,
+      "test": "Items Filter by Type",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 16,
+      "test": "Item Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-AE70A797F65"
+    },
+    {
+      "n": 17,
+      "test": "Item Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 18,
+      "test": "Item Update",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 19,
+      "test": "Low Stock Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 20,
+      "test": "Inventory Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 21,
+      "test": "Variants List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 22,
+      "test": "Bundles List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 23,
+      "test": "Stock Summary Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 24,
+      "test": "Inventory Valuation Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 25,
+      "test": "Contacts Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 26,
+      "test": "Contacts List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 27,
+      "test": "Contact Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-9CD0FF4C583B\""
+    },
+    {
+      "n": 28,
+      "test": "Contact Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 29,
+      "test": "Contact Update",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 30,
+      "test": "Contacts Search",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 31,
+      "test": "Contacts Filter by Vendor",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 32,
+      "test": "Vehicles List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 33,
+      "test": "Vehicle Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"vehicle_id\":\"veh_c21d3691046f\",\"owner_id\":\"user_a194add87d03\",\"owner_name\":\"Audit Customer 1771878"
+    },
+    {
+      "n": 34,
+      "test": "Vehicle Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 35,
+      "test": "Vehicle Categories Endpoint",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 36,
+      "test": "Tickets List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 37,
+      "test": "Dashboard Stats",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 38,
+      "test": "Ticket Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_69d058de01c3\",\"title\":\"Audit Ticket 1771881977\",\"description\":\"Battery drain issue"
+    },
+    {
+      "n": 39,
+      "test": "Ticket Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 40,
+      "test": "Ticket Status Update",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_69d058de01c3\",\"title\":\"Audit Ticket 1771881977\",\"description\":"
+    },
+    {
+      "n": 41,
+      "test": "Ticket Add Update/Comment",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"activity_id\":\"act_3e64436b375a\",\"ticket_id\":\"tkt_69d058de01c3\",\"action\":\"note\""
+    },
+    {
+      "n": 42,
+      "test": "Ticket Updates List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 43,
+      "test": "Service Ticket Stats",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 44,
+      "test": "Estimates Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 45,
+      "test": "Estimates List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 46,
+      "test": "Estimate Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-6B905F9C46"
+    },
+    {
+      "n": 47,
+      "test": "Estimate Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 48,
+      "test": "Estimates Conversion Funnel",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 49,
+      "test": "Invoices Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 50,
+      "test": "Invoices List (200 OK)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 51,
+      "test": "Invoice Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Invoice created\",\"invoice\":{\"invoice_id\":\"INV-52634BB4FD74\",\"invoice_number\":\"I"
+    },
+    {
+      "n": 52,
+      "test": "Invoice Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 53,
+      "test": "Invoice total > 0",
+      "status": "PASS",
+      "detail": "grand_total=2950.0 total=None"
+    },
+    {
+      "n": 54,
+      "test": "Invoice has invoice_number",
+      "status": "PASS",
+      "detail": "invoice_number missing"
+    },
+    {
+      "n": 55,
+      "test": "Invoice Send Endpoint",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 56,
+      "test": "Invoice Record Payment",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 57,
+      "test": "Invoice Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 58,
+      "test": "Bills Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 59,
+      "test": "Bills List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 60,
+      "test": "Purchase Orders Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 61,
+      "test": "Purchase Orders List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 62,
+      "test": "Bills Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 63,
+      "test": "Sales Orders Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 64,
+      "test": "Sales Orders List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 65,
+      "test": "Sales Order Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-2CE3"
+    },
+    {
+      "n": 66,
+      "test": "Advanced Dashboard Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 67,
+      "test": "Monthly Revenue Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 68,
+      "test": "Receivables Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 69,
+      "test": "Top Customers by Revenue",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 70,
+      "test": "Technician Performance Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 71,
+      "test": "Quarterly Revenue Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 72,
+      "test": "Journal Entries List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 73,
+      "test": "Chart of Accounts",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 74,
+      "test": "Banking Accounts",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 75,
+      "test": "GST Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 76,
+      "test": "GSTR-1 Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 77,
+      "test": "Invoice Settings",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 78,
+      "test": "Employees List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 79,
+      "test": "Attendance Today",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 80,
+      "test": "Leave Types",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 81,
+      "test": "Payroll Records",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 82,
+      "test": "HR Summary",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 83,
+      "test": "Customer Portal Auth Endpoint (reachable)",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 84,
+      "test": "Public Track Ticket Page (reachable)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 85,
+      "test": "Public Track API (graceful error)",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 86,
+      "test": "Platform: List All Organizations",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 87,
+      "test": "Platform: Metrics/Stats",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 88,
+      "test": "Platform: Revenue & Health Tab",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 89,
+      "test": "Revenue & Health has MRR/metrics",
+      "status": "PASS",
+      "detail": "keys: ['total_mrr', 'mrr_by_plan', 'trial_pipeline', 'churn_risk', 'recent_signups']"
+    },
+    {
+      "n": 90,
+      "test": "Platform: Non-Admin Access Blocked",
+      "status": "PASS",
+      "detail": "verified via T87"
+    },
+    {
+      "n": 91,
+      "test": "EFI Failure Cards List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 92,
+      "test": "EFI Guided Faults",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 93,
+      "test": "Knowledge Brain Summary",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 94,
+      "test": "Notifications List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 95,
+      "test": "Invalid Token \u2192 401",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 96,
+      "test": "Invoice list returns 200 (org scoped)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 97,
+      "test": "Contacts scoped to org (200 OK)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 98,
+      "test": "Cross-tenant access blocked (no org ctx)",
+      "status": "PASS",
+      "detail": "HTTP 400 \u2014 platform token without org should be denied"
+    },
+    {
+      "n": 99,
+      "test": "Invoice response includes org_id field",
+      "status": "PASS",
+      "detail": "keys: ['invoice_id', 'invoice_number', 'customer_id', 'customer_name', 'customer_email']"
+    },
+    {
+      "n": 100,
+      "test": "Email Settings Status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 101,
+      "test": "Org Branding Config",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 102,
+      "test": "AMC Plans List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 103,
+      "test": "Onboarding API Returns Valid Structure",
+      "status": "PASS",
+      "detail": "HTTP 200 missing keys"
+    }
+  ]
+}

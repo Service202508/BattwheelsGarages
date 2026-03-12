@@ -1,0 +1,85 @@
+{
+  "summary": "EFI Core Upgrade Tests - All features verified working. System prompt, safety injection, and classification functions are correctly applied to all EFI endpoints.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_efi_core_upgrade.py",
+    "/app/test_reports/pytest/efi_core_upgrade_results.xml"
+  ],
+  "action_items": [],
+  "features_verified": {
+    "test_1_known_model_classification": {
+      "endpoint": "POST /api/v1/ai/guidance/generate (STKT-001 - Ola S1 Pro)",
+      "status": "PASS",
+      "details": "efi_classification.level='AI_GUIDED', color='blue', SAFETY keyword present, BATTWHEELS EFI marker in response"
+    },
+    "test_2_unknown_model_classification": {
+      "endpoint": "POST /api/v1/ai/guidance/generate (STKT-003 - LocalBrand EcoRider X1)",
+      "status": "PASS",
+      "details": "efi_classification.level='AI_GENERAL', color='orange'"
+    },
+    "test_3_technician_ai_assist": {
+      "endpoint": "POST /api/v1/technician/ai-assist",
+      "status": "PASS",
+      "details": "efi_classification field present in response with level and color fields"
+    },
+    "test_4_cached_ticket_get": {
+      "endpoint": "GET /api/v1/ai/guidance/ticket/STKT-001",
+      "status": "PASS",
+      "details": "Cached result includes efi_classification even when serving from cache"
+    },
+    "test_5_safety_injection": {
+      "endpoint": "POST /api/v1/ai/guidance/generate (battery ticket)",
+      "status": "PASS",
+      "details": "SAFETY keyword present in guidance_text for battery-related tickets"
+    },
+    "test_6_frontend_build": {
+      "command": "cd /app/frontend && npx craco build",
+      "status": "PASS",
+      "details": "Build completed successfully, build folder ready for deployment"
+    },
+    "unit_test_classify_known_models": {
+      "function": "classify_efi_response()",
+      "status": "PASS",
+      "details": "All known EV models (Ola, Ather, TVS, Bajaj, Tata, Mahindra, Hero) return AI_GUIDED/blue"
+    },
+    "unit_test_classify_unknown_models": {
+      "function": "classify_efi_response()",
+      "status": "PASS",
+      "details": "Unknown models return AI_GENERAL/orange"
+    },
+    "unit_test_safety_injection_hv_keywords": {
+      "function": "inject_safety_warning()",
+      "status": "PASS",
+      "details": "Safety warning injected for battery, BMS, HV, charger, motor controller keywords"
+    },
+    "unit_test_safety_not_duplicated": {
+      "function": "inject_safety_warning()",
+      "status": "PASS",
+      "details": "Safety warning not duplicated if already present in response"
+    }
+  },
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_efi_core_upgrade.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "N/A (build test only)"
+  },
+  "test_credentials": {
+    "demo": "demo@voltmotors.in / Demo@12345",
+    "technician": "ankit@voltmotors.in / Demo@12345"
+  },
+  "seed_data_creation": "None - used existing STKT-001 and STKT-003 tickets in battwheels_dev DB",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "EFI Core upgrade fully tested. Key points: 1) inject_safety_warning() adds safety block if HV keywords detected and SAFETY not already present, 2) classify_efi_response() returns AI_GUIDED/blue for known models (Ola, Ather, TVS, Bajaj, Tata, Mahindra, Hero) and AI_GENERAL/orange otherwise, 3) Both functions applied in generate_guidance() (ai_guidance_service.py:339-355) and ai-assist endpoint (technician_portal.py:776-778), 4) GET /ai/guidance/ticket/{id} adds classification fallback for cached results (ai_guidance.py:252-264). LLM calls take 5-10 seconds. Test tickets: STKT-001 (Ola S1 Pro, battery) and STKT-003 (LocalBrand EcoRider X1, motor)."
+}

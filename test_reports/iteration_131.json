@@ -1,0 +1,63 @@
+{
+  "summary": "Sprint 6B: EFI Knowledge Pipeline - All 4 tasks verified and working. 13 tests passed. Regression tests: 428 passed, 13 skipped.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_sprint_6b_knowledge_pipeline.py",
+    "/app/test_reports/pytest/sprint_6b_knowledge_pipeline_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_sprint_6b_knowledge_pipeline.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 Sprint 6B tests + 428/428 regression tests)",
+    "frontend": "N/A (backend only testing)"
+  },
+  "test_credentials": {
+    "platform_admin": "platform-admin@battwheels.in / DevTest@123",
+    "dev_user": "dev@battwheels.internal / DevTest@123 (org: dev-internal-testing-001)",
+    "test_ticket_id": "tkt_8b36dc571ae4"
+  },
+  "seed_data_creation": "No new seed data created - existing 14 seed knowledge articles and 14 seed failure cards verified",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Sprint 6B Knowledge Pipeline complete. All 4 tasks verified: (1) process-queue creates knowledge articles from learning events via _create_or_update_knowledge_article(), (2) seed-articles creates 14 global articles from seed failure cards (idempotent), (3) fix-empty-failure-cards handles incomplete cards and marks with excluded_from_efi flag, (4) EFI suggestions endpoint enriches each suggested_path with knowledge_article field containing knowledge_id, title, summary, content.",
+  "verified_sprint_6b_tasks": {
+    "6B-01_process_queue_creates_knowledge_articles": {
+      "status": "PASS",
+      "endpoint": "POST /api/v1/platform/efi/process-queue",
+      "evidence": "Endpoint returns {success: true, processed: N, failed: N, remaining: N}. Knowledge articles created via _create_or_update_knowledge_article in continuous_learning_service.py line 479"
+    },
+    "6B-02_seed_knowledge_articles": {
+      "status": "PASS",
+      "endpoint": "POST /api/v1/platform/knowledge/seed-articles",
+      "evidence": "Returns {success: true, inserted: 0, skipped: 14} - 14 seed articles exist from previous run. Idempotent (skips existing). Function in efi_seed_data.py line 1421"
+    },
+    "6B-03_fix_empty_failure_cards": {
+      "status": "PASS",
+      "endpoint": "POST /api/v1/platform/efi/fix-empty-failure-cards",
+      "evidence": "Returns {total_empty_cards, populated_from_tickets, marked_incomplete, embeddings_generated}. Sets excluded_from_efi=True for incomplete cards. Filter verified in find_similar_failure_cards (efi_embedding_service.py line 472)"
+    },
+    "6B-04_suggestions_include_knowledge_article": {
+      "status": "PASS",
+      "endpoint": "GET /api/v1/efi-guided/suggestions/{ticket_id}",
+      "evidence": "Each suggested_path includes knowledge_article object with {knowledge_id, title, summary, content}. Verified via curl - saw KB-SEED-FC_* IDs in response. Implementation in efi_guided.py line 239-267"
+    }
+  },
+  "regression_test_results": {
+    "total_tests": 428,
+    "passed": 428,
+    "skipped": 13,
+    "failed": 0,
+    "command": "bash scripts/run_core_tests.sh"
+  }
+}

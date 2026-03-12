@@ -1,0 +1,115 @@
+{
+  "summary": "SaaS Onboarding Experience testing complete. All 15/15 backend tests PASSED. Frontend flows verified with Playwright: Landing page, Login with org context, Organization Signup via 'Start Free Trial'. Fixed switch-organization endpoint to use User model attributes correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Dashboard charts",
+        "issues": ["Console warning about chart dimensions being -1 (recharts library sizing issue) - minor cosmetic, does not affect functionality"]
+      }
+    ]
+  },
+  "features_tested": {
+    "saas_landing_page": {
+      "status": "PASS",
+      "tests": [
+        "Landing page shows at '/' for non-authenticated users",
+        "Page contains 'Battwheels OS' branding",
+        "'Start Free Trial' button visible",
+        "'Sign In' option visible",
+        "Features and pricing sections render correctly"
+      ]
+    },
+    "organization_signup_flow": {
+      "status": "PASS",
+      "tests": [
+        "Clicking 'Start Free Trial' opens signup modal",
+        "Signup form has all required fields (org name, admin name, email, password, city, state)",
+        "Signup creates organization and returns JWT token",
+        "After signup, user is auto-redirected to dashboard",
+        "Duplicate email registration is rejected with 400"
+      ]
+    },
+    "login_with_organizations": {
+      "status": "PASS",
+      "tests": [
+        "Login endpoint returns 'organizations' array",
+        "Login returns 'organization' key for single-org users (for auto-selection)",
+        "Login returns JWT token",
+        "Invalid credentials rejected with 401",
+        "After login, user redirected to dashboard"
+      ]
+    },
+    "organization_selection": {
+      "status": "PASS",
+      "tests": [
+        "For single-org users, auto-selection happens",
+        "Organization ID stored in localStorage",
+        "Organization data stored in localStorage"
+      ]
+    },
+    "x_organization_id_header": {
+      "status": "PASS",
+      "tests": [
+        "Header included in API requests after org selection",
+        "API accepts X-Organization-ID header",
+        "Invalid org ID returns 403 TENANT_ACCESS_DENIED"
+      ]
+    },
+    "switch_organization_endpoint": {
+      "status": "PASS",
+      "tests": [
+        "POST /api/auth/switch-organization returns new token",
+        "Response includes organization details",
+        "Invalid org_id returns 403",
+        "Endpoint requires authentication"
+      ]
+    },
+    "my_organizations_endpoint": {
+      "status": "PASS",
+      "tests": [
+        "GET /api/organizations/my-organizations returns user's orgs",
+        "Response includes total count",
+        "Endpoint requires authentication"
+      ]
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_saas_onboarding.py",
+    "/app/test_reports/pytest/saas_onboarding_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FIXED: switch_organization endpoint was using dict syntax (user['user_id']) on User pydantic model - changed to attribute access (user.user_id)",
+    "FIXED: Login endpoint now returns 'organization' key for single-org users to enable auto-selection in frontend",
+    "PASS: Organization context properly stored in localStorage (organization_id, organization)",
+    "PASS: X-Organization-ID header correctly added to API requests via utils/api.js",
+    "PASS: TenantGuard middleware rejects invalid org IDs with 403"
+  ],
+  "updated_files": [
+    "/app/backend/server.py - Fixed switch_organization to use User model attributes",
+    "/app/backend/server.py - Added 'organization' key to login response for single-org users",
+    "/app/backend/tests/test_saas_onboarding.py - Created comprehensive SaaS onboarding test suite"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "100% (4 Playwright UI tests verified)"
+  },
+  "test_credentials": {
+    "admin": "admin@battwheels.in / admin123"
+  },
+  "seed_data_creation": "Test organizations with TEST_ prefix created during pytest runs",
+  "mocked_integrations": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "SaaS Onboarding Experience fully implemented and tested. Key endpoints: POST /api/organizations/signup, POST /api/auth/login (returns organizations array), GET /api/organizations/my-organizations, POST /api/auth/switch-organization. Frontend stores organization_id in localStorage and sends X-Organization-ID header with all API requests. Organization selection screen (OrganizationSelection component in App.js) shows for multi-org users.",
+  "rca_of_issue": "Fixed: switch_organization endpoint was using dict syntax on Pydantic User model causing TypeError. Changed user['user_id'] to user.user_id etc."
+}

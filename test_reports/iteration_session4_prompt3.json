@@ -1,0 +1,105 @@
+{
+  "session": "Session 4 - Prompt 3 of 4",
+  "timestamp": "2026-03-05T10:20:00Z",
+  "task_1_inline_role_fixes": {
+    "status": "COMPLETE",
+    "files_fixed": 5,
+    "checks_replaced": 14,
+    "remaining_insecure_patterns": 0,
+    "details": {
+      "amc.py": {
+        "fixes": 2,
+        "old": ["user.get('role') not in ('admin', 'owner')", "user.get('role') not in ['admin', 'owner', 'technician']"],
+        "new": ["getattr(request.state, 'tenant_user_role', None) not in ('admin', 'owner')", "getattr(request.state, 'tenant_user_role', None) not in ('admin', 'owner', 'technician')"]
+      },
+      "efi_guided.py": {
+        "fixes": 5,
+        "old": ["user.get('role') not in ['admin', 'manager'] (x3)", "user.get('role') != 'admin' (x2)"],
+        "new": ["role not in ('admin', 'owner', 'manager') (x3)", "role not in ('admin', 'owner') (x2)"]
+      },
+      "entity_crud.py": {
+        "fixes": 4,
+        "old": ["current_user.get('role') != 'admin' (x2)", "user.get('role') not in [...] (x2)", "user.get('role') in ['admin', 'technician']"],
+        "new": ["role not in ('admin', 'owner') (x2)", "role not in ('admin', 'owner', 'technician', 'manager') (x2)", "role in ('admin', 'owner', 'technician')"]
+      },
+      "ticket_estimates.py": {
+        "fixes": 2,
+        "old": ["user.get('role') not in ['admin', 'manager']", "user.get('role') != 'admin'"],
+        "new": ["role not in ('admin', 'owner', 'manager')", "role not in ('admin', 'owner')"]
+      },
+      "operations_api.py": {
+        "fixes": 1,
+        "old": ["user.get('role') == 'admin'"],
+        "new": ["role in ('admin', 'owner')"]
+      }
+    }
+  },
+  "task_2_e2e_financial_workflow": {
+    "status": "PARTIAL_SUCCESS",
+    "steps": {
+      "step_1_create_ticket": {"status": "PASS", "ticket_id": "tkt_7f0683eb148d", "status_field": "open"},
+      "step_2_verify_ticket_db": {"status": "PASS", "organization_id": "demo-volt-motors-001", "ticket_type": "onsite"},
+      "step_3_create_estimate": {"status": "PASS", "estimate_id": "est_52312d92834c", "status_field": "draft"},
+      "step_4a_add_line_part": {"status": "PASS", "grand_total_after": 17700.0},
+      "step_4b_add_line_labour": {"status": "PASS", "grand_total_after": 24780.0},
+      "step_5_approve_estimate": {"status": "PASS", "status_field": "approved"},
+      "step_6_convert_to_invoice": {"status": "PASS", "invoice_id": "inv_ae107fd546d1", "invoice_number": "TKT-INV-00001", "grand_total": 24780.0},
+      "step_7_verify_invoice_db": {"status": "PASS_WITH_GAPS", "collection": "ticket_invoices", "not_in_invoices_collection": true, "has_invoice_flag_missing": true},
+      "step_8_record_payment": {"status": "FAIL", "error": "Invoice not found", "root_cause": "Payment route queries 'invoices' collection but ticket invoices are in 'ticket_invoices'"},
+      "step_9_verify_accounting": {"status": "N_A", "reason": "Payment failed - no accounting entries to verify"},
+      "step_10_chain_integrity": {"status": "DOCUMENTED"}
+    },
+    "chain_integrity_summary": {
+      "ticket_status": "invoiced (OK)",
+      "ticket_has_invoice": "false (BUG - should be true)",
+      "estimate_status": "converted (OK)",
+      "estimate_converted_to_invoice": "inv_ae107fd546d1 (OK)",
+      "invoice_in_ticket_invoices": "true (OK)",
+      "invoice_in_invoices": "false (CHAIN GAP)",
+      "payment_recordable": "false (BLOCKED by collection mismatch)",
+      "accounting_entries": "none (BLOCKED by payment failure)"
+    }
+  },
+  "verification_gaps": [
+    {
+      "id": "GAP-1",
+      "severity": "HIGH",
+      "title": "Ticket Invoice Collection Mismatch",
+      "description": "ticket_estimate_service.convert_to_invoice() stores in 'ticket_invoices' but sales_finance_api.record_payment() looks up 'invoices'. This breaks the payment step.",
+      "fix": "Unify collection or add payment route for ticket_invoices"
+    },
+    {
+      "id": "GAP-2",
+      "severity": "MEDIUM",
+      "title": "Ticket.has_invoice Flag Not Updated",
+      "description": "convert_to_invoice() sets status=invoiced and invoice_id but does NOT set has_invoice=True",
+      "fix": "Add has_invoice: True to $set in convert_to_invoice()"
+    },
+    {
+      "id": "GAP-3",
+      "severity": "LOW",
+      "title": "Sanitization Artifact in Line Items",
+      "description": "Bleach middleware converts & to &amp; in stored text fields",
+      "fix": "Consider HTML-decoding on read or whitelist & in sanitization"
+    },
+    {
+      "id": "GAP-4",
+      "severity": "CRITICAL",
+      "title": "Missing require_technician_or_admin Import in sales_finance_api.py",
+      "description": "NameError crashed all invoice/payment/sales routes. Import was missing.",
+      "status": "FIXED in this session"
+    }
+  ],
+  "test_suite": {
+    "total_run": 31,
+    "passed": 19,
+    "failed": 1,
+    "skipped": 11,
+    "known_failures": ["test_efi_guided.py::test_session_start_requires_auth (pre-existing)"],
+    "new_failures": 0
+  },
+  "frontend_build": {
+    "status": "SUCCESS",
+    "command": "craco build"
+  }
+}

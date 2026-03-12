@@ -1,0 +1,61 @@
+{
+  "summary": "Feature entitlement enforcement testing completed. All 8 specified test scenarios PASS (27 individual assertions). Backend plan-gating is fully functional for payroll, projects, EFI, advanced reports, and platform admin plan management.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "note": "models.py PROFESSIONAL plan enables inventory_stock_transfers (enabled=True) but FEATURE_PLAN_REQUIREMENTS maps it to PlanCode.ENTERPRISE. Non-blocking inconsistency but could cause confusion in error messages — error will say 'requires Enterprise' but the plan actually has it enabled.",
+        "priority": "LOW"
+      }
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "test_results": {
+    "Test 1 - Starter blocked from Payroll": "PASS - GET /api/hr/payroll/records returns 403, detail.error='feature_not_available', feature='Payroll', current_plan='starter', required_plan='professional'",
+    "Test 2 - Professional can access Payroll": "PASS - GET /api/hr/payroll/records returns 200 with data + pagination",
+    "Test 3 - Frontend UpgradeModal code review": "PASS - UpgradeModal.jsx exists, listens for 'feature_not_available' event, has data-testid attrs. apiFetch in api.js checks status===403 and dispatches CustomEvent with detail.error check",
+    "Test 4 - Platform admin plan change": "PASS - GET /api/platform/organizations returns org list, PUT /api/platform/organizations/org_9c74befbaa95/plan to 'professional' succeeds, payroll access works, reverted back to 'starter', 403 confirmed after revert",
+    "Test 5 - Starter blocked from Projects": "PASS - GET /api/projects returns 403 with feature_key='project_management'",
+    "Test 6 - EFI allowed on Starter": "PASS - GET /api/efi/failure-cards returns 200 (NOT 403) for starter org",
+    "Test 7 - Advanced Reports allowed on Starter": "PASS - GET /api/reports/profit-loss returns 200 (NOT 403) for starter org",
+    "Test 8 - Battwheels Garages Professional all access": "PASS - payroll (200), projects (200), advanced_reports (200), efi (200)"
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_entitlement_enforcement.py",
+    "/app/test_reports/pytest/entitlement_enforcement_results.xml"
+  ],
+
+  "action_items": [
+    "Minor (optional): Fix inconsistency in models.py - PROFESSIONAL plan should NOT have inventory_stock_transfers=True if FEATURE_PLAN_REQUIREMENTS maps it to ENTERPRISE, or update FEATURE_PLAN_REQUIREMENTS to match the plan definition"
+  ],
+
+  "critical_code_review_comments": [
+    "entitlement.py require_feature() has correct dual path: get_tenant_context() first (context var), then request.state.tenant_org_id fallback — works properly with TenantGuardMiddleware",
+    "Platform admin change_organization_plan updates BOTH organizations.plan_type AND subscriptions.plan_code — immediate effect, no cache invalidation needed (confirmed by Test 4)",
+    "Starter plan in DEFAULT_PLANS correctly has efi_failure_intelligence=True, efi_ai_guidance=True, advanced_reports=True — Tests 6 and 7 pass",
+    "hr_payroll and project_management are NOT in Starter plan features — Tests 1 and 5 block correctly with proper 403 structure"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_entitlement_enforcement.py"
+  ],
+
+  "success_rate": {
+    "backend": "100% (27/27)",
+    "frontend": "100% (code review + load check)"
+  },
+
+  "seed_data_creation": "None - used existing test credentials. org_9c74befbaa95 was temporarily upgraded to 'professional' in Test 4 then reverted back to 'starter'.",
+
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Feature entitlement enforcement is fully working. Starter org (john@testcompany.com, org_9c74befbaa95) is correctly blocked from hr_payroll and project_management. EFI and advanced_reports are allowed on Starter. Platform admin (platform-admin@battwheels.in) can change org plans via PUT /api/platform/organizations/{org_id}/plan. Plan changes are immediate. UpgradeModal.jsx correctly listens for 'feature_not_available' DOM events dispatched by apiFetch in utils/api.js on 403 responses."
+}
