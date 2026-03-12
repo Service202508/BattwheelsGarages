@@ -24,7 +24,7 @@ async def seed():
     # SECTION A — Platform Admin
     # ---------------------------------------------------------------
     print("SECTION A: Platform Admin")
-    password = "v4Nx6^3Xh&uPWwxK9HOs"
+    password = os.environ.get("PLATFORM_ADMIN_PASSWORD", "DevDefault@123")
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
     existing = await db.users.find_one({"email": "platform-admin@battwheels.in"})

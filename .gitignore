@@ -5,16 +5,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
+.DS_Store
+*.log
 *.env
 *.env.*
 !backend/.env
-.DS_Store
-*.log
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
+!backend/.env.example
+!frontend/.env

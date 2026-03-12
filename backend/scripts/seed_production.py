@@ -35,7 +35,7 @@ async def seed():
         else:
             print("  Already exists with correct role — skipping")
     else:
-        password = "v4Nx6^3Xh&uPWwxK9HOs"
+        password = os.environ.get("PLATFORM_ADMIN_PASSWORD", "DevDefault@123")
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         await db.users.insert_one({
             "email": "platform-admin@battwheels.in",
