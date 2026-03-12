@@ -221,3 +221,7 @@ CTO_REAUDIT_REPORT.md
 *.env
 *.env.*
 !backend/.env
+-e 
+# Environment files
+*.env
+*.env.*
