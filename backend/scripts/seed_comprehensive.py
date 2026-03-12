@@ -80,7 +80,7 @@ async def main():
     # ================================================================
     print("[B] Seeding users...")
 
-    demo_password = os.environ.get("DEMO_USER_PASSWORD", "DevDefault@123")
+    demo_password = os.environ.get("DEMO_USER_PASSWORD", "Demo@12345")
 
     USERS = [
         {
