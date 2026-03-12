@@ -10,3 +10,7 @@ __pycache__/
 !backend/.env
 .DS_Store
 *.log
+-e 
+# Environment files
+*.env
+*.env.*
