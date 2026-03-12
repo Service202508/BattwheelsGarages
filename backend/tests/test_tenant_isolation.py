@@ -9,7 +9,7 @@ import pytest
 import httpx
 import os
 
-API_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://env-conflict.preview.emergentagent.com")
+API_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://backend-recovery-8.preview.emergentagent.com")
 
 # Test credentials
 DEMO_EMAIL = "demo@voltmotors.in"

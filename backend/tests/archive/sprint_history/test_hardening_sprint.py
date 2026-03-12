@@ -23,7 +23,7 @@ import json
 import time
 import jwt
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://env-conflict.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://backend-recovery-8.preview.emergentagent.com').rstrip('/')
 AUTH_API = f"{BASE_URL}/api/v1/auth"
 API_V1 = f"{BASE_URL}/api/v1"
 JWT_SECRET = 'REDACTED_JWT_SECRET'
