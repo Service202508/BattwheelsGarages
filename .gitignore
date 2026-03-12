@@ -12,3 +12,7 @@ __pycache__/
 !backend/.env
 !backend/.env.example
 !frontend/.env
+-e 
+# Environment files
+*.env
+*.env.*
