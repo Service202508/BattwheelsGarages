@@ -275,9 +275,10 @@ app.include_router(api_router)
 @app.get("/api/health", tags=["Health"])
 async def health_check():
     from config.platform import PLATFORM_VERSION, RELEASE_DATE
+    from config.environments import get_environment_info
     import asyncio
     issues = []
-    status_data = {"status": "healthy", "version": PLATFORM_VERSION, "release_date": RELEASE_DATE, "timestamp": datetime.now(timezone.utc).isoformat()}
+    status_data = {"status": "healthy", "version": PLATFORM_VERSION, "release_date": RELEASE_DATE, "timestamp": datetime.now(timezone.utc).isoformat(), **get_environment_info()}
     try:
         await asyncio.wait_for(db.command("ping"), timeout=2.0)
         status_data["mongodb"] = "connected"
