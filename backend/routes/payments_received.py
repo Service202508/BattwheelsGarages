@@ -20,8 +20,8 @@ from utils.database import db
 router = APIRouter(prefix="/payments-received", tags=["Payments Received"])
 
 payments_collection = db["payments_received"]
-invoices_collection = db["invoices_enhanced"]
-contacts_collection = db["contacts_enhanced"]
+invoices_collection = db["invoices"]
+contacts_collection = db["contacts"]
 customer_credits_collection = db["customer_credits"]
 payment_settings_collection = db["payment_settings"]
 payment_history_collection = db["payment_history"]
@@ -380,11 +380,18 @@ async def get_customer_invoices_for_payment(customer_id: str):
 
 # ==================== CRUD OPERATIONS ====================
 
+@router.post("")
 @router.post("/")
-async def record_payment(payment: PaymentRecordCreate, background_tasks: BackgroundTasks):
+async def record_payment(payment: PaymentRecordCreate, request: Request, background_tasks: BackgroundTasks):
     """Record a new payment"""
-    # Validate customer
-    customer = await contacts_collection.find_one({"contact_id": payment.customer_id})
+    from utils.database import require_org_id
+    rec_org_id = require_org_id(request)
+
+    # Validate customer (with org_id filter for multi-tenancy)
+    cust_query = {"contact_id": payment.customer_id}
+    if rec_org_id:
+        cust_query["organization_id"] = rec_org_id
+    customer = await contacts_collection.find_one(cust_query)
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
@@ -396,7 +403,7 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     payment_id = generate_id("PAY")
     payment_number = await get_next_payment_number()
     payment_date = payment.payment_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    org_id = customer.get("organization_id", "")
+    org_id = rec_org_id or customer.get("organization_id", "")
     
     # Calculate allocation totals
     total_allocated = sum(a.amount for a in payment.allocations)
@@ -418,6 +425,7 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     payment_doc = {
         "payment_id": payment_id,
         "payment_number": payment_number,
+        "organization_id": org_id,
         "customer_id": payment.customer_id,
         "customer_name": customer.get("name", ""),
         "payment_date": payment_date,
@@ -489,12 +497,21 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     # Post journal entry for double-entry bookkeeping
     if org_id:
         try:
+            # Resolve the first invoice number for the journal entry description
+            first_invoice_number = ""
+            if payment.allocations:
+                first_inv = await invoices_collection.find_one(
+                    {"invoice_id": payment.allocations[0].invoice_id},
+                    {"_id": 0, "invoice_number": 1}
+                )
+                first_invoice_number = first_inv.get("invoice_number", "") if first_inv else ""
+
             await post_payment_received_journal_entry(
                 organization_id=org_id,
                 payment={
                     **payment_doc,
                     "customer_name": customer.get("name", ""),
-                    "invoice_number": first_invoice.get("invoice_number", "") if payment.allocations else ""
+                    "invoice_number": first_invoice_number
                 }
             )
         except Exception as e:

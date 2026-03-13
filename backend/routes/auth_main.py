@@ -27,28 +27,147 @@ def init_router(database):
     global db
     db = database
 
+class RegisterRequest(BaseModel):
+    """Registration request — creates user + organization"""
+    email: EmailStr
+    password: str
+    name: str
+    organization_name: Optional[str] = None
+    phone: Optional[str] = None
+
+
 @router.post("/auth/register")
-async def register(user_data: UserCreate):
-    existing = await db.users.find_one({"email": user_data.email}, {"_id": 0})
+async def register(user_data: RegisterRequest):
+    """
+    Full registration flow:
+    1. Create user (role: owner)
+    2. Create organization
+    3. Create organization_users membership
+    4. Create free_trial subscription
+    5. Return JWT with org_id
+    """
+    # Duplicate email check
+    existing = await db.users.find_one({"email": user_data.email}, {"_id": 0, "user_id": 1})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
+    now = datetime.now(timezone.utc).isoformat()
     user_id = f"user_{uuid.uuid4().hex[:12]}"
+    org_id = f"org_{uuid.uuid4().hex[:12]}"
+    membership_id = f"mem_{uuid.uuid4().hex[:12]}"
+    org_name = user_data.organization_name or f"{user_data.name}'s Workshop"
+
+    # Generate slug
+    import re
+    slug = org_name.lower().strip()
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[\s_-]+', '-', slug)[:50]
+    slug = f"{slug}-{uuid.uuid4().hex[:6]}"
+
+    trial_end = (datetime.now(timezone.utc) + timedelta(days=14)).isoformat()
+
+    # 1. Create user
     user_doc = {
         "user_id": user_id,
         "email": user_data.email,
         "password_hash": hash_password(user_data.password),
         "name": user_data.name,
-        "role": user_data.role,
-        "designation": user_data.designation,
+        "role": "owner",
+        "designation": "Owner",
         "phone": user_data.phone,
         "picture": None,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "organization_id": org_id,
+        "created_at": now,
+        "updated_at": now,
     }
+
+    # 2. Create organization
+    org_doc = {
+        "organization_id": org_id,
+        "name": org_name,
+        "slug": slug,
+        "industry_type": "ev_garage",
+        "plan_type": "free_trial",
+        "subscription_status": "trialing",
+        "trial_active": True,
+        "trial_start": now,
+        "trial_end": trial_end,
+        "trial_ends_at": trial_end,
+        "plan_expires_at": trial_end,
+        "logo_url": None,
+        "email": user_data.email,
+        "phone": user_data.phone,
+        "is_active": True,
+        "is_onboarded": False,
+        "total_users": 1,
+        "settings": {
+            "currency": "INR",
+            "timezone": "Asia/Kolkata",
+            "date_format": "DD/MM/YYYY",
+            "fiscal_year_start": "April",
+        },
+        "features": {
+            "ai_assistant": True,
+            "failure_intelligence": True,
+        },
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user_id,
+    }
+
+    # 3. Create membership (owner)
+    membership_doc = {
+        "membership_id": membership_id,
+        "organization_id": org_id,
+        "user_id": user_id,
+        "email": user_data.email,
+        "role": "owner",
+        "status": "active",
+        "custom_permissions": [],
+        "invited_by": None,
+        "invited_at": None,
+        "joined_at": now,
+        "last_active_at": now,
+        "created_at": now,
+        "updated_at": now,
+    }
+
+    # 4. Create free trial subscription
+    sub_id = f"sub_{uuid.uuid4().hex[:12]}"
+    subscription_doc = {
+        "subscription_id": sub_id,
+        "organization_id": org_id,
+        "plan_code": "starter",
+        "billing_cycle": "monthly",
+        "status": "trialing",
+        "trial_start": now,
+        "trial_end": trial_end,
+        "current_period_start": now,
+        "current_period_end": trial_end,
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user_id,
+    }
+
+    # Insert all documents
     await db.users.insert_one(user_doc)
-    token = create_token(user_id, user_data.email, user_data.role)
-    return {"token": token, "user_id": user_id, "role": user_data.role}
+    await db.organizations.insert_one(org_doc)
+    await db.organization_users.insert_one(membership_doc)
+    await db.subscriptions.insert_one(subscription_doc)
+
+    # 5. Return JWT with org_id
+    token = create_token(user_id, user_data.email, "owner", org_id=org_id)
+
+    logger.info(f"New registration: {user_data.email} -> org {org_id} ({org_name})")
+
+    return {
+        "token": token,
+        "user_id": user_id,
+        "role": "owner",
+        "organization_id": org_id,
+        "organization_name": org_name,
+    }
 
 @router.post("/auth/login")
 async def login(credentials: UserLogin):
