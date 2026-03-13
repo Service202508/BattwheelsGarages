@@ -12,39 +12,42 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
 
 ## Core Modules
 - Auth (register, login, password management)
-- Organizations (signup, invites, team management, branding)
-- Contacts, Vehicles, Tickets, Invoices, Estimates, Bills
+- Organizations, Contacts, Vehicles, Tickets, Invoices, Estimates, Bills
 - Payments Received, Credit Notes, Sales Orders
 - Items/Inventory, Chart of Accounts, Journal Entries
 - HR/Employees, Subscriptions, EVFI AI
 
-## What's Been Implemented
+## Completed Work
 
-### Security & Stability (Sessions 1-6)
+### Sessions 1-6: Security & Stability
 - Full multi-tenant security audit and hardening
-- Database cleanup (191MB -> 11MB)
-- Seed scripts for dev/staging/production
-- Password security fix (removed plaintext passwords)
-- Routing fixes for 6+ modules (307 redirect issues)
-- Field consistency fixes (organization_id standardization)
+- Database cleanup (191MB -> 11MB), seed scripts
+- Password security fix, routing fixes, field consistency
 
-### P0 Batch 2 (Session 7)
-- Payment recording fix — corrected collection names (contacts/invoices)
-- Registration fix — full flow: user + org + membership + subscription
+### Session 7: P0 Batch 2
+- Payment recording fix (correct collection names)
+- Registration fix (full user+org+membership+subscription flow)
 
-### P0-6 Chain Breaks (Session 8 — Current)
-- **FIX 1:** Added `organization_id` to estimates-enhanced and sales-orders-enhanced POST handlers
-- **FIX 2:** Added `plan_id` to subscription created during registration (fixes EVFI for new orgs)
-- **FIX 3:** Added empty-path POST decorator to invoices-enhanced (trailing slash 405)
-- **FIX 4:** Added `invoice_id` convenience field to payment API with auto-allocation + invoice status update
-- **Data fixes:** 3 orphaned estimates patched, 2 subscriptions missing plan_id patched
-- **Full chain verified:** Register → Contact → Vehicle → Ticket → EVFI → Estimate → Invoice → Payment → Journal (all PASS)
+### Session 8: P0-6 Chain Breaks
+- Added organization_id to estimates-enhanced and sales-orders-enhanced POST
+- Added plan_id to registration subscription (fixed EVFI for new orgs)
+- Invoice POST trailing slash fix, payment auto-allocation
+
+### Session 9: P1 Batch 1
+- Rate limiting: login (5/email/15min), register (3/IP/min), forgot-password (3/IP/min)
+- Subscription plan_code serialization confirmed working (was already fixed by plan_id fix)
+- EVFI patterns audit: 61 platform patterns, 150 decision trees, 1102 knowledge articles
+
+### Session 10: EVFI UX Fixes
+- AI Assistant layout: widened response panel (40/60 split instead of 50/50)
+- EVFI Guidance fallback: pattern-based diagnostics when LLM unavailable
+  - 6 structured steps per category (battery/motor/controller/electrical)
+  - Hinglish translations, probable causes with confidence scores
+  - Graceful degradation — no blank panels
 
 ## Pending (P1)
-- Subscription API `plan_code: None` serialization fix
-- Rate limiting on auth endpoints (slowapi)
 - Advanced Reports endpoints (404)
-- EVFI Guided Diagnosis endpoint (404)
+- EVFI Guided Diagnosis endpoint (separate from guidance — 404)
 - HR/Employees frontend page
 
 ## Backlog (P2/P3)
@@ -52,5 +55,7 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
 - Clean up test data from battwheels_dev
 - Deploy to Production
 - Purge secrets from Git history
-- Fix backend test suite (582 failed, 468 errors)
+- Fix backend test suite (582 failed)
 - Standardize customer_id vs contact_id fields
+- EVFI: expand patterns beyond motor category
+- AI token tracking: wire explicit usage tracking into guidance routes

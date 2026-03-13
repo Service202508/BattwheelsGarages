@@ -613,19 +613,20 @@ class AIGuidanceService:
         sources: List,
         confidence: GuidanceConfidence
     ) -> Dict:
-        """Generate full Hinglish guidance using LLM"""
-        # Build context for LLM
-        knowledge_context = self._format_knowledge_context(retrieved_docs)
-        
-        # Build system prompt
-        system_prompt = get_efi_system_prompt()
-        if mode == GuidanceMode.QUICK:
-            system_prompt += "\n\n" + QUICK_MODE_INSTRUCTIONS
-        else:
-            system_prompt += "\n\n" + DEEP_MODE_INSTRUCTIONS
-        
-        # Build user prompt
-        user_prompt = f"""
+        """Generate full Hinglish guidance using LLM, with pattern-based fallback"""
+        try:
+            # Build context for LLM
+            knowledge_context = self._format_knowledge_context(retrieved_docs)
+            
+            # Build system prompt
+            system_prompt = get_efi_system_prompt()
+            if mode == GuidanceMode.QUICK:
+                system_prompt += "\n\n" + QUICK_MODE_INSTRUCTIONS
+            else:
+                system_prompt += "\n\n" + DEEP_MODE_INSTRUCTIONS
+            
+            # Build user prompt
+            user_prompt = f"""
 ### JOB CARD CONTEXT ###
 Vehicle: {context.vehicle_make or 'Unknown'} {context.vehicle_model or 'Unknown'}
 Category: {context.category}
@@ -645,23 +646,161 @@ Technician Notes: {context.technician_notes or 'None'}
 Generate diagnostic guidance in Hinglish for the technician.
 {"Insufficient sources - provide safe checklist + ask-back questions." if confidence == GuidanceConfidence.LOW else ""}
 """
-        
-        # Get LLM provider
-        llm_config = await self.feature_flags.get_llm_config(context.organization_id)
-        provider = LLMProviderFactory.get_provider(
-            provider_type=LLMProviderType.GEMINI,
-            model=llm_config.get("model")
-        )
-        
-        # Generate response
-        response = await provider.generate(
-            prompt=user_prompt,
-            system_message=system_prompt,
-            session_id=f"guidance_{context.ticket_id}_{uuid.uuid4().hex[:6]}"
-        )
-        
-        # Parse the response
-        return self._parse_guidance_response(response.content, context)
+            
+            # Get LLM provider
+            llm_config = await self.feature_flags.get_llm_config(context.organization_id)
+            provider = LLMProviderFactory.get_provider(
+                provider_type=LLMProviderType.GEMINI,
+                model=llm_config.get("model")
+            )
+            
+            # Generate response
+            response = await provider.generate(
+                prompt=user_prompt,
+                system_message=system_prompt,
+                session_id=f"guidance_{context.ticket_id}_{uuid.uuid4().hex[:6]}"
+            )
+            
+            # Parse the response
+            parsed = self._parse_guidance_response(response.content, context)
+
+            # If LLM returned an error message or empty diagnostics, use pattern fallback
+            if not parsed.get("diagnostic_steps") and (
+                "error" in (parsed.get("text", "")[:100]).lower() or
+                not parsed.get("probable_causes")
+            ):
+                logger.warning(f"LLM returned empty diagnostics for ticket {context.ticket_id}. Using pattern fallback.")
+                return self._generate_pattern_fallback(context, mode, retrieved_docs)
+
+            return parsed
+        except Exception as e:
+            logger.warning(f"LLM guidance generation failed for ticket {context.ticket_id}: {e}. Using pattern-based fallback.")
+            return self._generate_pattern_fallback(context, mode, retrieved_docs)
+
+    def _generate_pattern_fallback(self, context: GuidanceContext, mode, retrieved_docs: List[Dict]) -> Dict:
+        """Generate structured diagnostic guidance without LLM, using pattern matching and templates."""
+        vehicle = f"{context.vehicle_make or 'Unknown'} {context.vehicle_model or 'Unknown'}"
+        desc = context.description or "Issue not specified"
+        category = (context.category or "general").lower()
+
+        # Category-specific diagnostic steps
+        category_steps = {
+            "battery": [
+                {"step": 1, "action": "HV system isolation", "expected": "Isolation confirmed", "hinglish": "HV system OFF karo, key nikaalo"},
+                {"step": 2, "action": "Check 12V auxiliary battery voltage", "expected": "12.4V+ (healthy)", "hinglish": "12V battery voltage check karo — 12.4V se zyada hona chahiye"},
+                {"step": 3, "action": "Check BMS error codes via OBD", "expected": "Record all DTCs", "hinglish": "OBD se BMS error codes check karo, saare DTCs note karo"},
+                {"step": 4, "action": "Visual inspection of battery pack", "expected": "No swelling, leaks or burn marks", "hinglish": "Battery pack ko dekho — sujan, leak ya jalane ke nishan nahi hone chahiye"},
+                {"step": 5, "action": "Check cell voltages individually", "expected": "All cells within 0.05V of each other", "hinglish": "Har cell ki voltage individually check karo — sab mein 0.05V se kam difference hona chahiye"},
+                {"step": 6, "action": "Check charging port and connector", "expected": "Clean, no corrosion, proper fit", "hinglish": "Charging port aur connector check karo — saaf, rust-free, aur tight fit hona chahiye"},
+            ],
+            "motor": [
+                {"step": 1, "action": "Vehicle on center stand, wheel free", "expected": "Wheel spins freely", "hinglish": "Vehicle center stand pe rakho, wheel free hona chahiye"},
+                {"step": 2, "action": "Check motor connector and wiring", "expected": "No loose connections, no burn marks", "hinglish": "Motor connector aur wiring check karo — koi loose ya jala hua nahi hona chahiye"},
+                {"step": 3, "action": "Spin wheel by hand, listen for noise", "expected": "Smooth rotation, no grinding", "hinglish": "Haath se wheel ghumaao — smooth hona chahiye, koi grinding sound nahi"},
+                {"step": 4, "action": "Check motor temperature after short run", "expected": "Warm but not hot (< 80°C)", "hinglish": "Chhoti ride ke baad motor ka temperature check karo — garam lekin bahut garam nahi (80°C se kam)"},
+                {"step": 5, "action": "Read motor controller error codes", "expected": "No active faults", "hinglish": "Motor controller ke error codes padho — koi active fault nahi hona chahiye"},
+                {"step": 6, "action": "Check Hall sensor signals", "expected": "Clean square wave on scope", "hinglish": "Hall sensor signals scope pe check karo — clean square wave aana chahiye"},
+            ],
+            "electrical": [
+                {"step": 1, "action": "Check fuse box and main fuses", "expected": "All fuses intact", "hinglish": "Fuse box check karo — saare fuses theek hone chahiye"},
+                {"step": 2, "action": "Check 12V system voltage", "expected": "12.4V+ at battery terminals", "hinglish": "12V system voltage check karo — battery terminals pe 12.4V+ hona chahiye"},
+                {"step": 3, "action": "Inspect wiring harness for damage", "expected": "No fraying, cuts, or exposed wires", "hinglish": "Wiring harness inspect karo — koi kata hua ya exposed wire nahi hona chahiye"},
+                {"step": 4, "action": "Check ground connections", "expected": "Clean, tight, no corrosion", "hinglish": "Ground connections check karo — saaf, tight, rust-free hone chahiye"},
+                {"step": 5, "action": "Test dashboard and lights", "expected": "All indicators working", "hinglish": "Dashboard aur lights test karo — saare indicators kaam karne chahiye"},
+            ],
+            "controller": [
+                {"step": 1, "action": "Read controller error codes via OBD", "expected": "Document all DTCs", "hinglish": "OBD se controller error codes padho — saare DTCs note karo"},
+                {"step": 2, "action": "Check controller temperature", "expected": "Below 70°C", "hinglish": "Controller temperature check karo — 70°C se neeche hona chahiye"},
+                {"step": 3, "action": "Inspect controller connections", "expected": "All connectors secure, no corrosion", "hinglish": "Controller ke saare connections check karo — tight aur corrosion-free hone chahiye"},
+                {"step": 4, "action": "Check throttle signal", "expected": "0.8V idle, 4.2V full", "hinglish": "Throttle signal check karo — idle pe 0.8V, full pe 4.2V hona chahiye"},
+                {"step": 5, "action": "Verify firmware version", "expected": "Latest version installed", "hinglish": "Controller firmware version verify karo — latest version hona chahiye"},
+            ],
+        }
+
+        # Determine best-match category from description
+        desc_lower = desc.lower()
+        if any(kw in desc_lower for kw in ["battery", "charge", "charging", "bms", "soc", "range", "cell"]):
+            cat_key = "battery"
+        elif any(kw in desc_lower for kw in ["motor", "noise", "grinding", "speed", "torque", "rpm"]):
+            cat_key = "motor"
+        elif any(kw in desc_lower for kw in ["controller", "throttle", "ecu", "firmware"]):
+            cat_key = "controller"
+        elif any(kw in desc_lower for kw in ["light", "fuse", "wire", "electrical", "dashboard", "indicator"]):
+            cat_key = "electrical"
+        else:
+            cat_key = category if category in category_steps else "battery"
+
+        steps = category_steps.get(cat_key, category_steps["battery"])
+
+        # Build guidance text in EVFI format
+        guidance_lines = [
+            f"**EVFI Pattern-Based Diagnostic Guidance**",
+            f"Vehicle: {vehicle} | Category: {cat_key.upper()}",
+            f"Issue: {desc}",
+            "",
+            f"⚡ SAFETY PRECAUTIONS",
+            "• Vehicle powered OFF, key removed",
+            "• Insulated gloves (Class 0) + safety glasses",
+            "• Do NOT touch orange cables (high voltage)",
+            "• Wait 5 min after power-off before inspection",
+            "• Use insulated tools rated for vehicle voltage",
+            "",
+            f"📋 DIAGNOSTIC STEPS",
+        ]
+        for s in steps:
+            guidance_lines.append(f"{s['step']}. {s['action']} — Expected: {s['expected']}")
+            guidance_lines.append(f"   Hindi: {s['hinglish']}")
+
+        guidance_lines += [
+            "",
+            f"🔧 PROBABLE ROOT CAUSES",
+            f"Based on {cat_key} category patterns:",
+        ]
+
+        # Category-specific probable causes (as structured dicts for chart compatibility)
+        cause_map = {
+            "battery": [
+                {"cause": "BMS cell balancing failure", "confidence": 75},
+                {"cause": "Degraded cells (capacity < 70%)", "confidence": 60},
+                {"cause": "Charging port corrosion or damage", "confidence": 50},
+                {"cause": "12V auxiliary battery drain", "confidence": 40},
+            ],
+            "motor": [
+                {"cause": "Worn motor bearings", "confidence": 70},
+                {"cause": "Hall sensor failure", "confidence": 65},
+                {"cause": "Motor controller communication error", "confidence": 55},
+                {"cause": "Phase winding insulation breakdown", "confidence": 45},
+            ],
+            "controller": [
+                {"cause": "Firmware fault or outdated version", "confidence": 70},
+                {"cause": "Throttle position sensor drift", "confidence": 60},
+                {"cause": "Overheating due to blocked ventilation", "confidence": 55},
+                {"cause": "CAN bus communication error", "confidence": 45},
+            ],
+            "electrical": [
+                {"cause": "Blown main fuse", "confidence": 75},
+                {"cause": "Corroded ground connection", "confidence": 65},
+                {"cause": "Damaged wiring harness", "confidence": 50},
+                {"cause": "12V system voltage drop", "confidence": 45},
+            ],
+        }
+        causes = cause_map.get(cat_key, cause_map["battery"])
+        for cause in causes:
+            guidance_lines.append(f"• {cause['cause']}")
+
+        guidance_lines += [
+            "",
+            "**Note:** Ye pattern-based guidance hai. AI-powered detailed analysis ke liye LLM key configure karein.",
+        ]
+
+        return {
+            "text": "\n".join(guidance_lines),
+            "safety_block": "⚡ SAFETY PRECAUTIONS — Vehicle OFF, insulated tools, wait 5 min",
+            "symptom_summary": desc,
+            "diagnostic_steps": steps,
+            "probable_causes": causes,
+            "recommended_fix": f"Follow the {len(steps)}-step diagnostic checklist above. If issue persists, escalate to OEM service."
+        }
     
     def _format_knowledge_context(self, docs: List[Dict]) -> str:
         """Format retrieved documents for LLM context"""

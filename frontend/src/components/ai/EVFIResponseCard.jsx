@@ -115,7 +115,7 @@ export default function EFIResponseCard({
   const timeDisplay = parsed.estimatedTime || externalTime || "";
 
   return (
-    <div className="space-y-3 w-full max-w-full md:max-w-4xl md:mx-auto overflow-hidden" data-testid="efi-response-card">
+    <div className="space-y-3 w-full max-w-full overflow-hidden" data-testid="efi-response-card">
       {/* Branded Header */}
       <div className="relative bg-slate-900 border border-[#CBFF00]/20 rounded-xl overflow-hidden" data-testid="efi-branded-header">
         <div className="absolute inset-0 bg-gradient-to-br from-[#CBFF00]/[0.04] to-transparent pointer-events-none" />

@@ -216,9 +216,9 @@ Please provide:
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Panel - Input Form */}
-        <Card className="bg-bw-panel border border-white/[0.07]">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Panel - Input Form (2/5 width) */}
+        <Card className="lg:col-span-2 bg-bw-panel border border-white/[0.07]">
           <CardHeader className="pb-4 border-b border-white/[0.07]">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-bw-volt" />
@@ -364,8 +364,8 @@ Please provide:
           </CardContent>
         </Card>
 
-        {/* Right Panel - Diagnosis Results */}
-        <Card className="bg-bw-panel border border-white/[0.07]">
+        {/* Right Panel - Diagnosis Results (3/5 width) */}
+        <Card className="lg:col-span-3 bg-bw-panel border border-white/[0.07]">
           <CardHeader className="pb-4 border-b border-white/[0.07]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -413,7 +413,7 @@ Please provide:
                 </div>
               </div>
             ) : diagnosis ? (
-              <ScrollArea className="h-[500px] pr-4">
+              <ScrollArea className="h-[650px] pr-4">
                 {/* Branded EVFI Response Card */}
                 <EVFIResponseCard
                   responseText={diagnosis.content}
