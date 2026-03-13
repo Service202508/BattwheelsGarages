@@ -538,6 +538,7 @@ async def record_payment(payment: PaymentRecordCreate, request: Request, backgro
         "overpayment_credited": overpayment_amount if overpayment_amount > 0 else None
     }
 
+@router.get("")
 @router.get("/")
 async def list_payments(
     request: Request,
