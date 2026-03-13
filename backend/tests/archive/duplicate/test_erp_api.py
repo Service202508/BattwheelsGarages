@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://beta-readiness-2.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://evfi-hardening.preview.emergentagent.com')
 
 class TestAuth:
     """Authentication endpoint tests"""

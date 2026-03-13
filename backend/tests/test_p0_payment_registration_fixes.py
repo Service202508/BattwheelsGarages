@@ -20,7 +20,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://beta-readiness-2.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://evfi-hardening.preview.emergentagent.com").rstrip("/")
 
 # Test data tracking for cleanup
 CREATED_TEST_USERS = []

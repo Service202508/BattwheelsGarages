@@ -1479,6 +1479,285 @@ async def seed_knowledge_articles(db):
     return {"inserted": inserted, "skipped": skipped}
 
 
+# ==================== BRAND-SPECIFIC EVFI PATTERNS ====================
+
+# Indian EV Brands and Models
+INDIAN_EV_BRANDS = {
+    "Ola": ["S1 Pro", "S1 X", "S1 Air"],
+    "Ather": ["450X", "450S", "Rizta"],
+    "TVS": ["iQube", "iQube ST"],
+    "Bajaj": ["Chetak", "Chetak Urbane"],
+    "Hero Electric": ["Optima", "Photon", "NYX"],
+    "Okinawa": ["Praise Pro", "i-Praise", "Ridge"],
+    "Revolt": ["RV400", "RV1"]
+}
+
+# Fault categories with common issues
+FAULT_CATEGORIES = {
+    "battery": {
+        "issues": [
+            {
+                "title": "Battery Draining Fast",
+                "symptoms": ["Range kam ho gaya", "Battery jaldi khatam hoti hai", "Indicator drops quickly"],
+                "causes": ["Cell degradation", "BMS calibration issue", "Parasitic drain", "Faulty cells"],
+                "steps": [
+                    "Pehle battery voltage check karo multimeter se (fully charged 72V-84V honi chahiye)",
+                    "Cell balance check karo diagnostic tool se - sabhi cells ka voltage ±0.1V mein hona chahiye",
+                    "BMS reset karo following OEM procedure",
+                    "Parasitic drain test - key off current <50mA hona chahiye",
+                    "Agar cell imbalance >0.3V hai to battery pack service required"
+                ],
+                "parts": [("Battery cells", "8507 60 00", 15000), ("BMS board", "8542 31 00", 8000)],
+                "safety": ["High voltage - insulated gloves use karo", "Battery disconnect before service"]
+            },
+            {
+                "title": "Charging Not Starting",
+                "symptoms": ["Charger light not coming", "No response when plugged", "Charging indicator off"],
+                "causes": ["Charger fault", "Charging port damage", "BMS lock", "Fuse blown"],
+                "steps": [
+                    "Charger output voltage check karo - rated voltage ±5% hona chahiye",
+                    "Charging port pins inspect karo - corrosion ya damage check",
+                    "BMS communication check karo diagnostic tool se",
+                    "Main fuse continuity check karo multimeter se",
+                    "Wiring harness continuity verify karo charger to battery"
+                ],
+                "parts": [("Charger unit", "8504 40 90", 4500), ("Charging port", "8536 69 00", 1200), ("Fuse 30A", "8536 10 00", 150)],
+                "safety": ["Charger unplug karo before inspection", "Wet hands se handle mat karo"]
+            },
+            {
+                "title": "BMS Error Code",
+                "symptoms": ["Error on dashboard", "Vehicle not starting", "Battery warning light"],
+                "causes": ["Temperature sensor fault", "Cell voltage out of range", "Communication error", "SOC mismatch"],
+                "steps": [
+                    "Error code note karo dashboard se",
+                    "Diagnostic tool connect karke detailed BMS status check karo",
+                    "Temperature sensors resistance check karo (NTC 10K typical)",
+                    "Cell voltages individually measure karo",
+                    "BMS firmware update check karo if available"
+                ],
+                "parts": [("Temperature sensor", "9025 19 90", 350), ("BMS board", "8542 31 00", 8000)],
+                "safety": ["Battery terminal cover rakho during diagnosis", "Fire extinguisher nearby rakho"]
+            }
+        ]
+    },
+    "motor": {
+        "issues": [
+            {
+                "title": "Motor Overheating",
+                "symptoms": ["Motor garam ho jata hai", "Power cut during ride", "Thermal warning on dash"],
+                "causes": ["Bearing failure", "Winding damage", "Cooling issue", "Overload"],
+                "steps": [
+                    "Motor surface temperature check karo IR gun se - 80°C se zyada nahi hona chahiye",
+                    "Bearing play check karo - shaft ko hilao, koi looseness nahi honi chahiye",
+                    "Winding resistance check karo phase to phase - balanced hona chahiye ±5%",
+                    "Cooling fins clean karo compressed air se",
+                    "Controller thermal paste check karo if motor is hub type"
+                ],
+                "parts": [("Motor bearing set", "8482 10 00", 800), ("Motor assembly", "8501 31 00", 18000)],
+                "safety": ["Motor cool hone do before touching", "Gloves use karo"]
+            },
+            {
+                "title": "Motor Noise/Vibration",
+                "symptoms": ["Grinding sound", "Vibration while riding", "Clicking noise from motor"],
+                "causes": ["Bearing wear", "Rotor damage", "Loose mounting", "Hall sensor issue"],
+                "steps": [
+                    "Motor manually rotate karo (power off) - smooth hona chahiye",
+                    "Mounting bolts torque check karo - spec ke according tight karo",
+                    "Hall sensor waveform check karo oscilloscope se if available",
+                    "Stator aur rotor gap inspect karo - uniform hona chahiye",
+                    "If grinding continuous hai, motor replacement consider karo"
+                ],
+                "parts": [("Motor bearing set", "8482 10 00", 800), ("Hall sensor set", "9032 89 00", 450), ("Motor assembly", "8501 31 00", 18000)],
+                "safety": ["Power off karo before manual rotation", "Loose clothing se door raho"]
+            },
+            {
+                "title": "Motor No Response",
+                "symptoms": ["Throttle press karne pe kuch nahi hota", "Motor dead", "No movement"],
+                "causes": ["Controller fault", "Motor winding open", "Throttle fault", "Wiring break"],
+                "steps": [
+                    "Throttle voltage check karo - 0.8V-4.2V range sweep hona chahiye",
+                    "Motor phase wires continuity check karo",
+                    "Controller output check karo - phase voltages present honi chahiye throttle pe",
+                    "Hall sensor power supply verify karo - 5V hona chahiye",
+                    "All connections inspect karo corrosion ke liye"
+                ],
+                "parts": [("Controller unit", "8537 10 00", 6500), ("Throttle assembly", "8536 50 00", 1200)],
+                "safety": ["High voltage present - insulated tools use karo", "Disconnect battery before wiring work"]
+            }
+        ]
+    },
+    "controller": {
+        "issues": [
+            {
+                "title": "Throttle Response Delayed",
+                "symptoms": ["Accelerate karne mein delay", "Jerky movement", "Lag in response"],
+                "causes": ["Throttle sensor dirty", "Controller calibration", "Software glitch", "Wiring issue"],
+                "steps": [
+                    "Throttle sensor clean karo contact cleaner se",
+                    "Throttle calibration perform karo - OEM procedure follow karo",
+                    "Controller firmware version check karo - update if available",
+                    "Throttle wire connections inspect karo - tight honi chahiye",
+                    "If issue persists, throttle assembly replace karo"
+                ],
+                "parts": [("Throttle assembly", "8536 50 00", 1200), ("Controller unit", "8537 10 00", 6500)],
+                "safety": ["Power off during throttle work", "Test ride carefully after adjustment"]
+            },
+            {
+                "title": "Controller Error Code",
+                "symptoms": ["Error flash on dashboard", "Vehicle in limp mode", "Reduced power"],
+                "causes": ["Overcurrent protection", "Overtemperature", "Sensor fault", "Communication error"],
+                "steps": [
+                    "Error code decode karo OEM manual se",
+                    "Controller temperature check karo - 70°C se kam hona chahiye",
+                    "All sensor connections verify karo",
+                    "Clear error code aur test ride karo",
+                    "Agar error repeat hota hai, deeper diagnosis required"
+                ],
+                "parts": [("Controller unit", "8537 10 00", 6500), ("Temperature sensor", "9025 19 90", 350)],
+                "safety": ["Error code clear karne se pehle root cause identify karo", "Test ride slowly after clearing"]
+            }
+        ]
+    },
+    "charging": {
+        "issues": [
+            {
+                "title": "Slow Charging",
+                "symptoms": ["Charging time badh gaya", "Full charge mein 8+ hours", "Charger garam hota hai"],
+                "causes": ["Charger degradation", "Battery aging", "Loose connection", "Voltage fluctuation"],
+                "steps": [
+                    "Input voltage check karo - 220V ±10% hona chahiye",
+                    "Charger output current measure karo - rated current milni chahiye",
+                    "Charging port connection tightness check karo",
+                    "Battery SOH (State of Health) check karo diagnostic tool se",
+                    "Charger fan working verify karo - cooling important hai"
+                ],
+                "parts": [("Charger unit", "8504 40 90", 4500), ("Charging cable", "8544 42 00", 800)],
+                "safety": ["Charger ventilated area mein use karo", "Extension cord avoid karo"]
+            },
+            {
+                "title": "Charger Making Noise",
+                "symptoms": ["Charger se buzzing sound", "Clicking noise", "Fan noise excessive"],
+                "causes": ["Fan bearing worn", "Loose components", "Capacitor issue", "Thermal issue"],
+                "steps": [
+                    "Charger fan inspect karo - smooth rotation honi chahiye",
+                    "Internal loose parts ke liye gentle shake test karo",
+                    "Charger temperature monitor karo during charging - 50°C se kam hona chahiye",
+                    "If noise continues, charger replacement recommended",
+                    "Check warranty status before replacement"
+                ],
+                "parts": [("Charger unit", "8504 40 90", 4500), ("Cooling fan", "8414 59 00", 600)],
+                "safety": ["Charger open mat karo - no user serviceable parts", "Original charger hi use karo"]
+            }
+        ]
+    },
+    "electrical": {
+        "issues": [
+            {
+                "title": "Lights Not Working",
+                "symptoms": ["Headlight off", "Tail light not working", "Indicators dim"],
+                "causes": ["Bulb/LED failure", "Fuse blown", "Wiring damage", "Switch fault"],
+                "steps": [
+                    "Fuse box check karo - relevant fuse continuity verify karo",
+                    "Bulb/LED unit inspect karo - blackened ya damaged ho sakta hai",
+                    "Switch continuity check karo multimeter se",
+                    "Wiring harness inspect karo damage ke liye",
+                    "Ground connection verify karo - clean aur tight hona chahiye"
+                ],
+                "parts": [("LED headlight", "8512 20 00", 2500), ("Fuse set", "8536 10 00", 200), ("Switch assembly", "8536 50 00", 800)],
+                "safety": ["Power off karo before working on lights", "Correct rating ka fuse use karo"]
+            },
+            {
+                "title": "Dashboard Malfunction",
+                "symptoms": ["Display blank", "Wrong readings", "Flickering display"],
+                "causes": ["Loose connection", "Display unit fault", "Controller communication", "Water damage"],
+                "steps": [
+                    "Dashboard connector check karo - properly seated hona chahiye",
+                    "Power supply voltage verify karo dashboard connector pe",
+                    "CAN bus communication check karo if applicable",
+                    "Water ingress signs check karo - corrosion ya stains",
+                    "If display unit faulty, replacement required"
+                ],
+                "parts": [("Dashboard/Display unit", "9029 20 00", 5500), ("Connector set", "8536 69 00", 350)],
+                "safety": ["Static discharge se protect karo", "Waterproof seal properly after service"]
+            }
+        ]
+    }
+}
+
+
+def generate_brand_patterns():
+    """Generate brand-specific EVFI patterns for all Indian EV brands"""
+    patterns = []
+    pattern_id = 1000
+    
+    for brand, models in INDIAN_EV_BRANDS.items():
+        for model in models:
+            for category, category_data in FAULT_CATEGORIES.items():
+                for issue in category_data["issues"]:
+                    pattern_id += 1
+                    
+                    # Create pattern with brand-specific context
+                    pattern = {
+                        "pattern_id": f"EVFI-{brand[:3].upper()}-{pattern_id}",
+                        "vehicle_make": brand,
+                        "vehicle_model": model,
+                        "fault_category": category,
+                        "title": f"{brand} {model} - {issue['title']}",
+                        "description": f"{issue['title']} issue specific to {brand} {model}. Common symptoms include: {', '.join(issue['symptoms'][:2])}.",
+                        "symptoms": issue["symptoms"],
+                        "probable_causes": issue["causes"],
+                        "diagnostic_steps": issue["steps"],
+                        "safety_warnings": issue["safety"],
+                        "parts_needed": [
+                            {
+                                "name": part[0],
+                                "hsn_code": part[1],
+                                "estimated_price": part[2],
+                                "currency": "INR"
+                            }
+                            for part in issue["parts"]
+                        ],
+                        "confidence_score": round(0.75 + (pattern_id % 20) / 100, 2),
+                        "keywords": [brand.lower(), model.lower(), category, issue["title"].lower().replace(" ", "_")],
+                        "status": "active",
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "usage_count": 0,
+                        "effectiveness_score": 0.85
+                    }
+                    patterns.append(pattern)
+    
+    return patterns
+
+
+async def seed_platform_patterns(db):
+    """Seed brand-specific platform patterns to efi_platform_patterns collection"""
+    collection = db["efi_platform_patterns"]
+    
+    # Generate patterns
+    patterns = generate_brand_patterns()
+    
+    # Check existing count
+    existing_count = await collection.count_documents({})
+    
+    # Insert new patterns (skip if pattern_id exists)
+    inserted = 0
+    for pattern in patterns:
+        existing = await collection.find_one({"pattern_id": pattern["pattern_id"]})
+        if not existing:
+            await collection.insert_one(pattern)
+            inserted += 1
+    
+    # Get final count
+    final_count = await collection.count_documents({})
+    
+    return {
+        "existing_before": existing_count,
+        "patterns_generated": len(patterns),
+        "patterns_inserted": inserted,
+        "total_after": final_count
+    }
+
+
 # Run seeding if called directly
 if __name__ == "__main__":
     from utils.database import db, client

@@ -597,6 +597,58 @@ class EFIService:
                         effectiveness_score=card.get("effectiveness_score", 0)
                     ))
         
+        # Stage 2.5: Platform Patterns Search (brand-specific diagnostic patterns)
+        if data.vehicle_make or data.vehicle_model:
+            stages_used.append("platform_patterns")
+            
+            pattern_query = {"status": "active"}
+            if data.vehicle_make:
+                pattern_query["vehicle_make"] = {"$regex": data.vehicle_make, "$options": "i"}
+            if data.vehicle_model:
+                pattern_query["vehicle_model"] = {"$regex": data.vehicle_model, "$options": "i"}
+            
+            # Add symptom keyword search
+            keywords = extract_keywords(data.symptom_text)
+            if keywords:
+                pattern_query["$or"] = [
+                    {"symptoms": {"$in": keywords}},
+                    {"title": {"$regex": "|".join(keywords[:5]), "$options": "i"}},
+                    {"keywords": {"$in": keywords}}
+                ]
+            
+            platform_patterns = await self.db.efi_platform_patterns.find(
+                pattern_query, {"_id": 0}
+            ).limit(15).to_list(15)
+            
+            for pattern in platform_patterns:
+                pattern_id = pattern.get("pattern_id", "")
+                if pattern_id in [m.failure_id for m in all_matches]:
+                    continue
+                
+                # Calculate score based on matches
+                score = 0.70  # Base score for brand match
+                
+                # Exact vehicle model match bonus
+                if data.vehicle_model and pattern.get("vehicle_model", "").lower() == data.vehicle_model.lower():
+                    score += 0.15
+                
+                # Symptom overlap bonus
+                pattern_symptoms = set(s.lower() for s in pattern.get("symptoms", []))
+                query_keywords = set(k.lower() for k in keywords)
+                if pattern_symptoms & query_keywords:
+                    score += 0.10 * min(len(pattern_symptoms & query_keywords), 3) / 3
+                
+                all_matches.append(FailureMatchResult(
+                    failure_id=pattern_id,
+                    title=pattern.get("title", "Unknown Pattern"),
+                    match_score=min(0.92, score),
+                    match_type="platform_pattern",
+                    match_stage=2,
+                    matched_symptoms=list(pattern_symptoms & query_keywords)[:5] if pattern_symptoms & query_keywords else pattern.get("symptoms", [])[:3],
+                    confidence_level=calculate_confidence_level(pattern.get("confidence_score", 0.8)),
+                    effectiveness_score=pattern.get("effectiveness_score", 0.85)
+                ))
+        
         # Stage 3: Vector Semantic Search (if available)
         if EMBEDDINGS_AVAILABLE and (not all_matches or all_matches[0].match_score < 0.8):
             try:
