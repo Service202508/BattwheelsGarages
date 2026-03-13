@@ -304,14 +304,6 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
     if not token_result.get("success"):
         raise HTTPException(status_code=429, detail=token_result.get("error", "Monthly diagnostic limit reached"))
     
-    # Track AI usage against subscription limits
-    try:
-        from services.usage_tracker import get_usage_tracker
-        tracker = get_usage_tracker()
-        await tracker.increment_usage(org_id, "ai_calls")
-    except Exception as track_err:
-        logger.warning(f"Failed to track AI usage for {org_id}: {track_err}")
-    
     try:
         session = await _decision_engine.start_session(
             ticket_id=data.ticket_id,
@@ -320,6 +312,14 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
             technician_id=user.get("user_id"),
             technician_name=user.get("name")
         )
+        
+        # Track AI usage against subscription limits (after successful session start)
+        try:
+            from services.usage_tracker import get_usage_tracker
+            tracker = get_usage_tracker()
+            await tracker.increment_usage(org_id, "ai_calls")
+        except Exception as track_err:
+            logger.warning(f"Failed to track AI usage for {org_id}: {track_err}")
         
         return session
     except ValueError as e:

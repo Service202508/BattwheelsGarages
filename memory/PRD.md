@@ -45,12 +45,28 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
   - Hinglish translations, probable causes with confidence scores
   - Graceful degradation — no blank panels
 
+### Session 11: Live Feedback Fixes
+- Technician "Assign/Reassign" button state-aware
+- Subscription pricing corrected in DB; new signups get free_trial plan
+
+### Session 12: Beta Readiness — Reports & Token Tracking (2026-03-13)
+- **Advanced Reports:** Verified all 13 /reports-advanced/* endpoints return 200 (route registration was already correct)
+- **AI Token Tracking:** Wired UsageTracker.increment_usage("ai_calls") to all EVFI LLM routes:
+  - `ai_assistant.py` /diagnose — tracks after successful LLM call
+  - `ai_guidance.py` /generate — tracks after guidance generation
+  - `efi_guided.py` /session/start — tracks after successful session creation
+  - Initialized UsageTracker singleton in server.py
+- Subscription page now correctly shows AI Calls (e.g., "2 / 100, 98 remaining")
+- Testing: 100% backend (18/18), 100% frontend verified
+
 ## Pending (P1)
-- Advanced Reports endpoints (404)
-- EVFI Guided Diagnosis endpoint (separate from guidance — 404)
-- HR/Employees frontend page
+- Reassign Technician full backend functionality (P2 per user)
+- Plan Upgrade workflow (P2 per user)
+- Plan Limit Enforcement (block at limit)
 
 ## Backlog (P2/P3)
+- EVFI Guided Diagnosis endpoint improvements
+- HR/Employees frontend page
 - Deploy to Staging + full QA
 - Clean up test data from battwheels_dev
 - Deploy to Production
@@ -58,4 +74,4 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
 - Fix backend test suite (582 failed)
 - Standardize customer_id vs contact_id fields
 - EVFI: expand patterns beyond motor category
-- AI token tracking: wire explicit usage tracking into guidance routes
+- Login rate limiting IP enhancement (prevent email spraying)
