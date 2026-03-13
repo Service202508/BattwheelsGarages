@@ -300,10 +300,11 @@ async def list_departments(request: Request):
 async def clock_in(request: Request, data: ClockRequest = None):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
     try:
         location = data.location if data else None
-        return await service.clock_in(user.get("user_id"), location)
+        return await service.clock_in(user.get("user_id"), location, organization_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -312,10 +313,11 @@ async def clock_in(request: Request, data: ClockRequest = None):
 async def clock_out(request: Request, data: ClockRequest = None):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
     try:
         location = data.location if data else None
-        return await service.clock_out(user.get("user_id"), location)
+        return await service.clock_out(user.get("user_id"), location, organization_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -324,8 +326,9 @@ async def clock_out(request: Request, data: ClockRequest = None):
 async def get_today_attendance(request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
-    attendance = await service.get_attendance_today(user.get("user_id"))
+    attendance = await service.get_attendance_today(user.get("user_id"), organization_id=org_id)
     return attendance or {"message": "No attendance record for today"}
 
 
@@ -333,8 +336,9 @@ async def get_today_attendance(request: Request):
 async def get_my_attendance(request: Request, limit: int = 30):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
-    employee = await service.get_employee_by_user(user.get("user_id"))
+    employee = await service.get_employee_by_user(user.get("user_id"), organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee record not found")
     
@@ -348,6 +352,7 @@ async def get_my_attendance(request: Request, limit: int = 30):
 async def get_all_attendance(request: Request, date: Optional[str] = None, department: Optional[str] = None):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     user_role = user.get("role", "")
     
     query = {}
@@ -356,7 +361,7 @@ async def get_all_attendance(request: Request, date: Optional[str] = None, depar
     
     # Employee-level isolation: non-HR/admin roles see only own data
     if user_role not in ("owner", "org_admin", "admin", "hr", "manager"):
-        employee = await service.get_employee_by_user(user.get("user_id"))
+        employee = await service.get_employee_by_user(user.get("user_id"), organization_id=org_id)
         if employee:
             query["employee_id"] = employee["employee_id"]
         else:
@@ -389,8 +394,9 @@ async def get_leave_types(request: Request):
 async def get_leave_balance(request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
-    employee = await service.get_employee_by_user(user.get("user_id"))
+    employee = await service.get_employee_by_user(user.get("user_id"), organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee record not found")
     
@@ -401,6 +407,7 @@ async def get_leave_balance(request: Request):
 async def request_leave(request: Request, data: LeaveRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
     try:
         return await service.request_leave(
@@ -408,7 +415,8 @@ async def request_leave(request: Request, data: LeaveRequest):
             leave_type=data.leave_type,
             start_date=data.start_date,
             end_date=data.end_date,
-            reason=data.reason
+            reason=data.reason,
+            organization_id=org_id
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -447,13 +455,15 @@ async def get_pending_approvals(request: Request):
 async def approve_leave(request: Request, leave_id: str, data: LeaveApprovalRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
     try:
         return await service.approve_leave(
             leave_id=leave_id,
             approved_by=user.get("user_id"),
             approved=data.approved,
-            comments=data.comments
+            comments=data.comments,
+            organization_id=org_id
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -487,13 +497,14 @@ async def cancel_leave(request: Request, leave_id: str):
 @router.get("/payroll/calculate/{employee_id}")
 async def calculate_payroll(request: Request, employee_id: str, month: str = None, year: int = None, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
+    org_id = await get_org_id(request, service.db)
     
     now = datetime.now(timezone.utc)
     month = month or now.strftime("%B")
     year = year or now.year
     
     try:
-        return await service.calculate_payroll(employee_id, month, year)
+        return await service.calculate_payroll(employee_id, month, year, organization_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -516,7 +527,7 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
     await enforce_period_lock(service.db, org_id, payroll_date)
     
     try:
-        return await service.generate_payroll(month, year, user.get("user_id"))
+        return await service.generate_payroll(month, year, user.get("user_id"), organization_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
 
@@ -545,7 +556,7 @@ async def list_payroll_records(request: Request, month: Optional[str] = None, ye
 
     # Employee data isolation: non-HR/admin see only own payroll
     if _is_self_only(user):
-        employee = await service.get_employee_by_user(user.get("user_id"))
+        employee = await service.get_employee_by_user(user.get("user_id"), organization_id=org_id)
         if employee:
             query["employee_id"] = employee["employee_id"]
         else:
@@ -574,8 +585,9 @@ async def list_payroll_records(request: Request, month: Optional[str] = None, ye
 async def get_my_payroll(request: Request, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
     
-    employee = await service.get_employee_by_user(user.get("user_id"))
+    employee = await service.get_employee_by_user(user.get("user_id"), organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee record not found")
     
@@ -628,8 +640,9 @@ async def update_employee_tax_config(request: Request, employee_id: str,
     from services.tds_service import validate_pan
     
     service = get_service()
+    org_id = await get_org_id(request, service.db)
     
-    employee = await service.get_employee(employee_id)
+    employee = await service.get_employee(employee_id, organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
@@ -665,8 +678,9 @@ async def update_employee_tax_config(request: Request, employee_id: str,
 async def get_employee_tax_config(request: Request, employee_id: str):
     """Get employee tax configuration"""
     service = get_service()
+    org_id = await get_org_id(request, service.db)
     
-    employee = await service.get_employee(employee_id)
+    employee = await service.get_employee(employee_id, organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
@@ -695,6 +709,7 @@ async def calculate_employee_tds(request: Request, employee_id: str, month: int 
     from services.tds_service import init_tds_service, get_tds_calculator
     
     service = get_service()
+    org_id = await get_org_id(request, service.db)
     
     # Initialize TDS service if not done
     try:
@@ -703,7 +718,7 @@ async def calculate_employee_tds(request: Request, employee_id: str, month: int 
         init_tds_service(service.db)
         tds_calc = get_tds_calculator()
     
-    employee = await service.get_employee(employee_id)
+    employee = await service.get_employee(employee_id, organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
@@ -777,8 +792,8 @@ async def get_tds_summary(request: Request, month: int = Query(None, ge=1, le=12
     year = year or now.year
     
     # Get all active employees
-    org_id = getattr(request.state, "tenant_org_id", None)
-    employees = await service.list_employees(status="active", org_id=org_id)
+    org_id = await get_org_id(request, service.db)
+    employees = await service.list_employees(status="active", organization_id=org_id)
     
     # Calculate TDS for each
     summary = []
@@ -1038,7 +1053,7 @@ async def mark_tds_deposited(request: Request, data: TDSMarkDepositedRequest, _:
         tds_calc = get_tds_calculator()
     
     # Get all active employees and calculate summary
-    employees = await service.list_employees(status="active")
+    employees = await service.list_employees(status="active", organization_id=org_id)
     total_tds_month = 0
     
     for emp in employees:
@@ -1114,7 +1129,7 @@ async def export_tds_data(request: Request, month: int = Query(..., ge=1, le=12)
     financial_year = f"{fy_start_year}-{str(fy_start_year + 1)[-2:]}"
     
     # Get employees
-    employees = await service.list_employees(status="active")
+    employees = await service.list_employees(status="active", organization_id=org_id)
     
     # Get challans for YTD deposited
     challans = await service.db.tds_challans.find(
@@ -1255,7 +1270,7 @@ async def get_form16_data(request: Request, employee_id: str, fy: str, _: None =
         form16_gen = get_form16_generator()
     
     # Get employee
-    employee = await service.get_employee(employee_id)
+    employee = await service.get_employee(employee_id, organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
@@ -1435,7 +1450,7 @@ async def download_form16_pdf(request: Request, employee_id: str, fy: str, _: No
         raise HTTPException(status_code=400, detail="Invalid FY format. Expected: 2024-25")
 
     # Get employee
-    employee = await service.get_employee(employee_id)
+    employee = await service.get_employee(employee_id, organization_id=org_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
 
