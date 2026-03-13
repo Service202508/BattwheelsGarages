@@ -88,7 +88,7 @@ async def main():
             "email": "demo@voltmotors.in",
             "name": "Demo Admin",
             "role": "owner",
-            "password": None,  # Don't touch existing password
+            "password": demo_password,
         },
         {
             "user_id": "user_priya_manager",
@@ -127,6 +127,7 @@ async def main():
             "email": u["email"],
             "name": u["name"],
             "role": u["role"],
+            "organization_id": ORG_ID,
             "is_active": True,
         }
         if u["password"] and not existing:
@@ -751,6 +752,47 @@ async def main():
     print(f"  {coa_count} accounts seeded")
 
     # ================================================================
+    # SECTION K — Subscription (unlocks EVFI + plan-gated features)
+    # ================================================================
+    print("[K] Seeding subscription...")
+    sub_doc = {
+        "subscription_id": "sub_demo_volt_motors_001",
+        "organization_id": ORG_ID,
+        "plan_id": "plan_professional_001",
+        "plan_code": "professional",
+        "status": "active",
+        "billing_cycle": "annual",
+        "current_period_start": NOW,
+        "current_period_end": NOW + timedelta(days=365),
+        "trial_start": None,
+        "trial_end": None,
+        "cancel_at_period_end": False,
+        "canceled_at": None,
+        "cancellation_reason": None,
+        "payment_method": "manual",
+        "external_subscription_id": None,
+        "usage": {
+            "tickets_created": 0,
+            "invoices_created": 0,
+            "ai_calls_made": 0,
+            "storage_used_gb": 0.0,
+            "api_calls_today": 0,
+            "last_reset": NOW,
+        },
+        "created_at": NOW,
+        "updated_at": NOW,
+        "created_by": "seed_script",
+        "_seed": SEED_TAG,
+    }
+    await db.subscriptions.update_one(
+        {"organization_id": ORG_ID},
+        {"$set": sub_doc},
+        upsert=True,
+    )
+    counts["subscriptions"] = 1
+    print(f"  Professional subscription: {sub_doc['subscription_id']}")
+
+    # ================================================================
     # SUMMARY
     # ================================================================
     print("\n" + "=" * 50)
@@ -762,7 +804,7 @@ async def main():
     # Verify final counts
     print("\nDatabase counts:")
     for col_name in ["organizations", "users", "organization_users", "contacts", "vehicles", "items",
-                     "employees", "invoices", "estimates", "chart_of_accounts"]:
+                     "employees", "invoices", "estimates", "chart_of_accounts", "subscriptions"]:
         c = await db[col_name].count_documents({})
         org_c = await db[col_name].count_documents({"organization_id": ORG_ID}) if col_name != "users" else c
         print(f"  {col_name}: {c} total ({org_c} for demo org)")
