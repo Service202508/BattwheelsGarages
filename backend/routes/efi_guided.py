@@ -84,6 +84,14 @@ class CaptureCompletionRequest(BaseModel):
     outcome: str = "success"
 
 
+class StandaloneDiagnosisRequest(BaseModel):
+    vehicle_make: str
+    vehicle_model: str
+    symptom: str
+    category: Optional[str] = None
+    mode: str = "hinglish"  # "hinglish" or "classic"
+
+
 # ==================== HELPER ====================
 
 async def get_current_user(request: Request) -> dict:
@@ -115,6 +123,84 @@ async def get_current_user(request: Request) -> dict:
                 return user
     
     raise HTTPException(status_code=401, detail="Not authenticated")
+
+
+# ==================== STANDALONE GUIDED DIAGNOSIS ====================
+
+@router.post("/start")
+async def standalone_guided_diagnosis(request: Request, data: StandaloneDiagnosisRequest):
+    """
+    Standalone EVFI guided diagnosis — no ticket required.
+    Accepts vehicle info + symptom, returns step-by-step diagnostic guidance
+    with safety warnings, probable causes, and recommended checks.
+    Supports Hinglish and Classic modes.
+    """
+    org_id = require_org_id(request)
+
+    # Enforce AI call limit
+    try:
+        from services.usage_tracker import get_usage_tracker
+        tracker = get_usage_tracker()
+        within_limit, current, limit = await tracker.check_limit(org_id, "ai_calls")
+        if not within_limit:
+            raise HTTPException(status_code=429, detail={
+                "error": "ai_limit_exceeded",
+                "message": f"AI call limit reached ({current}/{limit}). Upgrade your plan for more.",
+                "current_usage": current,
+                "limit": limit,
+                "upgrade_url": "/subscription"
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.warning(f"Failed to check AI limit for {org_id}: {e}")
+
+    from services.ai_guidance_service import AIGuidanceService, GuidanceContext
+    service = AIGuidanceService(_db)
+
+    context = GuidanceContext(
+        ticket_id=f"standalone-{uuid.uuid4().hex[:8]}",
+        organization_id=org_id,
+        vehicle_make=data.vehicle_make,
+        vehicle_model=data.vehicle_model,
+        description=data.symptom,
+        category=data.category or "general",
+    )
+
+    # Use pattern-based fallback (works without LLM)
+    result = service._generate_pattern_fallback(context, "quick", [])
+
+    # Format steps with or without Hinglish
+    steps = result.get("diagnostic_steps", [])
+    if data.mode == "classic":
+        for step in steps:
+            step.pop("hinglish", None)
+
+    # Track AI usage
+    try:
+        tracker = get_usage_tracker()
+        await tracker.increment_usage(org_id, "ai_calls")
+    except Exception as track_err:
+        logger.warning(f"Failed to track AI usage for {org_id}: {track_err}")
+
+    return {
+        "status": "success",
+        "vehicle": f"{data.vehicle_make} {data.vehicle_model}",
+        "symptom": data.symptom,
+        "category": result.get("text", "").split("Category: ")[-1].split("\n")[0] if "Category:" in result.get("text", "") else (data.category or "general"),
+        "safety_warnings": [
+            "Vehicle powered OFF, key removed",
+            "Insulated gloves (Class 0) + safety glasses",
+            "Do NOT touch orange cables (high voltage)",
+            "Wait 5 min after power-off before inspection",
+            "Use insulated tools rated for vehicle voltage",
+        ],
+        "diagnostic_steps": steps,
+        "probable_causes": result.get("probable_causes", []),
+        "recommended_fix": result.get("recommended_fix", ""),
+        "mode": data.mode,
+        "note": "Pattern-based guidance. For AI-powered analysis, ensure LLM key is configured.",
+    }
 
 
 # ==================== COMPLAINT PRE-PROCESSING ====================
@@ -295,6 +381,24 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
     
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
+    
+    # Enforce AI call limit (subscription-level monthly cap)
+    try:
+        from services.usage_tracker import get_usage_tracker
+        tracker = get_usage_tracker()
+        within_limit, current, limit = await tracker.check_limit(org_id, "ai_calls")
+        if not within_limit:
+            raise HTTPException(status_code=429, detail={
+                "error": "ai_limit_exceeded",
+                "message": f"AI call limit reached ({current}/{limit}). Upgrade your plan for more.",
+                "current_usage": current,
+                "limit": limit,
+                "upgrade_url": "/subscription"
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.warning(f"Failed to check AI limit for {org_id}: {e}")
     
     # Consume an AI diagnostic token before creating session
     from services.ai_token_service import consume_token

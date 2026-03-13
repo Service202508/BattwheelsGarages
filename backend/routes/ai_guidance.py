@@ -113,6 +113,24 @@ async def generate_guidance(
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
+    # Enforce AI call limit (subscription-level monthly cap)
+    try:
+        from services.usage_tracker import get_usage_tracker
+        tracker = get_usage_tracker()
+        within_limit, current, limit = await tracker.check_limit(org_id, "ai_calls")
+        if not within_limit:
+            raise HTTPException(status_code=429, detail={
+                "error": "ai_limit_exceeded",
+                "message": f"AI call limit reached ({current}/{limit}). Upgrade your plan for more.",
+                "current_usage": current,
+                "limit": limit,
+                "upgrade_url": "/subscription"
+            })
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.warning(f"Failed to check AI limit for {org_id}: {e}")
+    
     service = get_guidance_service()
     db = get_db()
     
