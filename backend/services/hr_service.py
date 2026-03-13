@@ -157,6 +157,10 @@ class HRService:
     
     async def create_employee(self, data: Dict[str, Any], user_id: str) -> Dict[str, Any]:
         """Create new employee with Indian compliance fields and optional user account"""
+        organization_id = data.get("organization_id")
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        
         employee_id = f"emp_{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)
         
@@ -164,8 +168,7 @@ class HRService:
         employee_code = data.get("employee_code")
         if not employee_code:
             count = await self.db.employees.count_documents(
-                {"organization_id": data.get("organization_id")} 
-                if data.get("organization_id") else {}
+                {"organization_id": organization_id}
             )
             employee_code = f"EMP{str(count + 1).zfill(4)}"
         
@@ -234,7 +237,7 @@ class HRService:
         employee = {
             "employee_id": employee_id,
             "employee_code": employee_code,
-            "organization_id": data.get("organization_id"),
+            "organization_id": organization_id,
             "user_id": created_user_id,
             "first_name": data.get("first_name"),
             "last_name": data.get("last_name"),
@@ -304,27 +307,31 @@ class HRService:
             user_id=user_id
         )
         
-        return await self.db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+        return await self.db.employees.find_one({"employee_id": employee_id, "organization_id": organization_id}, {"_id": 0})
     
-    async def get_employee(self, employee_id: str) -> Optional[Dict[str, Any]]:
+    async def get_employee(self, employee_id: str, organization_id: str = None) -> Optional[Dict[str, Any]]:
         """Get employee by ID"""
-        return await self.db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        return await self.db.employees.find_one({"employee_id": employee_id, "organization_id": organization_id}, {"_id": 0})
     
-    async def get_employee_by_user(self, user_id: str) -> Optional[Dict[str, Any]]:
+    async def get_employee_by_user(self, user_id: str, organization_id: str = None) -> Optional[Dict[str, Any]]:
         """Get employee by user_id"""
-        return await self.db.employees.find_one({"user_id": user_id}, {"_id": 0})
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        return await self.db.employees.find_one({"user_id": user_id, "organization_id": organization_id}, {"_id": 0})
     
     async def list_employees(
         self,
         department: Optional[str] = None,
         status: str = "active",
         limit: int = 100,
-        org_id: Optional[str] = None
+        organization_id: str = None
     ) -> List[Dict[str, Any]]:
         """List employees with filtering"""
-        query = {"status": status}
-        if org_id:
-            query["organization_id"] = org_id
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        query = {"status": status, "organization_id": organization_id}
         if department:
             query["department"] = department
         
@@ -334,23 +341,28 @@ class HRService:
         self,
         employee_id: str,
         updates: Dict[str, Any],
-        user_id: str
+        user_id: str,
+        organization_id: str = None
     ) -> Dict[str, Any]:
         """Update employee"""
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
         updates["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         await self.db.employees.update_one(
-            {"employee_id": employee_id},
+            {"employee_id": employee_id, "organization_id": organization_id},
             {"$set": updates}
         )
         
-        return await self.db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+        return await self.db.employees.find_one({"employee_id": employee_id, "organization_id": organization_id}, {"_id": 0})
     
     # ==================== ATTENDANCE MANAGEMENT ====================
     
-    async def clock_in(self, user_id: str, location: Optional[str] = None) -> Dict[str, Any]:
+    async def clock_in(self, user_id: str, location: Optional[str] = None, organization_id: str = None) -> Dict[str, Any]:
         """Record clock-in"""
-        employee = await self.get_employee_by_user(user_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employee = await self.get_employee_by_user(user_id, organization_id=organization_id)
         if not employee:
             raise ValueError("Employee record not found")
         
@@ -360,6 +372,7 @@ class HRService:
         # Check existing attendance
         existing = await self.db.attendance.find_one({
             "employee_id": employee["employee_id"],
+            "organization_id": organization_id,
             "date": today
         }, {"_id": 0})
         
@@ -378,7 +391,7 @@ class HRService:
         attendance = {
             "attendance_id": attendance_id,
             "employee_id": employee["employee_id"],
-            "organization_id": employee.get("organization_id", ""),
+            "organization_id": organization_id,
             "user_id": user_id,
             "date": today,
             "clock_in": now.isoformat(),
@@ -399,11 +412,13 @@ class HRService:
             user_id=user_id
         )
         
-        return await self.db.attendance.find_one({"attendance_id": attendance_id}, {"_id": 0})
+        return await self.db.attendance.find_one({"attendance_id": attendance_id, "organization_id": organization_id}, {"_id": 0})
     
-    async def clock_out(self, user_id: str, location: Optional[str] = None) -> Dict[str, Any]:
+    async def clock_out(self, user_id: str, location: Optional[str] = None, organization_id: str = None) -> Dict[str, Any]:
         """Record clock-out"""
-        employee = await self.get_employee_by_user(user_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employee = await self.get_employee_by_user(user_id, organization_id=organization_id)
         if not employee:
             raise ValueError("Employee record not found")
         
@@ -412,6 +427,7 @@ class HRService:
         
         attendance = await self.db.attendance.find_one({
             "employee_id": employee["employee_id"],
+            "organization_id": organization_id,
             "date": today,
             "clock_in": {"$exists": True}
         }, {"_id": 0})
@@ -436,7 +452,7 @@ class HRService:
         overtime_hours = max(0, hours_worked - STANDARD_WORK_HOURS)
         
         await self.db.attendance.update_one(
-            {"attendance_id": attendance["attendance_id"]},
+            {"attendance_id": attendance["attendance_id"], "organization_id": organization_id},
             {"$set": {
                 "clock_out": now.isoformat(),
                 "clock_out_location": location,
@@ -448,17 +464,20 @@ class HRService:
             }}
         )
         
-        return await self.db.attendance.find_one({"attendance_id": attendance["attendance_id"]}, {"_id": 0})
+        return await self.db.attendance.find_one({"attendance_id": attendance["attendance_id"], "organization_id": organization_id}, {"_id": 0})
     
-    async def get_attendance_today(self, user_id: str) -> Optional[Dict[str, Any]]:
+    async def get_attendance_today(self, user_id: str, organization_id: str = None) -> Optional[Dict[str, Any]]:
         """Get today's attendance for user"""
-        employee = await self.get_employee_by_user(user_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employee = await self.get_employee_by_user(user_id, organization_id=organization_id)
         if not employee:
             return None
         
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         return await self.db.attendance.find_one({
             "employee_id": employee["employee_id"],
+            "organization_id": organization_id,
             "date": today
         }, {"_id": 0})
     
@@ -470,10 +489,13 @@ class HRService:
         leave_type: str,
         start_date: str,
         end_date: str,
-        reason: str
+        reason: str,
+        organization_id: str = None
     ) -> Dict[str, Any]:
         """Submit leave request"""
-        employee = await self.get_employee_by_user(user_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employee = await self.get_employee_by_user(user_id, organization_id=organization_id)
         if not employee:
             raise ValueError("Employee record not found")
         
@@ -493,6 +515,7 @@ class HRService:
         leave = {
             "leave_id": leave_id,
             "employee_id": employee["employee_id"],
+            "organization_id": organization_id,
             "user_id": user_id,
             "leave_type": leave_type,
             "start_date": start_date,
@@ -514,17 +537,20 @@ class HRService:
             user_id=user_id
         )
         
-        return await self.db.leave_requests.find_one({"leave_id": leave_id}, {"_id": 0})
+        return await self.db.leave_requests.find_one({"leave_id": leave_id, "organization_id": organization_id}, {"_id": 0})
     
     async def approve_leave(
         self,
         leave_id: str,
         approved_by: str,
         approved: bool,
-        comments: Optional[str] = None
+        comments: Optional[str] = None,
+        organization_id: str = None
     ) -> Dict[str, Any]:
         """Approve or reject leave request"""
-        leave = await self.db.leave_requests.find_one({"leave_id": leave_id}, {"_id": 0})
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        leave = await self.db.leave_requests.find_one({"leave_id": leave_id, "organization_id": organization_id}, {"_id": 0})
         if not leave:
             raise ValueError(f"Leave request {leave_id} not found")
         
@@ -535,7 +561,7 @@ class HRService:
         new_status = "approved" if approved else "rejected"
         
         await self.db.leave_requests.update_one(
-            {"leave_id": leave_id},
+            {"leave_id": leave_id, "organization_id": organization_id},
             {"$set": {
                 "status": new_status,
                 "approved_by": approved_by,
@@ -551,7 +577,7 @@ class HRService:
             
             if leave_type != "unpaid":
                 await self.db.employees.update_one(
-                    {"employee_id": leave["employee_id"]},
+                    {"employee_id": leave["employee_id"], "organization_id": organization_id},
                     {"$inc": {f"leave_balances.{leave_type}": -days}}
                 )
             
@@ -563,13 +589,15 @@ class HRService:
                 user_id=approved_by
             )
         
-        return await self.db.leave_requests.find_one({"leave_id": leave_id}, {"_id": 0})
+        return await self.db.leave_requests.find_one({"leave_id": leave_id, "organization_id": organization_id}, {"_id": 0})
     
     # ==================== PAYROLL ====================
     
-    async def calculate_payroll(self, employee_id: str, month: str, year: int) -> Dict[str, Any]:
+    async def calculate_payroll(self, employee_id: str, month: str, year: int, organization_id: str = None) -> Dict[str, Any]:
         """Calculate payroll for employee"""
-        employee = await self.get_employee(employee_id)
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employee = await self.get_employee(employee_id, organization_id=organization_id)
         if not employee:
             raise ValueError(f"Employee {employee_id} not found")
         
@@ -653,42 +681,39 @@ class HRService:
             "ctc": round(gross + employer_pf_total + total_pf_overhead + employer_esi, 2)
         }
     
-    async def generate_payroll(self, month: str, year: int, user_id: str) -> Dict[str, Any]:
+    async def generate_payroll(self, month: str, year: int, user_id: str, organization_id: str = None) -> Dict[str, Any]:
         """Generate payroll for all active employees and post journal entry"""
-        employees = await self.list_employees(status="active")
-        
-        # Get org_id from user
-        user = await self.db.users.find_one({"user_id": user_id}, {"_id": 0, "organization_id": 1})
-        org_id = user.get("organization_id") if user else None
+        if not organization_id:
+            raise ValueError("organization_id is required for tenant-scoped operations")
+        employees = await self.list_employees(status="active", organization_id=organization_id)
 
         # Prevent duplicate payroll run for the same org/period
         period = f"{month} {year}"
-        if org_id:
-            try:
-                await self.db.payroll_runs.insert_one({
-                    "organization_id": org_id,
-                    "period": period,
-                    "status": "generated",
-                    "generated_by": user_id,
-                    "generated_at": datetime.now(timezone.utc).isoformat(),
-                })
-            except Exception as e:
-                if "E11000" in str(e) or "duplicate key" in str(e).lower():
-                    raise ValueError(f"Payroll for {period} has already been processed.")
-                raise
+        try:
+            await self.db.payroll_runs.insert_one({
+                "organization_id": organization_id,
+                "period": period,
+                "status": "generated",
+                "generated_by": user_id,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+            })
+        except Exception as e:
+            if "E11000" in str(e) or "duplicate key" in str(e).lower():
+                raise ValueError(f"Payroll for {period} has already been processed.")
+            raise
 
         records = []
         total_gross = 0
         total_net = 0
         
         for emp in employees:
-            payroll = await self.calculate_payroll(emp["employee_id"], month, year)
+            payroll = await self.calculate_payroll(emp["employee_id"], month, year, organization_id=organization_id)
             
             # Store payroll record
             payroll_id = f"pay_{uuid.uuid4().hex[:12]}"
             record = {
                 "payroll_id": payroll_id,
-                "organization_id": org_id,
+                "organization_id": organization_id,
                 **payroll,
                 "status": "generated",
                 "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -701,29 +726,12 @@ class HRService:
             total_gross += payroll["earnings"]["gross"]
             total_net += payroll["net_salary"]
         
-        # Get organization_id from context
-        org_id = None
-        if records:
-            # Fetch the org_id from the first employee
-            first_emp = await self.db.employees.find_one(
-                {"employee_id": records[0]["employee_id"]},
-                {"_id": 0, "organization_id": 1}
-            )
-            if first_emp:
-                org_id = first_emp.get("organization_id")
-        
-        # If no org_id from employee, try to get from user
-        if not org_id:
-            user = await self.db.users.find_one({"user_id": user_id}, {"_id": 0, "organization_id": 1})
-            if user:
-                org_id = user.get("organization_id")
-        
         # Post journal entry for payroll run
         journal_entry_id = None
-        if org_id and records:
+        if records:
             try:
                 success, msg, entry = await post_payroll_run_journal_entry(
-                    organization_id=org_id,
+                    organization_id=organization_id,
                     payroll_records=records,
                     created_by=user_id
                 )
@@ -738,7 +746,7 @@ class HRService:
         # Audit log
         try:
             from utils.audit import log_audit, AuditAction
-            await log_audit(self.db, AuditAction.PAYROLL_RUN, org_id or "", user_id,
+            await log_audit(self.db, AuditAction.PAYROLL_RUN, organization_id, user_id,
                 "payroll", period, {"total_net": round(total_net, 2), "employees": len(records)})
         except Exception:
             pass
