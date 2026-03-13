@@ -147,10 +147,11 @@ async def create_invoice_from_recurring(recurring: dict) -> dict:
 async def create_recurring_invoice(request: Request, data: RecurringInvoiceCreate):
     org_id = require_org_id(request)
     """Create a new recurring invoice profile"""
-    # Validate customer exists
-    customer = await contacts_collection.find_one(
-        {"contact_id": data.customer_id}, {"_id": 0}
-    )
+    # Validate customer exists in same organization
+    customer_query = {"contact_id": data.customer_id}
+    if org_id:
+        customer_query["organization_id"] = org_id
+    customer = await contacts_collection.find_one(customer_query, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
@@ -162,6 +163,7 @@ async def create_recurring_invoice(request: Request, data: RecurringInvoiceCreat
 
     recurring = {
         "recurring_id": f"RI-{uuid.uuid4().hex[:12].upper()}",
+        "organization_id": org_id,
         "customer_id": data.customer_id,
         "customer_name": customer.get("display_name", customer.get("contact_name", "")),
         "profile_name": data.profile_name,

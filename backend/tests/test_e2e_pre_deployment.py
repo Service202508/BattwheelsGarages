@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://qa-ready-phase.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://beta-readiness-2.preview.emergentagent.com')
 
 # ==================== TASK 1: Plan Type Consistency ====================
 class TestTask1PlanTypeConsistency:
