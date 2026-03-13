@@ -59,13 +59,27 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
 - Subscription page now correctly shows AI Calls (e.g., "2 / 100, 98 remaining")
 - Testing: 100% backend (18/18), 100% frontend verified
 
-## Pending (P1)
-- Reassign Technician full backend functionality (P2 per user)
-- Plan Upgrade workflow (P2 per user)
-- Plan Limit Enforcement (block at limit)
+### Session 13: Plan Limit Enforcement + EVFI Guided Endpoint (2026-03-13)
+- **AI Call Limit Enforcement:** Added `check_limit("ai_calls")` guard BEFORE LLM calls on all routes:
+  - `ai_assistant.py` /diagnose — blocks with 429 when at limit
+  - `ai_guidance.py` /generate — blocks with 429 when at limit
+  - `efi_guided.py` /session/start — blocks with 429 when at limit
+  - `efi_guided.py` /start (new) — blocks with 429 when at limit
+  - 429 response includes: error, message, current_usage, limit, upgrade_url
+  - Plan limits: free=10, starter=25, professional=100, enterprise=unlimited
+- **EVFI Guided Standalone Endpoint:** New `POST /evfi-guided/start`
+  - Accepts: vehicle_make, vehicle_model, symptom, category (optional), mode (hinglish/classic)
+  - Returns: safety_warnings, diagnostic_steps, probable_causes, recommended_fix
+  - Auto-detects category from symptom keywords (battery/motor/controller/electrical)
+  - Hinglish mode includes Hindi translations; classic mode strips them
+  - Uses pattern-based fallback (works without LLM)
+- Testing: 100% backend (16/16 tests passed)
+
+## Pending (P2)
+- Reassign Technician full backend functionality
+- Plan Upgrade workflow
 
 ## Backlog (P2/P3)
-- EVFI Guided Diagnosis endpoint improvements
 - HR/Employees frontend page
 - Deploy to Staging + full QA
 - Clean up test data from battwheels_dev
@@ -75,3 +89,4 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
 - Standardize customer_id vs contact_id fields
 - EVFI: expand patterns beyond motor category
 - Login rate limiting IP enhancement (prevent email spraying)
+- Frontend: handle 429 AI limit on EVFI page with upgrade prompt
