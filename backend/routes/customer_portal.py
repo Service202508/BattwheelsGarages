@@ -547,10 +547,15 @@ async def get_customer_tickets(
     if status:
         query["status"] = status
     
-    # Get tickets
+    # Get tickets — exclude internal/sensitive fields
+    PORTAL_TICKET_PROJECTION = {
+        "_id": 0, "organization_id": 0, "_seed": 0,
+        "assigned_technician_id": 0, "internal_notes": 0,
+        "resolution_notes": 0, "efi_preprocessing": 0,
+        "ask_back_answers": 0, "technician_notes": 0,
+    }
     tickets = await db["tickets"].find(
-        query,
-        {"_id": 0}
+        query, PORTAL_TICKET_PROJECTION
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
     return {"code": 0, "tickets": tickets, "count": len(tickets)}
@@ -565,9 +570,15 @@ async def get_ticket_detail(
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
+    PORTAL_TICKET_PROJECTION = {
+        "_id": 0, "organization_id": 0, "_seed": 0,
+        "assigned_technician_id": 0, "internal_notes": 0,
+        "resolution_notes": 0, "efi_preprocessing": 0,
+        "ask_back_answers": 0, "technician_notes": 0,
+    }
     ticket = await db["tickets"].find_one(
         {"ticket_id": ticket_id, "customer_id": contact_id},
-        {"_id": 0}
+        PORTAL_TICKET_PROJECTION
     )
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")

@@ -1,0 +1,79 @@
+{
+  "summary": "Phase B-1 E2E verification complete. All 16 tests PASS: (1) Customer Portal - 12 endpoints tested with X-Portal-Session auth, data leak prevention verified - NO sensitive fields (organization_id, _seed, assigned_technician_id, internal_notes, resolution_notes) in portal ticket responses. (2) Invoice PDF - 25KB PDF with GST-compliant CGST/SGST breakdown (₹990 each for 18% GST), GSTIN, HSN codes (8507, 998719), invoice number verified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_customer_portal_invoice_pdf.py",
+    "/app/test_reports/pytest/customer_portal_invoice_pdf_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "customer_portal.py Lines 551-560: PORTAL_TICKET_PROJECTION correctly excludes organization_id, _seed, assigned_technician_id, internal_notes, resolution_notes, efi_preprocessing, ask_back_answers, technician_notes",
+    "customer_portal.py Lines 568-577: Same projection applied to portal ticket detail endpoint",
+    "customer_portal.py Line 511: portal_token correctly excluded from profile response",
+    "pdf_service.py Lines 273-283: CGST/SGST correctly split from IGST when intra-state (is_igst=False)",
+    "pdf_service.py Lines 309-317: Invoice totals igst_total split into cgst_total/sgst_total for intra-state billing",
+    "invoices_enhanced.py Lines 1058-1180: PDF endpoint generates GST-compliant invoice with all required elements"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_customer_portal_invoice_pdf.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests passed)",
+    "frontend": "N/A - backend only testing requested"
+  },
+  "test_credentials": {
+    "workshop": "demo@voltmotors.in / Demo@12345",
+    "portal": "Token: PORTAL-SUNITA-2026",
+    "invoice_tested": "INV-52E8ABFFBF6D (INV-03573)"
+  },
+  "seed_data_creation": "None - used existing demo data",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Customer portal tests use X-Portal-Session header from POST /api/v1/customer-portal/login. Invoice PDF tests need X-Organization-ID header set to 'demo-volt-motors-001' to prevent conftest auto-injection of wrong org (dev-internal-testing-001). PDF content verification uses PyPDF2 for text extraction.",
+  "test_verification_details": {
+    "TASK_1_Portal_Endpoints": {
+      "auth_flow": "POST /api/v1/customer-portal/login with {token: 'PORTAL-SUNITA-2026'} returns session_token (PS-xxxxx)",
+      "endpoints_tested": [
+        "/api/v1/customer-portal/session - 200 OK",
+        "/api/v1/customer-portal/dashboard - 200 OK",
+        "/api/v1/customer-portal/tickets - 200 OK (NO SENSITIVE FIELDS)",
+        "/api/v1/customer-portal/invoices - 200 OK",
+        "/api/v1/customer-portal/estimates - 200 OK",
+        "/api/v1/customer-portal/payments - 200 OK",
+        "/api/v1/customer-portal/statement - 200 OK",
+        "/api/v1/customer-portal/profile - 200 OK (portal_token excluded)",
+        "/api/v1/customer-portal/vehicles - 200 OK",
+        "/api/v1/customer-portal/documents - 200 OK"
+      ],
+      "auth_denial": "All endpoints return 401 without X-Portal-Session header",
+      "data_leak_prevention": {
+        "verified": true,
+        "excluded_fields": ["organization_id", "_seed", "assigned_technician_id", "internal_notes", "resolution_notes"]
+      }
+    },
+    "TASK_2_Invoice_PDF": {
+      "endpoint": "GET /api/v1/invoices-enhanced/INV-52E8ABFFBF6D/pdf",
+      "response_status": 200,
+      "content_type": "application/pdf",
+      "pdf_size_bytes": 25483,
+      "gst_compliance_verified": {
+        "GSTIN": "07AABCV9603R1ZX",
+        "HSN_codes": ["8507", "998719"],
+        "CGST": "₹990.00 (9%)",
+        "SGST": "₹990.00 (9%)",
+        "grand_total": "₹12,980.00",
+        "invoice_number": "INV-03573",
+        "amount_in_words": "Rupees Twelve Thousand Nine Hundred Eighty Only"
+      },
+      "tax_breakdown_correct": "CGST + SGST = ₹1,980 (18% GST split correctly for intra-state Delhi-to-Delhi)"
+    }
+  }
+}

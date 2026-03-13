@@ -271,9 +271,14 @@ def generate_gst_invoice_html(
             cgst_amt = 0
             sgst_amt = 0
         else:
-            cgst_amt = item.get('cgst_amount', item.get('tax_amount', 0) / 2)
-            sgst_amt = item.get('sgst_amount', item.get('tax_amount', 0) / 2)
+            cgst_amt = item.get('cgst_amount', 0)
+            sgst_amt = item.get('sgst_amount', 0)
             igst_amt = 0
+            # If CGST/SGST are 0 but IGST or tax_amount exists, split evenly
+            if cgst_amt == 0 and sgst_amt == 0:
+                tax_amt = item.get('igst_amount', 0) or item.get('tax_amount', 0)
+                cgst_amt = round(tax_amt / 2, 2)
+                sgst_amt = round(tax_amt / 2, 2)
         
         item_total = item.get('total', item.get('item_total', taxable_amount + igst_amt + cgst_amt + sgst_amt))
         
@@ -304,6 +309,11 @@ def generate_gst_invoice_html(
     cgst_total = invoice.get('cgst_total', 0)
     sgst_total = invoice.get('sgst_total', 0)
     igst_total = invoice.get('igst_total', 0)
+    # If intra-state but data only has IGST totals, split into CGST/SGST
+    if not is_igst and cgst_total == 0 and sgst_total == 0 and igst_total > 0:
+        cgst_total = round(igst_total / 2, 2)
+        sgst_total = round(igst_total / 2, 2)
+        igst_total = 0
     tax_total = invoice.get('tax_total', cgst_total + sgst_total + igst_total)
     shipping_charge = invoice.get('shipping_charge', 0)
     adjustment = invoice.get('adjustment', 0)
@@ -332,8 +342,14 @@ def generate_gst_invoice_html(
             if is_igst:
                 hsn_summary[key]['igst'] += item.get('igst_amount', item.get('tax_amount', 0))
             else:
-                hsn_summary[key]['cgst'] += item.get('cgst_amount', item.get('tax_amount', 0) / 2)
-                hsn_summary[key]['sgst'] += item.get('sgst_amount', item.get('tax_amount', 0) / 2)
+                c_amt = item.get('cgst_amount', 0)
+                s_amt = item.get('sgst_amount', 0)
+                if c_amt == 0 and s_amt == 0:
+                    tax_amt = item.get('igst_amount', 0) or item.get('tax_amount', 0)
+                    c_amt = round(tax_amt / 2, 2)
+                    s_amt = round(tax_amt / 2, 2)
+                hsn_summary[key]['cgst'] += c_amt
+                hsn_summary[key]['sgst'] += s_amt
         
         gst_rows = ""
         for key, data in hsn_summary.items():
