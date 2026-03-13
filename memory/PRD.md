@@ -88,11 +88,27 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
   - Verified: GSTIN, HSN codes (8507, 998719), CGST ₹990 + SGST ₹990, Grand Total ₹12,980
 - Testing: 100% backend (16/16 tests passed)
 
+### Session 15: Phase B-2 — Technician Portal + Financial Reports (2026-03-13)
+- **Technician Portal:** All endpoints verified (200 OK)
+  - Tech login: ankit@voltmotors.in / Tech@12345 — role=technician
+  - Fixed null org_id on voltmotors techs (ankit, ravi)
+  - Dashboard, tickets (9 assigned), ticket detail, start-work, productivity, attendance, leave, payroll
+  - Access control: tech correctly blocked from contacts (403)
+- **Financial Reports Fix:** P&L and Balance Sheet returned all zeros
+  - Root cause: AccountType enum uses title-case ("Income", "Expense", "Asset", "Liability") but seed data uses lowercase ("revenue", "expense", "asset", "liability")
+  - Fix: Added lowercase values to $in filters and classification logic in double_entry_service.py
+  - P&L: Income=₹36,750, Expenses=₹217,200, Net Profit=-₹180,450
+  - Balance Sheet: Assets=₹26,165, Liabilities=₹206,615, Equity=-₹180,450, **Balanced=True**
+  - Trial Balance: ₹335,565 debit/credit (balanced)
+  - Account Ledger: working with running balance
+- Testing: 100% backend (16/16 tests passed)
+
 ## Pending (P2)
 - Reassign Technician full backend functionality
 - Plan Upgrade workflow
 
 ## Backlog (P2/P3)
+- Banking module reports read from chart_of_accounts (always 0) — need to sync from journal entries
 - HR/Employees frontend page
 - Deploy to Staging + full QA
 - Clean up test data from battwheels_dev
