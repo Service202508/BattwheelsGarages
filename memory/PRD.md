@@ -103,13 +103,27 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
   - Account Ledger: working with running balance
 - Testing: 100% backend (16/16 tests passed)
 
+### Session 16: Phase B-3 — Inventory + HR Depth (2026-03-13)
+- **Inventory Module:** All core operations verified
+  - Items: list (18), create (returns item_id), get detail
+  - Summary: total_items, low_stock, value tracking
+  - Adjustments: create (draft), list
+  - Reorder suggestions, serial/batch tracking — all 200
+  - Stock transfers & warehouses gated (enterprise feature) — correct 403
+- **HR Module:** Full depth verified with fixes
+  - **Code fix:** Payroll generate now reads month/year from request body (was ignoring body, using current month)
+  - **Data fix:** Linked employees to user accounts (user_id), added salary_structure, seeded leave_balances
+  - Attendance: clock-in/out (200), today view (200)
+  - Leave: 6 types, balance (casual=12, sick=12, earned=15, paternity=5), request creation (pending)
+  - Payroll: calculate EMP-001 (gross=₹60,000, net=₹55,800), generate Feb 2026 (5 employees, gross=₹250,000, net=₹232,000)
+- Testing: 100% backend (16/16 tests passed)
+
 ## Pending (P2)
 - Reassign Technician full backend functionality
 - Plan Upgrade workflow
 
 ## Backlog (P2/P3)
 - Banking module reports read from chart_of_accounts (always 0) — need to sync from journal entries
-- HR/Employees frontend page
 - Deploy to Staging + full QA
 - Clean up test data from battwheels_dev
 - Deploy to Production
