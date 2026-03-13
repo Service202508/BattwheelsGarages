@@ -857,6 +857,7 @@ async def report_new_contacts(request: Request, days: int = 30, contact_type: Op
 
 # ========================= CONTACT CRUD =========================
 
+@router.post("")
 @router.post("/")
 async def create_contact(contact: ContactCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new contact (customer, vendor, or both)"""

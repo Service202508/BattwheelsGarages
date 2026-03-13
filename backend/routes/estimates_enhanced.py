@@ -1041,6 +1041,7 @@ async def update_preferences(preferences: EstimatePreferences):
 
 # ========================= ESTIMATE CRUD ENDPOINTS =========================
 
+@router.post("")
 @router.post("/")
 async def create_estimate(estimate: EstimateCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new estimate/quote"""
