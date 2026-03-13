@@ -2,6 +2,7 @@
 Inventory Adjustments Module - Zoho Books Style
 Full workflow: Create -> Draft -> Adjusted -> Void
 Supports quantity and value adjustments with audit trail
+Integrated with Double-Entry Accounting (Phase C)
 """
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
@@ -17,6 +18,7 @@ import io
 import logging
 from fastapi import Request
 from utils.database import require_org_id, org_query
+from services.double_entry_service import DoubleEntryService, EntryType
 
 
 logger = logging.getLogger(__name__)
@@ -106,6 +108,155 @@ async def log_audit(adjustment_id: str, action: str, details: str, user: str = "
         "user": user,
         "timestamp": datetime.now(timezone.utc).isoformat()
     })
+
+
+async def post_inventory_adjustment_journal_entry(
+    org_id: str,
+    adjustment: dict,
+    reverse: bool = False
+) -> dict:
+    """
+    Create journal entry for inventory adjustment.
+    
+    For stock DECREASE (damaged, write-off, shrinkage):
+        Debit: Cost of Goods Sold / Inventory Write-off (expense increases)
+        Credit: Inventory Asset (asset decreases)
+    
+    For stock INCREASE (recount gain, found):
+        Debit: Inventory Asset (asset increases)
+        Credit: Inventory Adjustment Income (income increases)
+    
+    Args:
+        org_id: Organization ID
+        adjustment: The adjustment document
+        reverse: If True, reverse the journal entry (for voiding)
+    
+    Returns:
+        dict with success status and journal entry details
+    """
+    des = DoubleEntryService(db)
+    
+    # Calculate total adjustment value
+    line_items = adjustment.get("line_items", [])
+    total_value = 0
+    
+    for line in line_items:
+        item = await items_col.find_one({"item_id": line["item_id"]})
+        if not item:
+            continue
+        
+        item_rate = item.get("rate", item.get("purchase_rate", 0)) or 0
+        
+        if adjustment.get("adjustment_type") == "quantity":
+            qty_change = line.get("quantity_adjusted", 0)
+            line_value = abs(qty_change) * item_rate
+        else:  # value adjustment
+            line_value = abs(line.get("value_adjusted", 0))
+        
+        total_value += line_value
+    
+    if total_value <= 0:
+        return {"success": False, "message": "No value to record in journal entry"}
+    
+    # Determine if this is a net increase or decrease
+    total_increase = adjustment.get("total_increase", 0)
+    total_decrease = adjustment.get("total_decrease", 0)
+    
+    if reverse:
+        # Swap for reversal
+        total_increase, total_decrease = total_decrease, total_increase
+    
+    is_decrease = total_decrease > total_increase
+    
+    # Get or create accounts
+    # Inventory Asset account (1200)
+    inventory_account = await des.get_account_by_code(org_id, "1200")
+    if not inventory_account:
+        inventory_account = await des.get_or_create_account(
+            organization_id=org_id,
+            account_name="Inventory",
+            account_type="asset",
+            account_code="1200",
+            description="Inventory Asset"
+        )
+    
+    # COGS / Adjustment Expense account (5000)
+    cogs_account = await des.get_account_by_code(org_id, "5000")
+    if not cogs_account:
+        cogs_account = await des.get_or_create_account(
+            organization_id=org_id,
+            account_name="Cost of Goods Sold",
+            account_type="expense",
+            account_code="5000",
+            description="Cost of Goods Sold / Inventory Adjustments"
+        )
+    
+    # Build journal entry lines
+    adjustment_id = adjustment.get("adjustment_id", "")
+    reason = adjustment.get("reason", "Inventory adjustment")
+    description = f"Inventory Adjustment: {reason} ({adjustment_id})"
+    if reverse:
+        description = f"REVERSAL: {description}"
+    
+    if is_decrease:
+        # Stock decreased: Debit COGS, Credit Inventory
+        lines = [
+            {
+                "account_id": cogs_account["account_id"],
+                "debit_amount": total_value,
+                "credit_amount": 0,
+                "description": f"Inventory write-off/adjustment: {reason}"
+            },
+            {
+                "account_id": inventory_account["account_id"],
+                "debit_amount": 0,
+                "credit_amount": total_value,
+                "description": f"Inventory reduction: {reason}"
+            }
+        ]
+    else:
+        # Stock increased: Debit Inventory, Credit COGS (or adjustment income)
+        lines = [
+            {
+                "account_id": inventory_account["account_id"],
+                "debit_amount": total_value,
+                "credit_amount": 0,
+                "description": f"Inventory gain: {reason}"
+            },
+            {
+                "account_id": cogs_account["account_id"],
+                "debit_amount": 0,
+                "credit_amount": total_value,
+                "description": f"Inventory adjustment credit: {reason}"
+            }
+        ]
+    
+    # Create journal entry
+    entry_date = adjustment.get("date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    
+    success, message, entry = await des.create_journal_entry(
+        organization_id=org_id,
+        entry_date=entry_date,
+        description=description,
+        lines=lines,
+        entry_type=EntryType.JOURNAL,
+        source_document_id=adjustment_id,
+        source_document_type="inventory_adjustment",
+        created_by=adjustment.get("created_by", "system")
+    )
+    
+    if success:
+        logger.info(f"[JOURNAL] Inventory adjustment {adjustment_id}: Created journal entry for ₹{total_value}")
+    else:
+        logger.error(f"[JOURNAL] Failed to create journal entry for adjustment {adjustment_id}: {message}")
+    
+    return {
+        "success": success,
+        "message": message,
+        "journal_entry": entry,
+        "amount": total_value,
+        "type": "decrease" if is_decrease else "increase"
+    }
 
 
 async def apply_stock_changes(line_items: list, adjustment_type: str, reverse: bool = False):
@@ -293,21 +444,39 @@ async def create_adjustment(request: Request, data: AdjustmentCreate):
         "voided_at": None
     }
 
+    # Add organization_id for multi-tenant support
+    adj_doc["organization_id"] = org_id
+
     # If status is adjusted, apply stock changes immediately
+    journal_result = None
     if data.status == "adjusted":
         await apply_stock_changes(enriched_lines, data.adjustment_type)
         adj_doc["converted_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Create journal entry for accounting integration
+        journal_result = await post_inventory_adjustment_journal_entry(org_id, adj_doc)
+        if journal_result.get("success") and journal_result.get("journal_entry"):
+            adj_doc["journal_entry_id"] = journal_result["journal_entry"].get("entry_id")
 
     await adjustments_col.insert_one(adj_doc)
     await log_audit(adj_id, "created", f"Adjustment {ref_number} created as {data.status}", data.created_by or "admin")
 
-    return {
+    response = {
         "code": 0,
         "message": f"Adjustment created as {data.status}",
         "adjustment_id": adj_id,
         "reference_number": ref_number,
         "status": data.status
     }
+    
+    if journal_result:
+        response["journal_entry"] = {
+            "created": journal_result.get("success", False),
+            "amount": journal_result.get("amount", 0),
+            "entry_id": journal_result.get("journal_entry", {}).get("entry_id") if journal_result.get("journal_entry") else None
+        }
+    
+    return response
 
 
 @router.get("")
@@ -458,21 +627,38 @@ async def convert_to_adjusted(request: Request, adjustment_id: str):
 
     # Apply stock/value changes
     await apply_stock_changes(adj["line_items"], adj["adjustment_type"])
+    
+    # Create journal entry for accounting integration
+    adj["organization_id"] = org_id  # Ensure org_id is set
+    journal_result = await post_inventory_adjustment_journal_entry(org_id, adj)
 
     now = datetime.now(timezone.utc).isoformat()
+    update_data = {"status": "adjusted", "converted_at": now, "updated_at": now}
+    
+    if journal_result.get("success") and journal_result.get("journal_entry"):
+        update_data["journal_entry_id"] = journal_result["journal_entry"].get("entry_id")
+    
     await adjustments_col.update_one(
         {"adjustment_id": adjustment_id},
-        {"$set": {"status": "adjusted", "converted_at": now, "updated_at": now}}
+        {"$set": update_data}
     )
-    await log_audit(adjustment_id, "converted", "Converted to Adjusted - stock updated")
+    await log_audit(adjustment_id, "converted", "Converted to Adjusted - stock updated, journal entry created")
 
-    return {"code": 0, "message": "Adjustment converted and stock updated"}
+    response = {"code": 0, "message": "Adjustment converted and stock updated"}
+    if journal_result:
+        response["journal_entry"] = {
+            "created": journal_result.get("success", False),
+            "amount": journal_result.get("amount", 0),
+            "entry_id": journal_result.get("journal_entry", {}).get("entry_id") if journal_result.get("journal_entry") else None
+        }
+    
+    return response
 
 
 @router.post("/{adjustment_id}/void")
 async def void_adjustment(request: Request, adjustment_id: str):
     org_id = require_org_id(request)
-    """Void an adjusted adjustment (reverses stock changes)"""
+    """Void an adjusted adjustment (reverses stock changes and journal entry)"""
     adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
     if not adj:
         raise HTTPException(status_code=404, detail="Adjustment not found")
@@ -481,15 +667,32 @@ async def void_adjustment(request: Request, adjustment_id: str):
 
     # Reverse stock/value changes
     await apply_stock_changes(adj["line_items"], adj["adjustment_type"], reverse=True)
+    
+    # Create reversal journal entry
+    adj["organization_id"] = org_id
+    journal_result = await post_inventory_adjustment_journal_entry(org_id, adj, reverse=True)
 
     now = datetime.now(timezone.utc).isoformat()
+    update_data = {"status": "void", "voided_at": now, "updated_at": now}
+    
+    if journal_result.get("success") and journal_result.get("journal_entry"):
+        update_data["reversal_journal_entry_id"] = journal_result["journal_entry"].get("entry_id")
+    
     await adjustments_col.update_one(
         {"adjustment_id": adjustment_id},
-        {"$set": {"status": "void", "voided_at": now, "updated_at": now}}
+        {"$set": update_data}
     )
-    await log_audit(adjustment_id, "voided", "Adjustment voided - stock changes reversed")
+    await log_audit(adjustment_id, "voided", "Adjustment voided - stock changes and journal entry reversed")
 
-    return {"code": 0, "message": "Adjustment voided and stock changes reversed"}
+    response = {"code": 0, "message": "Adjustment voided and stock changes reversed"}
+    if journal_result:
+        response["reversal_journal_entry"] = {
+            "created": journal_result.get("success", False),
+            "amount": journal_result.get("amount", 0),
+            "entry_id": journal_result.get("journal_entry", {}).get("entry_id") if journal_result.get("journal_entry") else None
+        }
+    
+    return response
 
 
 @router.delete("/{adjustment_id}")
