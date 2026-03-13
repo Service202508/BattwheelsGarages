@@ -75,6 +75,19 @@ AI-powered EV workshop management SaaS platform with multi-tenant architecture, 
   - Uses pattern-based fallback (works without LLM)
 - Testing: 100% backend (16/16 tests passed)
 
+### Session 14: Phase B-1 — Customer Portal + Invoice PDF (2026-03-13)
+- **Customer Portal:** All 10 endpoints verified (200 OK)
+  - Portal auth: POST /customer-portal/login with token → X-Portal-Session header
+  - Dashboard, tickets, invoices, estimates, payments, statement, profile, vehicles, documents
+  - 401 returned without valid session
+  - **Data leak fix:** Excluded organization_id, _seed, assigned_technician_id, internal_notes, resolution_notes, efi_preprocessing from portal ticket responses
+- **Invoice PDF:** GST-compliant, 25KB
+  - **Fix:** CGST/SGST were ₹0.00 because data stored tax as IGST even for intra-state
+  - Root cause: pdf_service.py used `item.get('cgst_amount', tax/2)` but cgst_amount was explicitly 0
+  - Fix: Split IGST into CGST/SGST when intra-state (is_igst=False) and cgst/sgst are 0
+  - Verified: GSTIN, HSN codes (8507, 998719), CGST ₹990 + SGST ₹990, Grand Total ₹12,980
+- Testing: 100% backend (16/16 tests passed)
+
 ## Pending (P2)
 - Reassign Technician full backend functionality
 - Plan Upgrade workflow
