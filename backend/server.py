@@ -273,9 +273,10 @@ app.include_router(api_router)
 # ==================== HEALTH ====================
 @app.get("/health", tags=["Health"])
 @app.get("/api/health", tags=["Health"])
+@app.get("/api/v1/health", tags=["Health"])
 async def health_check():
     from config.platform import PLATFORM_VERSION, RELEASE_DATE
-    from config.environments import get_environment_info
+    from config.environments import get_environment_info, MONGO_URL
     import asyncio
     issues = []
     status_data = {"status": "healthy", "version": PLATFORM_VERSION, "release_date": RELEASE_DATE, "timestamp": datetime.now(timezone.utc).isoformat(), **get_environment_info()}
@@ -285,7 +286,9 @@ async def health_check():
     except Exception as e:
         status_data["mongodb"] = "disconnected"
         issues.append(f"MongoDB: {str(e)[:100]}")
-    missing = [v for v in ["MONGO_URL", "JWT_SECRET"] if not os.environ.get(v)]
+    if not MONGO_URL:
+        issues.append("MONGO_URL not configured")
+    missing = [v for v in ["JWT_SECRET"] if not os.environ.get(v)]
     if missing:
         issues.append(f"Missing env vars: {missing}")
     if issues:
