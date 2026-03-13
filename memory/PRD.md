@@ -1,99 +1,65 @@
-# Battwheels OS — Product Requirements Document
+# BattWheels EV Service Platform - PRD
 
-## Project Overview
-EV Workshop Management Platform with integrated accounting, inventory, HR, and AI-powered diagnostics (EVFI).
+## Original Problem Statement
+The user's initial problem was a 520 production deployment error. This evolved into a comprehensive security audit and stability hardening project called "Beta Readiness." The primary goal is to resolve all critical vulnerabilities, bugs, and data inconsistencies across the platform.
 
-## Current Phase: Beta Readiness (Phase C)
-Multi-session deep integration work to make all modules talk to each other.
+## Core Requirements
+1. Secrets Management: Maintain `.env.example`, no production secrets in version control
+2. Multi-Tenancy Data Isolation: All queries filtered by `organization_id`
+3. Defense-in-Depth: Service-layer validation of `organization_id`
+4. Centralized Guards & Config
+5. Code & Data Integrity
+6. Database Health: Purge orphaned data and test bloat
+7. Staging Environment: Fully functional and seeded
 
----
+## Architecture
+- **Backend:** FastAPI (Python) on port 8001
+- **Frontend:** React (CRA + craco) on port 3000
+- **Database:** MongoDB (motor/pymongo)
+- **Background Jobs:** asyncio tasks (recurring invoices every 6h, SLA breach detection every 30min)
 
-## Completed Work (Phase C Sessions)
+## What's Been Implemented
+- Phase B-4: Module Verification (SLA, Recurring Invoices, Data Export)
+- Phase C-1: Inventory-Accounting Integration (invoice stock deduction, journal entries)
+- Phase C-2: Payroll-Accounting Integration & Balance Sync
+- Phase C-3: Background Automation Schedulers (recurring invoices, SLA breach detection)
+- Phase C-4: Frontend AI Limit & Upgrade Workflow (429 handling, AILimitPrompt component)
+- Phase C-5: Frontend HR & Reassign Fixes
+- Phase C-6 (Partial): EVFI Data Seeding (216 brand-specific patterns seeded)
+- Deployment Readiness: CORS_ORIGINS fixed to wildcard for Emergent deployment
 
-### C-1: Invoice→Inventory + Inventory→Journal ✅
-- Invoice creation now deducts stock from inventory with history tracking
-- Inventory adjustments create double-entry journal entries
-- Commits: c41439bd, 3a36f7bb
+## Current Status
+- **Phase C-6 IN PROGRESS:** EVFI match endpoint needs fix to query `efi_platform_patterns` + AI token counter not started
 
-### C-2: Payroll→Journal + CoA Balance Sync ✅
-- Payroll generation creates salary expense journal entries (fixed account code 6000)
-- Chart of Accounts balances sync from journal entries on every entry
-- New endpoint: POST /api/v1/journal-entries/accounts/sync-balances
-- Commits: c9da0f5a, 1140fc98
+## Prioritized Backlog
 
-### C-3: Background Jobs ✅
-- Recurring invoice auto-generation (every 6 hours)
-- SLA breach auto-detection with notifications (every 30 minutes)
-- Both registered in server.py lifespan
-- Commit: f9829264
+### P0 (In Progress)
+- Fix EVFI match endpoint to include brand-specific patterns
+- AI Token Counter on EVFI pages + Header
 
-### C-4: Frontend - AI Limits + Plan Upgrade ✅
-- 429 AI limit handling with AILimitPrompt component
-- Applied to: AIDiagnosticAssistant, EVFIGuidancePanel, FailureIntelligence
-- Plan upgrade workflow with Razorpay fallback to contact email
-- Commits: c69fce52, 9fb2471f
+### P1 (Upcoming)
+- Phase C-7: Production readiness (secrets, Sentry, production seed data)
+- Phase C-8/C-9: pytest suite recovery
+- Phase C-10: Final E2E testing and cleanup
 
-### C-5: Frontend - HR Routes + Plan Limits ✅
-- Added "owner" role to HR, Payroll, Employees, Attendance, Leave routes
-- Set AI call limits for all plans in database:
-  - Free Trial: 10 AI calls/mo
-  - Starter: 25 AI calls/mo
-  - Professional: 100 AI calls/mo
-  - Enterprise: Unlimited
-- Reassign Technician: Already fully implemented (verified working)
-- Commit: c2ff30c3
+### P2 (Future)
+- Enhance Banking Module (compute balances from journal entries)
+- Deploy to Staging + full QA
+- Deploy to Production
+- Purge secrets from Git history
+- Fix login rate limiting (add IP-based checks)
+- Unify duplicate P&L report endpoints
 
----
+## Known Issues
+- pytest suite broken (582 failed, 468 errors)
+- Login rate limiting insufficient (no IP check)
+- EVFI search ignores brand-specific patterns (fix in progress)
 
-## Upcoming Tasks (Phase C Remaining)
+## Mocked Services
+- Email Service (email_service.py)
+- Razorpay integration (disabled)
 
-### C-6: EVFI Enhancement
-- Brand patterns integration
-- Token counter for AI usage display
-
-### C-7: Production Preparation
-- Secrets management
-- Sentry error tracking
-- Database seeding scripts
-
-### C-8-9: Test Suite Recovery
-- Fix pytest suite (582 failed, 468 errors)
-- Create regression test files
-
-### C-10: Final E2E + Cleanup
-- End-to-end testing
-- Code cleanup and documentation
-
----
-
-## Key Technical Decisions
-
-1. **Background Jobs**: Using asyncio tasks in FastAPI lifespan (not Celery/APScheduler)
-2. **Balance Sync**: Per-entry sync + batch endpoint (hybrid approach)
-3. **AI Limits**: Enforced at service layer with 429 response
-4. **Role-Based Access**: "owner" role added to all admin-level routes
-
----
-
-## API Endpoints Added/Modified
-
-- `POST /api/v1/journal-entries/accounts/sync-balances` - Batch balance recalculation
-- `POST /api/v1/recurring-invoices/process-due` - Manual trigger for recurring invoices
-- Background: `_recurring_invoice_scheduler()` - Auto-generates due invoices
-- Background: `_sla_breach_checker()` - Flags SLA breaches, creates notifications
-
----
-
-## Database Changes
-
-- `plans` collection: Added `limits.ai_calls_per_month` for all plans
-- `subscriptions` collection: Added `features.ai_calls_per_month`
-- `inventory_history` collection: Now populated on invoice stock deductions
-- `sla_breaches` collection: Populated by background SLA checker
-- `notifications` collection: SLA breach notifications added
-
----
-
-## Credentials for Testing
+## Test Credentials
 - Workshop Owner: demo@voltmotors.in / Demo@12345
-- Database: battwheels_dev (development), battwheels (production - UNTOUCHED)
+- Technician: Tech@12345
+- Customer Portal: via portal_access_token in contacts collection
