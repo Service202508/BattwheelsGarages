@@ -66,7 +66,7 @@ async def list_period_locks(request: Request):
     db = get_db()
 
     locks = await db.period_locks.find(
-        {"org_id": org_id}, {"_id": 0}
+        {"organization_id": org_id}, {"_id": 0}
     ).sort([("period_year", -1), ("period_month", -1)]).to_list(120)
 
     return {"code": 0, "data": locks}
@@ -85,7 +85,7 @@ async def lock_period(request: Request, data: PeriodLockCreate):
         raise HTTPException(status_code=403, detail="Only admin or owner can lock financial periods")
 
     existing = await db.period_locks.find_one({
-        "org_id": org_id,
+        "organization_id": org_id,
         "period_month": data.period_month,
         "period_year": data.period_year,
         "unlocked_at": None
@@ -99,7 +99,7 @@ async def lock_period(request: Request, data: PeriodLockCreate):
     lock_id = f"plock_{uuid.uuid4().hex[:12]}"
     lock_doc = {
         "lock_id": lock_id,
-        "org_id": org_id,
+        "organization_id": org_id,
         "period_month": data.period_month,
         "period_year": data.period_year,
         "locked_at": datetime.now(timezone.utc).isoformat(),
@@ -112,7 +112,7 @@ async def lock_period(request: Request, data: PeriodLockCreate):
     await db.period_locks.insert_one(lock_doc)
 
     await db.period_locks.create_index(
-        [("org_id", 1), ("period_month", 1), ("period_year", 1)],
+        [("organization_id", 1), ("period_month", 1), ("period_year", 1)],
         unique=False
     )
 

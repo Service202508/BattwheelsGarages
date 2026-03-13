@@ -30,7 +30,7 @@ async def check_period_lock(db, org_id: str, transaction_date: datetime) -> bool
     if not org_id:
         return False
     lock = await db.period_locks.find_one({
-        "org_id": org_id,
+        "organization_id": org_id,
         "period_month": transaction_date.month,
         "period_year": transaction_date.year,
         "unlocked_at": None
@@ -83,7 +83,7 @@ async def check_period_locked(organization_id: str, transaction_date: str) -> No
     from utils.database import db
 
     lock = await db.period_locks.find_one({
-        "org_id": organization_id,
+        "organization_id": organization_id,
         "period_month": dt.month,
         "period_year": dt.year,
         "unlocked_at": None
