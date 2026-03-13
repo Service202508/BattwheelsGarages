@@ -14,7 +14,7 @@ import os
 from datetime import datetime
 
 # Get BASE_URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://payment-registration.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://qa-ready-phase.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "demo@voltmotors.in"

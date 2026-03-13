@@ -104,6 +104,14 @@ async def ai_diagnose(request: Request, data: AIQueryRequest):
         processed_response = inject_safety_warning(response, ticket_data)
         efi_classification = classify_efi_response(ticket_data)
         
+        # Track AI usage against subscription limits
+        try:
+            from services.usage_tracker import get_usage_tracker
+            tracker = get_usage_tracker()
+            await tracker.increment_usage(org_id, "ai_calls")
+        except Exception as track_err:
+            logger.warning(f"Failed to track AI usage for {org_id}: {track_err}")
+        
         return AIQueryResponse(
             response=processed_response,
             ai_enabled=True,

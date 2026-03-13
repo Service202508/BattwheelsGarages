@@ -754,14 +754,14 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         {hasEFIAccess && ["open", "technician_assigned", "estimate_shared", "estimate_approved"].includes(localTicket.status) && (
           <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button variant={localTicket.assigned_technician_id ? "outline" : "default"} data-testid="assign-technician-btn">
                 <UserCog className="mr-2 h-4 w-4" />
-                Assign Technician
+                {localTicket.assigned_technician_id ? "Reassign Technician" : "Assign Technician"}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Assign Technician</DialogTitle>
+                <DialogTitle>{localTicket.assigned_technician_id ? "Reassign Technician" : "Assign Technician"}</DialogTitle>
                 <DialogDescription>Choose an available technician for this service ticket.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">

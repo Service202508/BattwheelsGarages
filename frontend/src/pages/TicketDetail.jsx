@@ -461,14 +461,17 @@ export default function TicketDetail({ user }) {
                   </SelectContent>
                 </Select>
               </div>
+              {ticket.status !== "closed" && ticket.status !== "resolved" && (
               <div>
-                <label className="text-xs text-zinc-500 mb-1 block">Assign Technician</label>
+                <label className="text-xs text-zinc-500 mb-1 block">
+                  {ticket.assigned_technician_id ? "Reassign Technician" : "Assign Technician"}
+                </label>
                 <Select
                   value={ticket.assigned_technician_id || "unassigned"}
                   onValueChange={handleAssignTechnician}
                   disabled={assigningTech}
                 >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-200" data-testid="assign-technician-select">
+                  <SelectTrigger className={`${ticket.assigned_technician_id ? "bg-zinc-800/60 border-bw-volt/20" : "bg-zinc-800 border-zinc-700"} text-zinc-200`} data-testid="assign-technician-select">
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
@@ -481,6 +484,13 @@ export default function TicketDetail({ user }) {
                   </SelectContent>
                 </Select>
               </div>
+              )}
+              {(ticket.status === "closed" || ticket.status === "resolved") && ticket.assigned_technician_id && (
+              <div>
+                <label className="text-xs text-zinc-500 mb-1 block">Assigned Technician</label>
+                <p className="text-sm text-zinc-200">{ticket.assigned_technician_name || ticket.assigned_technician_id}</p>
+              </div>
+              )}
               {ticket.resolution && (
                 <div>
                   <label className="text-xs text-zinc-500 mb-1 block">Resolution</label>

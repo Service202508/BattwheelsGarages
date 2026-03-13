@@ -152,7 +152,7 @@ async def register(user_data: RegisterRequest, request: Request):
         "subscription_id": sub_id,
         "organization_id": org_id,
         "plan_id": plan_id,
-        "plan_code": "starter",
+        "plan_code": "free",
         "billing_cycle": "monthly",
         "status": "trialing",
         "trial_start": now,

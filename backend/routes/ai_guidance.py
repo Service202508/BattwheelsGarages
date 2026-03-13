@@ -179,7 +179,7 @@ async def generate_guidance(
         force_regenerate=data.force_regenerate
     )
     
-    # Track usage
+    # Track usage (daily rate limit counter)
     await db.ai_usage.update_one(
         {"organization_id": org_id, "date": today},
         {
@@ -188,6 +188,14 @@ async def generate_guidance(
         },
         upsert=True
     )
+    
+    # Track AI usage against subscription limits
+    try:
+        from services.usage_tracker import get_usage_tracker
+        tracker = get_usage_tracker()
+        await tracker.increment_usage(org_id, "ai_calls")
+    except Exception as track_err:
+        logger.warning(f"Failed to track AI usage for {org_id}: {track_err}")
     
     # ── Audit Log ──
     await db.efi_audit_log.insert_one({

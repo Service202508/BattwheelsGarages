@@ -864,7 +864,7 @@ async def main():
             "start_date": "2026-01-01",
             "end_date": "2026-12-31",
             "status": "active",
-            "monthly_amount": 2999,
+            "monthly_amount": 999,
         },
         {
             "subscription_id": "SAMC-002",

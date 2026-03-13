@@ -140,6 +140,8 @@ async def lifespan(app: FastAPI):
     # Init AI token service
     from services.ai_token_service import init_ai_token_service
     init_ai_token_service(db)
+    from services.usage_tracker import init_usage_tracker
+    init_usage_tracker(db)
 
     if mongo_ok:
         # Ensure indexes
