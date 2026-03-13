@@ -501,6 +501,7 @@ async def convert_po_to_bill(po_id: str, background_tasks: BackgroundTasks):
 
 # ========================= BILLS CRUD =========================
 
+@router.post("")
 @router.post("/")
 async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
     vendor = await contacts_collection.find_one({"contact_id": bill.vendor_id})
@@ -574,6 +575,7 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
     bill_doc["line_items"] = calculated_items
     return {"code": 0, "message": "Bill created", "bill": bill_doc}
 
+@router.get("")
 @router.get("/")
 async def list_bills(
     request: Request,
