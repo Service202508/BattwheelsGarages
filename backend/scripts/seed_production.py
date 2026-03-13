@@ -39,7 +39,7 @@ async def seed():
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         await db.users.insert_one({
             "email": "platform-admin@battwheels.in",
-            "password": hashed,
+            "password_hash": hashed,
             "name": "Platform Admin",
             "role": "platform_admin",
             "is_active": True,

@@ -88,35 +88,35 @@ async def main():
             "email": "demo@voltmotors.in",
             "name": "Demo Admin",
             "role": "owner",
-            "password": demo_password,
+            "_raw_pw": demo_password,
         },
         {
             "user_id": "user_priya_manager",
             "email": "priya@voltmotors.in",
             "name": "Priya Sharma",
             "role": "manager",
-            "password": demo_password,
+            "_raw_pw": demo_password,
         },
         {
             "user_id": "user_ankit_tech",
             "email": "ankit@voltmotors.in",
             "name": "Ankit Verma",
             "role": "technician",
-            "password": demo_password,
+            "_raw_pw": demo_password,
         },
         {
             "user_id": "user_ravi_tech",
             "email": "ravi@voltmotors.in",
             "name": "Ravi Kumar",
             "role": "technician",
-            "password": demo_password,
+            "_raw_pw": demo_password,
         },
         {
             "user_id": "user_neha_acct",
             "email": "neha@voltmotors.in",
             "name": "Neha Gupta",
             "role": "accountant",
-            "password": demo_password,
+            "_raw_pw": demo_password,
         },
     ]
 
@@ -130,10 +130,10 @@ async def main():
             "organization_id": ORG_ID,
             "is_active": True,
         }
-        if u["password"] and not existing:
-            update_fields["password_hash"] = hash_pw(u["password"])
-        elif u["password"] and existing and not existing.get("password_hash"):
-            update_fields["password_hash"] = hash_pw(u["password"])
+        if u["_raw_pw"] and not existing:
+            update_fields["password_hash"] = hash_pw(u["_raw_pw"])
+        elif u["_raw_pw"] and existing and not existing.get("password_hash"):
+            update_fields["password_hash"] = hash_pw(u["_raw_pw"])
 
         result = await db.users.update_one(
             {"user_id": u["user_id"]},

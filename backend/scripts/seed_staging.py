@@ -33,7 +33,7 @@ async def seed():
     else:
         await db.users.insert_one({
             "email": "platform-admin@battwheels.in",
-            "password": hashed,
+            "password_hash": hashed,
             "name": "Platform Admin",
             "role": "platform_admin",
             "is_active": True,
