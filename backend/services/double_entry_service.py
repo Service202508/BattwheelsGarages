@@ -1486,7 +1486,10 @@ class DoubleEntryService:
             {"$unwind": "$lines"},
             {
                 "$match": {
-                    "lines.account_type": {"$in": [AccountType.INCOME.value, AccountType.EXPENSE.value]}
+                    "lines.account_type": {"$in": [
+                        AccountType.INCOME.value, AccountType.EXPENSE.value,
+                        "income", "expense", "revenue", "Revenue"
+                    ]}
                 }
             },
             {
@@ -1524,8 +1527,8 @@ class DoubleEntryService:
                 "total_credit": float(credit)
             }
             
-            if account_type == AccountType.INCOME.value:
-                # Income accounts have credit balance
+            if account_type in (AccountType.INCOME.value, "income", "revenue", "Revenue"):
+                # Income/revenue accounts have credit balance
                 balance = credit - debit
                 account_data["balance"] = float(balance)
                 income_accounts.append(account_data)
@@ -1590,7 +1593,8 @@ class DoubleEntryService:
                     "lines.account_type": {"$in": [
                         AccountType.ASSET.value, 
                         AccountType.LIABILITY.value, 
-                        AccountType.EQUITY.value
+                        AccountType.EQUITY.value,
+                        "asset", "liability", "equity"
                     ]}
                 }
             },
@@ -1629,12 +1633,12 @@ class DoubleEntryService:
                 "account_code": row["_id"].get("account_code", "")
             }
             
-            if account_type == AccountType.ASSET.value:
+            if account_type in (AccountType.ASSET.value, "asset"):
                 balance = debit - credit
                 account_data["balance"] = float(balance)
                 assets.append(account_data)
                 total_assets += balance
-            elif account_type == AccountType.LIABILITY.value:
+            elif account_type in (AccountType.LIABILITY.value, "liability"):
                 balance = credit - debit
                 account_data["balance"] = float(balance)
                 liabilities.append(account_data)
