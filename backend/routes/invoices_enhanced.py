@@ -437,18 +437,26 @@ def mock_generate_pdf(invoice: dict) -> bytes:
     return b"PDF_CONTENT_MOCK"
 
 
-async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False):
+async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False, org_id: str = None):
     """Update item stock when invoice is sent/voided
     
     Args:
         invoice_id: The invoice ID
         reverse: If True, add stock back (for voiding). If False, deduct stock.
+        org_id: Organization ID for multi-tenant filtering
     """
+    # Get the invoice to determine org_id if not provided
+    if not org_id:
+        invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"organization_id": 1})
+        org_id = invoice.get("organization_id") if invoice else None
+    
     # Get line items
     line_items = await invoice_line_items_collection.find(
         {"invoice_id": invoice_id},
         {"_id": 0}
     ).to_list(100)
+    
+    inventory_history = db["inventory_history"]
     
     for item in line_items:
         item_id = item.get("item_id")
@@ -456,11 +464,12 @@ async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False):
             continue
         
         quantity = item.get("quantity", 0)
-        if reverse:
-            quantity = -quantity  # Add back for void
         
-        # Get current item
-        db_item = await items_collection.find_one({"item_id": item_id})
+        # Get current item (with org_id filter for security)
+        item_query = {"item_id": item_id}
+        if org_id:
+            item_query["organization_id"] = org_id
+        db_item = await items_collection.find_one(item_query)
         if not db_item:
             continue
         
@@ -470,10 +479,20 @@ async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False):
             continue
         
         current_stock = db_item.get("stock_on_hand", db_item.get("quantity", 0)) or 0
-        new_stock = current_stock - quantity  # Deduct (or add if reversed)
         
+        # Calculate stock change
+        if reverse:
+            stock_change = quantity  # Add back for void
+            history_type = "invoice_void"
+        else:
+            stock_change = -quantity  # Deduct for sale
+            history_type = "invoice_sale"
+        
+        new_stock = current_stock + stock_change
+        
+        # Update item stock
         await items_collection.update_one(
-            {"item_id": item_id},
+            item_query,
             {"$set": {
                 "stock_on_hand": new_stock,
                 "quantity": new_stock,
@@ -482,7 +501,30 @@ async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False):
             }}
         )
         
-        logger.info(f"[STOCK] Item {item_id}: {current_stock} -> {new_stock} (invoice {invoice_id})")
+        # Create inventory history entry for audit trail
+        history_entry = {
+            "history_id": f"INV-HIST-{uuid.uuid4().hex[:12].upper()}",
+            "organization_id": org_id,
+            "item_id": item_id,
+            "item_name": db_item.get("name", ""),
+            "type": history_type,
+            "quantity_change": stock_change,
+            "quantity_before": current_stock,
+            "quantity_after": new_stock,
+            "reference_type": "invoice",
+            "reference_id": invoice_id,
+            "notes": f"{'Stock restored from voided' if reverse else 'Stock deducted for'} invoice {invoice_id}",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "system"
+        }
+        await inventory_history.insert_one(history_entry)
+        
+        # Log low stock warning if applicable
+        reorder_level = db_item.get("reorder_level", 0) or 0
+        if new_stock <= reorder_level and not reverse:
+            logger.warning(f"[LOW STOCK] Item {item_id} ({db_item.get('name')}): {new_stock} <= reorder level {reorder_level}")
+        
+        logger.info(f"[STOCK] Item {item_id}: {current_stock} -> {new_stock} (invoice {invoice_id}, {history_type})")
 
 
 # ========================= SETTINGS ENDPOINTS =========================
