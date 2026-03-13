@@ -548,3 +548,23 @@ async def get_account_types():
             for a in AccountType
         ]
     }
+
+
+# ==================== BALANCE SYNC ====================
+
+@router.post("/accounts/sync-balances")
+async def sync_account_balances(request: Request):
+    """
+    Recalculate all account balances from journal entries.
+    
+    Use this to:
+    - Fix any balance discrepancies
+    - Initialize balances after bulk journal imports
+    - Verify accounting integrity
+    """
+    org_id = await get_org_id(request)
+    service = get_service()
+    
+    result = await service.sync_all_account_balances(org_id)
+    
+    return {"code": 0, "message": "Account balances synced from journal entries", **result}

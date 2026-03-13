@@ -537,6 +537,9 @@ class DoubleEntryService:
         }
         await self.db.journal_audit_log.insert_one(journal_audit_entry)
         
+        # Update account balances in chart_of_accounts (Phase C-2b)
+        await self._sync_account_balances_from_entry(organization_id, entry_lines)
+        
         return True, "Journal entry created successfully", entry_dict
     
     async def reverse_journal_entry(
@@ -1454,6 +1457,90 @@ class DoubleEntryService:
             "total_credit": 0,
             "net_balance": 0
         }
+    
+    async def _sync_account_balances_from_entry(
+        self,
+        organization_id: str,
+        entry_lines: list
+    ) -> None:
+        """
+        Update current_balance in chart_of_accounts for each account affected by a journal entry.
+        
+        For Asset/Expense accounts: balance = debit - credit (increases with debits)
+        For Liability/Equity/Income accounts: balance = credit - debit (increases with credits)
+        
+        This is called after every journal entry creation to keep balances current.
+        """
+        for line in entry_lines:
+            account_id = line.account_id
+            account_type = line.account_type.lower() if hasattr(line, 'account_type') else ""
+            debit = float(line.debit_amount or 0)
+            credit = float(line.credit_amount or 0)
+            
+            # Determine balance change based on account type
+            # Assets and Expenses increase with debits
+            # Liabilities, Equity, and Income increase with credits
+            if account_type in ["asset", "expense"]:
+                balance_change = debit - credit
+            else:  # liability, equity, income, revenue
+                balance_change = credit - debit
+            
+            # Update the account balance
+            await self.chart_of_accounts.update_one(
+                {"account_id": account_id, "organization_id": organization_id},
+                {
+                    "$inc": {"current_balance": balance_change, "balance": balance_change},
+                    "$set": {"last_balance_update": datetime.now(timezone.utc).isoformat()}
+                }
+            )
+            
+            logger.debug(f"[BALANCE SYNC] Account {account_id}: {'+' if balance_change >= 0 else ''}{balance_change}")
+    
+    async def sync_all_account_balances(self, organization_id: str) -> Dict:
+        """
+        Recalculate all account balances from journal entries.
+        Use this for initial sync or to fix any discrepancies.
+        """
+        if not organization_id:
+            raise ValueError("organization_id is required")
+        
+        # Get all accounts
+        accounts = await self.chart_of_accounts.find(
+            {"organization_id": organization_id},
+            {"_id": 0, "account_id": 1, "account_type": 1}
+        ).to_list(1000)
+        
+        updated_count = 0
+        for account in accounts:
+            account_id = account["account_id"]
+            account_type = (account.get("account_type") or "").lower()
+            
+            # Calculate balance from journal entries
+            balance_data = await self.get_account_balance(organization_id, account_id)
+            debit = balance_data.get("total_debit", 0)
+            credit = balance_data.get("total_credit", 0)
+            
+            # Calculate proper balance based on account type
+            if account_type in ["asset", "expense"]:
+                new_balance = debit - credit
+            else:
+                new_balance = credit - debit
+            
+            # Update the account
+            await self.chart_of_accounts.update_one(
+                {"account_id": account_id, "organization_id": organization_id},
+                {
+                    "$set": {
+                        "current_balance": new_balance,
+                        "balance": new_balance,
+                        "last_balance_update": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            updated_count += 1
+        
+        logger.info(f"[BALANCE SYNC] Synced {updated_count} accounts for org {organization_id}")
+        return {"synced_accounts": updated_count}
     
     async def get_profit_and_loss(
         self,
