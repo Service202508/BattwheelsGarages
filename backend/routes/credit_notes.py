@@ -101,6 +101,7 @@ def compute_line_totals(item: dict, gst_treatment: str, original_cgst_rate: floa
 
 # ========================= ROUTES =========================
 
+@router.post("")
 @router.post("/")
 async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     """Create a credit note against an existing invoice."""
@@ -258,6 +259,7 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     }
 
 
+@router.get("")
 @router.get("/")
 async def list_credit_notes(request: Request, status: Optional[str] = None, invoice_id: Optional[str] = None):
     """List credit notes for the organization."""

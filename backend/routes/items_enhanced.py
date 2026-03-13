@@ -729,6 +729,7 @@ async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate, reques
 
 # ============== ENHANCED ITEMS ==============
 
+@router.post("")
 @router.post("/")
 async def create_enhanced_item(item: ItemCreate, request: Request):
     """Create item with full Zoho Books-style features and CSV compatibility"""
@@ -966,6 +967,7 @@ async def get_items_summary(request: Request):
         }
     }
 
+@router.get("")
 @router.get("/")
 async def list_enhanced_items(
     request: Request,

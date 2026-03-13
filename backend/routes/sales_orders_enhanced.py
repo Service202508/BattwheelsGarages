@@ -433,6 +433,7 @@ async def update_salesorder_settings(settings: dict):
 
 # ========================= SALES ORDER CRUD ENDPOINTS =========================
 
+@router.post("")
 @router.post("/")
 async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: BackgroundTasks):
     """Create a new sales order"""
@@ -576,6 +577,7 @@ async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: Bac
     
     return {"code": 0, "message": "Sales Order created", "salesorder": salesorder_doc}
 
+@router.get("")
 @router.get("/")
 async def list_sales_orders(
     request: Request,
