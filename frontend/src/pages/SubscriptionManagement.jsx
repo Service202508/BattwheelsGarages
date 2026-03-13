@@ -118,6 +118,16 @@ export default function SubscriptionManagement() {
 
       if (!response.ok) {
         const error = await response.json();
+        // Check if Razorpay is not configured
+        if (error.detail?.includes("Razorpay") || error.detail?.includes("not configured") || error.detail?.includes("disabled")) {
+          const selectedPlanName = plans.find(p => p.code === planCode)?.name || planCode;
+          const selectedPlanPrice = plans.find(p => p.code === planCode)?.price_monthly || 0;
+          toast.info(
+            `To upgrade to ${selectedPlanName} (₹${selectedPlanPrice.toLocaleString()}/mo), please contact support@battwheels.com`,
+            { duration: 8000 }
+          );
+          return;
+        }
         toast.error(error.detail || "Failed to initiate payment");
         return;
       }
@@ -158,7 +168,12 @@ export default function SubscriptionManagement() {
 
     } catch (error) {
       console.error("Upgrade error:", error);
-      toast.error("Failed to initiate payment. Please try again.");
+      // Show contact message as fallback
+      const selectedPlanName = plans.find(p => p.code === planCode)?.name || planCode;
+      toast.info(
+        `To upgrade to ${selectedPlanName}, please contact support@battwheels.com`,
+        { duration: 8000 }
+      );
     }
   };
 
@@ -303,6 +318,10 @@ export default function SubscriptionManagement() {
                             <li className="flex items-center gap-2">
                               <Check className="h-4 w-4 text-green-500" />
                               {plan.limits?.max_invoices_per_month === -1 ? "Unlimited" : plan.limits?.max_invoices_per_month} invoices/mo
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="h-4 w-4 text-green-500" />
+                              {plan.limits?.ai_calls_per_month === -1 ? "Unlimited" : (plan.limits?.ai_calls_per_month || 0)} AI calls/mo
                             </li>
                             <li className="flex items-center gap-2">
                               <Check className="h-4 w-4 text-green-500" />
