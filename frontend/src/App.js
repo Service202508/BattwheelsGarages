@@ -1077,35 +1077,35 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/hr" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager", "hr"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager", "hr", "owner"]}>
           <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <HRDashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/attendance" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant", "owner"]}>
           <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Attendance user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/leave" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant", "owner"]}>
           <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <LeaveManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/payroll" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "hr"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "hr", "owner"]}>
           <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Payroll user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/employees" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr", "owner"]}>
           <Layout user={auth.user} onLogout={auth.logout} emailVerified={auth.emailVerified}>
             <Employees user={auth.user} />
           </Layout>
