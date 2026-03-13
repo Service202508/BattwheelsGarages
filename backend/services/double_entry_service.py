@@ -1062,7 +1062,13 @@ class DoubleEntryService:
         await self.ensure_system_accounts(organization_id)
         
         # Get / create accounts — expense side
-        salary_expense = await self.get_account_by_code(organization_id, "6100")
+        # Account 6000 = Salaries & Wages (not 6100 which is Rent)
+        salary_expense = await self.get_account_by_code(organization_id, "6000")
+        if not salary_expense:
+            # Fallback: create if not found
+            salary_expense = await self.get_or_create_account(
+                organization_id, "Salaries & Wages", AccountType.EXPENSE, "6000", 
+                "Salary expense account for payroll")
         epf_expense = await self.get_or_create_account(
             organization_id, "PF Expense — EPF (Employer)", AccountType.EXPENSE, "6110")
         eps_expense = await self.get_or_create_account(
