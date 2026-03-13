@@ -4,6 +4,8 @@ Login Rate Limiter — Per-email brute-force protection
 Max 5 failed login attempts per email per 15 minutes.
 6th attempt returns 429. Successful login clears counter.
 Uses MongoDB login_attempts collection with TTL index.
+
+Also supports IP-based rate limiting for register/forgot-password.
 """
 
 import logging
@@ -14,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 _db: AsyncIOMotorDatabase = None
 _ttl_index_created = False
+_ip_ttl_index_created = False
 
 
 def init_rate_limiter_sync(db: AsyncIOMotorDatabase):
@@ -29,6 +32,14 @@ async def _ensure_ttl_index():
     if not _ttl_index_created and _db is not None:
         await _db.login_attempts.create_index("created_at", expireAfterSeconds=900)
         _ttl_index_created = True
+
+
+async def _ensure_ip_ttl_index():
+    """Create TTL index for IP-based rate limiting."""
+    global _ip_ttl_index_created
+    if not _ip_ttl_index_created and _db is not None:
+        await _db.ip_rate_limits.create_index("created_at", expireAfterSeconds=60)
+        _ip_ttl_index_created = True
 
 
 async def check_login_rate_limit(email: str) -> tuple:
@@ -62,3 +73,31 @@ async def clear_attempts(email: str):
     if _db is None:
         return
     await _db.login_attempts.delete_many({"email": email})
+
+
+async def check_ip_rate_limit(ip: str, action: str, max_attempts: int = 3) -> tuple:
+    """
+    IP-based rate limiting for register/forgot-password.
+    Returns (is_allowed: bool, retry_after: int).
+    Window: 60 seconds (TTL auto-cleans).
+    """
+    if _db is None:
+        return True, 0
+
+    await _ensure_ip_ttl_index()
+    count = await _db.ip_rate_limits.count_documents({"ip": ip, "action": action})
+    if count >= max_attempts:
+        return False, 60
+    return True, 0
+
+
+async def record_ip_attempt(ip: str, action: str):
+    """Record an IP-based rate limit attempt."""
+    if _db is None:
+        return
+    await _ensure_ip_ttl_index()
+    await _db.ip_rate_limits.insert_one({
+        "ip": ip,
+        "action": action,
+        "created_at": datetime.now(timezone.utc)
+    })

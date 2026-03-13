@@ -37,7 +37,7 @@ class RegisterRequest(BaseModel):
 
 
 @router.post("/auth/register")
-async def register(user_data: RegisterRequest):
+async def register(user_data: RegisterRequest, request: Request):
     """
     Full registration flow:
     1. Create user (role: owner)
@@ -46,6 +46,18 @@ async def register(user_data: RegisterRequest):
     4. Create free_trial subscription
     5. Return JWT with org_id
     """
+    # IP-based rate limiting: 3 registrations per minute per IP
+    from middleware.rate_limiter import check_ip_rate_limit, record_ip_attempt
+    client_ip = request.client.host if request.client else "unknown"
+    is_allowed, retry_after = await check_ip_rate_limit(client_ip, "register", max_attempts=3)
+    if not is_allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many registration attempts. Try again in 1 minute.",
+            headers={"Retry-After": str(retry_after)}
+        )
+    await record_ip_attempt(client_ip, "register")
+
     # Duplicate email check
     existing = await db.users.find_one({"email": user_data.email}, {"_id": 0, "user_id": 1})
     if existing:
@@ -491,8 +503,20 @@ async def change_password(request: Request, data: ChangePasswordRequest):
 
 
 @router.post("/auth/forgot-password")
-async def forgot_password(data: ForgotPasswordRequest):
+async def forgot_password(data: ForgotPasswordRequest, request: Request):
     """Send a time-limited password reset link via email"""
+    # IP-based rate limiting: 3 attempts per minute per IP
+    from middleware.rate_limiter import check_ip_rate_limit, record_ip_attempt
+    client_ip = request.client.host if request.client else "unknown"
+    is_allowed, retry_after = await check_ip_rate_limit(client_ip, "forgot_password", max_attempts=3)
+    if not is_allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many password reset requests. Try again in 1 minute.",
+            headers={"Retry-After": str(retry_after)}
+        )
+    await record_ip_attempt(client_ip, "forgot_password")
+
     import secrets, hashlib
     user = await db.users.find_one({"email": data.email}, {"_id": 0, "password_hash": 0})
     # Always return success to prevent email enumeration
