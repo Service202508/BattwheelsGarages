@@ -13,7 +13,7 @@ import requests
 import os
 import time
 
-BASE_URL = "https://multi-tenancy-fix.preview.emergentagent.com"
+BASE_URL = "https://vigorous-pare-4.preview.emergentagent.com"
 
 # Test credentials
 DEMO_EMAIL = "demo@voltmotors.in"
