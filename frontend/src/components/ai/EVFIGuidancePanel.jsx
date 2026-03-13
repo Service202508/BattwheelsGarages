@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import mermaid from "mermaid";
 import { API } from "@/App";
 import EVFIResponseCard from "./EVFIResponseCard";
+import AILimitPrompt from "./AILimitPrompt";
 
 // Initialize Mermaid
 mermaid.initialize({
@@ -287,6 +288,7 @@ export default function EFIGuidancePanel({
   const [showDiagram, setShowDiagram] = useState(true);
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [showRegenerateBtn, setShowRegenerateBtn] = useState(false);
+  const [aiLimitError, setAiLimitError] = useState(null);
   
   const orgId = user?.organization_id;
   
@@ -363,11 +365,17 @@ export default function EFIGuidancePanel({
         setGuidance(data);
         setCompletedSteps([]);
         setShowRegenerateBtn(false);  // Reset after fetch
+        setAiLimitError(null);  // Clear any previous limit error
         
         // Check for context changes if loaded from cache
         if (data.from_cache) {
           await checkContextChanged();
         }
+      } else if (res.status === 429) {
+        // Handle AI limit exceeded
+        const errorData = await res.json();
+        setAiLimitError(errorData.message || "You've reached your AI call limit for this billing period.");
+        setGuidance(null);
       } else if (res.status === 403) {
         setGuidance({ enabled: false, message: "EVFI Guidance not enabled" });
       } else {
@@ -485,6 +493,20 @@ export default function EFIGuidancePanel({
         <CardContent className="p-6 text-center text-slate-400">
           <Shield className="h-10 w-10 mx-auto mb-3 text-slate-500" />
           <p>EVFI Guidance Layer is not enabled for your organization.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  // Show AI Limit Prompt if limit exceeded
+  if (aiLimitError) {
+    return (
+      <Card className="bg-slate-900/50 border-white/[0.07] border-700">
+        <CardContent className="p-4">
+          <AILimitPrompt 
+            message={aiLimitError}
+            onClose={() => setAiLimitError(null)}
+          />
         </CardContent>
       </Card>
     );

@@ -19,6 +19,7 @@ import {
   FileText, Wrench, Battery, Cpu, Cable, Activity, Eye, Edit, Clock
 } from "lucide-react";
 import { API } from "@/App";
+import AILimitPrompt from "@/components/ai/AILimitPrompt";
 
 const subsystemIcons = {
   battery: Battery,
@@ -93,6 +94,7 @@ export default function FailureIntelligence({ user }) {
   const [matchQuery, setMatchQuery] = useState("");
   const [matchResults, setMatchResults] = useState([]);
   const [matching, setMatching] = useState(false);
+  const [aiLimitError, setAiLimitError] = useState(null);
   
   // Form states
   const [formData, setFormData] = useState({
@@ -175,6 +177,7 @@ export default function FailureIntelligence({ user }) {
     }
     
     setMatching(true);
+    setAiLimitError(null);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API}/evfi/match`, {
@@ -190,6 +193,13 @@ export default function FailureIntelligence({ user }) {
           limit: 5
         })
       });
+      
+      if (response.status === 429) {
+        // Handle AI limit exceeded
+        const errorData = await response.json();
+        setAiLimitError(errorData.message || "You've reached your AI call limit for this billing period.");
+        return;
+      }
       
       if (response.ok) {
         const data = await response.json();
@@ -656,7 +666,17 @@ Example: Battery not charging beyond 80%, intermittent error E401"
               )}
             </Button>
             
-            {matchResults.length > 0 && (
+            {/* Show AI Limit Prompt if limit exceeded */}
+            {aiLimitError && (
+              <div className="mt-4">
+                <AILimitPrompt 
+                  message={aiLimitError}
+                  onClose={() => setAiLimitError(null)}
+                />
+              </div>
+            )}
+            
+            {matchResults.length > 0 && !aiLimitError && (
               <div className="space-y-3">
                 <h4 className="font-semibold">Matches Found:</h4>
                 {matchResults.map((match, i) => (

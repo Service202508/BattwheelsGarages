@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
 import EVFIResponseCard from "@/components/ai/EVFIResponseCard";
+import AILimitPrompt from "@/components/ai/AILimitPrompt";
 
 // Issue categories - clean single-color design
 const ISSUE_CATEGORIES = [
@@ -71,6 +72,7 @@ export default function AIDiagnosticAssistant({ user, ticketContext = null }) {
   const [loading, setLoading] = useState(false);
   const [diagnosis, setDiagnosis] = useState(null);
   const [dtcCodes, setDtcCodes] = useState("");
+  const [aiLimitError, setAiLimitError] = useState(null);
 
   useEffect(() => {
     if (ticketContext) {
@@ -101,6 +103,7 @@ export default function AIDiagnosticAssistant({ user, ticketContext = null }) {
 
     setLoading(true);
     setDiagnosis(null);
+    setAiLimitError(null);
 
     try {
       const categoryLabel = ISSUE_CATEGORIES.find(c => c.id === selectedCategory)?.label || "General";
@@ -151,6 +154,12 @@ Please provide:
       });
 
       if (!res.ok) {
+        // Handle 429 AI limit exceeded
+        if (res.status === 429) {
+          const errorData = await res.json();
+          setAiLimitError(errorData.message || "You've reached your AI call limit for this billing period.");
+          return;
+        }
         const errorText = await res.text();
         console.error("AI API error:", res.status, errorText);
         throw new Error(`API Error: ${res.status}`);
@@ -411,6 +420,13 @@ Please provide:
                   <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
                   <span className="w-2 h-2 bg-bw-volt rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
                 </div>
+              </div>
+            ) : aiLimitError ? (
+              <div className="py-8">
+                <AILimitPrompt 
+                  message={aiLimitError}
+                  onClose={() => setAiLimitError(null)}
+                />
               </div>
             ) : diagnosis ? (
               <ScrollArea className="h-[650px] pr-4">
