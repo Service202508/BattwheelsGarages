@@ -574,6 +574,183 @@ async def main():
     counts["items"] = item_count
 
     # ================================================================
+    # SECTION G — Employees
+    # ================================================================
+    print("[G] Seeding employees...")
+    employees = [
+        {"employee_id": "EMP-001", "name": "Vikram Mehta", "email": "vikram@voltmotors.in",
+         "role": "technician", "department": "Service", "designation": "Senior Technician",
+         "phone": "+91-9876500001", "status": "active", "date_of_joining": "2024-03-15"},
+        {"employee_id": "EMP-002", "name": "Anita Reddy", "email": "anita@voltmotors.in",
+         "role": "technician", "department": "Service", "designation": "EV Specialist",
+         "phone": "+91-9876500002", "status": "active", "date_of_joining": "2024-06-01"},
+        {"employee_id": "EMP-003", "name": "Karan Joshi", "email": "karan@voltmotors.in",
+         "role": "manager", "department": "Operations", "designation": "Service Manager",
+         "phone": "+91-9876500003", "status": "active", "date_of_joining": "2024-01-10"},
+    ]
+    emp_count = 0
+    for emp in employees:
+        doc = {
+            **emp,
+            "organization_id": ORG_ID,
+            "is_active": True,
+            "created_at": iso(),
+            "updated_at": iso(),
+            "_seed": SEED_TAG,
+        }
+        await db.employees.update_one(
+            {"employee_id": emp["employee_id"], "organization_id": ORG_ID},
+            {"$set": doc}, upsert=True,
+        )
+        emp_count += 1
+        print(f"  {emp['name']} ({emp['role']})")
+    counts["employees"] = emp_count
+
+    # ================================================================
+    # SECTION H — Invoices
+    # ================================================================
+    print("[H] Seeding invoices...")
+    invoice_defs = [
+        {"invoice_number": "INV-2026-001", "customer_id": "CON-rajesh-001", "customer_name": "Rajesh Kumar",
+         "total": 8500, "status": "paid", "days_ago": 45},
+        {"invoice_number": "INV-2026-002", "customer_id": "CON-sunita-002", "customer_name": "Sunita Patel",
+         "total": 12200, "status": "paid", "days_ago": 30},
+        {"invoice_number": "INV-2026-003", "customer_id": "CON-devfleet-006", "customer_name": "Delhi EV Fleet Pvt Ltd",
+         "total": 35000, "status": "sent", "days_ago": 15},
+        {"invoice_number": "INV-2026-004", "customer_id": "CON-greenride-007", "customer_name": "GreenRide Logistics",
+         "total": 22750, "status": "overdue", "days_ago": 60},
+        {"invoice_number": "INV-2026-005", "customer_id": "CON-manoj-003", "customer_name": "Manoj Tiwari",
+         "total": 5400, "status": "draft", "days_ago": 3},
+    ]
+    inv_count = 0
+    for inv in invoice_defs:
+        inv_date = (NOW - timedelta(days=inv["days_ago"])).strftime("%Y-%m-%d")
+        due_date = (NOW - timedelta(days=inv["days_ago"]) + timedelta(days=30)).strftime("%Y-%m-%d")
+        balance = 0 if inv["status"] == "paid" else inv["total"]
+        doc = {
+            "invoice_id": uid("inv-"),
+            "invoice_number": inv["invoice_number"],
+            "organization_id": ORG_ID,
+            "customer_id": inv["customer_id"],
+            "customer_name": inv["customer_name"],
+            "invoice_date": inv_date,
+            "due_date": due_date,
+            "sub_total": inv["total"],
+            "tax_total": round(inv["total"] * 0.18, 2),
+            "total": round(inv["total"] * 1.18, 2),
+            "balance_due": round(balance * 1.18, 2),
+            "amount_due": round(balance * 1.18, 2),
+            "status": inv["status"],
+            "currency_code": "INR",
+            "line_items": [{"item_name": "EV Service", "quantity": 1, "rate": inv["total"], "amount": inv["total"]}],
+            "created_at": iso(NOW - timedelta(days=inv["days_ago"])),
+            "updated_at": iso(),
+            "_seed": SEED_TAG,
+        }
+        await db.invoices.update_one(
+            {"invoice_number": inv["invoice_number"], "organization_id": ORG_ID},
+            {"$set": doc}, upsert=True,
+        )
+        inv_count += 1
+        print(f"  {inv['invoice_number']}: {inv['customer_name']} ₹{inv['total']} ({inv['status']})")
+    counts["invoices"] = inv_count
+
+    # ================================================================
+    # SECTION I — Estimates
+    # ================================================================
+    print("[I] Seeding estimates...")
+    estimate_defs = [
+        {"estimate_number": "EST-2026-001", "customer_id": "CON-amit-005", "customer_name": "Amit Sharma",
+         "total": 15000, "status": "accepted", "days_ago": 20},
+        {"estimate_number": "EST-2026-002", "customer_id": "CON-deepak-004", "customer_name": "Deepak Singh",
+         "total": 7800, "status": "sent", "days_ago": 10},
+        {"estimate_number": "EST-2026-003", "customer_id": "CON-priyaent-008", "customer_name": "Priya Enterprises",
+         "total": 42000, "status": "accepted", "days_ago": 35},
+        {"estimate_number": "EST-2026-004", "customer_id": "CON-quickcharge-009", "customer_name": "Quick Charge Services",
+         "total": 18500, "status": "draft", "days_ago": 5},
+        {"estimate_number": "EST-2026-005", "customer_id": "CON-metroev-010", "customer_name": "Metro EV Solutions",
+         "total": 29000, "status": "declined", "days_ago": 40},
+    ]
+    est_count = 0
+    for est in estimate_defs:
+        est_date = (NOW - timedelta(days=est["days_ago"])).strftime("%Y-%m-%d")
+        expiry_date = (NOW - timedelta(days=est["days_ago"]) + timedelta(days=30)).strftime("%Y-%m-%d")
+        doc = {
+            "estimate_id": uid("est-"),
+            "estimate_number": est["estimate_number"],
+            "organization_id": ORG_ID,
+            "customer_id": est["customer_id"],
+            "customer_name": est["customer_name"],
+            "estimate_date": est_date,
+            "expiry_date": expiry_date,
+            "sub_total": est["total"],
+            "tax_total": round(est["total"] * 0.18, 2),
+            "total": round(est["total"] * 1.18, 2),
+            "status": est["status"],
+            "currency_code": "INR",
+            "line_items": [{"item_name": "EV Service Estimate", "quantity": 1, "rate": est["total"], "amount": est["total"]}],
+            "created_at": iso(NOW - timedelta(days=est["days_ago"])),
+            "updated_at": iso(),
+            "_seed": SEED_TAG,
+        }
+        await db.estimates.update_one(
+            {"estimate_number": est["estimate_number"], "organization_id": ORG_ID},
+            {"$set": doc}, upsert=True,
+        )
+        est_count += 1
+        print(f"  {est['estimate_number']}: {est['customer_name']} ₹{est['total']} ({est['status']})")
+    counts["estimates"] = est_count
+
+    # ================================================================
+    # SECTION J — Chart of Accounts
+    # ================================================================
+    print("[J] Seeding chart of accounts...")
+    coa_templates = [
+        {"account_code": "1000", "account_name": "Cash", "account_type": "asset", "sub_type": "current_asset"},
+        {"account_code": "1100", "account_name": "Accounts Receivable", "account_type": "asset", "sub_type": "current_asset"},
+        {"account_code": "1200", "account_name": "Inventory", "account_type": "asset", "sub_type": "current_asset"},
+        {"account_code": "1300", "account_name": "Prepaid Expenses", "account_type": "asset", "sub_type": "current_asset"},
+        {"account_code": "1500", "account_name": "Equipment", "account_type": "asset", "sub_type": "fixed_asset"},
+        {"account_code": "2000", "account_name": "Accounts Payable", "account_type": "liability", "sub_type": "current_liability"},
+        {"account_code": "2100", "account_name": "GST Payable", "account_type": "liability", "sub_type": "current_liability"},
+        {"account_code": "2200", "account_name": "TDS Payable", "account_type": "liability", "sub_type": "current_liability"},
+        {"account_code": "2500", "account_name": "Loans Payable", "account_type": "liability", "sub_type": "long_term_liability"},
+        {"account_code": "3000", "account_name": "Owner's Equity", "account_type": "equity", "sub_type": "equity"},
+        {"account_code": "3100", "account_name": "Retained Earnings", "account_type": "equity", "sub_type": "equity"},
+        {"account_code": "4000", "account_name": "Service Revenue", "account_type": "income", "sub_type": "revenue"},
+        {"account_code": "4100", "account_name": "Parts Sales", "account_type": "income", "sub_type": "revenue"},
+        {"account_code": "4200", "account_name": "AMC Revenue", "account_type": "income", "sub_type": "revenue"},
+        {"account_code": "5000", "account_name": "Cost of Goods Sold", "account_type": "expense", "sub_type": "cost_of_goods"},
+        {"account_code": "5100", "account_name": "Parts & Materials", "account_type": "expense", "sub_type": "cost_of_goods"},
+        {"account_code": "6000", "account_name": "Salaries & Wages", "account_type": "expense", "sub_type": "operating_expense"},
+        {"account_code": "6100", "account_name": "Rent", "account_type": "expense", "sub_type": "operating_expense"},
+        {"account_code": "6200", "account_name": "Utilities", "account_type": "expense", "sub_type": "operating_expense"},
+        {"account_code": "6300", "account_name": "Insurance", "account_type": "expense", "sub_type": "operating_expense"},
+    ]
+    coa_count = 0
+    for acct in coa_templates:
+        doc = {
+            "account_id": uid("acct-"),
+            "account_code": acct["account_code"],
+            "account_name": acct["account_name"],
+            "account_type": acct["account_type"],
+            "sub_type": acct["sub_type"],
+            "organization_id": ORG_ID,
+            "is_active": True,
+            "balance": 0,
+            "description": f"{acct['account_name']} account",
+            "created_at": iso(),
+            "_seed": SEED_TAG,
+        }
+        await db.chart_of_accounts.update_one(
+            {"account_code": acct["account_code"], "organization_id": ORG_ID},
+            {"$set": doc}, upsert=True,
+        )
+        coa_count += 1
+    counts["chart_of_accounts"] = coa_count
+    print(f"  {coa_count} accounts seeded")
+
+    # ================================================================
     # SUMMARY
     # ================================================================
     print("\n" + "=" * 50)
@@ -584,7 +761,8 @@ async def main():
 
     # Verify final counts
     print("\nDatabase counts:")
-    for col_name in ["organizations", "users", "organization_users", "contacts", "vehicles", "items"]:
+    for col_name in ["organizations", "users", "organization_users", "contacts", "vehicles", "items",
+                     "employees", "invoices", "estimates", "chart_of_accounts"]:
         c = await db[col_name].count_documents({})
         org_c = await db[col_name].count_documents({"organization_id": ORG_ID}) if col_name != "users" else c
         print(f"  {col_name}: {c} total ({org_c} for demo org)")
