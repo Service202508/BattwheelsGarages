@@ -173,6 +173,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/estimates-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
     r"^/api/inventory-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "accountant"],
     r"^/api/sales-orders-enhanced(/.*)?$":  ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/tickets-enhanced(/.*)?$":       ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
     
     # ============ ADVANCED/INTEGRATION MODULES (previously unmapped) ============
     r"^/api/reports-advanced(/.*)?$":       ["org_admin", "admin", "owner", "accountant", "manager"],
