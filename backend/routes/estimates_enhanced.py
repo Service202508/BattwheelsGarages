@@ -1153,9 +1153,13 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
     billing_address = estimate.billing_address or customer.get("billing_address")
     shipping_address = estimate.shipping_address or customer.get("shipping_address")
     
+    # Resolve org_id for multi-tenant scoping
+    org_id = await get_org_id(request) if request else None
+
     # Build estimate document
     estimate_doc = {
         "estimate_id": estimate_id,
+        "organization_id": org_id,
         "estimate_number": estimate_number,
         "reference_number": estimate.reference_number,
         "customer_id": estimate.customer_id,

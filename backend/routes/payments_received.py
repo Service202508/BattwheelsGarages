@@ -47,6 +47,7 @@ class PaymentRecordCreate(BaseModel):
     tax_account: str = ""
     tax_amount: float = 0
     notes: str = ""
+    invoice_id: Optional[str] = None  # Convenience: auto-creates single allocation
     allocations: List[PaymentAllocation] = []  # Empty = retainer/advance payment
     is_retainer: bool = False
     send_thank_you: bool = False
@@ -404,7 +405,11 @@ async def record_payment(payment: PaymentRecordCreate, request: Request, backgro
     payment_number = await get_next_payment_number()
     payment_date = payment.payment_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
     org_id = rec_org_id or customer.get("organization_id", "")
-    
+
+    # Auto-create allocation from top-level invoice_id if no explicit allocations
+    if payment.invoice_id and not payment.allocations:
+        payment.allocations = [PaymentAllocation(invoice_id=payment.invoice_id, amount=payment.amount)]
+
     # Calculate allocation totals
     total_allocated = sum(a.amount for a in payment.allocations)
     overpayment_amount = round_currency(payment.amount - total_allocated - payment.bank_charges)

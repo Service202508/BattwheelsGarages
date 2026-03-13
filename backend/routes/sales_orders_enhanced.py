@@ -435,8 +435,11 @@ async def update_salesorder_settings(settings: dict):
 
 @router.post("")
 @router.post("/")
-async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: BackgroundTasks):
+async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new sales order"""
+    # Multi-tenant scoping
+    org_id = await get_org_id(request) if request else None
+
     # Validate customer
     customer = await get_contact_details(salesorder.customer_id)
     if not customer:
@@ -526,6 +529,7 @@ async def create_sales_order(salesorder: SalesOrderCreate, background_tasks: Bac
     # Build sales order document
     salesorder_doc = {
         "salesorder_id": salesorder_id,
+        "organization_id": org_id,
         "salesorder_number": salesorder_number,
         "reference_number": salesorder.reference_number,
         "customer_id": salesorder.customer_id,

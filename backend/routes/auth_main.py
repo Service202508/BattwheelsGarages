@@ -135,9 +135,11 @@ async def register(user_data: RegisterRequest):
 
     # 4. Create free trial subscription
     sub_id = f"sub_{uuid.uuid4().hex[:12]}"
+    plan_id = f"plan_{uuid.uuid4().hex[:12]}"
     subscription_doc = {
         "subscription_id": sub_id,
         "organization_id": org_id,
+        "plan_id": plan_id,
         "plan_code": "starter",
         "billing_cycle": "monthly",
         "status": "trialing",

@@ -732,6 +732,7 @@ async def list_invoice_templates():
 
 # ========================= INVOICE CRUD =========================
 
+@router.post("")
 @router.post("/")
 async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new invoice"""
