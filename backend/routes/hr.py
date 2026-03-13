@@ -510,18 +510,34 @@ async def calculate_payroll(request: Request, employee_id: str, month: str = Non
 
 
 @router.post("/payroll/generate")
-async def generate_payroll(request: Request, month: str = None, year: int = None, _: None = Depends(require_feature("hr_payroll"))):
+async def generate_payroll(request: Request, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
 
     now = datetime.now(timezone.utc)
-    month = month or now.strftime("%B")
-    year = year or now.year
-
-    # Period lock check — payroll maps to a specific month/year
-    from utils.period_lock import enforce_period_lock
+    
+    # Read month/year from request body
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    
+    month_input = body.get("month")
+    year = body.get("year", now.year)
+    
+    # Convert numeric month to name
     import calendar
-    month_num = list(calendar.month_name).index(month) if isinstance(month, str) and month in calendar.month_name else now.month
+    if isinstance(month_input, int):
+        month = calendar.month_name[month_input]
+    elif isinstance(month_input, str) and month_input in calendar.month_name:
+        month = month_input
+    else:
+        month = now.strftime("%B")
+    
+    month_num = list(calendar.month_name).index(month)
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
     payroll_date = f"{year}-{month_num:02d}-01"
     org_id = await get_org_id(request, service.db)
     await enforce_period_lock(service.db, org_id, payroll_date)
