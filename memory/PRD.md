@@ -25,7 +25,8 @@ Comprehensive security audit and hardening of the Battwheels OS multi-tenant ERP
 - **`double_entry_service.py`** — COMPLETE: 1 critical cross-tenant write fix + 16 defense-in-depth guards
 - **`reports_advanced.py`** — COMPLETE: 13 endpoints hardened
 - **`master_data.py`** — COMPLETE: queries classified as org-scoped vs platform-global
-- **`hr_service.py`** — COMPLETE (2025-02-XX): 23 tenant-scoped queries secured, 12 defense-in-depth guards added, 84 insertions / 76 deletions. Critical fixes: leave_requests missing org_id, generate_payroll processing all orgs' employees.
+- **`hr_service.py`** — COMPLETE: 23 tenant-scoped queries secured, 12 defense-in-depth guards added
+- **`routes/hr.py`** — COMPLETE: All 21 service method callers now pass organization_id. 12 endpoints updated with get_org_id. Fixed wrong kwarg name (org_id→organization_id) and unsafe getattr pattern.
 
 ## Prioritized Backlog
 
@@ -34,9 +35,10 @@ Comprehensive security audit and hardening of the Battwheels OS multi-tenant ERP
 - [x] Secrets management
 - [x] `double_entry_service.py`
 - [x] `hr_service.py`
-- [ ] Update route-layer callers for new `hr_service.py` signatures (breaking change by design)
+- [x] Update route-layer callers for new `hr_service.py` signatures
 
 ### P1 (High)
+- [ ] Fix direct DB queries in `routes/hr.py` that bypass service layer (~30+ queries with conditional org_id)
 - [ ] Audit & fix `ticket_service.py`
 - [ ] Audit & fix `ticket_estimate_service.py`
 - [ ] Audit `scheduler.py` for org_id bypass
