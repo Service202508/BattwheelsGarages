@@ -378,3 +378,132 @@ async def run_all_scheduled_jobs():
 
     
     return results
+
+
+# ==================== SLA BREACH DETECTION ====================
+
+async def check_sla_breaches():
+    """
+    Check for SLA breaches across all organizations.
+    Flags tickets that have exceeded their SLA response/resolution time.
+    Creates notifications for breached tickets.
+    
+    Should be run every 30 minutes.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    
+    # Default SLA times in hours (if no org-specific config)
+    DEFAULT_SLA = {
+        "critical": {"response_hours": 1, "resolution_hours": 4},
+        "high": {"response_hours": 4, "resolution_hours": 8},
+        "medium": {"response_hours": 8, "resolution_hours": 24},
+        "low": {"response_hours": 24, "resolution_hours": 72}
+    }
+    
+    breaches_flagged = 0
+    notifications_created = 0
+    errors = []
+    
+    try:
+        # Get all open tickets that are NOT already breached
+        tickets = await db.tickets.find({
+            "status": {"$in": ["open", "in_progress", "pending", "assigned"]},
+            "sla_breached": {"$ne": True}
+        }, {"_id": 0}).to_list(length=1000)
+        
+        for ticket in tickets:
+            try:
+                org_id = ticket.get("organization_id")
+                ticket_id = ticket.get("ticket_id")
+                priority = (ticket.get("priority") or "medium").lower()
+                created_at_str = ticket.get("created_at", "")
+                
+                if not created_at_str:
+                    continue
+                
+                # Parse created_at
+                try:
+                    if "T" in created_at_str:
+                        created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
+                    else:
+                        created_at = datetime.strptime(created_at_str, "%Y-%m-%d %H:%M:%S")
+                        created_at = created_at.replace(tzinfo=timezone.utc)
+                except Exception:
+                    continue
+                
+                # Get SLA config for this org (or use default)
+                sla_config = await db.sla_configs.find_one(
+                    {"organization_id": org_id},
+                    {"_id": 0}
+                )
+                
+                if sla_config and "config" in sla_config:
+                    sla_times = sla_config.get("config", {}).get(priority.upper(), DEFAULT_SLA.get(priority, {}))
+                elif sla_config:
+                    sla_times = sla_config.get(priority.upper(), DEFAULT_SLA.get(priority, {}))
+                else:
+                    sla_times = DEFAULT_SLA.get(priority, {"response_hours": 24})
+                
+                response_hours = sla_times.get("response_hours", sla_times.get("response_time_hours", 24))
+                
+                # Calculate if breached
+                hours_since_creation = (now - created_at).total_seconds() / 3600
+                
+                if hours_since_creation > response_hours:
+                    # Flag as breached
+                    breach_time = now.isoformat()
+                    
+                    await db.tickets.update_one(
+                        {"ticket_id": ticket_id},
+                        {"$set": {
+                            "sla_breached": True,
+                            "sla_breach_time": breach_time,
+                            "sla_breach_hours": round(hours_since_creation, 2),
+                            "sla_threshold_hours": response_hours
+                        }}
+                    )
+                    
+                    # Log to sla_breaches collection
+                    breach_log = {
+                        "breach_id": f"SLA-{uuid.uuid4().hex[:12].upper()}",
+                        "organization_id": org_id,
+                        "ticket_id": ticket_id,
+                        "priority": priority,
+                        "breach_type": "response_time",
+                        "sla_threshold_hours": response_hours,
+                        "actual_hours": round(hours_since_creation, 2),
+                        "created_at": breach_time
+                    }
+                    await db.sla_breaches.insert_one(breach_log)
+                    
+                    # Create notification for org owner/admin
+                    notification = {
+                        "notification_id": f"NOTIF-{uuid.uuid4().hex[:12].upper()}",
+                        "organization_id": org_id,
+                        "type": "sla_breach",
+                        "title": f"SLA Breach: Ticket {ticket_id}",
+                        "message": f"Ticket {ticket_id} ({ticket.get('title', 'Untitled')[:50]}) has breached SLA — {round(hours_since_creation, 1)} hours since creation (SLA: {response_hours}h)",
+                        "priority": "high",
+                        "read": False,
+                        "created_at": breach_time,
+                        "ticket_id": ticket_id
+                    }
+                    await db.notifications.insert_one(notification)
+                    
+                    breaches_flagged += 1
+                    notifications_created += 1
+                    logger.info(f"SLA breach flagged: {ticket_id} ({round(hours_since_creation, 1)}h > {response_hours}h SLA)")
+                    
+            except Exception as e:
+                errors.append(f"{ticket.get('ticket_id', '?')}: {str(e)}")
+                
+    except Exception as e:
+        logger.error(f"SLA breach check failed: {e}")
+        errors.append(str(e))
+    
+    return {
+        "breaches_flagged": breaches_flagged,
+        "notifications_created": notifications_created,
+        "errors": errors if errors else None
+    }

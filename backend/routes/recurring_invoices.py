@@ -85,17 +85,22 @@ def calculate_next_date(current_date: datetime, frequency: str, repeat_every: in
         return current_date + relativedelta(months=repeat_every)
 
 
-async def generate_invoice_number():
+async def generate_invoice_number(org_id: str = None):
     """Generate sequential invoice number"""
-    count = await invoices_collection.count_documents(org_query(org_id))
+    query = {"organization_id": org_id} if org_id else {}
+    count = await invoices_collection.count_documents(query)
     return f"INV-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
 
 
 async def create_invoice_from_recurring(recurring: dict) -> dict:
     """Generate an invoice from recurring profile"""
-    customer = await contacts_collection.find_one(
-        {"contact_id": recurring["customer_id"]}, {"_id": 0}
-    )
+    org_id = recurring.get("organization_id")
+    
+    customer_query = {"contact_id": recurring["customer_id"]}
+    if org_id:
+        customer_query["organization_id"] = org_id
+        
+    customer = await contacts_collection.find_one(customer_query, {"_id": 0})
     if not customer:
         raise ValueError(f"Customer {recurring['customer_id']} not found")
 
@@ -112,11 +117,12 @@ async def create_invoice_from_recurring(recurring: dict) -> dict:
     invoice_date = datetime.now(timezone.utc)
     due_date = invoice_date + timedelta(days=recurring.get("payment_terms_days", 15))
 
-    invoice_number = await generate_invoice_number()
+    invoice_number = await generate_invoice_number(org_id)
 
     invoice = {
         "invoice_id": f"INV-{uuid.uuid4().hex[:12].upper()}",
         "invoice_number": invoice_number,
+        "organization_id": org_id,
         "recurring_invoice_id": recurring["recurring_id"],
         "customer_id": recurring["customer_id"],
         "customer_name": customer.get("display_name", customer.get("contact_name", "")),

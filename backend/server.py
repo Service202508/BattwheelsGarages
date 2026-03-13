@@ -156,11 +156,15 @@ async def lifespan(app: FastAPI):
 
     # Start background workers
     learning_task = asyncio.create_task(_learning_queue_worker())
+    recurring_invoice_task = asyncio.create_task(_recurring_invoice_scheduler())
+    sla_breach_task = asyncio.create_task(_sla_breach_checker())
 
     yield
 
     # Shutdown: cancel background workers
     learning_task.cancel()
+    recurring_invoice_task.cancel()
+    sla_breach_task.cancel()
     client.close()
     logger.info("Battwheels OS shutdown")
 
@@ -181,6 +185,45 @@ async def _learning_queue_worker():
         except Exception as e:
             logger.warning(f"EVFI learning worker error: {e}")
         await asyncio.sleep(300)  # 5 minutes
+
+
+async def _recurring_invoice_scheduler():
+    """Background worker: auto-generate recurring invoices every 6 hours."""
+    await asyncio.sleep(60)  # Wait for app to stabilize (1 minute)
+    while True:
+        try:
+            from services.scheduler import generate_recurring_invoices
+            result = await generate_recurring_invoices()
+            generated = result.get("generated", 0) if isinstance(result, dict) else 0
+            if generated > 0:
+                logger.info(f"Recurring invoice scheduler: generated {generated} invoices")
+            else:
+                logger.debug("Recurring invoice scheduler: no invoices due")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"Recurring invoice scheduler error: {e}")
+        await asyncio.sleep(6 * 3600)  # Every 6 hours
+
+
+async def _sla_breach_checker():
+    """Background worker: check for SLA breaches every 30 minutes."""
+    await asyncio.sleep(120)  # Wait for app to stabilize (2 minutes)
+    while True:
+        try:
+            from services.scheduler import check_sla_breaches
+            result = await check_sla_breaches()
+            breached = result.get("breaches_flagged", 0) if isinstance(result, dict) else 0
+            if breached > 0:
+                logger.info(f"SLA breach checker: flagged {breached} tickets")
+            else:
+                logger.debug("SLA breach checker: no new breaches")
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            logger.warning(f"SLA breach checker error: {e}")
+        await asyncio.sleep(30 * 60)  # Every 30 minutes
+
 
 # ==================== APP ====================
 app = FastAPI(title="Battwheels OS", lifespan=lifespan)
