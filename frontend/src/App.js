@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ScrollToTop from "@/components/ScrollToTop";
 
 // Pages
 import Login from "@/pages/Login";
@@ -1356,6 +1357,7 @@ function App() {
     <ErrorBoundary>
       <div className="App">
         <BrowserRouter>
+          <ScrollToTop />
           <AppRouter />
           <CommandPalette />
           <UpgradeModal />
