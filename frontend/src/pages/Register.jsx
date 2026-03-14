@@ -189,7 +189,7 @@ export default function Register({ onLogin }) {
     borderRadius: "4px",
     color: "rgb(var(--bw-white))",
     fontSize: "14px",
-    fontFamily: "Syne, sans-serif",
+    fontFamily: "Manrope, sans-serif",
     outline: "none",
     boxSizing: "border-box",
   });
@@ -197,7 +197,7 @@ export default function Register({ onLogin }) {
   const labelStyle = {
     display: "block",
     fontSize: "12px",
-    fontFamily: "Syne, sans-serif",
+    fontFamily: "Manrope, sans-serif",
     color: "rgb(var(--bw-white) / 0.55)",
     marginBottom: "6px",
     letterSpacing: "0.04em",
@@ -209,7 +209,7 @@ export default function Register({ onLogin }) {
         minHeight: "100vh",
         display: "flex",
         background: "rgb(var(--bw-black))",
-        fontFamily: "Syne, sans-serif",
+        fontFamily: "Manrope, sans-serif",
       }}
     >
       {/* ── LEFT PANEL ── */}

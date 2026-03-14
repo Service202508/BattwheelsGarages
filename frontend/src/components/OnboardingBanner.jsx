@@ -148,7 +148,7 @@ export function OnboardingBanner() {
         <div>
           <p
             style={{
-              fontFamily: "Syne, sans-serif",
+              fontFamily: "Manrope, sans-serif",
               fontSize: "16px",
               color: "rgb(var(--bw-white))",
               fontWeight: 600,
@@ -159,7 +159,7 @@ export function OnboardingBanner() {
           </p>
           <p
             style={{
-              fontFamily: "Syne, sans-serif",
+              fontFamily: "Manrope, sans-serif",
               fontSize: "13px",
               color: "rgb(var(--bw-white) / 0.55)",
               marginTop: "4px",
@@ -196,7 +196,7 @@ export function OnboardingBanner() {
       >
         <p
           style={{
-            fontFamily: "Syne, sans-serif",
+            fontFamily: "Manrope, sans-serif",
             fontSize: "16px",
             color: "rgb(var(--bw-white))",
             fontWeight: 600,
@@ -305,7 +305,7 @@ export function OnboardingBanner() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
-                    fontFamily: "Syne, sans-serif",
+                    fontFamily: "Manrope, sans-serif",
                     fontSize: "14px",
                     color: isComplete ? "rgba(244,246,240,0.40)" : "rgb(var(--bw-white))",
                     textDecoration: isComplete ? "line-through" : "none",
@@ -317,7 +317,7 @@ export function OnboardingBanner() {
                 </p>
                 <p
                   style={{
-                    fontFamily: "Syne, sans-serif",
+                    fontFamily: "Manrope, sans-serif",
                     fontSize: "12px",
                     color: "rgb(var(--bw-white) / 0.35)",
                     margin: "2px 0 0 0",
@@ -359,7 +359,7 @@ export function OnboardingBanner() {
             border: "none",
             cursor: "pointer",
             color: "rgb(var(--bw-white) / 0.35)",
-            fontFamily: "Syne, sans-serif",
+            fontFamily: "Manrope, sans-serif",
             fontSize: "12px",
             padding: 0,
           }}

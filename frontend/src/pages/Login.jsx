@@ -12,7 +12,7 @@ function useLoginStyles() {
       link.id = "bw-font";
       link.rel = "stylesheet";
       link.href =
-        "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Serif+Display&family=Syne:wght@400;500;600;700&display=swap";
+        "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap";
       document.head.appendChild(link);
     }
     if (!document.getElementById("bw-css")) {
@@ -44,7 +44,7 @@ function useLoginStyles() {
         .bw-footer-link {
           color: rgba(244,246,240,0.35);
           text-decoration: none;
-          font-family: 'Syne', sans-serif;
+          font-family: 'Manrope', sans-serif;
           font-size: 11px;
           transition: color 0.15s;
         }
@@ -174,7 +174,7 @@ const FormInput = ({
             border: `1px solid ${focused ? "rgba(200,255,0,0.50)" : "rgba(255,255,255,0.10)"}`,
             borderRadius: 4,
             padding: `0 ${showToggle ? 44 : 14}px 0 40px`,
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Manrope', sans-serif",
             fontSize: 14,
             color: "rgb(var(--bw-white))",
             outline: "none",
@@ -264,7 +264,7 @@ const InlineError = ({ msg }) =>
         borderLeft: "3px solid #FF3B2F",
         borderRadius: 4,
         padding: "10px 14px",
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Manrope', sans-serif",
         fontSize: 13,
         color: "rgb(var(--bw-red))",
       }}
@@ -279,7 +279,7 @@ const OrDivider = () => (
     <div style={{ flex: 1, height: 1, background: "var(--bw-border)" }} />
     <span
       style={{
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Manrope', sans-serif",
         fontSize: 12,
         color: "rgba(244,246,240,0.30)",
         whiteSpace: "nowrap",
@@ -410,7 +410,7 @@ const LeftPanel = () => (
         <h1
           className="bw-headline"
           style={{
-            fontFamily: "'DM Serif Display', serif",
+            fontFamily: "Barlow, sans-serif",
             fontSize: 52,
             fontWeight: 400,
             lineHeight: 1.1,
@@ -430,7 +430,7 @@ const LeftPanel = () => (
       <div style={{ marginTop: 20, ...anim(240) }}>
         <p
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Manrope', sans-serif",
             fontSize: 15,
             fontWeight: 400,
             lineHeight: 1.65,
@@ -473,7 +473,7 @@ const LeftPanel = () => (
         </div>
         <div
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Manrope', sans-serif",
             fontSize: 11,
             color: "rgb(var(--bw-white) / 0.40)",
           }}
@@ -506,7 +506,7 @@ const LeftPanel = () => (
         </div>
         <div
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Manrope', sans-serif",
             fontSize: 11,
             color: "rgb(var(--bw-white) / 0.40)",
           }}
@@ -780,7 +780,7 @@ export default function Login({ onLogin }) {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Manrope', sans-serif",
                 fontSize: 13,
                 color: "rgb(var(--bw-white) / 0.45)",
                 textDecoration: "none",
@@ -799,7 +799,7 @@ export default function Login({ onLogin }) {
           <div style={anim(100)}>
             <h2
               style={{
-                fontFamily: "'DM Serif Display', serif",
+                fontFamily: "Barlow, sans-serif",
                 fontSize: 28,
                 fontWeight: 400,
                 color: "rgb(var(--bw-white))",
@@ -812,7 +812,7 @@ export default function Login({ onLogin }) {
             </h2>
             <p
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Manrope', sans-serif",
                 fontSize: 14,
                 color: "var(--bw-muted)",
                 marginTop: 4,
@@ -913,7 +913,7 @@ export default function Login({ onLogin }) {
                   className="bw-forgot"
                   onClick={() => { setForgotEmail(loginData.email); setForgotSent(false); setShowForgotPassword(true); }}
                   style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Manrope', sans-serif",
                     fontSize: 12,
                     color: "rgba(200,255,0,0.60)",
                     cursor: "pointer",
@@ -947,7 +947,7 @@ export default function Login({ onLogin }) {
                       background: "rgb(255 255 255 / 0.04)",
                       border: "1px solid rgba(255,255,255,0.10)",
                       borderRadius: 4,
-                      fontFamily: "'Syne', sans-serif",
+                      fontFamily: "'Manrope', sans-serif",
                       fontSize: 14,
                       color: "rgb(var(--bw-white) / 0.70)",
                       cursor: "pointer",
@@ -1089,7 +1089,7 @@ export default function Login({ onLogin }) {
         >
           <p
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Manrope', sans-serif",
               fontSize: 11,
               color: "rgb(var(--bw-white) / 0.25)",
               margin: "0 0 6px",
@@ -1139,7 +1139,7 @@ export default function Login({ onLogin }) {
                 }}>
                   <Mail style={{ width: 28, height: 28, color: "rgb(var(--bw-green))" }} />
                 </div>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 8 }}>
+                <h3 style={{ fontFamily: "'Manrope', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 8 }}>
                   Check your email
                 </h3>
                 <p style={{ color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
@@ -1150,7 +1150,7 @@ export default function Login({ onLogin }) {
                   style={{
                     width: "100%", padding: "12px 0", borderRadius: 8,
                     background: "rgba(200,255,0,0.1)", border: "1px solid rgba(200,255,0,0.3)",
-                    color: "rgb(var(--bw-volt))", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                    color: "rgb(var(--bw-volt))", fontFamily: "'Manrope', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer",
                   }}
                   data-testid="forgot-done-btn"
                 >
@@ -1159,14 +1159,14 @@ export default function Login({ onLogin }) {
               </div>
             ) : (
               <>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 4 }}>
+                <h3 style={{ fontFamily: "'Manrope', sans-serif", fontSize: 20, fontWeight: 700, color: "rgb(var(--bw-white))", marginBottom: 4 }}>
                   Forgot your password?
                 </h3>
                 <p style={{ color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, marginBottom: 20 }}>
                   Enter your email and we'll send you a reset link.
                 </p>
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontFamily: "'Syne', sans-serif", fontSize: 12, color: "rgb(var(--bw-white) / 0.55)", marginBottom: 6 }}>
+                  <label style={{ display: "block", fontFamily: "'Manrope', sans-serif", fontSize: 12, color: "rgb(var(--bw-white) / 0.55)", marginBottom: 6 }}>
                     Email Address
                   </label>
                   <input
@@ -1190,7 +1190,7 @@ export default function Login({ onLogin }) {
                   style={{
                     width: "100%", padding: "12px 0", borderRadius: 8,
                     background: "rgb(var(--bw-volt))", border: "none",
-                    color: "rgb(var(--bw-black))", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                    color: "rgb(var(--bw-black))", fontFamily: "'Manrope', sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer",
                     opacity: forgotLoading ? 0.6 : 1,
                   }}
                   data-testid="forgot-submit-btn"
@@ -1203,7 +1203,7 @@ export default function Login({ onLogin }) {
                     width: "100%", padding: "10px 0", marginTop: 8, borderRadius: 8,
                     background: "transparent", border: "1px solid rgba(244,246,240,0.12)",
                     color: "rgb(var(--bw-white) / 0.55)", fontSize: 14, cursor: "pointer",
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Manrope', sans-serif",
                   }}
                   data-testid="forgot-cancel-btn"
                 >
