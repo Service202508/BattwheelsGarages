@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import ProductTour from '../components/ProductTour';
 import LiveShowcase from '../components/LiveShowcase';
-import BattwheelsLogo from '../components/BattwheelsLogo';
 
 // HARDCODED for production - Emergent overrides env vars during build
 const API_URL = window.location.origin;
@@ -927,9 +926,8 @@ const SaaSLanding = () => {
 
       {/* ========== SECTION 10: FOOTER ========== */}
       <footer className="py-10 px-6 md:px-12 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-3 text-xs text-white/20 font-mono">
-          <BattwheelsLogo size="sm" />
-          <span>{'\u00A9'} 2026 Battwheels Services Private Limited - India - All Rights Reserved</span>
+        <div className="text-xs text-white/20 font-mono">
+          {'\u00A9'} 2026 Battwheels Services Private Limited - India - All Rights Reserved
         </div>
         <div className="text-xs text-white/15 font-mono">
           Battwheels Engine Beta v2.00.26
