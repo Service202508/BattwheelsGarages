@@ -10,7 +10,7 @@ Complete organization lifecycle management for multi-tenant SaaS:
 """
 
 from fastapi import APIRouter, HTTPException, Request, Depends, BackgroundTasks
-from pydantic import BaseModel, Field, EmailStr, validator
+from pydantic import BaseModel, Field, EmailStr, validator, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 import uuid
@@ -34,13 +34,18 @@ from utils.database import db
 class OrganizationCreate(BaseModel):
     """Create a new organization with admin user"""
     # Organization details
-    name: str = Field(..., min_length=2, max_length=100)
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    organization_name: Optional[str] = Field(None, min_length=2, max_length=100)
     industry_type: str = Field(default="ev_garage")
 
-    # Admin user details
-    admin_name: str = Field(..., min_length=2, max_length=100)
-    admin_email: EmailStr
-    admin_password: str = Field(..., min_length=6)
+    # Admin user details — accept both prefixed and plain field names
+    admin_name: Optional[str] = Field(None, min_length=2, max_length=100)
+    admin_email: Optional[EmailStr] = None
+    admin_password: Optional[str] = Field(None, min_length=6)
+
+    # Plain field name alternatives (from some frontend forms)
+    email: Optional[EmailStr] = None
+    password: Optional[str] = Field(None, min_length=6)
 
     # Optional details
     phone: Optional[str] = None
@@ -55,6 +60,41 @@ class OrganizationCreate(BaseModel):
     # Self-serve signup extras
     vehicle_types: Optional[List[str]] = None  # ["2W", "3W", "4W"]
     invite_code: Optional[str] = None  # Beta access code
+
+    @model_validator(mode='before')
+    @classmethod
+    def normalize_fields(cls, values):
+        """Accept both {name, email, password} and {admin_name, admin_email, admin_password} conventions"""
+        # Organization name: prefer organization_name, fall back to name
+        org_name = values.get('organization_name') or values.get('name')
+        person_name = values.get('admin_name') or values.get('name')
+        person_email = values.get('admin_email') or values.get('email')
+        person_password = values.get('admin_password') or values.get('password')
+
+        # If organization_name was provided, name is the person's name
+        if values.get('organization_name'):
+            values['name'] = values['organization_name']
+            if not values.get('admin_name') and values.get('name') != person_name:
+                pass  # name was org name, person_name came from admin_name
+
+        values['name'] = org_name
+        values['admin_name'] = person_name
+        values['admin_email'] = person_email
+        values['admin_password'] = person_password
+        return values
+
+    @model_validator(mode='after')
+    def validate_required_fields(self):
+        """Ensure required fields are present after normalization"""
+        if not self.name:
+            raise ValueError('Organization name is required (provide "name" or "organization_name")')
+        if not self.admin_name:
+            raise ValueError('Admin name is required (provide "admin_name" or "name" with "organization_name")')
+        if not self.admin_email:
+            raise ValueError('Admin email is required (provide "admin_email" or "email")')
+        if not self.admin_password:
+            raise ValueError('Admin password is required (provide "admin_password" or "password")')
+        return self
 
     @validator('industry_type')
     def validate_industry(cls, v):
