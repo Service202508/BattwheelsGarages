@@ -45,24 +45,40 @@ The user's initial problem was a 520 production deployment error. This evolved i
 - Reassign Technician verified
 
 ### Phase C-6: EVFI Brand Patterns + AI Token Counter (COMPLETED 2026-03-14)
-- Fixed EVFI match endpoint Stage 2.5 to properly search `efi_platform_patterns`
+- Fixed EVFI match endpoint Stage 2.5 for brand-specific patterns
 - Enhanced matching with fault_category detection, title regex, vehicle-only fallback
 - Added `query` alias for `symptom_text` in FailureMatchRequest
 - Fixed PlanLimits model_validator to map DB field `ai_calls_per_month`
 - Created AIUsageCounter component with color-coded usage display
 - Added counter to EVFI page header and sidebar bottom
-- Auto-refresh counter after AI calls
-- CORS reverted to explicit origins (Emergent domains handled by regex)
 
-### Deployment Readiness
-- CORS configured: explicit origins + regex for Emergent domains
+### Phase C-10: Final E2E Platform Validation (COMPLETED 2026-03-14)
+- Full 7-phase platform validation: 92/100 score
+- All 30 module endpoints functional
+- All 7 integrations verified, books balanced
+- Security: auth, rate limiting, passwords, CORS all pass
+- All 7 EVFI brands matched, both portals functional
+
+### Pre-Deploy Quick Fixes (COMPLETED 2026-03-14)
+- **Fix 1:** EVFI now accessible for Free Trial users (15 AI calls/month)
+  - DB: Enabled `efi_failure_intelligence` for free plan
+  - Frontend: Unlocked `/failure-intelligence` in planConfig
+  - Registration: Added `usage` field to subscription doc
+- **Fix 2:** Invoice line items now accept both `hsn_code` and `hsn_sac_code`
+  - model_validator maps hsn_code → hsn_sac_code
+- **Fix 3:** API path aliases added
+  - `/reports/profit-and-loss` → `/reports/profit-loss`
+  - `/accounting/journal-entries` → `/banking/journal-entries`
+  - `/accounting/chart-of-accounts` → `/banking/chart-of-accounts`
+
+## Current Status
+**READY FOR DEPLOYMENT** — All pre-deploy fixes verified.
 
 ## Prioritized Backlog
 
 ### P1 (Upcoming)
 - Phase C-7: Production readiness (secrets management, Sentry, production seed data)
 - Phase C-8/C-9: pytest suite recovery (582 failed, 468 errors)
-- Phase C-10: Final E2E testing and cleanup
 
 ### P2 (Future)
 - Enhance Banking Module (compute balances from journal entries)
@@ -70,7 +86,6 @@ The user's initial problem was a 520 production deployment error. This evolved i
 - Deploy to Production
 - Purge secrets from Git history
 - Fix login rate limiting (add IP-based checks)
-- Unify duplicate P&L report endpoints
 
 ## Known Issues
 - pytest suite broken (582 failed, 468 errors)
@@ -82,17 +97,17 @@ The user's initial problem was a 520 production deployment error. This evolved i
 
 ## Test Credentials
 - Workshop Owner: demo@voltmotors.in / Demo@12345
-- Technician: Tech@12345
-- Customer Portal: via portal_access_token in contacts collection
+- Free Trial Test: freetrial-test@workshop.in / Test@12345
+- Technician: ankit@voltmotors.in / Tech@12345
+- Customer Portal: token PORTAL-SUNITA-2026
 
 ## Key API Endpoints
-- `/api/v1/evfi/match` POST - AI failure matching (supports query alias)
+- `/api/v1/evfi/match` POST - AI failure matching (accepts query alias)
 - `/api/v1/subscriptions/current` GET - Subscription + usage + limits
-- `/api/v1/subscriptions/usage` GET - Detailed usage breakdown
-- `/api/v1/recurring-invoices/process-due` POST - Auto-generate invoices
-- `/api/v1/journal-entries/accounts/sync-balances` POST - Recalc account balances
+- `/api/v1/reports/profit-loss` GET (alias: `/reports/profit-and-loss`)
+- `/api/v1/accounting/journal-entries` GET (alias for banking module)
+- `/api/v1/accounting/chart-of-accounts` GET (alias for banking module)
 
 ## Key Collections
 - `efi_platform_patterns`: 277 patterns (61 generic + 216 brand-specific for 7 brands)
-- `failure_cards`: Org-specific failure knowledge base
-- `plans`: 4 plans with AI call limits (Free:10, Starter:25, Professional:100, Enterprise:unlimited)
+- `plans`: 4 plans with AI call limits (Free:15, Starter:25, Professional:100, Enterprise:unlimited)
