@@ -1,4 +1,4 @@
-# BattWheels EV Service Platform - PRD
+# BattWheels OS — PRD
 
 ## Original Problem Statement
 The user's initial problem was a 520 production deployment error. This evolved into a comprehensive security audit and stability hardening project called "Beta Readiness." The primary goal is to resolve all critical vulnerabilities, bugs, and data inconsistencies across the platform.
@@ -15,31 +15,53 @@ The user's initial problem was a 520 production deployment error. This evolved i
 ## Architecture
 - **Backend:** FastAPI (Python) on port 8001
 - **Frontend:** React (CRA + craco) on port 3000
-- **Database:** MongoDB (motor/pymongo)
+- **Database:** MongoDB (motor/pymongo) — `battwheels_dev`
 - **Background Jobs:** asyncio tasks (recurring invoices every 6h, SLA breach detection every 30min)
 
 ## What's Been Implemented
-- Phase B-4: Module Verification (SLA, Recurring Invoices, Data Export)
-- Phase C-1: Inventory-Accounting Integration (invoice stock deduction, journal entries)
-- Phase C-2: Payroll-Accounting Integration & Balance Sync
-- Phase C-3: Background Automation Schedulers (recurring invoices, SLA breach detection)
-- Phase C-4: Frontend AI Limit & Upgrade Workflow (429 handling, AILimitPrompt component)
-- Phase C-5: Frontend HR & Reassign Fixes
-- Phase C-6 (Partial): EVFI Data Seeding (216 brand-specific patterns seeded)
-- Deployment Readiness: CORS_ORIGINS fixed to wildcard for Emergent deployment
 
-## Current Status
-- **Phase C-6 IN PROGRESS:** EVFI match endpoint needs fix to query `efi_platform_patterns` + AI token counter not started
+### Phase B-4: Module Verification
+- Verified SLA, Recurring Invoices, Data Export modules
+- Fixed critical multi-tenancy bug in recurring invoice creation
+
+### Phase C-1: Inventory-Accounting Integration
+- Invoice creation deducts stock from inventory
+- Inventory adjustments create journal entries
+
+### Phase C-2: Payroll-Accounting Integration & Balance Sync
+- Payroll generation creates salary expense journal entries
+- Chart of accounts balance sync from journal entries
+
+### Phase C-3: Background Automation Schedulers
+- Auto-generate recurring invoices (every 6 hours)
+- SLA breach detection + notifications (every 30 minutes)
+
+### Phase C-4: Frontend AI Limit & Upgrade Workflow
+- AILimitPrompt component for 429 error handling
+- Improved plan upgrade workflow
+
+### Phase C-5: Frontend HR & Reassign Fixes
+- HR page routing fix (owner role)
+- Reassign Technician verified
+
+### Phase C-6: EVFI Brand Patterns + AI Token Counter (COMPLETED 2026-03-14)
+- Fixed EVFI match endpoint Stage 2.5 to properly search `efi_platform_patterns`
+- Enhanced matching with fault_category detection, title regex, vehicle-only fallback
+- Added `query` alias for `symptom_text` in FailureMatchRequest
+- Fixed PlanLimits model_validator to map DB field `ai_calls_per_month`
+- Created AIUsageCounter component with color-coded usage display
+- Added counter to EVFI page header and sidebar bottom
+- Auto-refresh counter after AI calls
+- CORS reverted to explicit origins (Emergent domains handled by regex)
+
+### Deployment Readiness
+- CORS configured: explicit origins + regex for Emergent domains
 
 ## Prioritized Backlog
 
-### P0 (In Progress)
-- Fix EVFI match endpoint to include brand-specific patterns
-- AI Token Counter on EVFI pages + Header
-
 ### P1 (Upcoming)
-- Phase C-7: Production readiness (secrets, Sentry, production seed data)
-- Phase C-8/C-9: pytest suite recovery
+- Phase C-7: Production readiness (secrets management, Sentry, production seed data)
+- Phase C-8/C-9: pytest suite recovery (582 failed, 468 errors)
 - Phase C-10: Final E2E testing and cleanup
 
 ### P2 (Future)
@@ -53,7 +75,6 @@ The user's initial problem was a 520 production deployment error. This evolved i
 ## Known Issues
 - pytest suite broken (582 failed, 468 errors)
 - Login rate limiting insufficient (no IP check)
-- EVFI search ignores brand-specific patterns (fix in progress)
 
 ## Mocked Services
 - Email Service (email_service.py)
@@ -63,3 +84,15 @@ The user's initial problem was a 520 production deployment error. This evolved i
 - Workshop Owner: demo@voltmotors.in / Demo@12345
 - Technician: Tech@12345
 - Customer Portal: via portal_access_token in contacts collection
+
+## Key API Endpoints
+- `/api/v1/evfi/match` POST - AI failure matching (supports query alias)
+- `/api/v1/subscriptions/current` GET - Subscription + usage + limits
+- `/api/v1/subscriptions/usage` GET - Detailed usage breakdown
+- `/api/v1/recurring-invoices/process-due` POST - Auto-generate invoices
+- `/api/v1/journal-entries/accounts/sync-balances` POST - Recalc account balances
+
+## Key Collections
+- `efi_platform_patterns`: 277 patterns (61 generic + 216 brand-specific for 7 brands)
+- `failure_cards`: Org-specific failure knowledge base
+- `plans`: 4 plans with AI call limits (Free:10, Starter:25, Professional:100, Enterprise:unlimited)
