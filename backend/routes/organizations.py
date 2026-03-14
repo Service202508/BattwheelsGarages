@@ -248,6 +248,7 @@ async def signup_organization(data: OrganizationCreate):
         "password_hash": hash_password(data.admin_password),
         "name": data.admin_name,
         "role": "owner",
+        "organization_id": org_id,
         "designation": "Owner",
         "phone": data.phone,
         "picture": None,
