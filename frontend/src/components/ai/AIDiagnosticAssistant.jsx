@@ -179,6 +179,8 @@ Please provide:
         efi_classification: data.efi_classification
       });
       toast.success("Diagnosis generated successfully");
+      // Refresh AI usage counter
+      window.dispatchEvent(new Event("ai-usage-refresh"));
     } catch (error) {
       console.error("AI diagnosis error:", error);
       toast.error(error.message || "Failed to get AI diagnosis. Please try again.");

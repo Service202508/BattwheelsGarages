@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { API } from "@/App";
 import AILimitPrompt from "@/components/ai/AILimitPrompt";
+import AIUsageCounter from "@/components/ai/AIUsageCounter";
 
 const subsystemIcons = {
   battery: Battery,
@@ -205,6 +206,8 @@ export default function FailureIntelligence({ user }) {
         const data = await response.json();
         setMatchResults(data.matches || []);
         toast.success(`Found ${data.matches?.length || 0} matching failures in ${data.processing_time_ms?.toFixed(0)}ms`);
+        // Refresh AI usage counter
+        window.dispatchEvent(new Event("ai-usage-refresh"));
       }
     } catch (error) {
       toast.error("Matching failed");
@@ -295,7 +298,8 @@ export default function FailureIntelligence({ user }) {
             AI-powered failure knowledge base • Every repair makes the system smarter
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <AIUsageCounter data-testid="evfi-ai-usage-counter" />
           <Button variant="outline" onClick={() => setMatchDialogOpen(true)} data-testid="match-btn">
             <Target className="mr-2 h-4 w-4" />
             Match Symptoms

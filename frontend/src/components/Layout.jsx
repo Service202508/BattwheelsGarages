@@ -70,6 +70,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import NotificationBell from "@/components/NotificationBell";
+import AIUsageCounter from "@/components/ai/AIUsageCounter";
 
 // Reorganized & cleaned navigation - removed legacy items and duplicates
 const navItems = [
@@ -433,6 +434,16 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose, curr
 
       {/* User Profile */}
       <div className="border-t border-white/[0.07] p-4 bg-bw-black">
+        {/* AI Usage Counter */}
+        {!collapsed ? (
+          <div className="mb-3">
+            <AIUsageCounter compact={false} className="bg-bw-panel" />
+          </div>
+        ) : (
+          <div className="flex justify-center mb-3">
+            <AIUsageCounter compact={true} />
+          </div>
+        )}
         {!collapsed ? (
           <div className="flex items-center gap-3 p-2 rounded bg-bw-black mb-3">
             <Avatar className="h-10 w-10 ring-1 ring-bw-volt/20">

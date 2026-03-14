@@ -160,7 +160,10 @@ async def get_current_subscription(
         "cancel_at_period_end": subscription.cancel_at_period_end,
         "is_active": subscription.is_active(),
         "is_in_trial": subscription.is_in_trial(),
-        "usage": subscription.usage.model_dump() if subscription.usage else None
+        "usage": subscription.usage.model_dump() if subscription.usage else None,
+        "limits": {
+            "ai_calls_per_month": plan.limits.max_ai_calls_per_month if plan and plan.limits else 0
+        } if plan else {}
     }
 
 

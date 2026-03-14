@@ -6,7 +6,7 @@ Enterprise SaaS subscription management for Battwheels OS.
 Implements Zoho Books-style plan-based feature access with usage limits.
 """
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from enum import Enum
@@ -127,6 +127,24 @@ class PlanLimits(BaseModel):
     max_ai_calls_per_month: int = 0
     max_storage_gb: float = 1.0
     max_api_calls_per_day: int = 0
+
+    @model_validator(mode="before")
+    @classmethod
+    def _map_db_aliases(cls, values):
+        """Map DB field names to model field names"""
+        if isinstance(values, dict):
+            alias_map = {
+                "ai_calls_per_month": "max_ai_calls_per_month",
+                "max_tickets": "max_tickets_per_month",
+                "max_invoices": "max_invoices_per_month",
+                "max_contacts": "max_users",
+                "max_items": "max_technicians",
+                "max_employees": "max_technicians",
+            }
+            for db_key, model_key in alias_map.items():
+                if db_key in values and model_key not in values:
+                    values[model_key] = values[db_key]
+        return values
 
 
 # ==================== PLAN MODEL ====================
