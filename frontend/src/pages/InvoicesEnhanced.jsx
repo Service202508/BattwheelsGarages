@@ -1281,7 +1281,7 @@ export default function InvoicesEnhanced() {
                       </td>
                       <td className="px-4 py-3 text-sm">{formatDate(inv.invoice_date)}</td>
                       <td className="px-4 py-3 text-sm">{formatDate(inv.due_date)}</td>
-                      <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.grand_total)}</td>
+                      <td className="px-4 py-3 text-right font-medium bw-text-money">{formatCurrency(inv.grand_total)}</td>
                       <td className="px-4 py-3 text-right">
                         <span className={inv.balance_due > 0 ? "text-bw-red font-medium" : "text-bw-green"}>
                           {formatCurrency(inv.balance_due)}
@@ -1349,7 +1349,7 @@ export default function InvoicesEnhanced() {
                         <p className="text-sm text-bw-red">Due: {formatDate(inv.due_date)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-bw-red">{formatCurrency(inv.balance_due)}</p>
+                        <p className="text-2xl font-bold text-bw-red bw-text-money">{formatCurrency(inv.balance_due)}</p>
                         <Badge className="bg-red-100 text-bw-red">Overdue</Badge>
                       </div>
                     </div>
@@ -1375,7 +1375,7 @@ export default function InvoicesEnhanced() {
                         <p className="text-sm text-bw-white/[0.45]">Created: {formatDate(inv.created_time)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold">{formatCurrency(inv.grand_total)}</p>
+                        <p className="text-2xl font-bold bw-text-money">{formatCurrency(inv.grand_total)}</p>
                         <Badge className="bg-white/5 text-bw-white">Draft</Badge>
                       </div>
                     </div>
@@ -1565,7 +1565,7 @@ export default function InvoicesEnhanced() {
                   <Input type="number" className="w-24" value={newInvoice.shipping_charge} onChange={(e) => setNewInvoice({ ...newInvoice, shipping_charge: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <Separator />
-                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-bw-green">{formatCurrency(calculateTotal())}</span></div>
+                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-bw-green bw-text-money">{formatCurrency(calculateTotal())}</span></div>
               </div>
             </div>
 
@@ -1621,7 +1621,7 @@ export default function InvoicesEnhanced() {
                     <DialogDescription>{selectedInvoice.customer_name}</DialogDescription>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold">{formatCurrency(selectedInvoice.grand_total)}</p>
+                    <p className="text-2xl font-bold bw-text-money">{formatCurrency(selectedInvoice.grand_total)}</p>
                     {selectedInvoice.balance_due > 0 && (
                       <p className="text-sm text-bw-red">Balance: {formatCurrency(selectedInvoice.balance_due)}</p>
                     )}

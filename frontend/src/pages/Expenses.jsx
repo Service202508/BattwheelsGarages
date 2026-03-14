@@ -518,7 +518,7 @@ export default function Expenses() {
                   )}
                   <div className="flex justify-between border-t border-white/[0.07] pt-2 mt-2">
                     <span className="font-medium">Total:</span>
-                    <span className="font-bold text-bw-volt">₹{gstCalculation.total}</span>
+                    <span className="font-bold text-bw-volt bw-text-money">₹{gstCalculation.total}</span>
                   </div>
                 </div>
               </div>
@@ -694,9 +694,9 @@ export default function Expenses() {
                         <Badge variant="outline" className="text-xs">{expense.category_name || 'Unknown'}</Badge>
                       </td>
                       <td className="p-3 text-sm text-bw-white/[0.65] max-w-[200px] truncate">{expense.description}</td>
-                      <td className="p-3 text-sm text-right font-mono">₹{expense.amount?.toLocaleString('en-IN')}</td>
-                      <td className="p-3 text-sm text-right font-mono text-bw-white/[0.45]">₹{gstAmount.toLocaleString('en-IN')}</td>
-                      <td className="p-3 text-sm text-right font-bold font-mono text-bw-volt">₹{expense.total_amount?.toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-sm text-right font-mono bw-text-money">₹{expense.amount?.toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-sm text-right font-mono text-bw-white/[0.45] bw-text-money">₹{gstAmount.toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-sm text-right font-bold font-mono text-bw-volt bw-text-money">₹{expense.total_amount?.toLocaleString('en-IN')}</td>
                       <td className="p-3 text-center">
                         {expense.is_itc_eligible ? (
                           <Badge className="bg-bw-teal/10 text-bw-teal text-xs">ITC</Badge>
@@ -814,7 +814,7 @@ export default function Expenses() {
                 </div>
                 <div className="flex justify-between border-t border-white/[0.07] pt-2 mt-2">
                   <span className="font-medium">Total:</span>
-                  <span className="font-bold text-bw-volt">₹{selectedExpense.total_amount?.toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-bw-volt bw-text-money">₹{selectedExpense.total_amount?.toLocaleString('en-IN')}</span>
                 </div>
                 {selectedExpense.is_itc_eligible && (
                   <div className="mt-2 text-xs text-bw-teal">

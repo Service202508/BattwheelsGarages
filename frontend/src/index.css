@@ -725,22 +725,18 @@ code, .mono {
 /* --- Financial Typography (monospace for currency values) --- */
 .bw-text-money {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.9375rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
 .bw-text-money-lg {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.75rem;
-  font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
 .bw-text-money-sm {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
 

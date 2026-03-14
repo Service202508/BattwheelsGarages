@@ -304,7 +304,7 @@ export default function SubscriptionManagement() {
                         <CardHeader className="pb-2">
                           <CardTitle className="text-lg">{plan.name}</CardTitle>
                           <div className="mt-2">
-                            <span className="text-3xl font-bold">₹{plan.price_monthly.toLocaleString()}</span>
+                            <span className="text-3xl font-bold bw-text-money">₹{plan.price_monthly.toLocaleString()}</span>
                             <span className="text-bw-white/[0.45]">/mo</span>
                           </div>
                         </CardHeader>

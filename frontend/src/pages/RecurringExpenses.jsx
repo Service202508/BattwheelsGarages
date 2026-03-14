@@ -58,11 +58,16 @@ export default function RecurringExpenses() {
     try {
       const url = `${API}/recurring-expenses${statusFilter ? `?status=${statusFilter}` : ''}`;
       const res = await fetch(url, { headers });
+      if (!res.ok) {
+        // Feature not yet available or access denied — show empty state
+        setExpenses([]);
+        return;
+      }
       const data = await res.json();
       setExpenses(data.recurring_expenses || []);
     } catch (error) {
       console.error("Error fetching recurring expenses:", error);
-      toast.error("Failed to load recurring expenses");
+      setExpenses([]);
     } finally {
       setLoading(false);
     }

@@ -431,7 +431,7 @@ export default function ReportsAdvanced() {
                     color={themeColors.teal}
                   />
                   <p className="text-center mt-4 text-sm text-bw-white/[0.45]">
-                    Total Collected: <span className="font-bold text-green-600">{formatCurrency(paymentTrend.total_collected)}</span>
+                    Total Collected: <span className="font-bold text-green-600 bw-text-money">{formatCurrency(paymentTrend.total_collected)}</span>
                   </p>
                 </CardContent>
               </Card>
@@ -452,7 +452,7 @@ export default function ReportsAdvanced() {
                     {monthlyRevenue.data?.map((item, idx) => (
                       <div key={idx} className="bg-bw-panel p-4 rounded-lg text-center">
                         <p className="text-xs text-bw-white/[0.45]">{item.month_name}</p>
-                        <p className="text-lg font-bold text-bw-blue mt-1">{formatCurrencyK(item.invoiced)}</p>
+                        <p className="text-lg font-bold text-bw-blue mt-1 bw-text-money">{formatCurrencyK(item.invoiced)}</p>
                         <p className="text-xs text-green-600">{formatCurrencyK(item.collected)} collected</p>
                         <p className="text-xs text-bw-white/[0.45] mt-1">{item.invoice_count} invoices</p>
                       </div>
@@ -516,7 +516,7 @@ export default function ReportsAdvanced() {
                   </div>
                   <div className="mt-4 pt-4 border-t text-center">
                     <p className="text-sm text-bw-white/[0.45]">Total Outstanding</p>
-                    <p className="text-2xl font-bold text-bw-orange">{formatCurrency(agingData.total_outstanding)}</p>
+                    <p className="text-2xl font-bold text-bw-orange bw-text-money">{formatCurrency(agingData.total_outstanding)}</p>
                   </div>
                 </CardContent>
               </Card>

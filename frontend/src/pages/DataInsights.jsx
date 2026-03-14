@@ -120,7 +120,7 @@ function KpiCard({ icon: Icon, label, value, delta, sub, color = VOLT, warn = fa
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <p className="text-xs mb-1 truncate" style={{ color: DIM_TEXT }}>{label}</p>
-            <p className="text-xl font-bold tracking-tight" style={{ color, fontFamily: "Syne, sans-serif" }}>
+            <p className="text-xl font-bold tracking-tight bw-text-money" style={{ color }}>
               {value}
             </p>
             {(delta !== null && delta !== undefined) && (
@@ -150,7 +150,7 @@ function SectionHeader({ icon: Icon, title, sub }) {
         <Icon size={16} style={{ color: VOLT }} />
       </div>
       <div>
-        <h2 className="text-base font-semibold" style={{ fontFamily: "Syne, sans-serif", color: "rgb(var(--bw-white))" }}>
+        <h2 className="text-base font-semibold" style={{ color: "rgb(var(--bw-white))" }}>
           {title}
         </h2>
         {sub && <p className="text-xs" style={{ color: DIM_TEXT }}>{sub}</p>}
@@ -937,8 +937,7 @@ export default function DataInsights({ user }) {
       <div className="px-4 sm:px-6 pt-6 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1
-            className="text-2xl sm:text-3xl font-bold"
-            style={{ fontFamily: "Syne, sans-serif", color: "rgb(var(--bw-white))" }}
+            className="text-3xl font-bold text-bw-white tracking-tight"
           >
             Data Insights
           </h1>

@@ -84,11 +84,31 @@ export default function Reports() {
 
   const fetchProfitLoss = async () => {
     const res = await fetch(
-      `${API}/reports/profit-loss?start_date=${dateRange.start_date}&end_date=${dateRange.end_date}`,
+      `${API}/journal-entries/reports/profit-loss?start_date=${dateRange.start_date}&end_date=${dateRange.end_date}`,
       { headers }
     );
     const data = await res.json();
-    setProfitLoss(data);
+    // Transform journal-based P&L to match the rendering schema
+    const income_total = data.income?.total || 0;
+    const cogs_accounts = (data.expenses?.accounts || []).filter(a => a.account_code?.startsWith('5'));
+    const opex_accounts = (data.expenses?.accounts || []).filter(a => !a.account_code?.startsWith('5'));
+    const total_cogs = cogs_accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
+    const expenses_breakdown = {};
+    opex_accounts.forEach(a => { expenses_breakdown[a.account_name] = a.balance || 0; });
+    const total_opex = opex_accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
+    setProfitLoss({
+      ...data,
+      total_income: income_total,
+      total_cogs: total_cogs,
+      gross_profit: income_total - total_cogs,
+      expenses_breakdown,
+      total_expenses: total_opex,
+      net_profit: data.net_profit || (income_total - (total_cogs + total_opex)),
+      margins: {
+        gross_margin_percent: income_total > 0 ? ((income_total - total_cogs) / income_total * 100).toFixed(1) : 0,
+        net_margin_percent: income_total > 0 ? (data.net_profit / income_total * 100).toFixed(1) : 0,
+      }
+    });
   };
 
   const fetchBalanceSheet = async () => {
