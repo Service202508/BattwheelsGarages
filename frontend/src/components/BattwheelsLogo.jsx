@@ -46,21 +46,20 @@ export default function BattwheelsLogo({ size = 'md', variant = 'solid', classNa
       aria-label="Battwheels logo"
     >
       {/* Positive terminal — top-left */}
-      <span style={{ ...terminalBase, top: s.terminalOffset, left: s.terminalOffset + 1 }}>
+      <span style={{ ...terminalBase, top: '15%', left: '12%' }}>
         +
       </span>
 
-      {/* Bolt */}
+      {/* Bolt — filled solid shape */}
       <Zap
         size={s.icon}
-        fill={iconColor}
-        color={iconColor}
-        strokeWidth={0}
-        style={{ position: 'relative', zIndex: 1 }}
+        strokeWidth={2}
+        fill="currentColor"
+        style={{ position: 'relative', zIndex: 1, color: iconColor }}
       />
 
-      {/* Negative terminal — bottom-right */}
-      <span style={{ ...terminalBase, bottom: s.terminalOffset, right: s.terminalOffset + 2 }}>
+      {/* Negative terminal — bottom-right, larger dot for visibility */}
+      <span style={{ ...terminalBase, bottom: '15%', right: '12%', fontSize: s.terminalText * 1.4 }}>
         ·
       </span>
     </span>
