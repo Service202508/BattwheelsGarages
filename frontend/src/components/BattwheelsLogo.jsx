@@ -50,17 +50,17 @@ export default function BattwheelsLogo({ size = 'md', variant = 'solid', classNa
         +
       </span>
 
-      {/* Bolt — filled solid shape */}
+      {/* Bolt — solid filled */}
       <Zap
         size={s.icon}
-        strokeWidth={2}
+        strokeWidth={1}
         fill="currentColor"
         style={{ position: 'relative', zIndex: 1, color: iconColor }}
       />
 
-      {/* Negative terminal — bottom-right, larger dot for visibility */}
-      <span style={{ ...terminalBase, bottom: '15%', right: '12%', fontSize: s.terminalText * 1.4 }}>
-        ·
+      {/* Negative terminal — bottom-right */}
+      <span style={{ ...terminalBase, bottom: '15%', right: '12%' }}>
+        −
       </span>
     </span>
   );
