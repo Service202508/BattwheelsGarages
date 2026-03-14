@@ -492,6 +492,7 @@ async def verify_payment(request: Request, req: PaymentVerifyRequest):
     }
 
 
+@router.post("/razorpay/webhook")
 @router.post("/webhook")
 async def handle_razorpay_webhook(request: Request):
     """

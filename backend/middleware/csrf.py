@@ -42,6 +42,8 @@ CSRF_EXEMPT_PATHS = (
     "/api/v1/contact-form",
     "/api/demo-request",
     "/api/v1/demo-request",
+    "/api/v1/payments/webhook",
+    "/api/v1/payments/razorpay/webhook",
 )
 
 CSRF_EXEMPT_PREFIXES = (

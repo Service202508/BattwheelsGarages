@@ -303,6 +303,7 @@ class RBACMiddleware(BaseHTTPMiddleware):
         r"^/api/v1/webhooks/.*",
         r"^/api/payments/webhook$",
         r"^/api/v1/payments/webhook$",
+        r"^/api/v1/payments/razorpay/webhook$",
         r"^/api/v1/razorpay/webhook$",
         r"^/api/customer-portal/.*",
         r"^/api/v1/customer-portal/.*",
