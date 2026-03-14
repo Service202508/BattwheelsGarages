@@ -20,7 +20,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://badge-refresh-2.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://middleware-trace.preview.emergentagent.com").rstrip("/")
 
 # Test data tracking for cleanup
 CREATED_TEST_USERS = []

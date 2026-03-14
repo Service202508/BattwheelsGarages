@@ -120,6 +120,6 @@
   "seed_data_creation": "None required",
   "retest_needed": false,
   "should_main_agent_self_test": false,
-  "context_for_next_testing_agent": "All homepage content rewrite v2.0 changes have been verified. The landing page at https://badge-refresh-2.preview.emergentagent.com correctly displays all updated content including Hero section, Problem section, Live Showcase panels, Opportunity section, Five Audiences tabs, EVFI Technology section, Built for Scale section, Pricing with diagnoses (not tokens), Flywheel section, CTA section, and Product Tour modal. Global sweep confirmed no workshop owner text, no tokens in pricing, and EVFI mentioned 28 times.",
+  "context_for_next_testing_agent": "All homepage content rewrite v2.0 changes have been verified. The landing page at https://middleware-trace.preview.emergentagent.com correctly displays all updated content including Hero section, Problem section, Live Showcase panels, Opportunity section, Five Audiences tabs, EVFI Technology section, Built for Scale section, Pricing with diagnoses (not tokens), Flywheel section, CTA section, and Product Tour modal. Global sweep confirmed no workshop owner text, no tokens in pricing, and EVFI mentioned 28 times.",
   "testing_methodology": "Playwright browser automation testing with screenshot verification"
 }
