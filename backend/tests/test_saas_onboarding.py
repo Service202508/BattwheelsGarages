@@ -18,7 +18,7 @@ import uuid
 # Get API URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://security-hardening-17.preview.emergentagent.com"
+    BASE_URL = "https://badge-refresh-2.preview.emergentagent.com"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
