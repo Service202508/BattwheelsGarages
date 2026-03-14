@@ -13,7 +13,7 @@ import requests
 import os
 import time
 
-BASE_URL = "https://evfi-hardening.preview.emergentagent.com"
+BASE_URL = "https://security-hardening-17.preview.emergentagent.com"
 
 # Test credentials
 DEMO_EMAIL = "demo@voltmotors.in"
