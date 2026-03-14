@@ -659,7 +659,7 @@ export default function Login({ onLogin }) {
     setIsLoading(true);
     setRegisterError("");
     try {
-      const response = await fetch(`${API}/v1/organizations/signup`, {
+      const response = await fetch(`${API}/organizations/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

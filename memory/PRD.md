@@ -42,6 +42,7 @@ Comprehensive UX and brand consistency overhaul titled "Beta Readiness" and "UX 
 - [x] Webhook route alias
 - [x] ScrollToTop on route navigation
 - [x] Registration organization_id consistency fix
+- [x] **P0 FIX (March 14, 2026):** Registration "Network Error" — Login.jsx had double `/v1/v1/` in signup URL (`${API}/v1/organizations/signup` where API already includes `/api/v1`). Fixed to `${API}/organizations/signup`. Root cause: CSRF middleware blocked the malformed path `/api/v1/v1/organizations/signup` with 403, which the frontend catch block reported as "Network Error". All 6 middleware layers verified passing for the correct path.
 - [ ] BattwheelsLogo shared component (deferred — needs redesign from user)
 - [ ] Replace 6 hardcoded logo instances
 
