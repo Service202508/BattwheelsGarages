@@ -122,7 +122,7 @@ export default function Vehicles({ user }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Vehicles</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Vehicles</h1>
           <p className="text-muted-foreground mt-1">Manage registered EVs in the system.</p>
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>

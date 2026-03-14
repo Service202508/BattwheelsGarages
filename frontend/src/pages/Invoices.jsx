@@ -206,7 +206,7 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-bw-white">Invoices</h1>
+          <h1 className="text-3xl font-bold text-bw-white tracking-tight">Invoices</h1>
           <p className="text-bw-white/[0.45] text-sm mt-1">Manage your sales invoices</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
