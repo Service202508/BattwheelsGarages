@@ -4,7 +4,7 @@
 
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File, Request, Depends
 from fastapi.responses import Response, StreamingResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
@@ -106,6 +106,7 @@ class LineItem(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     description: str = ""
     hsn_sac_code: str = ""
+    hsn_code: Optional[str] = None  # Alias accepted
     quantity: float = Field(default=1, gt=0)
     unit: str = "pcs"
     rate: float = Field(..., ge=0)
@@ -118,6 +119,14 @@ class LineItem(BaseModel):
     amount: float = 0
     discount_amount: float = 0
     tax_amount: float = 0
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_hsn_code_alias(cls, values):
+        if isinstance(values, dict):
+            if values.get("hsn_code") and not values.get("hsn_sac_code"):
+                values["hsn_sac_code"] = values["hsn_code"]
+        return values
     total: float = 0
 
 class PaymentCreate(BaseModel):

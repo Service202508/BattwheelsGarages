@@ -159,6 +159,12 @@ async def register(user_data: RegisterRequest, request: Request):
         "trial_end": trial_end,
         "current_period_start": now,
         "current_period_end": trial_end,
+        "usage": {
+            "invoices_created": 0,
+            "tickets_created": 0,
+            "vehicles_added": 0,
+            "ai_calls_made": 0,
+        },
         "created_at": now,
         "updated_at": now,
         "created_by": user_id,

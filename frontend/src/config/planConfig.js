@@ -60,7 +60,7 @@ const MODULE_ACCESS = {
   // INTELLIGENCE
   '/ai-assistant':          { free_trial: true,  starter: true,  professional: true,  enterprise: true },
   '/knowledge-brain':       { free_trial: false, starter: true,  professional: true,  enterprise: true },
-  '/failure-intelligence':  { free_trial: false, starter: false, professional: true,  enterprise: true },
+  '/failure-intelligence':  { free_trial: true,  starter: true,  professional: true,  enterprise: true },
   '/fault-tree-import':     { free_trial: false, starter: false, professional: true,  enterprise: true },
 
   // OPERATIONS
@@ -150,7 +150,7 @@ const MODULE_DESCRIPTIONS = {
   '/failure-intelligence': {
     title: 'Failure Intelligence Dashboard',
     description: 'Deep analytics on failure patterns, trending issues, and predictive insights across your fleet. Identify recurring problems before they become costly.',
-    minPlan: 'professional',
+    minPlan: 'free_trial',
   },
   '/fault-tree-import': {
     title: 'Fault Tree Import',

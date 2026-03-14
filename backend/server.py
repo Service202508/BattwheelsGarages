@@ -311,6 +311,32 @@ for mod_path in V1_ROUTES:
 for mod_path in API_ROUTES:
     _load_route(mod_path, api_router)
 
+# ==================== ROUTE ALIASES ====================
+# /accounting/* aliases that forward to banking module handlers
+accounting_router = APIRouter(prefix="/accounting", tags=["Accounting Aliases"])
+
+@accounting_router.get("/journal-entries")
+async def alias_journal_entries(
+    request: Request,
+    start_date: str = None,
+    end_date: str = None,
+    page: int = 1,
+    per_page: int = 50
+):
+    from routes.banking_module import list_journal_entries
+    return await list_journal_entries(request=request, start_date=start_date, end_date=end_date, page=page, per_page=per_page)
+
+@accounting_router.get("/chart-of-accounts")
+async def alias_chart_of_accounts(
+    request: Request,
+    account_type: str = None,
+    is_active: bool = True,
+):
+    from routes.banking_module import list_chart_of_accounts
+    return await list_chart_of_accounts(request=request, account_type=account_type, is_active=is_active)
+
+v1_router.include_router(accounting_router)
+
 # Mount routers
 api_router.include_router(v1_router)
 app.include_router(api_router)

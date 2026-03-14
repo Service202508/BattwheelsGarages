@@ -823,6 +823,17 @@ async def get_profit_loss_report(
     
     return {"code": 0, "report": "profit_and_loss", **report_data}
 
+# Alias: /profit-and-loss → same handler as /profit-loss
+@router.get("/profit-and-loss")
+async def get_profit_and_loss_alias(
+    start_date: str = "",
+    end_date: str = "",
+    format: str = Query("json", enum=["json", "pdf", "excel"]),
+    request: Request = None,
+    _: None = Depends(require_feature("advanced_reports"))
+):
+    return await get_profit_loss_report(start_date, end_date, format, request, _)
+
 @router.get("/balance-sheet")
 async def get_balance_sheet_report(
     request: Request,
