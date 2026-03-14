@@ -132,7 +132,7 @@ class BookDemoRequest(BaseModel):
     workshop_name: str
     city: str
     phone: str
-    vehicles_per_month: str  # "<10" | "10-50" | "50-200" | "200+"
+    vehicles_per_month: str = "<10"  # "<10" | "10-50" | "50-200" | "200+"
 
 
 @router.post("/book-demo", tags=["Public"])

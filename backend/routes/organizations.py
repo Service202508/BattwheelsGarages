@@ -200,7 +200,7 @@ def generate_slug(name: str) -> str:
 
 @router.post("/signup", response_model=Dict[str, Any])
 @router.post("/register", response_model=Dict[str, Any], include_in_schema=False)
-async def signup_organization(data: OrganizationCreate):
+async def signup_organization(data: OrganizationCreate, request: Request):
     """
     Create a new organization with admin user.
     
@@ -210,6 +210,18 @@ async def signup_organization(data: OrganizationCreate):
     3. Creates organization membership
     4. Returns JWT token for immediate login
     """
+    # IP-based rate limiting: 3 signups per minute per IP
+    from middleware.rate_limiter import check_ip_rate_limit, record_ip_attempt
+    client_ip = request.client.host if request.client else "unknown"
+    is_allowed, retry_after = await check_ip_rate_limit(client_ip, "org_signup", max_attempts=3)
+    if not is_allowed:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many registration attempts. Please try again later.",
+            headers={"Retry-After": str(retry_after)}
+        )
+    await record_ip_attempt(client_ip, "org_signup")
+
     # Check if admin email already exists
     existing_user = await db.users.find_one({"email": data.admin_email})
     if existing_user:
