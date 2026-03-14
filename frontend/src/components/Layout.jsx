@@ -679,7 +679,7 @@ export default function Layout({ children, user, onLogout, emailVerified = true 
               <span
                 style={{
                   fontSize: "10px",
-                  fontFamily: "Syne, sans-serif",
+                  fontFamily: "Manrope, sans-serif",
                   fontWeight: isActive ? 600 : 400,
                   letterSpacing: "0.02em",
                 }}
@@ -709,7 +709,7 @@ export default function Layout({ children, user, onLogout, emailVerified = true 
           }}
         >
           <Menu style={{ width: "20px", height: "20px" }} />
-          <span style={{ fontSize: "10px", fontFamily: "Syne, sans-serif" }}>More</span>
+          <span style={{ fontSize: "10px", fontFamily: "Manrope, sans-serif" }}>More</span>
         </button>
       </nav>
     </div>

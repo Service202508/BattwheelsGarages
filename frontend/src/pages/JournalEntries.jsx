@@ -102,7 +102,7 @@ const StatCard = ({ label, value, format = 'number', status = null }) => {
         {label}
       </div>
       <div style={{ 
-        fontFamily: format === 'status' ? 'JetBrains Mono, monospace' : 'Syne, sans-serif',
+        fontFamily: format === 'status' ? 'JetBrains Mono, monospace' : 'Manrope, sans-serif',
         fontSize: format === 'status' ? '16px' : '20px',
         fontWeight: 700,
         color: valueColor,
@@ -227,7 +227,7 @@ const EntryLines = ({ lines }) => {
               </td>
               <td style={{ 
                 padding: '12px 16px',
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '13px',
                 color: colors.white
               }}>
@@ -428,7 +428,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
         }}>
           <div>
             <h2 style={{ 
-              fontFamily: 'Syne, sans-serif', 
+              fontFamily: 'Manrope, sans-serif', 
               fontSize: '18px', 
               fontWeight: 700,
               color: colors.white,
@@ -510,7 +510,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
                   border: `1px solid ${colors.border}`,
                   borderRadius: '4px',
                   color: colors.white,
-                  fontFamily: 'Syne, sans-serif',
+                  fontFamily: 'Manrope, sans-serif',
                   fontSize: '13px'
                 }}
               />
@@ -733,7 +733,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
                 borderRadius: '4px',
                 color: colors.muted,
                 cursor: 'pointer',
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '13px'
               }}
             >
@@ -749,7 +749,7 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
                 borderRadius: '4px',
                 color: colors.pageBg,
                 cursor: isBalanced && description ? 'pointer' : 'not-allowed',
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '13px',
                 fontWeight: 700,
                 opacity: isBalanced && description ? 1 : 0.5
@@ -945,7 +945,7 @@ const AccountLedgerTab = ({ accounts }) => {
                 {ledgerData.account_code}
               </span>
               <span style={{ 
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '16px',
                 color: colors.white,
                 fontWeight: 600
@@ -1027,7 +1027,7 @@ const AccountLedgerTab = ({ accounts }) => {
                   </td>
                   <td style={{ 
                     padding: '12px 16px',
-                    fontFamily: 'Syne, sans-serif',
+                    fontFamily: 'Manrope, sans-serif',
                     fontSize: '13px',
                     color: colors.white
                   }}>
@@ -1293,7 +1293,7 @@ const JournalEntries = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 style={{ 
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '28px',
               fontWeight: 700,
               color: colors.white,
@@ -1323,7 +1323,7 @@ const JournalEntries = () => {
               border: 'none',
               borderRadius: '4px',
               color: colors.pageBg,
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '13px',
               fontWeight: 700,
               cursor: 'pointer'
@@ -1371,7 +1371,7 @@ const JournalEntries = () => {
               border: 'none',
               borderBottom: activeTab === tab.id ? `2px solid ${colors.volt}` : '2px solid transparent',
               color: activeTab === tab.id ? colors.volt : colors.muted,
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '13px',
               fontWeight: 600,
               cursor: 'pointer',
@@ -1555,7 +1555,7 @@ const JournalEntries = () => {
                   width: '400px',
                   maxWidth: '90vw',
                 }}>
-                  <h3 style={{ fontFamily: 'Syne, sans-serif', fontSize: '16px', color: colors.white, margin: '0 0 16px 0' }}>
+                  <h3 style={{ fontFamily: 'Manrope, sans-serif', fontSize: '16px', color: colors.white, margin: '0 0 16px 0' }}>
                     Export to Tally XML
                   </h3>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
@@ -1656,7 +1656,7 @@ const JournalEntries = () => {
                       </td>
                       <td style={{ 
                         padding: '14px 16px',
-                        fontFamily: 'Syne, sans-serif',
+                        fontFamily: 'Manrope, sans-serif',
                         fontSize: '13px',
                         color: colors.white,
                         maxWidth: '250px',

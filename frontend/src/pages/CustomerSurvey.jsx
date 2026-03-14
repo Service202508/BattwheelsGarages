@@ -34,7 +34,7 @@ function useSurveyStyles() {
       const l = document.createElement("link");
       l.id = "bw-survey-font";
       l.rel = "stylesheet";
-      l.href = "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Serif+Display&family=Syne:wght@400;500;600;700&display=swap";
+      l.href = "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap";
       document.head.appendChild(l);
       return l;
     })();
@@ -58,7 +58,7 @@ function useSurveyStyles() {
         display:flex; align-items:flex-start; justify-content:center;
         padding:48px 16px 64px;
         position:relative; overflow:hidden;
-        font-family:'Syne',sans-serif;
+        font-family:'Manrope',sans-serif;
       }
       .sv-grid {
         position:absolute; inset:0; pointer-events:none;
@@ -81,7 +81,7 @@ function useSurveyStyles() {
         border:1px solid rgba(255,255,255,0.10);
       }
       .sv-brand-name {
-        font-family:'Syne',sans-serif; font-size:20px; font-weight:600;
+        font-family:'Manrope',sans-serif; font-size:20px; font-weight:600;
         color:#F4F6F0; margin:0 0 4px;
       }
       .sv-brand-sub {
@@ -96,7 +96,7 @@ function useSurveyStyles() {
         margin:0 0 28px;
       }
       .sv-vehicle-name {
-        font-family:'Syne',sans-serif; font-size:16px; font-weight:600;
+        font-family:'Manrope',sans-serif; font-size:16px; font-weight:600;
         color:#F4F6F0; margin:0 0 4px;
       }
       .sv-vehicle-title {
@@ -108,7 +108,7 @@ function useSurveyStyles() {
       }
       .sv-rating-label-text {
         font-size:14px; color:rgba(244,246,240,0.50);
-        margin:0 0 16px; font-family:'Syne',sans-serif;
+        margin:0 0 16px; font-family:'Manrope',sans-serif;
       }
       .sv-stars {
         display:flex; gap:8px; margin-bottom:8px;
@@ -136,7 +136,7 @@ function useSurveyStyles() {
         background:rgba(255,255,255,0.04);
         border:1px solid rgba(255,255,255,0.10);
         border-radius:4px; padding:12px 14px;
-        font-family:'Syne',sans-serif; font-size:14px; color:#F4F6F0;
+        font-family:'Manrope',sans-serif; font-size:14px; color:#F4F6F0;
         resize:vertical; outline:none;
         transition:border-color 0.15s ease;
         line-height:1.5;
@@ -151,7 +151,7 @@ function useSurveyStyles() {
       }
       .sv-recommend-btn {
         flex:1; padding:10px 0; border-radius:4px; cursor:pointer;
-        font-family:'Syne',sans-serif; font-size:13px; font-weight:500;
+        font-family:'Manrope',sans-serif; font-size:13px; font-weight:500;
         transition:all 0.15s ease; border:1px solid rgba(255,255,255,0.12);
         background:transparent; color:rgba(244,246,240,0.50);
       }
@@ -207,7 +207,7 @@ function useSurveyStyles() {
         animation:svCheckIn 0.5s 0.1s ease both;
       }
       .sv-thanks-title {
-        font-family:'DM Serif Display',serif; font-size:32px;
+        font-family:'Barlow',sans-serif; font-size:32px;
         color:#F4F6F0; margin:0 0 10px;
       }
       .sv-thanks-body {
@@ -219,7 +219,7 @@ function useSurveyStyles() {
         padding:10px 20px; border-radius:4px;
         border:1px solid rgba(255,255,255,0.15);
         background:transparent; color:rgba(244,246,240,0.60);
-        font-family:'Syne',sans-serif; font-size:13px;
+        font-family:'Manrope',sans-serif; font-size:13px;
         cursor:pointer; text-decoration:none;
         transition:all 0.15s ease;
       }
@@ -385,7 +385,7 @@ export default function CustomerSurvey() {
             {surveyData.google_maps_url && (
               <>
                 <div className="sv-divider" />
-                <p style={{ fontSize: 13, color: "rgb(var(--bw-white) / 0.40)", marginBottom: 12, fontFamily: "Syne" }}>
+                <p style={{ fontSize: 13, color: "rgb(var(--bw-white) / 0.40)", marginBottom: 12, fontFamily: "Manrope" }}>
                   Enjoyed the service?
                 </p>
                 <a

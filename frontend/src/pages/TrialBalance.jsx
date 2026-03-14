@@ -110,7 +110,7 @@ const TrialBalance = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 style={{ 
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '28px',
               fontWeight: 700,
               color: colors.white,
@@ -202,7 +202,7 @@ const TrialBalance = () => {
             </div>
             <div>
               <div style={{ 
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '15px',
                 fontWeight: 700,
                 color: colors.green
@@ -234,7 +234,7 @@ const TrialBalance = () => {
             </div>
             <div>
               <div style={{ 
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'Manrope, sans-serif',
                 fontSize: '15px',
                 fontWeight: 700,
                 color: colors.red
@@ -327,7 +327,7 @@ const TrialBalance = () => {
                     <tr style={{ background: 'rgb(255 255 255 / 0.02)' }}>
                       <td colSpan="4" style={{ 
                         padding: '12px 20px',
-                        fontFamily: 'Syne, sans-serif',
+                        fontFamily: 'Manrope, sans-serif',
                         fontSize: '12px',
                         fontWeight: 700,
                         color: colors.volt,
@@ -352,7 +352,7 @@ const TrialBalance = () => {
                         </td>
                         <td style={{ 
                           padding: '12px 20px',
-                          fontFamily: 'Syne, sans-serif',
+                          fontFamily: 'Manrope, sans-serif',
                           fontSize: '13px',
                           color: colors.white
                         }}>
@@ -427,7 +427,7 @@ const TrialBalance = () => {
               }}>
                 <td colSpan="2" style={{ 
                   padding: '16px 20px',
-                  fontFamily: 'Syne, sans-serif',
+                  fontFamily: 'Manrope, sans-serif',
                   fontSize: '14px',
                   fontWeight: 700,
                   color: colors.volt,
@@ -502,7 +502,7 @@ const TrialBalance = () => {
               Total Accounts
             </div>
             <div style={{ 
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '24px',
               fontWeight: 700,
               color: colors.volt
@@ -527,7 +527,7 @@ const TrialBalance = () => {
               With Debit Balance
             </div>
             <div style={{ 
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '24px',
               fontWeight: 700,
               color: colors.green
@@ -552,7 +552,7 @@ const TrialBalance = () => {
               With Credit Balance
             </div>
             <div style={{ 
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'Manrope, sans-serif',
               fontSize: '24px',
               fontWeight: 700,
               color: 'rgb(var(--bw-blue))'

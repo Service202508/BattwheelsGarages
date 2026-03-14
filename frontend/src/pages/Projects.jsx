@@ -132,7 +132,7 @@ export default function Projects() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-bw-white" style={{ fontFamily: "'DM Serif Display', serif" }}>
+          <h1 className="text-2xl font-bold text-bw-white" style={{ fontFamily: "Barlow, sans-serif" }}>
             Projects
           </h1>
           <p className="text-bw-white/[0.45] text-sm mt-1">
@@ -319,7 +319,7 @@ function ProjectCard({ project, onClick }) {
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-bw-white truncate" style={{ fontFamily: "'DM Serif Display', serif", fontSize: "18px" }}>
+            <h3 className="font-semibold text-bw-white truncate" style={{ fontFamily: "Barlow, sans-serif", fontSize: "18px" }}>
               {project.name}
             </h3>
             <Badge className={`${status.bg} ${status.text} ${status.border} border mt-1`}>
@@ -562,7 +562,7 @@ export function ProjectDetail() {
             <ChevronRight className="h-4 w-4" />
             <span>{project.name}</span>
           </div>
-          <h1 className="text-2xl font-bold text-bw-white" style={{ fontFamily: "'DM Serif Display', serif" }}>
+          <h1 className="text-2xl font-bold text-bw-white" style={{ fontFamily: "Barlow, sans-serif" }}>
             {project.name}
           </h1>
           <div className="flex items-center gap-3 mt-2">
