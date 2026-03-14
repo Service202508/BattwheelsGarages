@@ -31,6 +31,8 @@ Comprehensive UX and brand consistency overhaul titled "Beta Readiness" and "UX 
 - Webhook route alias at `/payments/razorpay/webhook`
 - Registration fix: added `organization_id` to user document in signup handler
 - **Registration P0 fix:** `OrganizationCreate` Pydantic model now accepts both `{name, email, password}` and `{admin_name, admin_email, admin_password}` field conventions via `model_validator`, fixing 422/500 errors for users submitting with plain field names
+- **Book Demo fix:** Made `vehicles_per_month` optional with default `"<10"` in `BookDemoRequest` model — prevents 422 if field is omitted
+- **Registration rate limiting:** Added IP-based rate limiting (3 attempts/min) to `/organizations/signup` using existing `check_ip_rate_limit` — prevents bot spam-creation of orgs
 - Full platform verification: 80/80 endpoints passing
 
 ## Prioritized Backlog
