@@ -30,6 +30,7 @@ Comprehensive UX and brand consistency overhaul titled "Beta Readiness" and "UX 
 - CSRF exemption for Razorpay webhook endpoints
 - Webhook route alias at `/payments/razorpay/webhook`
 - Registration fix: added `organization_id` to user document in signup handler
+- **Registration P0 fix:** `OrganizationCreate` Pydantic model now accepts both `{name, email, password}` and `{admin_name, admin_email, admin_password}` field conventions via `model_validator`, fixing 422/500 errors for users submitting with plain field names
 - Full platform verification: 80/80 endpoints passing
 
 ## Prioritized Backlog
