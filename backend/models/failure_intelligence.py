@@ -4,7 +4,7 @@ Core data models for the Electric Vehicle Failure Intelligence (EVFI) Platform
 
 Version: 2.0 - Enhanced with diagnostic reasoning, confidence history, and pattern detection
 """
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from enum import Enum
@@ -558,7 +558,16 @@ class PartUsageCreate(BaseModel):
 
 class FailureMatchRequest(BaseModel):
     """Request for AI failure matching"""
-    symptom_text: str
+    symptom_text: str = ""
+    query: Optional[str] = None  # Alias for symptom_text
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_query_alias(cls, values):
+        if isinstance(values, dict):
+            if values.get("query") and not values.get("symptom_text"):
+                values["symptom_text"] = values["query"]
+        return values
     error_codes: List[str] = []
     vehicle_make: Optional[str] = None
     vehicle_model: Optional[str] = None

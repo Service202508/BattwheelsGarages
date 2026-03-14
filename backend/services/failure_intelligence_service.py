@@ -607,18 +607,52 @@ class EFIService:
             if data.vehicle_model:
                 pattern_query["vehicle_model"] = {"$regex": data.vehicle_model, "$options": "i"}
             
-            # Add symptom keyword search
+            # Derive fault_category from query text
+            query_lower = data.symptom_text.lower()
+            category_keywords = {
+                "battery": ["battery", "bms", "cell", "charge", "drain", "soc", "voltage"],
+                "motor": ["motor", "overheat", "vibrat", "noise", "torque", "rpm"],
+                "controller": ["controller", "ecu", "throttle", "error code", "limp"],
+                "charging": ["charg", "plug", "socket", "adapter", "slow charg"],
+                "electrical": ["wire", "fuse", "light", "horn", "relay", "electrical", "short"],
+            }
+            matched_category = None
+            for cat, cat_kws in category_keywords.items():
+                if any(kw in query_lower for kw in cat_kws):
+                    matched_category = cat
+                    break
+            
+            # Build keyword and category search filter
             keywords = extract_keywords(data.symptom_text)
+            search_conditions = []
             if keywords:
-                pattern_query["$or"] = [
-                    {"symptoms": {"$in": keywords}},
-                    {"title": {"$regex": "|".join(keywords[:5]), "$options": "i"}},
-                    {"keywords": {"$in": keywords}}
-                ]
+                search_conditions.append({"symptoms": {"$in": keywords}})
+                search_conditions.append({"title": {"$regex": "|".join(keywords[:5]), "$options": "i"}})
+                search_conditions.append({"keywords": {"$in": keywords}})
+            if matched_category:
+                search_conditions.append({"fault_category": matched_category})
+            # Also do a broad regex on title/description using raw query words
+            query_words = [w for w in data.symptom_text.lower().split() if len(w) > 2]
+            if query_words:
+                search_conditions.append({"title": {"$regex": "|".join(query_words[:5]), "$options": "i"}})
+            
+            if search_conditions:
+                pattern_query["$or"] = search_conditions
             
             platform_patterns = await self.db.efi_platform_patterns.find(
                 pattern_query, {"_id": 0}
             ).limit(15).to_list(15)
+            
+            # Fallback: if no results with keyword filter, try vehicle-only
+            if not platform_patterns and (data.vehicle_make or data.vehicle_model):
+                fallback_query = {"status": "active"}
+                if data.vehicle_make:
+                    fallback_query["vehicle_make"] = {"$regex": data.vehicle_make, "$options": "i"}
+                if data.vehicle_model:
+                    fallback_query["vehicle_model"] = {"$regex": data.vehicle_model, "$options": "i"}
+                platform_patterns = await self.db.efi_platform_patterns.find(
+                    fallback_query, {"_id": 0}
+                ).sort("confidence_score", -1).limit(10).to_list(10)
             
             for pattern in platform_patterns:
                 pattern_id = pattern.get("pattern_id", "")
@@ -631,6 +665,10 @@ class EFIService:
                 # Exact vehicle model match bonus
                 if data.vehicle_model and pattern.get("vehicle_model", "").lower() == data.vehicle_model.lower():
                     score += 0.15
+                
+                # Fault category match bonus
+                if matched_category and pattern.get("fault_category") == matched_category:
+                    score += 0.08
                 
                 # Symptom overlap bonus
                 pattern_symptoms = set(s.lower() for s in pattern.get("symptoms", []))
